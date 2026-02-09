@@ -1,0 +1,176 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-exclamation-triangle me-2"></i>{{ page_title }}
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning">
+                        <h6 class="alert-heading">
+                            <i class="fas fa-exclamation-circle me-2"></i>Warning
+                        </h6>
+                        <p class="mb-0">You are about to delete a custom package. This action cannot be undone.</p>
+                    </div>
+
+                    <div class="package-details mb-4">
+                        <h6 class="text-muted mb-3">Package Details:</h6>
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <tbody>
+                                    <tr>
+                                        <th class="bg-light" style="width: 40%">Name/Business:</th>
+                                        <td>{{ custom_package.name_business_name }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="bg-light">Phone Number:</th>
+                                        <td>{{ custom_package.phone_number }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="bg-light">Email:</th>
+                                        <td>{{ custom_package.email }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="bg-light">Business Category:</th>
+                                        <td>{{ custom_package.business_category }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="bg-light">Number of Graphics:</th>
+                                        <td>{{ custom_package.no_of_graphics }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="bg-light">Number of Videos:</th>
+                                        <td>{{ custom_package.no_of_videos }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <form method="post" id="deleteForm">
+                        {% csrf_token %}
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'package_app:custom_package_list' %}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-danger" id="deleteButton">
+                                <i class="fas fa-trash me-2"></i>Delete Package
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.card {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    border-width: 2px;
+}
+
+.card-header {
+    border-bottom: 2px solid rgba(0, 0, 0, 0.125);
+}
+
+.table th {
+    font-weight: 600;
+}
+
+.btn {
+    font-weight: 500;
+    padding: 0.5rem 1.5rem;
+}
+
+#deleteButton {
+    min-width: 150px;
+}
+
+.alert-warning {
+    border-left: 4px solid #ffc107;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .col-md-6 {
+        width: 100%;
+    }
+    
+    .d-flex {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* Loading state for delete button */
+.btn-loading {
+    position: relative;
+    color: transparent;
+}
+
+.btn-loading:after {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    top: 50%;
+    left: 50%;
+    margin-left: -10px;
+    margin-top: -10px;
+    border: 2px solid #ffffff;
+    border-radius: 50%;
+    border-right-color: transparent;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    // Form submission handler
+    $('#deleteForm').on('submit', function(e) {
+        // Prevent multiple submissions
+        $('#deleteButton').prop('disabled', true);
+        $('#deleteButton').addClass('btn-loading');
+        
+        // Change button text
+        $('#deleteButton').html('<i class="fas fa-spinner me-2"></i>Deleting...');
+    });
+    
+    // Enter key prevention in form
+    $(document).on('keydown', function(e) {
+        if (e.keyCode === 13 && !$(e.target).is('textarea, input[type="text"]')) {
+            e.preventDefault();
+            return false;
+        }
+    });
+    
+    // Escape key to go back
+    $(document).on('keydown', function(e) {
+        if (e.keyCode === 27) { // Escape key
+            window.location.href = "{% url 'package_app:custom_package_list' %}";
+        }
+    });
+});
+</script>
+{% endblock %}

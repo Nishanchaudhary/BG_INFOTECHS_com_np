@@ -1,0 +1,1378 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Home - BG-Infotechs</title>
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+
+    <!-- Favicons -->
+    <link href="assets/img/favicon.png" rel="icon">
+    <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Raleway:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+        rel="stylesheet">
+
+    <!-- Vendor CSS Files -->
+    <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+    <link href="assets/vendor/aos/aos.css" rel="stylesheet">
+    <link href="assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
+    <link href="assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
+
+    <!-- Main CSS File -->
+    <link href="assets/css/main.css" rel="stylesheet">
+
+
+ <style>
+        :root {
+            --primary12: #4361ee;
+            --primary-dark12: #3a56d4;
+            --secondary12: #7209b7;
+            --accent12: #f72585;
+            --light12: #f8f9fa;
+            --dark12: #212529;
+            --success12: #4cc9f0;
+            --gradient12: linear-gradient(135deg, var(--primary12), var(--secondary12));
+            --shadow12: 0 10px 30px rgba(0, 0, 0, 0.08);
+            --shadow-hover12: 0 15px 40px rgba(0, 0, 0, 0.12);
+            --transition12: all 0.3s ease;
+        }
+        
+  
+        /* Header Styles */
+        .course-header {
+            background-image: url(assets/img/full-stack.jpg);
+            color: white;
+            /* padding: 6rem 0 4rem; */
+            position: relative;
+            background-repeat: no-repeat;
+            background-position: center;
+            height: 595px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-size: cover;
+            overflow: hidden;
+        }
+        
+        .course-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        background-color: rgba(0, 0, 0, 0.7);
+        }
+        
+        .header-content1 {
+            top: -50px;
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .breadcrumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50px;
+            padding: 0.5rem 1rem;
+            backdrop-filter: blur(10px);
+            display: inline-block;
+        }
+        
+        .breadcrumb-item a {
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            transition: var(--transition12);
+        }
+        
+        .breadcrumb-item a:hover {
+            color: white;
+            transform: translateY(-1px);
+        }
+        
+        .breadcrumb-item.active {
+            color: white;
+            font-weight: 500;
+        }
+        
+        .course-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin: 1.5rem 0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            animation: fadeInUp 0.8s ease-out;
+        }
+        
+        .header-content1 .lead {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            max-width: 700px;
+            animation: fadeInUp 0.8s ease-out 0.2s both;
+        }
+        
+        /* Course Info Section */
+        .course-info {
+            padding: 4rem 0;
+            background: white;
+            border-radius: 20px;
+            margin-top: -50px;
+            position: relative;
+            z-index: 10;
+            box-shadow: var(--shadow12);
+        }
+        
+        .course-image {
+            height: 350px;
+            background: var(--gradient12);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 5rem;
+            margin-bottom: 2rem;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .course-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: var(--transition12);
+        }
+        
+        .course-image:hover img {
+            transform: scale(1.05);
+        }
+        
+        .course-image::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(67, 97, 238, 0.3);
+            opacity: 0;
+            transition: var(--transition12);
+        }
+        
+        .course-image:hover::after {
+            opacity: 1;
+        }
+        
+        .course-highlights {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 2rem 0;
+            border-left: 4px solid var(--primary12);
+            transition: var(--transition12);
+        }
+        
+        .course-highlights:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .highlight-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        .highlight-item p{
+            color: black;
+        }
+        
+        .highlight-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--gradient12);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            color: white;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+        
+        .course-price-section {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            border: 2px dashed var(--primary12);
+            transition: var(--transition12);
+        }
+        
+        .course-price-section:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow12);
+        }
+        
+        .course-price {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--primary12);
+            margin-bottom: 0.5rem;
+        }
+        
+        .course-price span {
+            font-size: 1rem;
+            color: #6c757d;
+            text-decoration: line-through;
+            margin-left: 0.5rem;
+        }
+        
+        .btn-enroll-large {
+            /* background: var(--gradient12); */
+              background: linear-gradient(90deg, #00c6ff 0%, #0072ff 100%);
+
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 1rem 2rem;
+            font-weight: 600;
+            font-size: 1.1rem;
+            width: 100%;
+            transition: var(--transition12);
+            margin-bottom: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-enroll-large::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: all 0.6s ease;
+        }
+        
+        .btn-enroll-large:hover::before {
+            left: 100%;
+        }
+        
+        .btn-enroll-large:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(67, 97, 238, 0.3);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            color: var(--primary12);
+            border: 2px solid var(--primary12);
+            border-radius: 50px;
+            padding: 0.9rem 2rem;
+            font-weight: 600;
+            width: 100%;
+            transition: var(--transition12);
+        }
+        
+        .btn-outline:hover {
+            background: var(--primary12);
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .course-details-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .course-details-list li {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            color: black;
+        }
+        
+        .course-details-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .course-details-list i {
+            color: var(--primary);
+            margin-right: 1rem;
+            font-size: 1.1rem;
+            width: 20px;
+            text-align: center;
+        }
+        
+        /* Course Content Section */
+        .course-content {
+            padding: 5rem 0;
+            background: #f8f9fa;
+        }
+        
+        .section-title {
+            margin-bottom: 3rem;
+            position: relative;
+            padding-bottom: 1rem;
+            text-align: center;
+        }
+        
+        .section-title h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 2.5rem;
+            color: var(--dark);
+            display: inline-block;
+            font-weight: bold;
+            position: relative;
+        }
+        
+        .section-title h3::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: var(--accent12);
+            border-radius: 2px;
+        }
+        
+        .module-card {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: var(--shadow12);
+            margin-bottom: 2rem;
+            transition: var(--transition12);
+            border-top: 4px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .module-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--gradient12);
+            opacity: 0;
+            transition: var(--transition12);
+            z-index: 0;
+        }
+        
+        .module-card:hover::before {
+            opacity: 0.03;
+        }
+        
+        .module-card:hover {
+            transform: translateY(-10px);
+            border-top-color: var(--primary);
+        }
+        
+        .module-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--dark12);
+            display: flex;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .module-title i {
+            margin-right: 1rem;
+            color: var(--primary);
+            font-size: 1.5rem;
+        }
+        
+        .module-topics {
+            list-style: none;
+            padding-left: 0;
+            position: relative;
+            z-index: 1;
+        }
+        
+        
+        .module-topics li {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #eee;
+            position: relative;
+            padding-left: 2rem;
+            color: black;
+            transition: var(--transition12);
+        }
+        
+        .module-topics li:hover {
+            color: var(--primary);
+            padding-left: 2.5rem;
+        }
+        
+        .module-topics li:last-child {
+            border-bottom: none;
+        }
+        
+        .module-topics li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--success12);
+            font-weight: bold;
+            transition: var(--transition12);
+        }
+        
+        .module-topics li:hover::before {
+            transform: scale(1.2);
+        }
+        
+        /* Instructor Section */
+        .instructor-section {
+            padding: 5rem 0;
+            background: white;
+        }
+        
+        .instructor-card {
+            background: white;
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: var(--shadow12);
+            text-align: center;
+            transition: var(--transition12);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .instructor-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: var(--gradient12);
+        }
+        
+        .instructor-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover12);
+        }
+        
+        .instructor-image {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: var(--gradient12);
+            margin: 0 auto 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3.5rem;
+            border: 5px solid white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .instructor-name {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--dark12);
+        }
+        
+        .instructor-title {
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+        }
+        
+        .instructor-bio {
+            color: #666;
+            margin-bottom: 2rem;
+            line-height: 1.8;
+        }
+        
+        .instructor-stats {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 2rem;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+            display: block;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        /* Testimonials Section */
+        .testimonials-section {
+            padding: 5rem 0;
+            background: #f8f9fa;
+        }
+        
+        .testimonial-card {
+            background: white;
+            border-radius: 15px;
+            padding: 2.5rem;
+            box-shadow: var(--shadow12);
+            margin-bottom: 2rem;
+            position: relative;
+            transition: var(--transition12);
+        }
+        
+        .testimonial-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover12);
+        }
+        
+        .testimonial-card::before {
+            content: '"';
+            position: absolute;
+            top: 10px;
+            left: 20px;
+            font-size: 5rem;
+            color: rgba(67, 97, 238, 0.1);
+            font-family: Georgia, serif;
+            line-height: 1;
+        }
+        
+        .testimonial-text {
+            font-style: italic;
+            margin-bottom: 1.5rem;
+            position: relative;
+            z-index: 2;
+            color: black;
+            line-height: 1.8;
+        }
+        
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+        }
+        
+        .author-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            overflow: hidden;
+            margin-right: 1rem;
+            background: var(--gradient12);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+        
+        .author-info h5 {
+            margin: 0;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        
+        .author-info p {
+            margin: 0;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        /* CTA Section */
+        .cta1-section {
+            background: var(--gradient12);
+            color: white;
+            padding: 5rem 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .cta1-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%23ffffff" fill-opacity="0.1" d="M0,96L48,112C96,128,192,160,288,186.7C384,213,480,235,576,213.3C672,192,768,128,864,128C960,128,1056,192,1152,192C1248,192,1344,128,1392,96L1440,64L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>');
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .cta-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .cta-subtitle {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            opacity: 0.9;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .btn-cta {
+            background: white;
+            color: var(--primary);
+            border: none;
+            border-radius: 50px;
+            padding: 1rem 2.5rem;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: var(--transition12);
+            position: relative;
+            z-index: 2;
+        }
+        
+        .btn-cta:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Footer */
+        .course-footer {
+            background: var(--dark12);
+            color: white;
+            padding: 3rem 0 1rem;
+        }
+        
+        .footer-logo {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        
+        .footer-logo span {
+            color: var(--primary);
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 2rem;
+            margin-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.9rem;
+            color: #bbb;
+        }
+        
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .course-title {
+                font-size: 2.5rem;
+            }
+            
+            .course-image {
+                height: 250px;
+                font-size: 3rem;
+            }
+            
+            .section-title h2 {
+                font-size: 2rem;
+            }
+            
+            .instructor-stats {
+                flex-direction: column;
+                gap: 1.5rem;
+            }
+            
+            .cta-title {
+                font-size: 2rem;
+            }
+        }
+    </style>
+
+
+</head>
+
+<body class="starter-page-page">
+
+   <header class="sticky-top">
+    <nav class="navbar ">
+      <a href="index.html" class="">
+        <img src="/assets/img/Logo.png" height="70px" alt="">
+      </a>
+
+      <div class="nav-links">
+        <a href="/index.html" class="fade-in active" style="animation-delay: 0.1s; color: #5D9CEC;">Home</a>
+        <a href="/about.html" class="fade-in" style="animation-delay: 0.4s;">About</a>
+
+
+
+        <!-- START: Mega Services Dropdown -->
+        <div class="mega-services-dropdown fade-in">
+          <a href="#" class="nav-link mega-services-toggle">Services <i class="fas fa-chevron-down"></i></a>
+          <div class="mega-services-menu">
+            <div class="mega-services-grid">
+              <a href="/web-development.html" class="mega-service-card">
+                <div class="mega-service-icon"><img src="./assets/img/services/web-structure.gif" height="40px" alt="">
+                </div>
+                <div>
+                  <h3 class="mega-service-title">Web Development</h3>
+                  <p class="mega-service-desc text-dark">Custom websites and web applications built with modern
+                    technologies</p>
+                  <span class="mega-service-arrow"><i class="fas fa-arrow-right"></i></span>
+                </div>
+              </a>
+
+
+              <a href="graphic-designing.html" class="mega-service-card">
+                <div class="mega-service-icon"><img src="./assets/img/services/design.gif" height="40px" alt=""></div>
+                <div>
+                  <h3 class="mega-service-title">Graphic Design</h3>
+                  <p class="mega-service-desc text-dark">Stunning visuals that communicate your brand's message
+                    effectively</p>
+                  <span class="mega-service-arrow"><i class="fas fa-arrow-right"></i></span>
+                </div>
+              </a>
+
+              <a href="/mobile-apps.html" class="mega-service-card">
+                <div class="mega-service-icon"><img src="./assets/img/services/seo.gif" height="40px" alt=""></div>
+                <div>
+                  <h3 class="mega-service-title ">Search Engine Optimization</h3>
+                  <p class="mega-service-desc text-dark">Rank higher on search engines and grow organic traffic</p>
+                  <span class="mega-service-arrow"><i class="fas fa-arrow-right"></i></span>
+                </div>
+              </a>
+
+              <a href="/mobile-apps.html" class="mega-service-card">
+                <div class="mega-service-icon"><img src="./assets/img/services/smartphone-coding.gif" height="40px"
+                    alt=""></div>
+                <div>
+                  <h3 class="mega-service-title">Mobile Apps</h3>
+                  <p class="mega-service-desc text-dark">Cross-platform mobile applications for iOS and Android</p>
+                  <span class="mega-service-arrow"><i class="fas fa-arrow-right"></i></span>
+                </div>
+              </a>
+
+              <a href="smm.html" class="mega-service-card">
+                <div class="mega-service-icon"><img src="./assets/img/services/social-media.gif" height="40px" alt="">
+                </div>
+                <div>
+                  <h3 class="mega-service-title">Social Media Handling</h3>
+                  <p class="mega-service-desc text-dark">Grow your brand across all social platforms</p>
+                  <span class="mega-service-arrow"><i class="fas fa-arrow-right"></i></span>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
+
+
+        <!-- END: Mega Services Dropdown -->
+
+        <div class="mega-services-dropdown fade-in">
+          <a href="#" class="nav-link mega-services-toggle">Inside <i class="fas fa-chevron-down"></i></a>
+          <div class="mega-services-menu">
+            <div class="mega-services-grid">
+
+
+              <a href="/training.html" class="mega-service-card">
+                <div class="mega-service-icon"><img src="./assets/img/services/training.gif" height="40px" alt=""></div>
+                <div>
+                  <h3 class="mega-service-title">Training</h3>
+                  <p class="mega-service-desc text-dark">Cross-platform mobile applications for iOS and Android</p>
+                  <span class="mega-service-arrow"><i class="fas fa-arrow-right"></i></span>
+                </div>
+              </a>
+              <a href="features.html" class="mega-service-card">
+                <div class="mega-service-icon"><img src="./assets/img/services/premium.gif" height="40px" alt=""></div>
+                <div>
+                  <h3 class="mega-service-title">Features</h3>
+                  <p class="mega-service-desc text-dark">Cross-platform mobile applications for iOS and Android</p>
+                  <span class="mega-service-arrow"><i class="fas fa-arrow-right"></i></span>
+                </div>
+              </a>
+
+              <a href="blog_details.html" class="mega-service-card">
+                <div class="mega-service-icon"><img src="./assets/img/services/blog-post.gif" height="40px" alt="">
+                </div>
+                <div>
+                  <h3 class="mega-service-title">Blog</h3>
+                  <p class="mega-service-desc text-dark">Grow your brand across all social platforms</p>
+                  <span class="mega-service-arrow"><i class="fas fa-arrow-right"></i></span>
+                </div>
+              </a>
+
+              <a href="career.html" class="mega-service-card">
+                <div class="mega-service-icon"><img src="./assets/img/services/career.gif" height="40px" alt="">
+                </div>
+                <div>
+                  <h3 class="mega-service-title">Career</h3>
+                  <p class="mega-service-desc text-dark">Join our team of innovators and help shape the future of
+                    technology.</p>
+                  <span class="mega-service-arrow"><i class="fas fa-arrow-right"></i></span>
+                </div>
+              </a>
+
+              <a href="pricing.html" class="mega-service-card">
+                <div class="mega-service-icon"><img src="./assets/img/services/pricing.gif" height="40px" alt="">
+                </div>
+                <div>
+                  <h3 class="mega-service-title">Pricing</h3>
+                  <p class="mega-service-desc text-dark">Strategic solutions tailored to elevate your brand's digital
+                    presence</p>
+                  <span class="mega-service-arrow"><i class="fas fa-arrow-right"></i></span>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
+        <a href="/digital_marketing.html" class="fade-in" style="animation-delay: 0.4s;">Digital Marketing</a>
+        <a href="/contact.html" class="fade-in" style="animation-delay: 0.5s;">Contact</a>
+      </div>
+
+
+      <button class="cta-button fade-in" style="animation-delay: 0.6s;"><a href="student_login.html"
+          class="text-light">Students Login</a></button>
+
+      <div class="hamburger">
+        <div class="line1"></div>
+        <div class="line2"></div>
+        <div class="line3"></div>
+      </div>
+    </nav>
+
+    <div class="mobile-menu">
+      <span class="close-btn">×</span>
+      <a href="index.html">Home</a>
+      <a href="features.html">Features</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+
+      <!-- Mobile dropdown -->
+      <div class="mobile-dropdown">
+        <a href="#" class="mobile-dropdown-toggle">Inside</a>
+        <div class="mobile-dropdown-content">
+          <a href="/training.html">Training</a>
+        </div>
+      </div>
+
+      <a href="student_login.html" class="mobile-cta">Students Login</a>
+    </div>
+
+    <div class="overlay"></div>
+  </header>
+
+    <main class="main">
+        <!-- <div class="page-title light-background">
+            <div class="container">
+                <h1 data-aos="fade-right">BG-Infotechs</h1>
+                <nav class="breadcrumbs" data-aos="fade-right" data-aos-delay="100">
+                    <ol>
+                        <li><a href="index.html"><i class="fas fa-home"></i> Home</a></li>
+                        <li class="current">Trainings</li>
+                    </ol>
+                </nav>
+            </div>
+        </div> -->
+        
+
+</head>
+<body>
+ <main>
+
+      <!-- Course Details Page -->
+    <div class="bg-course-details">
+        <!-- Header Section -->
+        <section class="course-header">
+            <div class="container">
+              
+                
+                <div class="header-content1">
+                    <h1 class="course-title text-white">Full Stack Web Development</h1>
+                    <p class="lead">Master front-end and back-end technologies to build complete web applications from scratch. Become a sought-after full stack developer in just 3 months.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Course Info Section -->
+        <section class="course-info">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-8">
+                        <div class="course-image">
+                            <img src="https://media.geeksforgeeks.org/wp-content/cdn-uploads/20210222183454/How-to-Become-a-Full-Stack-Web-Developer-in-2021.png" class="img-fluid" alt="Full Stack Web Development">
+                        </div>
+                        
+                        <h3>About This Course</h3>
+                        <p class="text-dark">This comprehensive Full Stack Web Development course is designed to take you from beginner to job-ready developer. You'll learn both front-end and back-end technologies, how to connect them, and how to deploy your applications.</p>
+                        
+                        <p class="text-dark">Our project-based approach ensures you gain practical experience by building real-world applications. By the end of the course, you'll have a portfolio of projects to showcase to potential employers.</p>
+                        
+                        <div class="course-highlights">
+                            <h4>Course Highlights</h4>
+                            <div class="highlight-item">
+                                <div class="highlight-icon">
+                                    <i class="fas fa-laptop-code"></i>
+                                </div>
+                                <div>
+                                    <h5>Hands-on Projects</h5>
+                                    <p class="text-dark">Build 5+ real-world applications for your portfolio</p>
+                                </div>
+                            </div>
+                            <div class="highlight-item">
+                                <div class="highlight-icon">
+                                    <i class="fas fa-certificate"></i>
+                                </div>
+                                <div>
+                                    <h5>Industry-Recognized Certificate</h5>
+                                    <p>Receive a certificate upon completion that employers value</p>
+                                </div>
+                            </div>
+                            <div class="highlight-item">
+                                <div class="highlight-icon">
+                                    <i class="fas fa-user-tie"></i>
+                                </div>
+                                <div>
+                                    <h5>Career Support</h5>
+                                    <p>Get assistance with resume building and job placement</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-4">
+                     <div class="course-price-section">
+    <!-- Optional info badge instead of price -->
+    <p class="text-info mb-2">
+        <i class="fas fa-info-circle me-2"></i> Contact us for course details
+    </p>
+
+    <!-- Optional offer note -->
+    <p class="text-success mb-3">
+        <i class="fas fa-clock me-2"></i> Limited time offer
+    </p>
+
+    <div class="d-grid gap-2">
+        <button class="btn-enroll-large" onclick="window.location.href='enrollment.html'">
+            <i class="fas fa-lock me-2"></i> Enroll Now
+        </button>
+    </div>
+</div>
+
+                        
+                        <div class="mt-4">
+                            <h5>Course Details</h5>
+                            <ul class="course-details-list">
+                                <li><i class="far fa-clock"></i> Duration: 3 Months</li>
+                                <li><i class="fas fa-users"></i> Max Students: 30</li>
+                                <li><i class="fas fa-chart-bar"></i> Level: Beginner to Advanced</li>
+                                <li><i class="fas fa-language"></i> Language: English, Nepali</li>
+                                <li><i class="fas fa-certificate"></i> Certificate: Yes</li>
+                                <li><i class="fas fa-video"></i> Lectures: 60+</li>
+                                <li><i class="fas fa-tasks"></i> Assignments: 20+</li>
+                                <li><i class="fas fa-project-diagram"></i> Projects: 5+</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Course Content Section -->
+        <section class="course-content">
+            <div class="container">
+                <div class="section-title">
+                    <h3>Course Curriculum</h3>
+                </div>
+                
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="module-card">
+                            <h4 class="module-title"><i class="fas fa-html5"></i> HTML5 & CSS3 Fundamentals</h4>
+                            <ul class="module-topics">
+                                <li>HTML5 Semantic Elements</li>
+                                <li>CSS3 Flexbox and Grid</li>
+                                <li>Responsive Web Design</li>
+                                <li>CSS Animations and Transitions</li>
+                                <li>Bootstrap Framework</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="module-card">
+                            <h4 class="module-title"><i class="fab fa-js-square"></i> JavaScript & DOM Manipulation</h4>
+                            <ul class="module-topics">
+                                <li>JavaScript Fundamentals</li>
+                                <li>ES6+ Features</li>
+                                <li>DOM Selection and Manipulation</li>
+                                <li>Event Handling</li>
+                                <li>Async JavaScript and APIs</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="module-card">
+                            <h4 class="module-title"><i class="fab fa-react"></i> React.js Frontend Development</h4>
+                            <ul class="module-topics">
+                                <li>React Components and JSX</li>
+                                <li>State and Props</li>
+                                <li>React Hooks</li>
+                                <li>React Router</li>
+                                <li>Context API</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-6">
+                        <div class="module-card">
+                            <h4 class="module-title"><i class="fab fa-node-js"></i> Node.js Backend Development</h4>
+                            <ul class="module-topics">
+                                <li>Node.js Fundamentals</li>
+                                <li>Express.js Framework</li>
+                                <li>RESTful API Development</li>
+                                <li>Middleware Implementation</li>
+                                <li>Authentication with JWT</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="module-card">
+                            <h4 class="module-title"><i class="fas fa-database"></i> Database Management</h4>
+                            <ul class="module-topics">
+                                <li>MongoDB and Mongoose</li>
+                                <li>SQL and PostgreSQL</li>
+                                <li>Database Design</li>
+                                <li>CRUD Operations</li>
+                                <li>Data Relationships</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="module-card">
+                            <h4 class="module-title"><i class="fas fa-cloud-upload-alt"></i> Deployment & DevOps</h4>
+                            <ul class="module-topics">
+                                <li>Git and GitHub</li>
+                                <li>Heroku Deployment</li>
+                                <li>Netlify for Frontend</li>
+                                <li>Basic DevOps Concepts</li>
+                                <li>Performance Optimization</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Instructor Section -->
+        <section class="instructor-section">
+            <div class="container">
+                <div class="section-title">
+                    <h3>Meet Your Instructor</h3>
+                </div>
+                
+                <div class="row justify-content-center">
+                    <div class="col-lg-8">
+                        <div class="instructor-card">
+                            <div class="instructor-image">
+                                <i class="fas fa-user-tie"></i>
+                            </div>
+                            <h3 class="instructor-name">Rajesh Sharma</h3>
+                            <p class="instructor-title">Senior Full Stack Developer</p>
+                            <p class="instructor-bio">Rajesh has over 8 years of experience in web development and has worked with numerous startups and established companies. He specializes in MERN stack development and has trained over 500 students in his career. His teaching methodology focuses on practical implementation and real-world projects.</p>
+                            
+                            <div class="instructor-stats">
+                                <div class="stat-item">
+                                    <span class="stat-value">8+</span>
+                                    <span class="stat-label">Years Experience</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-value">500+</span>
+                                    <span class="stat-label">Students Trained</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-value">4.9</span>
+                                    <span class="stat-label">Rating</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Testimonials Section -->
+        <section class="testimonials-section">
+            <div class="container">
+                <div class="section-title">
+                    <h3>What Our Students Say</h3>
+                </div>
+                
+                <div class="row">
+                    <div class="col-lg-4">
+                        <div class="testimonial-card">
+                            <p class="testimonial-text">This course completely transformed my career. I went from zero coding knowledge to landing a job as a junior developer in just 4 months after completing the course. The hands-on projects were incredibly valuable.</p>
+                            <div class="testimonial-author">
+                                <div class="author-avatar">SP</div>
+                                <div class="author-info">
+                                    <h5>Sarah P.</h5>
+                                    <p>Junior Developer at TechCorp</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-4">
+                        <div class="testimonial-card">
+                            <p class="testimonial-text">The project-based approach was fantastic. By the end of the course, I had a portfolio that impressed all my interviewers. The instructor's support was exceptional throughout the learning journey.</p>
+                            <div class="testimonial-author">
+                                <div class="author-avatar">MJ</div>
+                                <div class="author-info">
+                                    <h5>Mike J.</h5>
+                                    <p>Frontend Developer at WebSolutions</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-4">
+                        <div class="testimonial-card">
+                            <p class="testimonial-text">I appreciated the balance between theory and practice. The course covered everything I needed to start my freelancing career. The career support after completion was an unexpected bonus!</p>
+                            <div class="testimonial-author">
+                                <div class="author-avatar">AR</div>
+                                <div class="author-info">
+                                    <h5>Alex R.</h5>
+                                    <p>Freelance Web Developer</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section class="cta1-section">
+            <div class="container">
+                <h2 class="cta-title">Ready to Start Your Journey?</h2>
+                <p class="cta-subtitle">Join hundreds of students who have transformed their careers with our Full Stack Web Development course. Limited seats available for the next batch!</p>
+                <button class="btn-cta" onclick="window.location.href='enrollment.html'">Enroll Now</button>
+            </div>
+        </section>
+
+
+    </div>
+
+
+    </main>
+
+    <footer>
+    <div class="container">
+      <div class="row g-4">
+        <div class="col-lg-4">
+          <img src="/assets/img/Logo.png" class="mb-4" alt="" height="70px">
+          <p class="text-light">At BG INFOTECHS, we specialize in crafting cutting-edge IT solutions
+            tailored
+            to meet the evolving needs of businesses. With a commitment to innovation and excellence, we
+            empower organizations to thrive in the digital age.</p>
+          <div class="social-icons mt-4">
+            <a href="#"><i class="fab fa-facebook-f"></i></a>
+            <a href="#"><i class="fab fa-linkedin-in"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+            <a href="#"><i class="fab fa-youtube"></i></a>
+          </div>
+        </div>
+        <div class="col-lg-2 col-md-4">
+          <div class="footer-links">
+            <h5>Company</h5>
+            <ul>
+              <li><a href="#">About Us</a></li>
+              <li><a href="#">Services</a></li>
+              <li><a href="#">Contact Us</a></li>
+              <li><a href="#">Our Team</a></li>
+              <li><a href="#">Branches</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="col-lg-2 col-md-4">
+          <div class="footer-links">
+            <h5>We Serve</h5>
+            <ul>
+              <li><a href="#">Dhangadhi</a></li>
+              <li><a href="#">Mahendranagar</a></li>
+              <li><a href="#">Nepalgunj</a></li>
+              <li><a href="#">Butwal</a></li>
+              <li><a href="#">Pokhara</a></li>
+              <li><a href="#">Kathmandu</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="col-lg-2 col-md-4">
+          <div class="footer-links">
+            <h5>Branches</h5>
+            <ul>
+              <li><a href="">BG Infotechs, Dhangadhi</a></li>
+              <li><a href="">BG Infotechs, Kathmandu</a></li>
+            </ul>
+
+
+          </div>
+        </div>
+        <div class="col-lg-2 col-md-4">
+          <div class="footer-links">
+            <h5>Contact</h5>
+            <ul>
+              <li><a href="mailto:info@bginfotechs.com">info@bginfotechs.com</a></li>
+              <li><a href="https://www.bginfotechs.com">www.bginfotechs.com</a></li>
+              <li><a href="#">Our Partners</a></li>
+              <li><a href="faq.html">FAQ's</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="copyright text-center mt-4">
+        <p>&copy; 2023 BG Infotechs. All Rights Reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+    <!-- Chatbot Container -->
+    <div class="chatbot-container d-none" id="chatbotContainer">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center" style="padding: 0.5rem 1rem;">
+                <h5 class="mb-0" style="font-size: 1rem;">BG-Infotechs Assistant</h5>
+                <div class="d-flex">
+                    <button type="button" class="btn btn-sm btn-light ms-1 rounded-5" id="minimizeChat" style="padding: 0.25rem 0.5rem;">
+                        <i class="fas fa-minus"></i>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-danger ms-1 rounded-5" id="closeChat" style="padding: 0.25rem 0.5rem;">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="card-body chatbot-body" id="chatbotBody">
+                <!-- Messages will appear here -->
+                <div class="chatbot-welcome">
+                    <p>Hello! I'm your assistant. How can I help you today?</p>
+                    <div class="quick-questions mt-2">
+                        <button class="btn btn-sm btn-outline-primary m-1 quick-question">How to reset password?</button>
+                        <button class="btn btn-sm btn-outline-primary m-1 quick-question">Software installation help</button>
+                        <button class="btn btn-sm btn-outline-primary m-1 quick-question">Network issues</button>
+                        <button class="btn btn-sm btn-outline-primary m-1 quick-question">Hardware problems</button>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <div class="input-group">
+                    <input type="text" class="form-control" id="userInput" placeholder="Type your question here...">
+                    <div class="input-group-append">
+                        <button class="btn btn-success btn-lg" type="button" id="sendMessage">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chatbot Toggle Button (Fixed at bottom right) -->
+    <button class="btn btn-secondary rounded-circle chatbot-toggle" id="chatbotToggle">
+        <i class="fas fa-robot fa-lg"></i>
+    </button>
+
+    <!-- Vendor JS Files -->
+    <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/vendor/php-email-form/validate.js"></script>
+    <script src="assets/vendor/aos/aos.js"></script>
+    <script src="assets/vendor/glightbox/js/glightbox.min.js"></script>
+    <script src="assets/vendor/purecounter/purecounter_vanilla.js"></script>
+    <script src="assets/vendor/typed.js/typed.umd.js"></script>
+    <script src="assets/vendor/swiper/swiper-bundle.min.js"></script>
+
+    <!-- Main JS File -->
+    <script src="assets/js/main.js"></script>
+       <script>
+        // Add scroll animations
+        document.addEventListener('DOMContentLoaded', function() {
+            const animatedElements = document.querySelectorAll('.module-card, .testimonial-card, .instructor-card, .course-highlights');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, { threshold: 0.1 });
+            
+            animatedElements.forEach(el => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(20px)';
+                el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                observer.observe(el);
+            });
+            
+            // Add hover effect to course image
+            const courseImage = document.querySelector('.course-image');
+            if (courseImage) {
+                courseImage.addEventListener('mouseenter', function() {
+                    this.querySelector('img').style.transform = 'scale(1.05)';
+                });
+                
+                courseImage.addEventListener('mouseleave', function() {
+                    this.querySelector('img').style.transform = 'scale(1)';
+                });
+            }
+        });
+    </script>
+
+</body>
+</html>

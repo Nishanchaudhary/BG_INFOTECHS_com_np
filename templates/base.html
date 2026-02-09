@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Home{% endblock %} | BG-Infotechs</title>
+    {% load static %}
+    <link href="{% static 'img/logo1.png' %}" style="width: 100%; height: 100%; " rel="icon">
+    <!-- Google Font: Source Sans Pro -->
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
+    <!-- SweetAlert2 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <!-- Summernote CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    {% block extra_css %}
+    {% endblock %}
+
+    <style>
+        :root {
+            --primary-color: #4e73df;
+            --secondary-color: #6f42c1;
+            --success-color: #1cc88a;
+            --info-color: #36b9cc;
+            --warning-color: #f6c23e;
+            --danger-color: #e74a3b;
+            --light-bg: #f8f9fc;
+            --dark-bg: #2e59d9;
+            --card-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            font-family: 'Source Sans Pro', sans-serif !important;
+            background-color: #f8f9fc !important;
+            line-height: 1.6;
+        }
+
+        .main-header {
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1) !important;
+            border-bottom: 1px solid #eaecf4 !important;
+        }
+
+        .navbar-white {
+            background-color: #fff !important;
+        }
+
+        .card {
+            box-shadow: var(--card-shadow) !important;
+            border: none !important;
+            border-radius: 0.5rem !important;
+            margin-bottom: 1.5rem !important;
+            transition: var(--transition) !important;
+            overflow: hidden !important;
+        }
+
+        .card:hover {
+            transform: translateY(-5px) !important;
+            box-shadow: 0 0.5rem 2rem rgba(58, 59, 69, 0.2) !important;
+        }
+
+        .card-header {
+            background-color: #f8f9fc !important;
+            border-bottom: 1px solid #e3e6f0 !important;
+            padding: 1rem 1.25rem !important;
+            font-weight: 600 !important;
+            color: #5a5c69 !important;
+        }
+
+        .sidebar-dark-primary {
+            background-color: #4e73df !important;
+            background-image: linear-gradient(180deg, #4e73df 10%, #224abe 100%) !important;
+            background-size: cover !important;
+        }
+
+        /* Brand Logo Styles - Fixed with !important */
+        .brand-link {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15) !important;
+            padding: 1.2rem 0.5rem !important;
+            transition: var(--transition) !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            height: 90px !important;
+            text-decoration: none !important;
+        }
+
+        .logo-container {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: center !important;
+            transition: var(--transition) !important;
+            width: 100% !important;
+        }
+
+        /* Fixed logo sizing for both states */
+        .brand-logo-full {
+            height: 50px !important;
+            width: auto !important;
+            max-width: 160px !important;
+            object-fit: contain !important;
+            margin-bottom: 8px !important;
+            transition: var(--transition) !important;
+        }
+
+        .brand-logo-icon {
+            height: 45px !important;
+            width: auto !important;
+            max-width: 45px !important;
+            object-fit: contain !important;
+            display: none !important;
+            transition: var(--transition) !important;
+        }
+
+        .logo-text {
+            font-size: 1rem !important;
+            font-weight: 500 !important;
+            color: #fff !important;
+            text-align: center !important;
+            transition: var(--transition) !important;
+            white-space: nowrap !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+            max-width: 100% !important;
+        }
+
+        /* Sidebar collapsed state */
+        .sidebar-collapse .brand-logo-full,
+        .sidebar-collapse .logo-text {
+            display: none !important;
+        }
+
+        .sidebar-collapse .brand-logo-icon {
+            display: block !important;
+        }
+
+        .sidebar-collapse .brand-link {
+            padding: 1rem 0.5rem !important;
+            height: 70px !important;
+        }
+
+        .sidebar-collapse .logo-container {
+            padding: 5px 0 !important;
+        }
+
+        /* User panel styling */
+        .user-panel {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15) !important;
+            padding-bottom: 1rem !important;
+            margin-bottom: 1rem !important;
+        }
+
+        .user-panel .image img {
+            width: 45px !important;
+            height: 45px !important;
+            object-fit: cover !important;
+            border: 3px solid rgba(255, 255, 255, 0.2) !important;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1) !important;
+            transition: var(--transition) !important;
+        }
+
+        .user-panel .image img:hover {
+            border-color: rgba(255, 255, 255, 0.4) !important;
+            transform: scale(1.05) !important;
+        }
+
+        .user-panel .info {
+            margin-left: 10px !important;
+        }
+
+        .user-panel .info a {
+            color: #fff !important;
+            font-weight: 500 !important;
+            text-decoration: none !important;
+            transition: var(--transition) !important;
+        }
+
+        .user-panel .info a:hover {
+            color: rgba(255, 255, 255, 0.9) !important;
+        }
+
+        .role-badge {
+            font-size: 0.7rem !important;
+            padding: 0.25em 0.6em !important;
+            margin-top: 3px !important;
+            display: inline-block !important;
+            background-color: rgba(59, 183, 232, 0.614) !important;
+            border-radius: 10px !important;
+        }
+
+        /* Nav item styling */
+        .nav-sidebar>.nav-item>.nav-link {
+            margin-bottom: 0.2rem !important;
+            border-radius: 0.25rem !important;
+            color: rgba(255, 255, 255, 0.8) !important;
+            padding: 0.75rem 1rem !important;
+            transition: var(--transition) !important;
+        }
+
+        .nav-sidebar>.nav-item>.nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.1) !important;
+            color: #fff !important;
+            padding-left: 1.25rem !important;
+        }
+
+        .nav-sidebar>.nav-item>.nav-link.active {
+            background-color: rgba(255, 255, 255, 0.2) !important;
+            color: #fff !important;
+            font-weight: 600 !important;
+        }
+
+        .nav-sidebar .nav-icon {
+            width: 1.2rem !important;
+            text-align: center !important;
+            margin-right: 0.5rem !important;
+            font-size: 1.1rem !important;
+        }
+
+        /* Content header styling */
+        .content-header {
+            padding: 1rem 2rem !important;
+        }
+
+        .content-header h1 {
+            font-size: 1.8rem !important;
+            margin: 0 !important;
+            color: #5a5c69 !important;
+            font-weight: 600 !important;
+        }
+
+        .breadcrumb {
+            margin-bottom: 0 !important;
+            padding: 0.5rem 1rem !important;
+            background-color: transparent !important;
+            border-radius: 0.35rem !important;
+        }
+
+        /* Alert styling */
+        .alert {
+            border: none !important;
+            border-radius: 0.35rem !important;
+            box-shadow: var(--card-shadow) !important;
+            margin-bottom: 1.5rem !important;
+        }
+
+        /* Footer styling */
+        .main-footer {
+            background-color: #fff !important;
+            border-top: 1px solid #e3e6f0 !important;
+            padding: 1rem !important;
+            color: #5a5c69 !important;
+            font-size: 0.9rem !important;
+            box-shadow: 0 -0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1) !important;
+        }
+
+        /* Toast notification positioning */
+        .swal2-container {
+            z-index: 10000 !important;
+        }
+
+        /* Custom styles for click-based dropdown */
+        .nav-treeview {
+            display: none !important;
+        }
+
+        .menu-open .nav-treeview {
+            display: block !important;
+        }
+
+        .nav-item.has-treeview>.nav-link {
+            cursor: pointer !important;
+        }
+
+        /* Action buttons styling */
+        .btn-action {
+            border-radius: 50% !important;
+            width: 40px !important;
+            height: 40px !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            transition: var(--transition) !important;
+        }
+
+        .btn-action:hover {
+            transform: scale(1.1) !important;
+        }
+
+        /* Table enhancements for Django tables */
+        .table th {
+            border-top: none !important;
+            font-weight: 600 !important;
+            color: #5a5c69 !important;
+            background-color: #f8f9fc !important;
+        }
+
+        .table-hover tbody tr:hover {
+            background-color: rgba(78, 115, 223, 0.05) !important;
+        }
+
+        /* Django table specific fixes */
+        .table-responsive {
+            border-radius: 0.5rem !important;
+            overflow: hidden !important;
+            box-shadow: var(--card-shadow) !important;
+        }
+
+        .table thead th {
+            vertical-align: bottom !important;
+            border-bottom: 2px solid #e3e6f0 !important;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 767.98px) {
+            .brand-logo-full {
+                height: 45px !important;
+                max-width: 140px !important;
+            }
+
+            .brand-logo-icon {
+                height: 40px !important;
+                max-width: 40px !important;
+            }
+
+            .logo-text {
+                font-size: 0.9rem !important;
+            }
+
+            .content-header {
+                padding: 1rem !important;
+            }
+
+            .content-header h1 {
+                font-size: 1.5rem !important;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .brand-link {
+                padding: 0.8rem 0.5rem !important;
+                height: 80px !important;
+            }
+
+            .brand-logo-full {
+                height: 40px !important;
+                max-width: 120px !important;
+            }
+
+            .brand-logo-icon {
+                height: 35px !important;
+                max-width: 35px !important;
+            }
+
+            .logo-text {
+                font-size: 0.85rem !important;
+            }
+
+            .user-panel .image img {
+                width: 40px !important;
+                height: 40px !important;
+            }
+
+            .sidebar-collapse .brand-link {
+                height: 60px !important;
+            }
+        }
+
+        /* Animation classes */
+        .fade-in {
+            animation: fadeIn 0.5s ease-in !important;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .slide-in-left {
+            animation: slideInLeft 0.5s ease-out !important;
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+    </style>
+</head>
+
+<body class="hold-transition sidebar-mini">
+    <div class="wrapper">
+        <!-- Navbar -->
+        <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+            <!-- Left navbar links -->
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+                </li>
+                <li class="nav-item d-none d-sm-inline-block">
+                    <!-- Dashboard link based on user role -->
+                    {% if user.is_superuser or user.role.name == 'admin' %}
+                    <a href="{% url 'bg_app:admin_dashboard' %}" class="nav-link">Home</a>
+                    {% elif user.role.name == 'staff' %}
+                    <a href="{% url 'bg_app:staff_dashboard' %}" class="nav-link">Home</a>
+                    {% elif user.role.name == 'student' %}
+                    <a href="{% url 'bg_app:student_dashboard' %}" class="nav-link">Home</a>
+                    {% else %}
+                    <a href="{% url 'bg_app:profile' %}" class="nav-link">Home</a>
+                    {% endif %}
+                </li>
+            </ul>
+
+            <!-- Right navbar links -->
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'bg_app:profile' %}">
+                        <i class="fas fa-user mr-1"></i> Profile
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'bg_app:logout' %}">
+                        <i class="fas fa-sign-out-alt mr-1"></i> Logout
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        <!-- /.navbar -->
+
+        <!-- Main Sidebar Container -->
+        <aside class="main-sidebar sidebar-dark-info elevation-4">
+            <!-- Brand Logo -->
+            <a href="
+                {% if user.is_superuser or user.role.name == 'admin' %}{% url 'bg_app:admin_dashboard' %}
+                {% elif user.role.name == 'staff' %}{% url 'bg_app:staff_dashboard' %}
+                {% elif user.role.name == 'student' %}{% url 'bg_app:student_dashboard' %}
+                {% else %}{% url 'bg_app:profile' %}
+                {% endif %}" class="brand-link"
+                style="border-bottom: 1px solid rgba(255, 255, 255, 0.15) !important; padding: 1.2rem 0.5rem !important; display: flex !important; align-items: center !important; justify-content: center !important; height: 90px !important; text-decoration: none !important;">
+
+                <div class="logo-container"
+                    style="display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; width: 100% !important;">
+                    <!-- Logo for expanded state (with text below) -->
+                    <img src="{% static 'img/logo.png' %}" alt="Logo with name" class="brand-logo-full"
+                        style="height: 50px !important; width: auto !important; max-width: 160px !important; object-fit: contain !important; margin-bottom: 8px !important;">
+
+                    <!-- Logo for collapsed state (icon only) -->
+                    <img src="{% static 'img/logo1.png' %}" alt="Logo" class="brand-logo-icon"
+                        style="height: 45px !important; width: auto !important; max-width: 45px !important; object-fit: contain !important; display: none !important;">
+
+                    <span class="logo-text"
+                        style="font-size: 1rem !important; font-weight: 500 !important; color: #fff !important; text-align: center !important; white-space: nowrap !important; overflow: hidden !important; text-overflow: ellipsis !important; max-width: 100% !important;">
+                        {% if user.is_superuser or user.role.name == 'admin' %}Admin Portal
+                        {% elif user.role.name == 'staff' %}Staff Portal
+                        {% elif user.role.name == 'student' %}Student Portal
+                        {% else %}User Portal
+                        {% endif %}
+                    </span>
+                </div>
+            </a>
+
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <!-- Sidebar user panel (optional) -->
+                <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+                    <div class="image">
+                        {% if user.profile_picture %}
+                        <img src="{{ user.profile_picture.url }}" class="img-circle elevation-2" alt="User Image">
+                        {% else %}
+                        <img src="https://adminlte.io/themes/v3/dist/img/user2-160x160.jpg"
+                            class="img-circle elevation-2" alt="User Image">
+                        {% endif %}
+                    </div>
+                    <div class="info">
+                        <a href="{% url 'bg_app:profile' %}" class="d-block">
+                            {{ user.first_name|default:user.username }}
+                            <span class="badge badge-light bg-info role-badge">
+                                {% if user.is_superuser %}Superuser
+                                {% elif user.role %}{{ user.role.name|title }}
+                                {% else %}User
+                                {% endif %}
+                            </span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Sidebar Menu -->
+                <nav class="mt-2">
+                    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
+                        data-accordion="false">
+                        <!-- Dashboard link based on role -->
+                        <li class="nav-item">
+                            {% if user.is_superuser or user.role.name == 'admin' %}
+                            <a href="{% url 'bg_app:admin_dashboard' %}"
+                                class="nav-link {% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}">
+                                <i class="nav-icon fas fa-tachometer-alt"></i>
+                                <p>Admin Dashboard</p>
+                            </a>
+                            {% elif user.role.name == 'staff' %}
+                            <a href="{% url 'bg_app:staff_dashboard' %}"
+                                class="nav-link {% if request.resolver_match.url_name == 'staff_dashboard' %}active{% endif %}">
+                                <i class="nav-icon fas fa-tachometer-alt"></i>
+                                <p>Staff Dashboard</p>
+                            </a>
+                            {% elif user.role.name == 'student' %}
+                            <a href="{% url 'bg_app:student_dashboard' %}"
+                                class="nav-link {% if request.resolver_match.url_name == 'student_dashboard' %}active{% endif %}">
+                                <i class="nav-icon fas fa-tachometer-alt"></i>
+                                <p>Student Dashboard</p>
+                            </a>
+                            {% else %}
+                            <a href="{% url 'bg_app:profile' %}"
+                                class="nav-link {% if request.resolver_match.url_name == 'profile' %}active{% endif %}">
+                                <i class="nav-icon fas fa-tachometer-alt"></i>
+                                <p>Dashboard</p>
+                            </a>
+                            {% endif %}
+                        </li>
+
+                        <!-- Admin and Staff Menu Items -->
+                        {% if user.is_superuser or user.role.name == 'admin' or user.role.name == 'staff' %}
+
+                        <!-- User Management -->
+                        {% if user.is_superuser or user.role.name == 'admin' or perms.bg_app.view_user %}
+                        <li class="nav-item">
+                            <a href="{% url 'bg_app:user_list' %}"
+                                class="nav-link {% if request.resolver_match.url_name == 'user_list' %}active{% endif %}">
+                                <i class="nav-icon fas fa-users"></i>
+                                <p>User Management</p>
+                            </a>
+                        </li>
+                        {% endif %}
+
+                        <!-- RBAC Management (Admin Only) -->
+                        {% if user.is_superuser or user.role.name == 'admin' %}
+                        <li
+                            class="nav-item has-treeview {% if 'role' in request.path or 'permission' in request.path %}menu-open{% endif %}">
+                            <a href="#"
+                                class="nav-link {% if 'role' in request.path or 'permission' in request.path %}active{% endif %}">
+                                <i class="nav-icon fas fa-user-shield"></i>
+                                <p>
+                                    RBAC Management
+                                    <i class="right fas fa-angle-left"></i>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a href="{% url 'bg_app:role_list' %}"
+                                        class="nav-link {% if request.resolver_match.url_name == 'role_list' %}active{% endif %}">
+                                        <i class="fas fa-users-cog nav-icon"></i>
+                                        <p>Role Management</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="{% url 'bg_app:staff_permissions' %}"
+                                        class="nav-link {% if request.resolver_match.url_name == 'staff_permissions' %}active{% endif %}">
+                                        <i class="fas fa-key nav-icon"></i>
+                                        <p>Staff Permissions</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        {% endif %}
+
+
+                        <li class="nav-item">
+                            <a href="{% url 'company_app:feature_list' %}" class="nav-link">
+                                <i class="fa-solid fa-tag nav-icon"></i>
+                                <p>Features</p>
+                            </a>
+                        </li>
+
+                        <li class="nav-item has-treeview" id="company-settings-menu">
+                            <a href="{% url 'company_app:service_list' %}" class="nav-link"
+                                id="company-settings-toggle">
+                                <i class="fa-solid fa-user-gear nav-icon"></i>
+                                <p>
+                                    All Services
+                                    <i class="right fas fa-angle-left"></i>
+                                </p>
+                            </a>
+
+                            <ul class="nav nav-treeview ">
+                                <li class="nav-item">
+
+                                    <a href="{% url 'company_app:service_list' %}" class="nav-link"
+                                        id="company-settings-toggle">
+                                        <i class="fa-solid fa-user-gear nav-icon"></i>
+                                        <p>
+                                            Services
+                                        </p>
+                                    </a>
+
+                                    <a href="{% url 'company_app:category_list' %}" class="nav-link">
+                                        <i class="fa-solid fa-layer-group nav-icon "></i>
+                                        <p>Services Category</p>
+                                    </a>
+
+                                    <a href="{% url 'company_app:services_success_list' %}" class="nav-link">
+                                        <i class="fa-solid fa-trophy nav-icon "></i>
+                                        <p>Services Success</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <li class="nav-item">
+                            <a href="{% url 'company_app:testimonial_list' %}" class="nav-link">
+                                <i class="fa-solid fa-star nav-icon"></i>
+                                <p>Testimonials</p>
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a href="{% url 'trainings_app:training_list' %}" class="nav-link">
+                                <i class="fa-solid fa-laptop-code nav-icon"></i>
+                                <p>Trainings</p>
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a href="{% url 'blog_app:blog_list' %}" class="nav-link">
+                                <i class="fa-solid fa-blog nav-icon"></i>
+                                <p>Blogs</p>
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a href="{% url 'blog_app:category_list' %}" class="nav-link">
+                                <i class="fa-solid fa-list nav-icon "></i>
+                                <p>Blog Category</p>
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a href="{% url 'vacancy_app:vacancy_list' %}" class="nav-link">
+                                <i class="fa-solid fa-briefcase nav-icon "></i>
+                                <p>Vacancy Management</p>
+                            </a>
+                        </li>
+
+                        <!-- <li class="nav-item">
+                            <a href="{% url 'vacancy_app:application_list' %}" class="nav-link">
+                                <i class="fa-solid fa-file-lines nav-icon "></i>
+                                <p>Job Applications</p>
+                            </a>
+                        </li> -->
+
+                        <li class="nav-item">
+                            <a href="{% url 'teams_app:teams_list' %}" class="nav-link">
+                                <i class="fa-solid fa-users-viewfinder nav-icon"></i>
+                                <p>Teams Management</p>
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a href="{% url 'faq_app:faq_list' %}" class="nav-link">
+                                <i class="fa-solid fa-person-circle-question nav-icon "></i>
+                                <p>FAQ Management</p>
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a href="{% url 'faq_app:slider_list' %}" class="nav-link">
+                                <i class="fa-solid fa-arrow-right-long nav-icon "></i>
+                                <p>Image Sliders</p>
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a href="{% url 'course_app:courses_list' %}" class="nav-link">
+                                <i class="fa-solid fa-chalkboard-user nav-icon "></i>
+                                <p>Courses</p>
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a href="{% url 'contact_app:branch_list' %}" class="nav-link">
+                                <i class="fa-solid fa-code-branch nav-icon "></i>
+                                <p>Branch</p>
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a href="{% url 'contact_app:contact_list' %}" class="nav-link">
+                                <i class="fa-solid fa-message nav-icon "></i>
+                                <p>Contact Message</p>
+                            </a>
+                        </li>
+
+
+                        <li class="nav-item has-treeview" id="company-settings-menu">
+                            <a href="{% url 'package_app:package_list' %}" class="nav-link"
+                                id="company-settings-toggle">
+                                <i class="fa-solid fa-box-open nav-icon "></i>
+                                <p>
+                                    Packages
+                                    <i class="right fas fa-angle-left"></i>
+                                </p>
+                            </a>
+
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                     <a href="{% url 'package_app:package_list' %}" class="nav-link">
+                                        <i class="fa-solid fa-box-open nav-icon "></i>
+                                        <p>Packages</p>
+                                    </a>
+
+                                    <a href="{% url 'package_app:planSubscriber_list' %}" class="nav-link">
+                                        <i class="fa-solid fa-box nav-icon "></i>
+                                        <p>Packages Subscriber</p>
+                                    </a>
+
+                                    <a href="{% url 'package_app:custom_package_list' %}" class="nav-link">
+                                        <i class="fa-solid fa-boxes-stacked nav-icon "></i>
+                                        <p>Custom Packages</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+
+
+                        {% if perms.company_app.add_features %}
+                        <li class="nav-item has-treeview" id="company-settings-menu">
+                            <a href="#" class="nav-link" id="company-settings-toggle">
+                                <i class="bi bi-building-gear nav-icon"></i>
+                                <p>
+                                    Company Settings
+                                    <i class="right fas fa-angle-left"></i>
+                                </p>
+                            </a>
+
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+
+                                    <a href="{% url 'company_app:company_profile' %}" class="nav-link">
+                                        <i class="bi bi-building-add nav-icon"></i>
+                                        <p>Company Profile</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+
+                        {% endif %}
+                        {% endif %}
+
+                        <li class="nav-item">
+                            <a href="{% url 'bg_app:profile' %}"
+                                class="nav-link {% if request.resolver_match.url_name == 'profile' %}active{% endif %}">
+                                <i class="nav-icon fas fa-user"></i>
+                                <p>Profile</p>
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a href="{% url 'bg_app:logout' %}" class="nav-link">
+                                <i class="nav-icon fas fa-sign-out-alt"></i>
+                                <p>Logout</p>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+                <!-- /.sidebar-menu -->
+            </div>
+            <!-- /.sidebar -->
+        </aside>
+
+        <!-- Content Wrapper. Contains page content -->
+        <div class="content-wrapper">
+            <!-- Content Header (Page header) -->
+            <section class="content-header">
+                <div class="container-fluid">
+                    <div class="row mb-2">
+                        <div class="col-sm-6">
+                            <h1>{% block page_title %}
+                                {% if user.is_superuser or user.role.name == 'admin' %}Admin Dashboard
+                                {% elif user.role.name == 'staff' %}Staff Dashboard
+                                {% elif user.role.name == 'student' %}Student Dashboard
+                                {% else %}Dashboard
+                                {% endif %}
+                                {% endblock %}</h1>
+                        </div>
+                        <div class="col-sm-6">
+                            <ol class="breadcrumb float-sm-right">
+                                <li class="breadcrumb-item">
+                                    {% if user.is_superuser or user.role.name == 'admin' %}
+                                    <a href="{% url 'bg_app:admin_dashboard' %}">Home</a>
+                                    {% elif user.role.name == 'staff' %}
+                                    <a href="{% url 'bg_app:staff_dashboard' %}">Home</a>
+                                    {% elif user.role.name == 'student' %}
+                                    <a href="{% url 'bg_app:student_dashboard' %}">Home</a>
+                                    {% else %}
+                                    <a href="{% url 'bg_app:profile' %}">Home</a>
+                                    {% endif %}
+                                </li>
+                                <li class="breadcrumb-item active">{% block breadcrumb_active %}
+                                    {% if user.is_superuser or user.role.name == 'admin' %}Admin
+                                    {% elif user.role.name == 'staff' %}Staff
+                                    {% elif user.role.name == 'student' %}Student
+                                    {% else %}Dashboard
+                                    {% endif %}
+                                    {% endblock %}</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div><!-- /.container-fluid -->
+            </section>
+
+            <!-- Main content -->
+            <section class="content">
+                <div class="container-fluid">
+                    {% if messages %}
+                    {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                        <h5><i class="icon fas fa-{% if message.tags == 'success' %}check{% else %}ban{% endif %}"></i>
+                            Alert!</h5>
+                        {{ message }}
+                    </div>
+                    {% endfor %}
+                    {% endif %}
+
+                    {% block content %}
+                    <!-- Django tables and other content will go here -->
+                    {% endblock %}
+                </div>
+            </section>
+            <!-- /.content -->
+        </div>
+        <!-- /.content-wrapper -->
+
+        <!-- Main Footer -->
+        <footer class="main-footer">
+            <div class="float-right d-none d-sm-block">
+                <b>Version</b> 1.0.0
+            </div>
+            <strong>Copyright &copy; {% now "Y" %} BG infotechs.</strong> All rights reserved.
+        </footer>
+    </div>
+    <!-- ./wrapper -->
+
+    <!-- REQUIRED SCRIPTS -->
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Bootstrap 4 -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- AdminLTE App -->
+    <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Summernote JS -->
+    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            // Function to update logo visibility based on sidebar state
+            function updateLogoVisibility() {
+                if ($('body').hasClass('sidebar-collapse')) {
+                    $('.brand-logo-icon').show();
+                    $('.brand-logo-full, .logo-text').hide();
+                } else {
+                    $('.brand-logo-icon').hide();
+                    $('.brand-logo-full, .logo-text').show();
+                }
+            }
+
+            // Initialize on page load
+            updateLogoVisibility();
+
+            // Update when sidebar is toggled
+            $('[data-widget="pushmenu"]').on('click', function () {
+                setTimeout(function () {
+                    updateLogoVisibility();
+                }, 350);
+            });
+
+            // Handle window resize
+            $(window).resize(function () {
+                setTimeout(function () {
+                    updateLogoVisibility();
+                }, 100);
+            });
+
+            // Add active class to current nav item
+            $('.nav-sidebar a').filter(function () {
+                return this.href == window.location.href;
+            }).addClass('active');
+
+            // Handle dropdown toggle on click
+            $('.has-treeview > .nav-link').on('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                $(this).parent().toggleClass('menu-open');
+
+                // Close other open menus
+                $('.has-treeview').not($(this).parent()).removeClass('menu-open');
+            });
+
+            // Close dropdown when clicking outside
+            $(document).on('click', function (e) {
+                if (!$(e.target).closest('.has-treeview').length) {
+                    $('.has-treeview').removeClass('menu-open');
+                }
+            });
+
+            // Prevent dropdown from closing when clicking inside
+            $('.has-treeview').on('click', function (e) {
+                e.stopPropagation();
+            });
+        });
+
+        // Global notification function
+        function showToast(type, message, position = 'top-end', timer = 3000) {
+            const Toast = Swal.mixin({
+                toast: true,
+                position: position,
+                showConfirmButton: false,
+                timer: timer,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer);
+                    toast.addEventListener('mouseleave', Swal.resumeTimer);
+                }
+            });
+
+            Toast.fire({
+                icon: type,
+                title: message
+            });
+        }
+
+        // Auto-dismiss alerts after 5 seconds
+        $('.alert').not('.alert-permanent').delay(5000).fadeOut(400);
+
+        // Handle form submissions with loading states
+        $('form').on('submit', function () {
+            const submitBtn = $(this).find('button[type="submit"]');
+            if (submitBtn.length) {
+                submitBtn.prop('disabled', true);
+                if (!submitBtn.find('.fa-spinner').length) {
+                    submitBtn.prepend('<i class="fas fa-spinner fa-spin mr-1"></i>');
+                }
+            }
+        });
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+
+</html>

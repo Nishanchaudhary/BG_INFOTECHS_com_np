@@ -1,0 +1,154 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ page_title }} - BG Infotech{% endblock %}
+
+{% block page_title %}{{ page_title }}{% endblock %}
+
+{% block breadcrumb_active %}{{ breadcrumb_active }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-star mr-2"></i>{{ page_title }}
+                </h3>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="name">Name *</label>
+                                <input type="text" class="form-control" id="name" name="name"
+                                    value="{{ testimonial.name|default:'' }}" placeholder="Enter person's name"
+                                    required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="designation">Designation</label>
+                                <input type="text" class="form-control" id="designation" name="designation"
+                                    value="{{ testimonial.designation|default:'' }}"
+                                    placeholder="Enter designation/company">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group" style="width:fit-content;">
+                                <label for="rating">Rating *</label>
+                                <select class="form-control rating-select" id="rating" required
+                                    style="height: 40px!important ;" name="rating" required>
+                                    <option value="5" {% if testimonial.rating == 5 %}selected{% endif %}>★★★★★ (5 Stars)
+                                    </option>
+                                    <option value="4" {% if testimonial.rating == 4 %}selected{% endif %}>★★★★☆ (4 Stars)
+                                    </option>
+                                    <option value="3" {% if testimonial.rating == 3 %}selected{% endif %}>★★★☆☆ (3 Stars)
+                                    </option>
+                                    <option value="2" {% if testimonial.rating == 2 %}selected{% endif %}>★★☆☆☆ (2 Stars)
+                                    </option>
+                                    <option value="1" {% if testimonial.rating == 1 %}selected{% endif %}>★☆☆☆☆ (1 Star)
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="image">Profile Image</label>
+                                <div class="custom-file">
+                                    <input type="file" class="custom-file-input" id="image" name="image"
+                                        accept="image/*">
+                                    <label class="custom-file-label" for="image">
+                                        {% if testimonial.image %}Change image{% else %}Choose image{% endif %}
+                                    </label>
+                                </div>
+                                {% if testimonial.image %}
+                                <div class="mt-2">
+                                    <img src="{{ testimonial.image.url }}" alt="Current image"
+                                        class="img-thumbnail rounded-circle" style="max-height: 100px;">
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="message">Message *</label>
+                        <textarea class="form-control" id="message" name="message" rows="4"
+                            placeholder="Enter the testimonial message"
+                            required>{{ testimonial.message|default:'' }}</textarea>
+                        <small class="form-text text-muted">What did the person say about your service/product?</small>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="custom-control custom-switch">
+                            <input type="checkbox" class="custom-control-input" id="status" name="status" {% if testimonial.status or not testimonial %}checked{% endif %}>
+                            <label class="custom-control-label" for="status">Active Testimonial</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group mt-4">
+                        <button type="submit" class="btn btn-primary mr-2">
+                            <i class="fas fa-save mr-1"></i> Save Testimonial
+                        </button>
+                        <a href="{% url 'company_app:testimonial_list' %}" class="btn btn-secondary">
+                            <i class="fas fa-times mr-1"></i> Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+
+<!-- Load Summernote CSS and JS -->
+<script>
+    $(document).ready(function () {
+        $('#message').summernote(
+            {
+                height: 200,
+                toolbar: [
+                    ['style', ['bold', 'italic', 'underline', 'clear']],
+                    ['font', ['strikethrough', 'superscript', 'subscript']],
+                    ['fontsize', ['fontsize']],
+                    ['color', ['color']],
+                    ['para', ['ul', 'ol', 'paragraph']],
+                    ['height', ['height']]
+                ]
+            }
+        );
+        console.log('Summernote should be working now');
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+        // File input label update
+        $('#image').on('change', function () {
+            const fileName = $(this).val().split('\\').pop();
+            $(this).next('.custom-file-label').text(fileName || 'Choose image');
+        });
+
+        // Form validation
+        $('form').on('submit', function () {
+            const name = $('#name').val().trim();
+            const message = $('#message').val().trim();
+
+            if (!name || !message) {
+                showToast('error', 'Please fill in all required fields');
+                return false;
+            }
+        });
+    });
+</script>
+{% endblock %}

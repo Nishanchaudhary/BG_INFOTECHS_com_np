@@ -1,0 +1,280 @@
+{% extends 'Frontend/base.html' %}
+{% load static %}
+{% block title %}Terms and Conditions - BG Infotechs{% endblock %}
+{% block extra_css %}
+<style>
+    :root {
+        --primary-color: #4361ee;
+        --secondary-color: #7209b7;
+        --accent-color: #f72585;
+        --dark-color: #212529;
+        --light-color: #f8f9fa;
+        --gradient-primary: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    }
+
+    .terms-hero {
+        background: var(--gradient-primary);
+        color: white;
+        padding: 100px 0 60px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .terms-hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.1);
+    }
+
+    .terms-container {
+        background: white;
+        border-radius: 20px;
+        padding: 3rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        margin: -50px auto 3rem;
+        position: relative;
+        max-width: 1200px;
+    }
+
+    .terms-content {
+        line-height: 1.8;
+        color: #495057;
+    }
+
+    .terms-content h2 {
+        color: var(--primary-color);
+        margin: 2.5rem 0 1rem;
+        font-weight: 700;
+        border-bottom: 2px solid #e9ecef;
+        padding-bottom: 0.5rem;
+    }
+
+    .terms-content h3 {
+        color: var(--dark-color);
+        margin: 2rem 0 1rem;
+        font-weight: 600;
+    }
+
+    .terms-content p {
+        margin-bottom: 1.2rem;
+        text-align: justify;
+    }
+
+    .terms-content ul {
+        margin: 1rem 0;
+        padding-left: 2rem;
+    }
+
+    .terms-content li {
+        margin-bottom: 0.8rem;
+        position: relative;
+    }
+
+    .highlight-box {
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        border-left: 4px solid var(--primary-color);
+        padding: 1.5rem;
+        border-radius: 10px;
+        margin: 1.5rem 0;
+    }
+
+    .contact-info {
+        background: var(--gradient-primary);
+        color: white;
+        padding: 2rem;
+        border-radius: 15px;
+        text-align: center;
+        margin: 2rem 0;
+    }
+
+    .last-updated {
+        text-align: center;
+        color: #6c757d;
+        font-style: italic;
+        margin-top: 3rem;
+        padding-top: 2rem;
+        border-top: 1px solid #dee2e6;
+    }
+
+    @media (max-width: 768px) {
+        .terms-container {
+            padding: 2rem;
+            margin: -30px 1rem 2rem;
+        }
+        
+        .terms-hero {
+            padding: 80px 0 40px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<main class="main">
+    <!-- Hero Section -->
+    <section class="terms-hero">
+        <div class="container">
+            <div class="row justify-content-center text-center">
+                <div class="col-lg-8">
+                    <h1 class="display-4 fw-bold mb-4">Terms and Conditions</h1>
+                    <p class="lead">Please read these terms carefully before enrolling in any of our courses</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Terms Content -->
+    <div class="container">
+        <div class="terms-container">
+            <div class="terms-content">
+                <div class="text-center mb-5">
+                    <p class="text-muted">Last Updated: {% now "F j, Y" %}</p>
+                </div>
+
+                <h2>1. Acceptance of Terms</h2>
+                <p>By enrolling in any course offered by BG Infotechs, you acknowledge that you have read, understood, and agree to be bound by these Terms and Conditions. These terms constitute a legal agreement between you and BG Infotechs.</p>
+
+                <h2>2. Enrollment and Registration</h2>
+                <h3>2.1 Eligibility</h3>
+                <p>To enroll in our courses, you must:</p>
+                <ul>
+                    <li>Be at least 10 years of age</li>
+                    <li>Provide accurate and complete registration information</li>
+                    <li>Have the necessary prerequisites for the selected course</li>
+                    <li>Agree to these terms and conditions</li>
+                </ul>
+
+                <h3>2.2 Registration Process</h3>
+                <p>Your enrollment is considered complete only after:</p>
+                <ul>
+                    <li>Submission of the enrollment form with all required information</li>
+                    <li>Payment of course fees (if applicable)</li>
+                    <li>Receipt of confirmation email from BG Infotechs</li>
+                </ul>
+
+                <div class="highlight-box">
+                    <strong>Note:</strong> BG Infotechs reserves the right to refuse enrollment to any individual at our discretion.
+                </div>
+
+                <h2>3. Course Fees and Payment</h2>
+                <h3>3.1 Fee Structure</h3>
+                <p>Course fees are as published on our website or communicated during the enrollment process. All fees are quoted in local currency unless otherwise specified.</p>
+
+                <h3>3.2 Payment Terms</h3>
+                <ul>
+                    <li>Full payment must be made before course commencement unless otherwise arranged</li>
+                    <li>We accept various payment methods including bank transfer, credit/debit cards, and digital payments</li>
+                    <li>All fees are non-transferable between courses or individuals</li>
+                </ul>
+
+                <h3>3.3 Refund Policy</h3>
+                <p>Refund requests will be considered under the following conditions:</p>
+                <ul>
+                    <li>Cancellation within 7 days of enrollment: Full refund</li>
+                    <li>Cancellation after 7 days but before course start: 50% refund</li>
+                    <li>No refunds after course commencement</li>
+                    <li>Refunds processed within 15 business days</li>
+                </ul>
+
+                <h2>4. Student Responsibilities</h2>
+                <h3>4.1 Academic Conduct</h3>
+                <p>Students are expected to:</p>
+                <ul>
+                    <li>Maintain academic integrity and honesty</li>
+                    <li>Respect instructors and fellow students</li>
+                    <li>Complete assignments and assessments independently</li>
+                    <li>Adhere to course schedules and deadlines</li>
+                </ul>
+
+                <h3>4.2 Prohibited Activities</h3>
+                <p>The following activities are strictly prohibited:</p>
+                <ul>
+                    <li>Plagiarism or academic dishonesty</li>
+                    <li>Sharing course materials without authorization</li>
+                    <li>Disruptive behavior during classes</li>
+                    <li>Unauthorized recording of sessions</li>
+                    <li>Misuse of institute resources</li>
+                </ul>
+
+                <h2>5. Intellectual Property</h2>
+                <h3>5.1 Course Materials</h3>
+                <p>All course materials, including but not limited to:</p>
+                <ul>
+                    <li>Lecture notes and presentations</li>
+                    <li>Videos and audio recordings</li>
+                    <li>Assignments and assessments</li>
+                    <li>Software and tools provided</li>
+                </ul>
+                <p>are the intellectual property of BG Infotechs and are provided for personal educational use only.</p>
+
+                <h3>5.2 Usage Restrictions</h3>
+                <p>You may not:</p>
+                <ul>
+                    <li>Reproduce, distribute, or sell course materials</li>
+                    <li>Share login credentials with others</li>
+                    <li>Use materials for commercial purposes</li>
+                    <li>Create derivative works without permission</li>
+                </ul>
+
+                <h2>6. Certification</h2>
+                <h3>6.1 Certificate Eligibility</h3>
+                <p>To receive a certificate of completion, students must:</p>
+                <ul>
+                    <li>Attend a minimum of 80% of scheduled sessions</li>
+                    <li>Complete all required assignments and projects</li>
+                    <li>Pass all assessments with minimum required scores</li>
+                    <li>Clear all outstanding fees</li>
+                </ul>
+
+                <h3>6.2 Certificate Issuance</h3>
+                <p>Certificates are issued within 30 days of course completion. Digital certificates are provided by default, with physical certificates available upon request (additional charges may apply).</p>
+
+                <h2>7. Limitation of Liability</h2>
+                <p>BG Infotechs shall not be liable for:</p>
+                <ul>
+                    <li>Any indirect, incidental, or consequential damages</li>
+                    <li>Loss of data or personal information</li>
+                    <li>Interruptions in service due to technical issues</li>
+                    <li>Employment outcomes after course completion</li>
+                </ul>
+
+                <h2>8. Privacy and Data Protection</h2>
+                <p>We are committed to protecting your privacy. Our data collection and usage practices are detailed in our Privacy Policy. By enrolling, you consent to the collection and use of your information as described in that policy.</p>
+
+                <h2>9. Modifications to Terms</h2>
+                <p>BG Infotechs reserves the right to modify these terms at any time. Students will be notified of significant changes via email or through our website. Continued use of our services after changes constitutes acceptance of the modified terms.</p>
+
+                <h2>10. Termination</h2>
+                <p>We reserve the right to terminate your enrollment for:</p>
+                <ul>
+                    <li>Violation of these terms and conditions</li>
+                    <li>Non-payment of fees</li>
+                    <li>Disruptive or inappropriate behavior</li>
+                    <li>Academic dishonesty</li>
+                </ul>
+
+                <h2>11. Governing Law</h2>
+                <p>These terms shall be governed by and construed in accordance with the laws of [Your Country/State]. Any disputes shall be subject to the exclusive jurisdiction of the courts in [Your City/Region].</p>
+
+                <div class="contact-info">
+                    <h3>Contact Information</h3>
+                    <p>If you have any questions about these Terms and Conditions, please contact us:</p>
+                    <p>
+                        <strong>Email:</strong> info@bginfotechs.com<br>
+                        <strong>Phone:</strong> 9842251119 <br>
+                        <strong>Address:</strong> Taranagar-05, Dhangadhi, Kailali, Nepal
+                    </p>
+                </div>
+
+                <div class="last-updated">
+                    <p>This document was last updated on {% now "F j, Y" %}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}

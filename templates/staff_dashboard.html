@@ -1,0 +1,434 @@
+<!-- templates/staff_dashboard.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block page_title %}Staff Dashboard - {{ user.get_full_name }}{% endblock %}
+{% block breadcrumb_active %}Staff Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Welcome Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="welcome-card">
+                <div class="d-flex align-items-center">
+                    <div class="flex-shrink-0">
+                        {% if user.profile_picture %}
+                        <img src="{{ user.profile_picture.url }}" class="img-circle elevation-3" alt="Profile Picture" 
+                             style="width: 80px; height: 80px; object-fit: cover;">
+                        {% else %}
+                        <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center" 
+                             style="width: 80px; height: 80px;">
+                            <i class="fas fa-user fa-2x text-white"></i>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                        <h3 class="mb-1">Welcome, {{ user.get_full_name|default:user.username }}!</h3>
+                        <p class="text-muted mb-0">
+                            <i class="fas fa-briefcase me-1"></i>
+                            {{ profile.position }} | {{ profile.department }}
+                            {% if profile.employee_id %}
+                            | ID: {{ profile.employee_id }}
+                            {% endif %}
+                        </p>
+                        <small class="text-muted">
+                            <i class="fas fa-calendar me-1"></i>
+                            Joined: {{ profile.join_date|date:"M d, Y" }}
+                        </small>
+                    </div>
+                    <div class="flex-shrink-0">
+                        <span class="badge bg-success fs-6">
+                            <i class="fas fa-circle me-1"></i>
+                            Active Staff
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Left Column - Profile Information -->
+        <div class="col-lg-4 col-md-6">
+            <!-- Profile Card -->
+            <div class="card card-primary">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="fas fa-id-card me-2"></i>
+                        Staff Profile
+                    </h3>
+                    <div class="card-tools">
+                        <a href="{% url 'bg_app:profile' %}" class="btn btn-tool" title="Edit Profile">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-3">
+                        {% if user.profile_picture %}
+                        <img src="{{ user.profile_picture.url }}" class="img-circle elevation-3" alt="Profile Picture" 
+                             style="width: 120px; height: 120px; object-fit: cover;">
+                        {% else %}
+                        <div class="bg-gradient-primary rounded-circle d-flex align-items-center justify-content-center mx-auto" 
+                             style="width: 120px; height: 120px;">
+                            <i class="fas fa-user fa-3x text-white"></i>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="staff-info">
+                        <div class="info-item">
+                            <strong><i class="fas fa-user me-2"></i>Full Name:</strong>
+                            <span>{{ user.get_full_name|default:"Not specified" }}</span>
+                        </div>
+                        <div class="info-item">
+                            <strong><i class="fas fa-id-badge me-2"></i>Employee ID:</strong>
+                            <span>{{ profile.employee_id|default:"Not set" }}</span>
+                        </div>
+                        <div class="info-item">
+                            <strong><i class="fas fa-building me-2"></i>Department:</strong>
+                            <span>{{ profile.department|default:"Not set" }}</span>
+                        </div>
+                        <div class="info-item">
+                            <strong><i class="fas fa-briefcase me-2"></i>Position:</strong>
+                            <span>{{ profile.position|default:"Not set" }}</span>
+                        </div>
+                        <div class="info-item">
+                            <strong><i class="fas fa-envelope me-2"></i>Email:</strong>
+                            <span>{{ user.email|default:"Not provided" }}</span>
+                        </div>
+                        <div class="info-item">
+                            <strong><i class="fas fa-calendar me-2"></i>Join Date:</strong>
+                            <span>{{ profile.join_date|date:"M d, Y" }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact Information Card -->
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="fas fa-address-book me-2"></i>
+                        Contact Information
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="contact-info">
+                        <div class="contact-item mb-3">
+                            <i class="fas fa-phone text-primary me-2"></i>
+                            <strong>Phone:</strong>
+                            <span class="ms-2">{{ user.phone_number|default:"Not provided" }}</span>
+                        </div>
+                        <div class="contact-item mb-3">
+                            <i class="fas fa-envelope text-primary me-2"></i>
+                            <strong>Email:</strong>
+                            <span class="ms-2">{{ user.email|default:"Not provided" }}</span>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-map-marker-alt text-primary me-2"></i>
+                            <strong>Address:</strong>
+                            <div class="ms-4 mt-1 text-muted">
+                                {{ user.address|default:"Not provided"|linebreaks }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <a href="{% url 'bg_app:profile' %}" class="btn btn-primary btn-sm">
+                        <i class="fas fa-edit me-1"></i>
+                        Update Contact Info
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column - Salary Information & Quick Actions -->
+        <div class="col-lg-8 col-md-6">
+            <!-- Salary Information Card -->
+            <div class="card">
+                <div class="card-header bg-gradient-info">
+                    <h3 class="card-title text-white">
+                        <i class="fas fa-money-bill-wave me-2"></i>
+                        Salary Information
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <!-- Salary Stats Cards -->
+                    <div class="row">
+                        <div class="col-md-6 col-sm-12 mb-3">
+                            <div class="info-box bg-gradient-success">
+                                <span class="info-box-icon">
+                                    <i class="fas fa-wallet"></i>
+                                </span>
+                                <div class="info-box-content">
+                                    <span class="info-box-text">Total Salary</span>
+                                    <span class="info-box-number">₹ {{ profile.salary|default:0|floatformat:2 }}</span>
+                                    <div class="progress">
+                                        <div class="progress-bar bg-white" style="width: 100%"></div>
+                                    </div>
+                                    <span class="progress-description">
+                                        Annual Package
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 col-sm-12 mb-3">
+                            <div class="info-box bg-gradient-primary">
+                                <span class="info-box-icon">
+                                    <i class="fas fa-check-circle"></i>
+                                </span>
+                                <div class="info-box-content">
+                                    <span class="info-box-text">Paid Salary</span>
+                                    <span class="info-box-number">₹ {{ profile.paid_salary|default:0|floatformat:2 }}</span>
+                                    <div class="progress">
+                                        <div class="progress-bar bg-white" style="width: {{ salary_paid_percentage|default:0 }}%"></div>
+                                    </div>
+                                    <span class="progress-description">
+                                        Amount Received
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 col-sm-12 mb-3">
+                            <div class="info-box bg-gradient-warning">
+                                <span class="info-box-icon">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                </span>
+                                <div class="info-box-content">
+                                    <span class="info-box-text">Due Salary</span>
+                                    <span class="info-box-number">₹ {{ salary_due|default:0|floatformat:2 }}</span>
+                                    <div class="progress">
+                                        <div class="progress-bar bg-white" style="width: 100%"></div>
+                                    </div>
+                                    <span class="progress-description">
+                                        Pending Amount
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 col-sm-12 mb-3">
+                            <div class="info-box bg-gradient-secondary">
+                                <span class="info-box-icon">
+                                    <i class="fas fa-chart-line"></i>
+                                </span>
+                                <div class="info-box-content">
+                                    <span class="info-box-text">Payment Progress</span>
+                                    <span class="info-box-number">{{ salary_paid_percentage|default:0|floatformat:1 }}%</span>
+                                    <div class="progress">
+                                        <div class="progress-bar bg-white" style="width: {{ salary_paid_percentage|default:0 }}%"></div>
+                                    </div>
+                                    <span class="progress-description">
+                                        Completion Rate
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Progress Bar -->
+                    <div class="progress-section mt-4">
+                        <h5 class="mb-3">Salary Payment Progress</h5>
+                        <div class="progress" style="height: 25px;">
+                            <div class="progress-bar bg-success progress-bar-striped progress-bar-animated" 
+                                 role="progressbar" 
+                                 style="width: {{ salary_paid_percentage|default:0 }}%" 
+                                 aria-valuenow="{{ salary_paid_percentage|default:0 }}" 
+                                 aria-valuemin="0" 
+                                 aria-valuemax="100">
+                                <strong>{{ salary_paid_percentage|default:0|floatformat:1 }}% Paid</strong>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between mt-2">
+                            <small class="text-muted">₹0</small>
+                            <small class="text-muted">₹ {{ profile.salary|default:0|floatformat:2 }}</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions Card -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="fas fa-bolt me-2"></i>
+                        Quick Actions
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <a href="{% url 'bg_app:profile' %}" class="btn btn-outline-primary btn-block btn-hover">
+                                <i class="fas fa-user-edit me-2"></i>
+                                Update Profile
+                            </a>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <a href="#" class="btn btn-outline-info btn-block btn-hover">
+                                <i class="fas fa-key me-2"></i>
+                                Change Password
+                            </a>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <a href="#" class="btn btn-outline-success btn-block btn-hover">
+                                <i class="fas fa-file-invoice me-2"></i>
+                                Salary Slips
+                            </a>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <a href="#" class="btn btn-outline-warning btn-block btn-hover">
+                                <i class="fas fa-calendar-alt me-2"></i>
+                                Attendance
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Account Statistics Card -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="fas fa-chart-bar me-2"></i>
+                        Account Statistics
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-4">
+                            <div class="stat-item">
+                                <h3 class="text-primary">{{ user.login_count|default:0 }}</h3>
+                                <small class="text-muted">Login Count</small>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="stat-item">
+                                <h3 class="text-success">
+                                    {% if user.is_active %}
+                                    <i class="fas fa-check-circle"></i>
+                                    {% else %}
+                                    <i class="fas fa-times-circle"></i>
+                                    {% endif %}
+                                </h3>
+                                <small class="text-muted">Status</small>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="stat-item">
+                                <h3 class="text-info">
+                                    {% if user.last_login %}
+                                    <i class="fas fa-clock"></i>
+                                    {% else %}
+                                    <i class="fas fa-minus"></i>
+                                    {% endif %}
+                                </h3>
+                                <small class="text-muted">Last Active</small>
+                            </div>
+                        </div>
+                    </div>
+                    {% if user.last_login %}
+                    <div class="text-center mt-3">
+                        <small class="text-muted">
+                            Last login: {{ user.last_login|date:"M d, Y H:i" }}
+                        </small>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.welcome-card {
+    background: linear-gradient(135deg, #8fa1f071 0%, #c39ee994 100%);
+    color: white;
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.staff-info .info-item {
+    padding: 8px 0;
+    border-bottom: 1px solid #f0f0f0;
+    display: flex;
+    justify-content: between;
+}
+
+.staff-info .info-item:last-child {
+    border-bottom: none;
+}
+
+.staff-info .info-item strong {
+    min-width: 140px;
+    color: #495057;
+}
+
+.contact-info .contact-item {
+    display: flex;
+    align-items: flex-start;
+}
+
+.btn-hover:hover {
+    transform: translateY(-2px);
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.stat-item {
+    padding: 10px;
+}
+
+.stat-item h3 {
+    margin-bottom: 5px;
+}
+
+.info-box {
+    border-radius: 10px;
+    color: white;
+}
+
+.info-box .info-box-icon {
+    border-radius: 10px 0 0 10px;
+}
+
+.progress-section {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 10px;
+    border: 1px solid #e9ecef;
+}
+
+.img-circle {
+    border-radius: 50%;
+    border: 3px solid #fff;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+@media (max-width: 768px) {
+    .welcome-card .d-flex {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .welcome-card .flex-grow-1 {
+        margin: 15px 0;
+    }
+    
+    .staff-info .info-item {
+        flex-direction: column;
+    }
+    
+    .staff-info .info-item strong {
+        min-width: auto;
+        margin-bottom: 5px;
+    }
+}
+</style>
+{% endblock %}

@@ -1,0 +1,622 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center flex-column flex-md-row">
+                <h1 class="h3 mb-0 text-gray-800">
+                    <i class="fas fa-folder me-2"></i>{{ page_title }}
+                </h1>
+                {% if perms.blog_app.add_category %}
+                <a href="{% url 'blog_app:category_create' %}" class="btn btn-primary mt-2 mt-md-0">
+                    <i class="fas fa-plus me-2"></i>Add New Category
+                </a>
+                {% endif %}
+            </div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'bg_app:profile' %}">Dashboard</a></li>
+                    <li class="breadcrumb-item active">{{ breadcrumb_active }}</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Categories Table -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-column flex-md-row justify-content-between align-items-center bg-primary text-white">
+                    <h6 class="m-0 font-weight-bold">
+                        <i class="fas fa-list me-1"></i>All Categories
+                    </h6>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped table-bordered" id="categoriesTable" style="width:100%; margin:0;">
+                            <thead class="table-primary">
+                                <tr>
+                                    <th style="border: 1px solid #dee2e6; padding: 12px; text-align: center;">Name</th>
+                                    <th style="border: 1px solid #dee2e6; padding: 12px; text-align: center;">Slug</th>
+                                    <th style="border: 1px solid #dee2e6; padding: 12px; text-align: center;">Description</th>
+                                    <th style="border: 1px solid #dee2e6; padding: 12px; text-align: center;">Blog Count</th>
+                                    <th style="border: 1px solid #dee2e6; padding: 12px; text-align: center;">Created At</th>
+                                    <th style="border: 1px solid #dee2e6; padding: 12px; text-align: center;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Data will be loaded via AJAX -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<!-- DataTables CSS -->
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.bootstrap5.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.4.1/css/responsive.bootstrap5.min.css">
+
+<style>
+#categoriesTable {
+    border: 1px solid #dee2e6 !important;
+    border-collapse: collapse !important;
+}
+
+#categoriesTable th,
+#categoriesTable td {
+    border: 1px solid #dee2e6 !important;
+    vertical-align: middle !important;
+    padding: 12px 8px !important;
+}
+
+#categoriesTable thead th {
+    background-color: #b8d4ff !important;
+    font-weight: 600;
+    font-size: 0.9rem;
+    border-bottom: 2px solid #000 !important;
+}
+
+.btn-group-sm .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.8rem;
+}
+
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(0, 123, 255, 0.1) !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    #categoriesTable th,
+    #categoriesTable td {
+        padding: 8px 4px !important;
+        font-size: 0.875rem;
+    }
+    
+    .card-header .btn-group {
+        width: 100%;
+        justify-content: flex-end;
+    }
+    
+    .dataTables_wrapper .dt-buttons {
+        text-align: center;
+        margin-bottom: 10px;
+    }
+    
+    .dataTables_wrapper .dt-buttons .btn {
+        margin: 2px;
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+    }
+    
+    .table-responsive {
+        font-size: 0.875rem;
+    }
+    
+    /* DataTables responsive child row styling */
+    .dtr-details {
+        width: 100% !important;
+    }
+    
+    .dtr-details li {
+        border-bottom: 1px solid #eee;
+        padding: 8px 0;
+    }
+    
+    .dtr-details .dtr-title {
+        font-weight: 600;
+        min-width: 100px;
+        display: inline-block;
+    }
+}
+
+@media (max-width: 576px) {
+    h1.h3 {
+        font-size: 1.5rem;
+    }
+    
+    .breadcrumb {
+        font-size: 0.875rem;
+    }
+    
+    .table-responsive {
+        font-size: 0.8rem;
+    }
+    
+    #categoriesTable th,
+    #categoriesTable td {
+        padding: 6px 3px !important;
+    }
+    
+    .btn {
+        font-size: 0.875rem;
+    }
+    
+    .dataTables_filter input {
+        width: 100% !important;
+        margin-top: 10px;
+    }
+    
+    .dataTables_length {
+        margin-bottom: 10px;
+    }
+    
+    /* Stack buttons vertically on very small screens */
+    .dt-buttons .btn {
+        display: block;
+        width: 100%;
+        margin: 2px 0;
+    }
+}
+
+/* Custom scrollbar for table */
+.table-responsive::-webkit-scrollbar {
+    height: 8px;
+}
+
+.table-responsive::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 10px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* DataTables responsive styling */
+table.dataTable.dtr-inline.collapsed > tbody > tr > td.dtr-control:before,
+table.dataTable.dtr-inline.collapsed > tbody > tr > th.dtr-control:before {
+    background-color: #4e73df;
+    border: 2px solid white;
+    box-shadow: 0 0 3px #444;
+}
+
+table.dataTable.dtr-inline.collapsed > tbody > tr.parent > td.dtr-control:before,
+table.dataTable.dtr-inline.collapsed > tbody > tr.parent > th.dtr-control:before {
+    background-color: #e74a3b;
+}
+
+/* Mobile action buttons */
+.mobile-actions {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .desktop-actions {
+        display: none;
+    }
+    
+    .mobile-actions {
+        display: flex;
+        justify-content: center;
+        gap: 5px;
+    }
+    
+    .mobile-actions .btn {
+        padding: 0.2rem 0.4rem;
+        font-size: 0.7rem;
+    }
+}
+
+/* Loading states */
+.dataTables_processing {
+    background: linear-gradient(90deg, transparent, rgba(78, 115, 223, 0.1), transparent) !important;
+    background-size: 200% 100% !important;
+    animation: loading 1.5s infinite !important;
+}
+
+@keyframes loading {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<!-- DataTables JS -->
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.bootstrap5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.print.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.4.1/js/responsive.bootstrap5.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+
+<script>
+// Global table variable
+var categoriesTable;
+
+function refreshTable() {
+    categoriesTable.ajax.reload(null, false); // false means don't reset paging
+    showToast('Categories data refreshed successfully!', 'success');
+}
+
+function showToast(message, type = 'info') {
+    Swal.fire({
+        toast: true,
+        position: 'top-end',
+        icon: type,
+        title: message,
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true
+    });
+}
+
+// Handle responsive actions
+function handleCategoryAction(action, categoryId, categoryName) {
+    switch(action) {
+        case 'edit':
+            window.location.href = `/categories/${categoryId}/edit/`;
+            break;
+        case 'delete':
+            deleteCategory(categoryId, categoryName);
+            break;
+    }
+}
+
+function deleteCategory(categoryId, categoryName) {
+    Swal.fire({
+        title: 'Are you sure?',
+        text: `You are about to delete category "${categoryName}". This action cannot be undone.`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Yes, delete it!',
+        cancelButtonText: 'Cancel'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Simulate delete action - replace with actual API call
+            $.ajax({
+                url: `/api/categories/${categoryId}/`,
+                type: 'DELETE',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                success: function(response) {
+                    showToast('Category deleted successfully!', 'success');
+                    refreshTable();
+                },
+                error: function(xhr) {
+                    showToast('Error deleting category!', 'error');
+                }
+            });
+        }
+    });
+}
+
+$(document).ready(function() {
+    categoriesTable = $('#categoriesTable').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: {
+            url: "{% url 'blog_app:categories_datatables' %}",
+            type: "GET",
+            dataType: "json",
+            error: function(xhr, error, code) {
+                console.error('DataTables error:', xhr, error, code);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Data Loading Error',
+                    text: 'Unable to load categories data. Please try again.',
+                    timer: 3000
+                });
+            }
+        },
+        columns: [
+            { 
+                data: 'name', 
+                name: 'name', 
+                className: 'text-left',
+                orderable: true,
+                responsivePriority: 1
+            },
+            { 
+                data: 'slug', 
+                name: 'slug', 
+                className: 'text-center',
+                orderable: true,
+                responsivePriority: 3
+            },
+            { 
+                data: 'description', 
+                name: 'description', 
+                className: 'text-left',
+                orderable: true,
+                responsivePriority: 4,
+                render: function(data, type, row) {
+                    if (type === 'display' && data && data.length > 100) {
+                        return data.substr(0, 100) + '...';
+                    }
+                    return data;
+                }
+            },
+            { 
+                data: 'blog_count', 
+                name: 'blog_count', 
+                className: 'text-center',
+                orderable: false,
+                searchable: false,
+                responsivePriority: 2
+            },
+            { 
+                data: 'created_at', 
+                name: 'created_at', 
+                className: 'text-center',
+                orderable: true,
+                responsivePriority: 5,
+                render: function(data, type, row) {
+                    if (type === 'display' || type === 'filter') {
+                        return new Date(data).toLocaleDateString();
+                    }
+                    return data;
+                }
+            },
+            { 
+                data: 'actions', 
+                name: 'actions', 
+                className: 'text-center', 
+                orderable: false, 
+                searchable: false,
+                responsivePriority: 1,
+                render: function(data, type, row) {
+                    if (type === 'display') {
+                        return `
+                            <div class="desktop-actions">
+                                <div class="btn-group btn-group-sm">
+                                    <button class="btn btn-warning" title="Edit" onclick="handleCategoryAction('edit', ${row.id}, '${row.name}')">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-danger" title="Delete" onclick="handleCategoryAction('delete', ${row.id}, '${row.name}')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="mobile-actions">
+                                <button class="btn btn-warning btn-sm" title="Edit" onclick="handleCategoryAction('edit', ${row.id}, '${row.name}')">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-danger btn-sm" title="Delete" onclick="handleCategoryAction('delete', ${row.id}, '${row.name}')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        `;
+                    }
+                    return data;
+                }
+            }
+        ],
+        order: [[0, 'asc']],
+        pageLength: 10,
+        lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+        responsive: {
+            details: {
+                display: $.fn.dataTable.Responsive.display.modal({
+                    header: function (row) {
+                        var data = row.data();
+                        return 'Category Details: ' + data.name;
+                    }
+                }),
+                renderer: function (api, rowIdx, columns) {
+                    var data = $.map(columns, function (col, i) {
+                        if (col.hidden) {
+                            return '<tr>' +
+                                '<td class="fw-bold">' + col.title + ':' + '</td> ' +
+                                '<td>' + col.data + '</td>' +
+                                '</tr>';
+                        }
+                        return '';
+                    }).join('');
+
+                    return $('<table class="table"/>').append(data);
+                }
+            },
+            breakpoints: [
+                { name: 'desktop', width: Infinity },
+                { name: 'tablet', width: 1024 },
+                { name: 'mobile', width: 768 }
+            ]
+        },
+        dom: '<"row"<"col-sm-12 col-md-6"B><"col-sm-12 col-md-6"f>>' +
+             '<"row"<"col-sm-12"tr>>' +
+             '<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
+        buttons: [
+            {
+                extend: 'copy',
+                text: '<i class="fas fa-copy"></i> Copy',
+                className: 'btn btn-secondary btn-sm',
+                exportOptions: {
+                    columns: [0, 1, 2, 3, 4]
+                }
+            },
+            {
+                extend: 'excel',
+                text: '<i class="fas fa-file-excel"></i> Excel',
+                className: 'btn btn-success btn-sm',
+                exportOptions: {
+                    columns: [0, 1, 2, 3, 4]
+                },
+                filename: 'categories_list_' + new Date().toISOString().slice(0, 10)
+            },
+            {
+                extend: 'pdf',
+                text: '<i class="fas fa-file-pdf"></i> PDF',
+                className: 'btn btn-danger btn-sm',
+                exportOptions: {
+                    columns: [0, 1, 2, 3, 4]
+                },
+                filename: 'categories_list_' + new Date().toISOString().slice(0, 10),
+                orientation: 'portrait',
+                pageSize: 'A4'
+            },
+            {
+                extend: 'print',
+                text: '<i class="fas fa-print"></i> Print',
+                className: 'btn btn-info btn-sm',
+                exportOptions: {
+                    columns: [0, 1, 2, 3, 4]
+                },
+                customize: function (win) {
+                    $(win.document.body).find('table').addClass('display').css('font-size', '10px');
+                    $(win.document.body).find('tr:nth-child(odd) td').css('background-color','#f9f9f9');
+                    $(win.document.body).find('h1').text('Categories List - ' + new Date().toLocaleDateString());
+                }
+            },
+            {
+                text: '<i class="fas fa-plus"></i> Add Category',
+                className: 'btn btn-primary btn-sm',
+                action: function (e, dt, node, config) {
+                    window.location.href = "{% url 'blog_app:category_create' %}";
+                }
+            },
+            {
+                text: '<i class="fas fa-sync-alt"></i> Refresh',
+                className: 'btn btn-warning btn-sm',
+                action: function (e, dt, node, config) {
+                    refreshTable();
+                }
+            }
+        ],
+        language: {
+            search: "Search categories:",
+            searchPlaceholder: "Search by name, slug, description...",
+            lengthMenu: "Show _MENU_ categories",
+            info: "Showing _START_ to _END_ of _TOTAL_ categories",
+            infoEmpty: "Showing 0 to 0 of 0 categories",
+            infoFiltered: "(filtered from _MAX_ total categories)",
+            zeroRecords: "No matching categories found",
+            emptyTable: "No categories available",
+            processing: '<i class="fas fa-spinner fa-spin"></i> Loading categories...',
+            paginate: {
+                first: "First",
+                last: "Last",
+                next: "Next",
+                previous: "Previous"
+            },
+            buttons: {
+                copy: "Copy",
+                excel: "Excel",
+                pdf: "PDF",
+                print: "Print",
+                colvis: "Columns"
+            }
+        },
+        initComplete: function() {
+            // Style the search input
+            $('.dataTables_filter input')
+                .addClass('form-control form-control-sm')
+                .attr('placeholder', 'Search categories...')
+                .css('width', '250px')
+                .wrap('<div class="input-group"></div>')
+                .before('<span class="input-group-text"><i class="fas fa-search"></i></span>');
+
+            // Style the length menu
+            $('.dataTables_length select').addClass('form-control form-control-sm');
+            
+            // Add loading overlay
+            $('#categoriesTable').on('processing.dt', function (e, settings, processing) {
+                if (processing) {
+                    $(this).closest('.card').append('<div class="overlay"><i class="fas fa-3x fa-sync-alt fa-spin text-primary"></i></div>');
+                } else {
+                    $(this).closest('.card').find('.overlay').remove();
+                }
+            });
+        },
+        drawCallback: function() {
+            // Initialize tooltips
+            $('[data-bs-toggle="tooltip"]').tooltip();
+            
+            // Add click handler for table rows
+            $('#categoriesTable tbody').on('click', 'tr', function() {
+                $(this).toggleClass('table-active');
+            });
+        }
+    });
+
+    // Custom search functionality
+    $('#categoriesTable_filter input').unbind().bind('keyup', function() {
+        categoriesTable.search(this.value).draw();
+    });
+
+    // Style the buttons container
+    $('.dt-buttons').addClass('btn-group flex-wrap');
+    $('.dt-button').addClass('btn btn-sm m-1');
+    $('.dt-buttons').css('margin-bottom', '10px');
+
+    // Handle responsive adjustments for buttons on small screens
+    $(window).on('resize', function() {
+        if ($(window).width() < 768) {
+            $('.dt-buttons').addClass('justify-content-center');
+            $('.dt-button').addClass('mb-1');
+        } else {
+            $('.dt-buttons').removeClass('justify-content-center');
+            $('.dt-button').removeClass('mb-1');
+        }
+    }).trigger('resize');
+
+    // Handle delete confirmation for legacy links
+    $(document).on('click', 'a[href*="delete"]', function(e) {
+        e.preventDefault();
+        var categoryName = $(this).closest('tr').find('td:first').text();
+        deleteCategory($(this).data('id') || 0, categoryName);
+    });
+});
+
+// Global error handler for DataTables
+$.fn.dataTable.ext.errMode = 'throw';
+</script>
+{% endblock %}

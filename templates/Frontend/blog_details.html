@@ -1,0 +1,509 @@
+{% extends 'Frontend/base.html' %}
+{% load static %}
+{% block title %} Blog-{{ blog.title }}{% endblock %}
+
+{% block content %}
+
+<main class="main">
+    <div class="page-title light-background">
+        <div class="container">
+            <h1>BG-Infotechs Blog</h1>
+            <nav class="breadcrumbs">
+                <ol>
+                    <li><a href="{% url 'frontend_app:home' %}"><i class="fas fa-home"></i> Home</a></li>
+                    <li><a href="{% url 'frontend_app:blogs' %}">Blog</a></li>
+                    <li class="current">{{ blog.title|truncatewords:5 }}</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+</main>
+
+<!-- Messages -->
+{% if messages %}
+<div class="container mt-4">
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+        <i
+            class="fas fa-{% if message.tags == 'success' %}check-circle{% elif message.tags == 'error' %}exclamation-circle{% else %}info-circle{% endif %} me-2"></i>
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<div class="container py-5">
+    <div class="row">
+        <!-- Main Content -->
+        <div class="col-lg-8">
+            <article class="blog-article bg-white rounded shadow-sm p-4 mb-4">
+                <!-- Article Header -->
+                <header class="article-header mb-4">
+                    <h1 class="article-title mb-3">{{ blog.title }}</h1>
+
+                    <div class="article-meta d-flex flex-wrap gap-3 mb-3">
+                        <div class="meta-item d-flex align-items-center">
+                            <i class="fas fa-user-circle text-primary me-2"></i>
+                            <span class="meta-text">{{ blog.author.get_full_name|default:blog.author.username }}</span>
+                        </div>
+                        <div class="meta-item d-flex align-items-center">
+                            <i class="fas fa-calendar-alt text-primary me-2"></i>
+                            <span class="meta-text">{{ blog.published_at|date:"F d, Y" }}</span>
+                        </div>
+                        <div class="meta-item d-flex align-items-center">
+                            <i class="fas fa-clock text-primary me-2"></i>
+                            <span class="meta-text">{{ blog.reading_time }} min read</span>
+                        </div>
+                        {% if blog.category %}
+                        <div class="meta-item d-flex align-items-center">
+                            <i class="fas fa-tag text-primary me-2"></i>
+                            <span class="meta-text">{{ blog.category.name }}</span>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    {% if blog.short_description %}
+                    <div
+                        class="article-excerpt bg-light p-3 rounded border-start border-warning border-4 position-relative">
+                        <i
+                            class="fas fa-quote-left text-warning position-absolute top-0 start-0 translate-middle bg-white rounded-circle p-1"></i>
+                        <p class="mb-0 fst-italic">{{ blog.short_description }}</p>
+                    </div>
+                    {% endif %}
+                </header>
+
+                <!-- Featured Image -->
+                <div class="featured-image-container mb-4 rounded overflow-hidden position-relative">
+                    {% if blog.image %}
+                    <img src="{{ blog.image.url }}" alt="{{ blog.title }}" class="featured-image w-100"
+                        style="max-height: 450px; object-fit: cover;" loading="lazy">
+                    {% else %}
+                    <div
+                        class="featured-image-placeholder bg-light d-flex flex-column align-items-center justify-content-center py-5">
+                        <i class="fas fa-image text-muted mb-2" style="font-size: 3rem;"></i>
+                        <p class="text-muted mb-0">Featured Image</p>
+                    </div>
+                    {% endif %}
+                    <div class="image-overlay position-absolute bottom-0 start-0 w-100 h-25"
+                        style="background: linear-gradient(transparent, rgba(0, 0, 0, 0.1));"></div>
+                </div>
+
+                <!-- Article Content -->
+                <div class="article-content-wrapper">
+                    <div class="article-content">
+                        {{ blog.description|safe }}
+                    </div>
+                </div>
+
+                <!-- Article Footer -->
+                <footer class="article-footer bg-light mt-0">
+                    <!-- Share Section -->
+                    <div class="share-section bg-light pt-4 rounded">
+                        <div class="share-header d-flex align-items-center mb-3">
+                            <i class="fas fa-share-alt text-primary bg-white rounded-circle p-2 me-3"></i>
+                            <h4 class="mb-0">Share This Article</h4>
+                        </div>
+                        <div class="share-content">
+                            <p class="text-muted mb-3">If you enjoyed this article, share it with your friends and
+                                colleagues!</p>
+                            <div class="social-share-grid row g-2">
+                                <div class="col-sm-6 col-md-3">
+                                    <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}"
+                                        target="_blank"
+                                        class="social-share-btn d-flex align-items-center p-2 text-decoration-none bg-white rounded border"
+                                        aria-label="Share on Facebook">
+                                        <div class="social-icon bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2"
+                                            style="width: 36px; height: 36px;">
+                                            <i class="fab fa-facebook-f"></i>
+                                        </div>
+                                        <div class="social-info">
+                                            <span class="social-name fw-medium">Facebook</span>
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="col-sm-6 col-md-3">
+                                    <a href="https://twitter.com/intent/tweet?text={{ blog.title|urlencode }}&url={{ request.build_absolute_uri|urlencode }}"
+                                        target="_blank"
+                                        class="social-share-btn d-flex align-items-center p-2 text-decoration-none bg-white rounded border"
+                                        aria-label="Share on Twitter">
+                                        <div class="social-icon bg-info text-white rounded-circle d-flex align-items-center justify-content-center me-2"
+                                            style="width: 36px; height: 36px;">
+                                            <i class="fab fa-twitter"></i>
+                                        </div>
+                                        <div class="social-info">
+                                            <span class="social-name fw-medium">Twitter</span>
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="col-sm-6 col-md-3">
+                                    <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ request.build_absolute_uri|urlencode }}"
+                                        target="_blank"
+                                        class="social-share-btn d-flex align-items-center p-2 text-decoration-none bg-white rounded border"
+                                        aria-label="Share on LinkedIn">
+                                        <div class="social-icon bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2"
+                                            style="width: 36px; height: 36px;">
+                                            <i class="fab fa-linkedin-in"></i>
+                                        </div>
+                                        <div class="social-info">
+                                            <span class="social-name fw-medium">LinkedIn</span>
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="col-sm-6 col-md-3">
+                                    <button
+                                        class="social-share-btn d-flex align-items-center p-2 text-decoration-none bg-white rounded border w-100"
+                                        onclick="copyToClipboard('{{ request.build_absolute_uri }}')"
+                                        aria-label="Copy link">
+                                        <div class="social-icon bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center me-2"
+                                            style="width: 36px; height: 36px;">
+                                            <i class="fas fa-link"></i>
+                                        </div>
+                                        <div class="social-info">
+                                            <span class="social-name fw-medium">Copy Link</span>
+                                        </div>
+                                    </button>
+                                </div>
+                            </div>
+                            <div id="copy-message" class="copy-message mt-3"></div>
+                        </div>
+                    </div>
+                </footer>
+            </article>
+
+            <!-- Comments Section -->
+            <section class="comments-section bg-white rounded shadow-sm p-4">
+                <!-- Add Comment Form -->
+                <div class="add-comment-section mb-5">
+                    <div class="section-header mb-4">
+                        <h3>Leave a Comment</h3>
+                        <p class="text-muted">Your email address will not be published. Required fields are marked *</p>
+                    </div>
+
+                    <form method="post" class="comment-form">
+                        {% csrf_token %}
+                        <div class="row mb-3">
+                            <div class="col-md-6 mb-3 mb-md-0">
+                                <div class="form-group">
+                                    <label for="full_name" class="form-label text-black ">Full Name *</label>
+                                    <input type="text" id="full_name" name="full_name" class="form-control"
+                                        placeholder="Enter your full_name "
+                                        value="{{ user.get_full_name|default:user.username }}" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="email" class="form-label text-black ">Email Address *</label>
+                                    <input type="email" id="email" name="email" class="form-control"
+                                        placeholder="Enter your Email" value="{{ user.email }}" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="comment" class="form-label text-black ">Your Comment *</label>
+                            <textarea id="comment" name="comment" rows="6" class="form-control"
+                                placeholder="Write your comment here... (Minimum 10 characters)" required minlength="10"
+                                maxlength="1000"></textarea>
+                            <div class="form-help d-flex justify-content-between mt-1">
+                                <small class="text-muted">Minimum 10 characters</small>
+                                <small class="text-muted"><span id="charCount">0</span>/1000 characters</small>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-paper-plane me-2"></i>
+                            Post Comment
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Comments List -->
+                <div class="comments-list-section">
+                    <div class="section-header mb-4">
+                        <h2>Comments ({{ comments.count }})</h2>
+                        <div class="section-divider bg-primary mt-2" style="height: 3px; width: 80px;"></div>
+                    </div>
+
+                    {% if comments %}
+                    <div class="comments-list">
+                        {% for comment in comments %}
+                        <div class="comment-card bg-light p-3 rounded mb-3 border-start border-primary border-4">
+                            <div class="d-flex">
+                                <div class="comment-avatar me-3">
+                                    <div class="avatar-circle bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold"
+                                        style="width: 50px; height: 50px;">
+                                        {{ comment.full_name|first|upper }}
+                                    </div>
+                                </div>
+                                <div class="comment-content flex-grow-1">
+                                    <div
+                                        class="comment-header d-flex flex-wrap justify-content-between align-items-start mb-2">
+                                        <div class="comment-author-info d-flex align-items-center flex-wrap">
+                                            <h4 class="comment-author mb-0 me-2">{{ comment.full_name }}</h4>
+                                            <span class="comment-badge guest-user badge bg-info">
+                                                <i class="fas fa-user me-1"></i>
+                                                Guest
+                                            </span>
+                                        </div>
+                                        <span class="comment-date text-muted">
+                                            <i class="fas fa-clock me-1"></i>
+                                            {{ comment.created_at|timesince }} ago
+                                        </span>
+                                    </div>
+                                    <p class="comment-text text-black mb-0">{{ comment.comment|linebreaksbr }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="no-comments-state text-center py-5">
+                        <i class="fas fa-comments text-primary mb-3" style="font-size: 4rem;"></i>
+                        <h3>No comments yet</h3>
+                        <p class="text-muted">Be the first to share your thoughts on this post!</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </section>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <aside class="blog-sidebar">
+                <!-- Popular Posts Widget -->
+                <div class="sidebar-widget bg-white rounded shadow-sm p-3 mb-4">
+                    <div class="widget-header d-flex align-items-center mb-3 pb-2 border-bottom">
+                        <i class="fas fa-fire text-primary me-2"></i>
+                        <h3 class="mb-0">Popular Posts</h3>
+                    </div>
+                    <div class="popular-posts-list">
+                        {% for popular_blog in popular_posts|slice:":5" %}
+                        <a href="{% url 'frontend_app:blog_details' popular_blog.slug %}"
+                            class="popular-post-item d-flex text-decoration-none text-dark mb-3 p-2 rounded hover-shadow">
+                            {% if popular_blog.image %}
+                            <img src="{{ popular_blog.image.url }}" alt="{{ popular_blog.title }}"
+                                class="post-thumbnail rounded me-3"
+                                style="width: 60px; height: 60px; object-fit: cover;">
+                            {% else %}
+                            <div class="post-thumbnail placeholder bg-light rounded me-3 d-flex align-items-center justify-content-center"
+                                style="width: 60px; height: 60px;">
+                                <i class="fas fa-newspaper text-muted"></i>
+                            </div>
+                            {% endif %}
+                            <div class="post-info">
+                                <h4 class="post-title h6 mb-1">{{ popular_blog.title|truncatewords:6 }}</h4>
+                                <span class="post-date text-muted small">{{ popular_blog.published_at|date:"F d, Y" }}</span>
+                            </div>
+                        </a>
+                        {% empty %}
+                        <div class="no-posts text-center py-3">
+                            <i class="fas fa-newspaper text-muted mb-2" style="font-size: 2rem;"></i>
+                            <p class="text-muted mb-0">No other posts yet</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Categories Widget -->
+                <div class="sidebar-widget bg-white rounded shadow-sm p-3">
+                    <div class="widget-header d-flex align-items-center mb-3 pb-2 border-bottom">
+                        <i class="fas fa-folder text-primary me-2"></i>
+                        <h3 class="mb-0">Categories</h3>
+                    </div>
+                    <div class="categories-list">
+                        {% for category in categories %}
+                        <a href="{% url 'frontend_app:blogs' %}?category={{ category.slug }}"
+                            class="category-item d-flex justify-content-between align-items-center text-decoration-none text-dark p-2 rounded hover-shadow mb-1">
+                            <span class="category-name">{{ category.name }}</span>
+                            <span class="category-count badge bg-primary rounded-pill">{{ category.blog_count }}</span>
+                        </a>
+                        {% empty %}
+                        <div class="no-categories text-center py-3">
+                            <i class="fas fa-folder-open text-muted mb-2" style="font-size: 2rem;"></i>
+                            <p class="text-muted mb-0">No categories yet</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Custom Styles for Blog Detail Page */
+
+    .page-title {
+        background-image: linear-gradient(rgba(28, 29, 31, 0.65), rgba(23, 4, 69, 0.65)),
+        url("{% static 'img/breadcrumb.jpg' %}");
+        background-size: cover;
+        background-position: center;
+        padding: 30px 0px;
+    }
+
+    < .article-title {
+        font-size: clamp(1.75rem, 4vw, 2.5rem);
+        font-weight: 700;
+        color: #1e293b;
+        line-height: 1.3;
+    }
+
+    .article-content {
+        line-height: 1.7;
+        color: #374151;
+    }
+
+    .article-content h2 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-top: 2rem;
+        margin-bottom: 1rem;
+        color: #1e293b;
+    }
+
+    .article-content h3 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-top: 1.5rem;
+        margin-bottom: 0.75rem;
+        color: #1e293b;
+    }
+
+    .article-content img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 8px;
+        margin: 1.5rem 0;
+    }
+
+    .article-content blockquote {
+        border-left: 4px solid #3b82f6;
+        padding-left: 1.5rem;
+        margin: 1.5rem 0;
+        font-style: italic;
+        color: #64748b;
+        background: #f8fafc;
+        padding: 1rem 1.5rem;
+        border-radius: 0 8px 8px 0;
+    }
+
+    .social-share-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+    }
+
+    .hover-shadow:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+    }
+
+    .comment-card:hover {
+        transform: translateX(4px);
+        transition: all 0.3s ease;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .article-meta {
+            gap: 1rem !important;
+        }
+
+        .meta-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .social-share-grid .col-sm-6 {
+            margin-bottom: 0.5rem;
+        }
+
+        .comment-card .d-flex {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .comment-avatar {
+            margin-bottom: 1rem;
+            margin-right: 0 !important;
+        }
+
+        .comment-author-info {
+            justify-content: center;
+            margin-bottom: 0.5rem;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .page-title {
+            padding: 2rem 0;
+        }
+
+        .blog-article,
+        .comments-section,
+        .sidebar-widget {
+            padding: 1.5rem !important;
+        }
+
+        .article-title {
+            font-size: 1.5rem;
+        }
+    }
+</style>
+
+<script>
+    function copyToClipboard(text) {
+        navigator.clipboard.writeText(text).then(function () {
+            const message = document.getElementById('copy-message');
+            message.textContent = '✓ Link copied to clipboard!';
+            message.className = 'copy-message alert alert-success mt-3';
+            message.style.display = 'block';
+
+            setTimeout(function () {
+                message.style.display = 'none';
+            }, 3000);
+        }).catch(function (err) {
+            console.error('Failed to copy: ', err);
+            const message = document.getElementById('copy-message');
+            message.textContent = '✗ Failed to copy link';
+            message.className = 'copy-message alert alert-danger mt-3';
+            message.style.display = 'block';
+
+            setTimeout(function () {
+                message.style.display = 'none';
+            }, 3000);
+        });
+    }
+
+    // Character count for comment textarea
+    document.addEventListener('DOMContentLoaded', function () {
+        const commentTextarea = document.getElementById('comment');
+        const charCount = document.getElementById('charCount');
+
+        if (commentTextarea && charCount) {
+            commentTextarea.addEventListener('input', function () {
+                const length = this.value.length;
+                charCount.textContent = length;
+
+                if (length < 10) {
+                    charCount.style.color = '#dc2626';
+                } else if (length > 900) {
+                    charCount.style.color = '#f59e0b';
+                } else {
+                    charCount.style.color = '#059669';
+                }
+            });
+
+            // Initialize count
+            charCount.textContent = commentTextarea.value.length;
+        }
+
+        // Auto-hide alert messages
+        const alerts = document.querySelectorAll('.alert');
+        alerts.forEach(function (alert) {
+            setTimeout(function () {
+                const bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
+            }, 5000);
+        });
+    });
+</script>
+{% endblock %}

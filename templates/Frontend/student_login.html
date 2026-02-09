@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Student Login | Register | BG-Infotechs</title>
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+
+    <!-- Favicons -->
+    <link href="assets/img/favicon.png" rel="icon">
+    <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Raleway:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+        integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <!-- Vendor CSS Files -->
+    <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+    <link href="assets/vendor/aos/aos.css" rel="stylesheet">
+    <link href="assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
+    <link href="assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
+
+    <!-- Main CSS File -->
+    <link href="assets/css/main.css" rel="stylesheet">
+
+</head>
+
+<body class="starter-page-page">
+
+  <header class="sticky-top">
+    <nav class="navbar ">
+      <a href="index.html" class="">
+        <img src="/assets/img/Logo.png" height="70px" alt="">
+      </a>
+
+      <div class="nav-links">
+        <a href="/index.html" class="fade-in active" style="animation-delay: 0.1s; color: #5D9CEC;">Home</a>
+        <a href="/about.html" class="fade-in" style="animation-delay: 0.4s;">About</a>
+
+        <div class="mega-services-dropdown fade-in">
+          <a href="#" class="nav-link mega-services-toggle">Services <i class="fas fa-chevron-down"></i></a>
+          <div class="mega-services-menu">
+            <div class="mega-services-grid">
+              <a href="/web-development.html" class="mega-service-card">
+                <div class="mega-service-icon"><img src="./assets/img/services/web-structure.gif" height="40px" alt="">
+                </div>
+                <div>
+                  <h3 class="mega-service-title">Web Development</h3>
+                  <p class="mega-service-desc text-dark">Custom websites and web applications built with modern
+                    technologies</p>
+                  <span class="mega-service-arrow"><i class="fas fa-arrow-right"></i></span>
+                </div>
+              </a>
+
+
+              <a href="graphic-designing.html" class="mega-service-card">
+                <div class="mega-service-icon"><img src="./assets/img/services/design.gif" height="40px" alt=""></div>
+                <div>
+                  <h3 class="mega-service-title">Graphic Design</h3>
+                  <p class="mega-service-desc text-dark">Stunning visuals that communicate your brand's message
+                    effectively</p>
+                  <span class="mega-service-arrow"><i class="fas fa-arrow-right"></i></span>
+                </div>
+              </a>
+
+              <a href="/mobile-apps.html" class="mega-service-card">
+                <div class="mega-service-icon"><img src="./assets/img/services/seo.gif" height="40px" alt=""></div>
+                <div>
+                  <h3 class="mega-service-title ">Search Engine Optimization</h3>
+                  <p class="mega-service-desc text-dark">Rank higher on search engines and grow organic traffic</p>
+                  <span class="mega-service-arrow"><i class="fas fa-arrow-right"></i></span>
+                </div>
+              </a>
+
+              <a href="/mobile-apps.html" class="mega-service-card">
+                <div class="mega-service-icon"><img src="./assets/img/services/smartphone-coding.gif" height="40px"
+                    alt=""></div>
+                <div>
+                  <h3 class="mega-service-title">Mobile Apps</h3>
+                  <p class="mega-service-desc text-dark">Cross-platform mobile applications for iOS and Android</p>
+                  <span class="mega-service-arrow"><i class="fas fa-arrow-right"></i></span>
+                </div>
+              </a>
+
+              <a href="smm.html" class="mega-service-card">
+                <div class="mega-service-icon"><img src="./assets/img/services/social-media.gif" height="40px" alt="">
+                </div>
+                <div>
+                  <h3 class="mega-service-title">Social Media Handling</h3>
+                  <p class="mega-service-desc text-dark">Grow your brand across all social platforms</p>
+                  <span class="mega-service-arrow"><i class="fas fa-arrow-right"></i></span>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="mega-services-dropdown fade-in">
+          <a href="#" class="nav-link mega-services-toggle">Inside <i class="fas fa-chevron-down"></i></a>
+          <div class="mega-services-menu">
+            <div class="mega-services-grid">
+
+
+              <a href="/training.html" class="mega-service-card">
+                <div class="mega-service-icon"><img src="./assets/img/services/training.gif" height="40px" alt=""></div>
+                <div>
+                  <h3 class="mega-service-title">Training</h3>
+                  <p class="mega-service-desc text-dark">Cross-platform mobile applications for iOS and Android</p>
+                  <span class="mega-service-arrow"><i class="fas fa-arrow-right"></i></span>
+                </div>
+              </a>
+              <a href="features.html" class="mega-service-card">
+                <div class="mega-service-icon"><img src="./assets/img/services/premium.gif" height="40px" alt=""></div>
+                <div>
+                  <h3 class="mega-service-title">Features</h3>
+                  <p class="mega-service-desc text-dark">Cross-platform mobile applications for iOS and Android</p>
+                  <span class="mega-service-arrow"><i class="fas fa-arrow-right"></i></span>
+                </div>
+              </a>
+
+              <a href="blog_details.html" class="mega-service-card">
+                <div class="mega-service-icon"><img src="./assets/img/services/blog-post.gif" height="40px" alt="">
+                </div>
+                <div>
+                  <h3 class="mega-service-title">Blog</h3>
+                  <p class="mega-service-desc text-dark">Grow your brand across all social platforms</p>
+                  <span class="mega-service-arrow"><i class="fas fa-arrow-right"></i></span>
+                </div>
+              </a>
+
+              <a href="career.html" class="mega-service-card">
+                <div class="mega-service-icon"><img src="./assets/img/services/career.gif" height="40px" alt="">
+                </div>
+                <div>
+                  <h3 class="mega-service-title">Career</h3>
+                  <p class="mega-service-desc text-dark">Join our team of innovators and help shape the future of
+                    technology.</p>
+                  <span class="mega-service-arrow"><i class="fas fa-arrow-right"></i></span>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
+        <a href="/digital_marketing.html" class="fade-in" style="animation-delay: 0.4s;">Digital Marketing</a>
+        <a href="/contact.html" class="fade-in" style="animation-delay: 0.5s;">Contact</a>
+      </div>
+
+
+      <button class="cta-button fade-in" style="animation-delay: 0.6s;"><a href="student_login.html"
+          class="text-light">Students Login</a></button>
+
+      <div class="hamburger">
+        <div class="line1"></div>
+        <div class="line2"></div>
+        <div class="line3"></div>
+      </div>
+    </nav>
+
+    <div class="mobile-menu">
+      <a class="mt-3" href="index.html">Home</a>
+      <a href="about.html">About</a>
+
+      <div class="container">
+        <!-- Services Dropdown -->
+        <div class="mobile-dropdown">
+            <a href="#" class="mobile-dropdown-toggle">
+                <span>Services</span>
+                <i class="fas fa-chevron-down"></i>
+            </a>
+            <div class="mobile-dropdown-content">
+                <a href="web-development.html">
+                    <i class="fas fa-code"></i> Web Development
+                </a>
+                <a href="">
+                    <i class="fas fa-mobile-alt"></i> Mobile App
+                </a>
+                <a href="smm.html">
+                    <i class="fas fa-hashtag"></i> Social Media Handling
+                </a>
+                <a href="">
+                    <i class="fas fa-search"></i> SEO
+                </a>
+                <a href="#">
+                    <i class="fas fa-paint-brush"></i> UI/UX Design
+                </a>
+                <a href="#">
+                    <i class="fas fa-chart-line"></i> Digital Marketing
+                </a>
+                <a href="#">
+                    <i class="fas fa-cloud"></i> Cloud Services
+                </a>
+            </div>
+        </div>
+        
+        <!-- Inside Dropdown -->
+        <div class="mobile-dropdown">
+            <a href="#" class="mobile-dropdown-toggle">
+                <span>Inside</span>
+                <i class="fas fa-chevron-down"></i>
+            </a>
+            <div class="mobile-dropdown-content">
+                <a href="/training.html">
+                    <i class="fas fa-graduation-cap"></i> Training
+                </a>
+                <a href="features.html">
+                    <i class="fas fa-star"></i> Features
+                </a>
+                <a href="blog_details.html">
+                    <i class="fas fa-blog"></i> Blog
+                </a>
+                <a href="career.html">
+                    <i class="fas fa-briefcase"></i> Career
+                </a>
+                <a href="#">
+                    <i class="fas fa-users"></i> Our Team
+                </a>
+                <a href="#">
+                    <i class="fas fa-building"></i> About Us
+                </a>
+            </div>
+        </div>
+    </div>
+      <a href="digital_marketing.html">Digital Marketing</a>
+      <a href="contact.html">Contact</a>
+
+      <a href="student_login.html" class="mobile-cta">Students Login</a>
+    </div>
+
+    <div class="overlay"></div>
+  </header>
+
+    <main class="student-login-main">
+
+        <div class="page-title light-background">
+            <div class="background-image-wrapper">
+                <div class="overlay"></div>
+                <div class="container">
+                    <h1>BG-Infotechs</h1>
+                    <nav class="breadcrumbs">
+                        <ol>
+                            <li><a href="index.html"><i class="fas fa-home"></i> Home</a></li>
+                            <li class="current">Student's Login</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row justify-content-center">
+                <!-- Left Side - Image Section -->
+                <div class="col-lg-6 d-none d-lg-flex align-items-center justify-content-center left-side p-0">
+                    <div class="image-container">
+                        <img src="/assets/img/features/Social networking-pana.png" alt="Login Illustration"
+                            class="img-fluid h-100 w-100" style="object-fit: cover;">
+                    </div>
+                </div>
+
+                <!-- Right Side - Form Section -->
+                <div class="col-lg-6 d-flex align-items-center justify-content-center right-side p-5">
+                    <div class="form-2-wrapper">
+                        <div class="logo text-center">
+                            <h2><img class="mb-3" src="/assets/img/bg_info_new_logo.webp.webp" width="180px" alt="">
+                            </h2>
+                        </div>
+
+                        <!-- Login Form  -->
+                        <div id="loginForm">
+                            <h4 class="text-center mb-4 text-black fw-bold">Sign Into Your Account</h4>
+                            <form action="#">
+                                <div class="mb-3 form-box">
+                                    <input type="email" class="form-control" id="email" name="email"
+                                        placeholder="Enter Your Email" required>
+                                </div>
+                                <div class="mb-3">
+                                    <input type="password" class="form-control" id="password" name="password"
+                                        placeholder="Enter Your Password" required>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="form-check">
+                                        <input type="checkbox" class="form-check-input" id="rememberMe">
+                                        <label class="form-check-label text-black" for="rememberMe">Remember me</label>
+                                    </div>
+                                </div>
+                                <button type="submit"
+                                    class="btn btn-outline-primary login-btn w-100 mb-3">Login</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+  <footer>
+    <div class="container">
+      <div class="row g-4">
+        <div class="col-lg-4">
+          <img src="/assets/img/Logo.png" class="mb-4" alt="" height="70px">
+          <p class="text-light">At BG INFOTECHS, we specialize in crafting cutting-edge IT solutions
+            tailored
+            to meet the evolving needs of businesses. With a commitment to innovation and excellence, we
+            empower organizations to thrive in the digital age.</p>
+          <div class="social-icons mt-4">
+            <a href="#"><i class="fab fa-facebook-f"></i></a>
+            <a href="#"><i class="fab fa-linkedin-in"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+            <a href="#"><i class="fab fa-youtube"></i></a>
+          </div>
+        </div>
+        <div class="col-lg-2 col-md-4">
+          <div class="footer-links">
+            <h5>Company</h5>
+            <ul>
+              <li><a href="#">About Us</a></li>
+              <li><a href="#">Services</a></li>
+              <li><a href="#">Contact Us</a></li>
+              <li><a href="#">Our Team</a></li>
+              <li><a href="#">Branches</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="col-lg-2 col-md-4">
+          <div class="footer-links">
+            <h5>We Serve</h5>
+            <ul>
+              <li><a href="#">Dhangadhi</a></li>
+              <li><a href="#">Mahendranagar</a></li>
+              <li><a href="#">Nepalgunj</a></li>
+              <li><a href="#">Butwal</a></li>
+              <li><a href="#">Pokhara</a></li>
+              <li><a href="#">Kathmandu</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="col-lg-2 col-md-4">
+          <div class="footer-links">
+            <h5>Branches</h5>
+            <ul>
+              <li><a href="">BG Infotechs, Dhangadhi</a></li>
+              <li><a href="">BG Infotechs, Kathmandu</a></li>
+            </ul>
+
+
+          </div>
+        </div>
+        <div class="col-lg-2 col-md-4">
+          <div class="footer-links">
+            <h5>Contact</h5>
+            <ul>
+              <li><a href="mailto:info@bginfotechs.com">info@bginfotechs.com</a></li>
+              <li><a href="https://www.bginfotechs.com">www.bginfotechs.com</a></li>
+              <li><a href="#">Our Partners</a></li>
+              <li><a href="faq.html">FAQ's</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="copyright text-center mt-4">
+        <p>&copy; 2023 BG Infotechs. All Rights Reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+   <!-- Chatbot Container -->
+  <div class="chatbot-container d-none" id="chatbotContainer">
+    <div class="card">
+      <div class="card-header d-flex justify-content-between align-items-center"
+        style="padding: 0.5rem 1rem;">
+        <h5 class="mb-0" style="font-size: 1rem;">BG-Infotechs Assistant</h5>
+        <div class="d-flex">
+          <button type="button" class="btn btn-sm btn-light ms-1 rounded-5" id="minimizeChat"
+            style="padding: 0.25rem 0.5rem;">
+            <i class="fas fa-minus"></i>
+          </button>
+          <button type="button" class="btn btn-sm btn-danger ms-1 rounded-5" id="closeChat"
+            style="padding: 0.25rem 0.5rem;">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+      </div>
+      <div class="card-body chatbot-body" id="chatbotBody">
+        <!-- Messages will appear here -->
+        <div class="chatbot-welcome">
+          <p>Hello! I'm your assistant. How can I help you today?</p>
+          <div class="quick-questions mt-2">
+            <button class="btn btn-sm btn-outline-primary m-1 quick-question">How to reset password?</button>
+            <button class="btn btn-sm btn-outline-primary m-1 quick-question">Software installation help</button>
+            <button class="btn btn-sm btn-outline-primary m-1 quick-question">Network issues</button>
+            <button class="btn btn-sm btn-outline-primary m-1 quick-question">Hardware problems</button>
+          </div>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="input-group">
+          <input type="text" class="form-control" id="userInput" placeholder="Type your question here...">
+          <div class="input-group-append">
+            <button class="btn btn-success btn-lg" type="button" id="sendMessage">
+              <i class="fas fa-paper-plane"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chatbot Toggle Button (Fixed at bottom right) -->
+  <button class="btn btn-secondary rounded-circle chatbot-toggle" id="chatbotToggle">
+    <i class="fas fa-robot fa-lg"></i>
+  </button>
+
+    <!-- Vendor JS Files -->
+    <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/vendor/php-email-form/validate.js"></script>
+    <script src="assets/vendor/aos/aos.js"></script>
+    <script src="assets/vendor/glightbox/js/glightbox.min.js"></script>
+    <script src="assets/vendor/purecounter/purecounter_vanilla.js"></script>
+    <script src="assets/vendor/typed.js/typed.umd.js"></script>
+    <script src="assets/vendor/swiper/swiper-bundle.min.js"></script>
+
+    <!-- Main JS File -->
+    <script src="assets/js/main.js"></script>
+    <script>
+        // Toggle between login and registration forms
+        document.getElementById('showRegister').addEventListener('click', function (e) {
+            e.preventDefault();
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('registerForm').style.display = 'block';
+        });
+
+        document.getElementById('showLogin').addEventListener('click', function (e) {
+            e.preventDefault();
+            document.getElementById('registerForm').style.display = 'none';
+            document.getElementById('loginForm').style.display = 'block';
+        });
+    </script>
+
+</body>
+
+</html>

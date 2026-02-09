@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us - BG Infotechs</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <style>
+        /* Unique CSS namespace to prevent conflicts */
+        .bg-infotechs-about {
+            --primary-blue: #2CAAE2;
+            --primary-red: #D4161C;
+            --dark-blue: #1a7ca8;
+            --dark-red: #A71118;
+            --text-dark: #333;
+            --text-light: #777;
+            --light-bg: #f8f9fa;
+            --white: #ffffff;
+            --dark-bg: #222;
+        }
+
+        /* Reset and base styles */
+        .bg-infotechs-about * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        .bg-infotechs-about body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--text-dark);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* Hero Section */
+        .bg-infotechs-about .hero-section {
+            background: linear-gradient(135deg, var(--primary-blue), var(--dark-blue));
+            color: white;
+            padding: 150px 0 100px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .bg-infotechs-about .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%23ffffff" fill-opacity="0.1" d="M0,96L48,112C96,128,192,160,288,186.7C384,213,480,235,576,213.3C672,192,768,128,864,128C960,128,1056,192,1152,192C1248,192,1344,128,1392,96L1440,64L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>');
+            background-size: cover;
+            background-position: center;
+        }
+
+        .bg-infotechs-about .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .bg-infotechs-about .hero-title {
+            font-size: 4rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .bg-infotechs-about .hero-subtitle {
+            font-size: 1.5rem;
+            margin-bottom: 2.5rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .bg-infotechs-about .hero-btn {
+            background: var(--primary-red);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 50px;
+            transition: all 0.4s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .bg-infotechs-about .hero-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            background: var(--dark-red);
+        }
+
+        .bg-infotechs-about .hero-btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: 0.5s;
+        }
+
+        .bg-infotechs-about .hero-btn:hover::after {
+            left: 100%;
+        }
+
+        /* Floating elements animation */
+        .bg-infotechs-about .floating-elements {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .bg-infotechs-about .floating-element {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: float 15s infinite linear;
+        }
+
+        .bg-infotechs-about .floating-element:nth-child(1) {
+            width: 80px;
+            height: 80px;
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .bg-infotechs-about .floating-element:nth-child(2) {
+            width: 120px;
+            height: 120px;
+            top: 70%;
+            left: 80%;
+            animation-delay: 2s;
+        }
+
+        .bg-infotechs-about .floating-element:nth-child(3) {
+            width: 60px;
+            height: 60px;
+            top: 50%;
+            left: 5%;
+            animation-delay: 4s;
+        }
+
+        .bg-infotechs-about .floating-element:nth-child(4) {
+            width: 100px;
+            height: 100px;
+            top: 20%;
+            left: 85%;
+            animation-delay: 6s;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0) rotate(0deg);
+            }
+            50% {
+                transform: translateY(-20px) rotate(180deg);
+            }
+            100% {
+                transform: translateY(0) rotate(360deg);
+            }
+        }
+
+        /* Section Styling */
+        .bg-infotechs-about .section {
+            padding: 100px 0;
+        }
+
+        .bg-infotechs-about .section-title {
+            font-size: 2.8rem;
+            font-weight: 700;
+            margin-bottom: 3rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .bg-infotechs-about .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 5px;
+            background: linear-gradient(to right, var(--primary-blue), var(--primary-red));
+            border-radius: 5px;
+        }
+
+        /* Image-Paragraph Sections */
+        .bg-infotechs-about .content-section {
+            padding: 80px 0;
+        }
+
+        .bg-infotechs-about .content-section:nth-child(even) {
+            background-color: var(--light-bg);
+        }
+
+        .bg-infotechs-about .content-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 500px;
+        }
+
+        .bg-infotechs-about .image-container {
+            position: relative;
+            overflow: hidden;
+            border-radius: 15px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+            height: 400px;
+        }
+
+        .bg-infotechs-about .image-placeholder {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, var(--primary-blue), var(--primary-red));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .bg-infotechs-about .text-content {
+            padding: 0 40px;
+        }
+
+        .bg-infotechs-about .content-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: var(--text-dark);
+        }
+
+        .bg-infotechs-about .content-description {
+            font-size: 1.1rem;
+            color: var(--text-light);
+            margin-bottom: 2rem;
+            line-height: 1.8;
+        }
+
+        .bg-infotechs-about .content-features {
+            list-style: none;
+            padding: 0;
+        }
+
+        .bg-infotechs-about .content-features li {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .bg-infotechs-about .content-features i {
+            color: var(--primary-blue);
+            margin-right: 10px;
+            font-size: 1.2rem;
+            margin-top: 3px;
+        }
+
+        /* Animation classes */
+        .bg-infotechs-about .slide-in-left {
+            opacity: 0;
+            transform: translateX(-100px);
+            transition: all 0.8s cubic-bezier(0.215, 0.61, 0.355, 1);
+        }
+
+        .bg-infotechs-about .slide-in-left.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .bg-infotechs-about .slide-in-right {
+            opacity: 0;
+            transform: translateX(100px);
+            transition: all 0.8s cubic-bezier(0.215, 0.61, 0.355, 1);
+        }
+
+        .bg-infotechs-about .slide-in-right.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .bg-infotechs-about .fade-in-up {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 0.8s ease;
+        }
+
+        .bg-infotechs-about .fade-in-up.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Stats Section */
+        .bg-infotechs-about .stats-section {
+            background: linear-gradient(135deg, var(--primary-blue), var(--dark-blue));
+            color: white;
+            padding: 100px 0;
+            text-align: center;
+        }
+
+        .bg-infotechs-about .stat-item {
+            padding: 20px;
+        }
+
+        .bg-infotechs-about .stat-number {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .bg-infotechs-about .stat-label {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        /* Team Section */
+        .bg-infotechs-about .team-section {
+            background-color: var(--white);
+        }
+
+        .bg-infotechs-about .team-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.4s ease;
+            margin-bottom: 30px;
+            transform: translateY(0);
+        }
+
+        .bg-infotechs-about .team-card:hover {
+            transform: translateY(-15px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .bg-infotechs-about .team-img {
+            height: 280px;
+            background: linear-gradient(45deg, var(--primary-blue), var(--primary-red));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 4rem;
+        }
+
+        .bg-infotechs-about .team-info {
+            padding: 25px;
+        }
+
+        .bg-infotechs-about .team-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: var(--text-dark);
+        }
+
+        .bg-infotechs-about .team-role {
+            color: var(--primary-blue);
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .bg-infotechs-about .team-description {
+            color: var(--text-light);
+            margin-bottom: 20px;
+        }
+
+        .bg-infotechs-about .team-social {
+            display: flex;
+            gap: 15px;
+        }
+
+        .bg-infotechs-about .team-social a {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--light-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-dark);
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .bg-infotechs-about .team-social a:hover {
+            background: var(--primary-blue);
+            color: white;
+            transform: translateY(-3px);
+        }
+
+        /* CTA Section */
+        .bg-infotechs-about .cta-section {
+            background: linear-gradient(135deg, var(--primary-red), var(--dark-red));
+            color: white;
+            padding: 120px 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .bg-infotechs-about .cta-title {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+        }
+
+        .bg-infotechs-about .cta-description {
+            font-size: 1.2rem;
+            margin-bottom: 2.5rem;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            opacity: 0.9;
+        }
+
+        .bg-infotechs-about .cta-btn {
+            background: white;
+            color: var(--primary-red);
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 50px;
+            transition: all 0.4s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .bg-infotechs-about .cta-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            background: var(--light-bg);
+        }
+
+        /* Footer */
+        .bg-infotechs-about .footer {
+            background-color: var(--dark-bg);
+            color: white;
+            padding: 70px 0 30px;
+        }
+
+        .bg-infotechs-about .footer-logo {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            background: linear-gradient(to right, var(--primary-blue), var(--primary-red));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .bg-infotechs-about .footer-description {
+            color: #aaa;
+            margin-bottom: 25px;
+            max-width: 300px;
+        }
+
+        .bg-infotechs-about .footer-heading {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .bg-infotechs-about .footer-heading::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 40px;
+            height: 3px;
+            background: var(--primary-blue);
+        }
+
+        .bg-infotechs-about .footer-links {
+            list-style: none;
+            padding: 0;
+        }
+
+        .bg-infotechs-about .footer-links li {
+            margin-bottom: 12px;
+        }
+
+        .bg-infotechs-about .footer-links a {
+            color: #aaa;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .bg-infotechs-about .footer-links a:hover {
+            color: white;
+            padding-left: 5px;
+        }
+
+        .bg-infotechs-about .copyright {
+            margin-top: 50px;
+            padding-top: 25px;
+            border-top: 1px solid #444;
+            text-align: center;
+            color: #777;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 992px) {
+            .bg-infotechs-about .content-wrapper {
+                flex-direction: column;
+            }
+            
+            .bg-infotechs-about .image-container {
+                margin-bottom: 40px;
+                height: 300px;
+            }
+            
+            .bg-infotechs-about .text-content {
+                padding: 0 20px;
+            }
+            
+            .bg-infotechs-about .hero-title {
+                font-size: 3rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .bg-infotechs-about .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .bg-infotechs-about .section-title {
+                font-size: 2.2rem;
+            }
+            
+            .bg-infotechs-about .content-title {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body class="bg-infotechs-about">
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="floating-elements">
+            <div class="floating-element"></div>
+            <div class="floating-element"></div>
+            <div class="floating-element"></div>
+            <div class="floating-element"></div>
+        </div>
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-8 mx-auto text-center hero-content">
+                    <h1 class="hero-title animate__animated animate__fadeInDown">About BG Infotechs</h1>
+                    <p class="hero-subtitle animate__animated animate__fadeInUp">We are a global technology company dedicated to transforming businesses through innovative digital solutions and cutting-edge technologies.</p>
+                    <a href="#our-story" class="btn hero-btn animate__animated animate__fadeInUp animate__delay-1s">Explore Our Journey <i class="fas fa-arrow-right ms-2"></i></a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Our Story Section -->
+    <section id="our-story" class="content-section">
+        <div class="container">
+            <div class="content-wrapper">
+                <div class="row align-items-center">
+                    <div class="col-lg-6">
+                        <div class="image-container slide-in-left">
+                            <div class="image-placeholder">
+                                <i class="fas fa-rocket"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="text-content slide-in-right">
+                            <h2 class="content-title">Our Story</h2>
+                            <p class="content-description">Founded in 2015, BG Infotechs began as a small startup with a big vision: to revolutionize the tech industry through innovative solutions. Today, we're a global company with offices in 12 countries, serving clients across various industries.</p>
+                            <ul class="content-features">
+                                <li><i class="fas fa-check-circle"></i> Over 500 successful projects delivered</li>
+                                <li><i class="fas fa-check-circle"></i> 98% client retention rate</li>
+                                <li><i class="fas fa-check-circle"></i> Recognized as "Tech Innovator of the Year" 2022</li>
+                                <li><i class="fas fa-check-circle"></i> 150+ dedicated team members worldwide</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Our Approach Section -->
+    <section class="content-section">
+        <div class="container">
+            <div class="content-wrapper">
+                <div class="row align-items-center flex-row-reverse">
+                    <div class="col-lg-6">
+                        <div class="image-container slide-in-right">
+                            <div class="image-placeholder">
+                                <i class="fas fa-lightbulb"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="text-content slide-in-left">
+                            <h2 class="content-title">Our Approach</h2>
+                            <p class="content-description">At BG Infotechs, we believe in a collaborative, client-centric approach. We work closely with our clients to understand their unique challenges and goals, then develop tailored solutions that drive real business value.</p>
+                            <ul class="content-features">
+                                <li><i class="fas fa-check-circle"></i> Agile development methodology</li>
+                                <li><i class="fas fa-check-circle"></i> Continuous integration and deployment</li>
+                                <li><i class="fas fa-check-circle"></i> Data-driven decision making</li>
+                                <li><i class="fas fa-check-circle"></i> User-centered design principles</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Our Technology Section -->
+    <section class="content-section">
+        <div class="container">
+            <div class="content-wrapper">
+                <div class="row align-items-center">
+                    <div class="col-lg-6">
+                        <div class="image-container slide-in-left">
+                            <div class="image-placeholder">
+                                <i class="fas fa-cogs"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="text-content slide-in-right">
+                            <h2 class="content-title">Our Technology</h2>
+                            <p class="content-description">We leverage cutting-edge technologies to build scalable, secure, and high-performance solutions. Our expertise spans across multiple domains including cloud computing, AI/ML, blockchain, and IoT.</p>
+                            <ul class="content-features">
+                                <li><i class="fas fa-check-circle"></i> Cloud-native architecture</li>
+                                <li><i class="fas fa-check-circle"></i> Artificial Intelligence & Machine Learning</li>
+                                <li><i class="fas fa-check-circle"></i> Blockchain solutions</li>
+                                <li><i class="fas fa-check-circle"></i> Internet of Things (IoT) platforms</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3 col-6">
+                    <div class="stat-item fade-in-up">
+                        <span class="stat-number" data-count="500">0</span>
+                        <span class="stat-label">Projects Completed</span>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="stat-item fade-in-up">
+                        <span class="stat-number" data-count="150">0</span>
+                        <span class="stat-label">Team Members</span>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="stat-item fade-in-up">
+                        <span class="stat-number" data-count="12">0</span>
+                        <span class="stat-label">Countries</span>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="stat-item fade-in-up">
+                        <span class="stat-number" data-count="98">0</span>
+                        <span class="stat-label">Client Satisfaction</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Team Section -->
+    <section class="section team-section">
+        <div class="container">
+            <h2 class="section-title">Our Leadership Team</h2>
+            <div class="row">
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="team-card fade-in-up">
+                        <div class="team-img">
+                            <i class="fas fa-user-tie"></i>
+                        </div>
+                        <div class="team-info">
+                            <h3 class="team-name">Sarah Johnson</h3>
+                            <span class="team-role">CEO & Founder</span>
+                            <p class="team-description">Visionary leader with 15+ years of experience in technology and business strategy.</p>
+                            <div class="team-social">
+                                <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                                <a href="#"><i class="fab fa-twitter"></i></a>
+                                <a href="#"><i class="fas fa-envelope"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="team-card fade-in-up">
+                        <div class="team-img">
+                            <i class="fas fa-user-tie"></i>
+                        </div>
+                        <div class="team-info">
+                            <h3 class="team-name">Michael Chen</h3>
+                            <span class="team-role">CTO</span>
+                            <p class="team-description">Technology expert specializing in cloud architecture and digital transformation.</p>
+                            <div class="team-social">
+                                <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                                <a href="#"><i class="fab fa-twitter"></i></a>
+                                <a href="#"><i class="fas fa-envelope"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="team-card fade-in-up">
+                        <div class="team-img">
+                            <i class="fas fa-user-tie"></i>
+                        </div>
+                        <div class="team-info">
+                            <h3 class="team-name">Elena Rodriguez</h3>
+                            <span class="team-role">Head of Innovation</span>
+                            <p class="team-description">Drives research and development initiatives to keep BG Infotechs at the forefront of technology.</p>
+                            <div class="team-social">
+                                <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                                <a href="#"><i class="fab fa-twitter"></i></a>
+                                <a href="#"><i class="fas fa-envelope"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 mx-auto text-center">
+                    <h2 class="cta-title">Ready to Transform Your Business?</h2>
+                    <p class="cta-description">Let's discuss how BG Infotechs can help you achieve your digital goals and drive innovation in your organization.</p>
+                    <a href="#" class="btn cta-btn">Get In Touch <i class="fas fa-arrow-right ms-2"></i></a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-5 mb-lg-0">
+                    <div class="footer-logo">BG Infotechs</div>
+                    <p class="footer-description">Driving digital transformation through innovative technology solutions since 2015.</p>
+                </div>
+                <div class="col-lg-2 col-md-4 mb-5 mb-md-0">
+                    <h5 class="footer-heading">Company</h5>
+                    <ul class="footer-links">
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Services</a></li>
+                        <li><a href="#">Careers</a></li>
+                        <li><a href="#">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2 col-md-4 mb-5 mb-md-0">
+                    <h5 class="footer-heading">Services</h5>
+                    <ul class="footer-links">
+                        <li><a href="#">Web Development</a></li>
+                        <li><a href="#">Mobile Apps</a></li>
+                        <li><a href="#">Cloud Solutions</a></li>
+                        <li><a href="#">AI & ML</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-4 col-md-4">
+                    <h5 class="footer-heading">Contact Us</h5>
+                    <ul class="footer-links">
+                        <li><i class="fas fa-map-marker-alt me-2"></i> 123 Tech Avenue, Innovation City</li>
+                        <li><i class="fas fa-phone me-2"></i> +1 (555) 123-4567</li>
+                        <li><i class="fas fa-envelope me-2"></i> info@bginfotechs.com</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2023 BG Infotechs. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Animation on scroll
+        document.addEventListener('DOMContentLoaded', function() {
+            // Observe elements for animation
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver(function(entries) {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        
+                        // If it's a stat number, animate counting
+                        if (entry.target.classList.contains('stat-number')) {
+                            animateCount(entry.target);
+                        }
+                    }
+                });
+            }, observerOptions);
+
+            // Observe all elements with animation classes
+            const animatedElements = document.querySelectorAll('.slide-in-left, .slide-in-right, .fade-in-up');
+            animatedElements.forEach(el => {
+                observer.observe(el);
+            });
+
+            // Animate counting for stats
+            function animateCount(element) {
+                const target = parseInt(element.getAttribute('data-count'));
+                const duration = 2000; // 2 seconds
+                const step = target / (duration / 16); // 60fps
+                let current = 0;
+                
+                const timer = setInterval(() => {
+                    current += step;
+                    if (current >= target) {
+                        element.textContent = target + (element.getAttribute('data-count') === '98' ? '%' : '+');
+                        clearInterval(timer);
+                    } else {
+                        element.textContent = Math.floor(current) + (element.getAttribute('data-count') === '98' ? '%' : '+');
+                    }
+                }, 16);
+            }
+        });
+    </script>
+</body>
+</html>

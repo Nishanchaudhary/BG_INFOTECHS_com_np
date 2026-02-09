@@ -1,0 +1,534 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="card border-dark">
+        <div class="card-header bg-primary text-white border-dark d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
+            <h5 class="card-title mb-2 mb-md-0">
+                <i class="fas fa-comments me-2"></i>{{ page_title }}
+            </h5>
+            <a href="{% url 'blog_app:blog_list' %}" class="btn btn-light btn-sm mt-2 mt-md-0">
+                <i class="fas fa-arrow-left me-1"></i>Back to Blogs
+            </a>
+        </div>
+        <div class="card-body">
+            <!-- Blog Info -->
+            <div class="row mb-4">
+                <div class="col-md-8 mb-3 mb-md-0">
+                    <h4 class="h5 h-md-4">{{ blog.title }}</h4>
+                    <p class="text-muted mb-2">{{ blog.short_description }}</p>
+                    <p class="mb-0"><strong>Status:</strong> 
+                        <span class="badge bg-{% if blog.status == 'published' %}success{% elif blog.status == 'draft' %}secondary{% else %}warning{% endif %}">
+                            {{ blog.get_status_display }}
+                        </span>
+                    </p>
+                </div>
+                <div class="col-md-4 text-md-end text-start">
+                    <div class="d-flex flex-column flex-sm-row flex-md-column flex-lg-row gap-2">
+                        <a href="{% url 'blog_app:blog_edit' blog.pk %}" class="btn btn-warning btn-sm">
+                            <i class="fas fa-edit me-1"></i>Edit Blog
+                        </a>
+                        <a href="{% url 'blog_app:blog_detail' blog.slug %}" target="_blank" class="btn btn-info btn-sm">
+                            <i class="fas fa-eye me-1"></i>View Blog
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Comment Statistics -->
+            <div class="row mb-4">
+                <div class="col-6 col-md-3 mb-3">
+                    <div class="card text-white bg-primary h-100">
+                        <div class="card-body text-center d-flex flex-column justify-content-center">
+                            <h4 class="h5 h-md-4 mb-1">{{ comment_stats.total }}</h4>
+                            <p class="mb-0 small">Total Comments</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3 mb-3">
+                    <div class="card text-white bg-success h-100">
+                        <div class="card-body text-center d-flex flex-column justify-content-center">
+                            <h4 class="h5 h-md-4 mb-1">{{ comment_stats.approved }}</h4>
+                            <p class="mb-0 small">Approved</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3 mb-3">
+                    <div class="card text-white bg-warning h-100">
+                        <div class="card-body text-center d-flex flex-column justify-content-center">
+                            <h4 class="h5 h-md-4 mb-1">{{ comment_stats.pending }}</h4>
+                            <p class="mb-0 small">Pending</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3 mb-3">
+                    <div class="card text-white bg-danger h-100">
+                        <div class="card-body text-center d-flex flex-column justify-content-center">
+                            <h4 class="h5 h-md-4 mb-1">{{ comment_stats.rejected }}</h4>
+                            <p class="mb-0 small">Rejected</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Comments List -->
+            <div class="card">
+                <div class="card-header bg-light d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
+                    <h6 class="mb-2 mb-md-0"><i class="fas fa-comment-dots me-2"></i>All Comments ({{ comments.count }})</h6>
+                    <div class="btn-group btn-group-sm flex-wrap">
+                        <button type="button" class="btn btn-outline-primary active mb-1" data-filter="all">
+                            All ({{ comment_stats.total }})
+                        </button>
+                        <button type="button" class="btn btn-outline-success mb-1" data-filter="approved">
+                            Approved ({{ comment_stats.approved }})
+                        </button>
+                        <button type="button" class="btn btn-outline-warning mb-1" data-filter="pending">
+                            Pending ({{ comment_stats.pending }})
+                        </button>
+                        <button type="button" class="btn btn-outline-danger mb-1" data-filter="rejected">
+                            Rejected ({{ comment_stats.rejected }})
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    {% if comments %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th class="d-none d-md-table-cell">Commenter</th>
+                                    <th>Comment</th>
+                                    <th class="d-none d-sm-table-cell">Status</th>
+                                    <th class="d-none d-lg-table-cell">Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for comment in comments %}
+                                <tr class="comment-row" data-status="{{ comment.status }}">
+                                    <td class="d-none d-md-table-cell">
+                                        <div>
+                                            <strong>{{ comment.full_name }}</strong><br>
+                                            <small class="text-muted">{{ comment.email }}</small>
+                                            {% if comment.user %}
+                                                <br><small class="text-info">(Registered User)</small>
+                                            {% else %}
+                                                <br><small class="text-muted">(Guest)</small>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="comment-text">
+                                            {{ comment.comment|linebreaksbr }}
+                                        </div>
+                                        <div class="d-md-none">
+                                            <small class="text-muted">
+                                                <strong>By:</strong> {{ comment.full_name }}<br>
+                                                <strong>Status:</strong> 
+                                                <span class="badge bg-{% if comment.status == 'approved' %}success{% elif comment.status == 'pending' %}warning{% else %}danger{% endif %}">
+                                                    {{ comment.get_status_display }}
+                                                </span><br>
+                                                <strong>Date:</strong> {{ comment.created_at|date:"M d, Y H:i" }}
+                                            </small>
+                                        </div>
+                                        <small class="text-muted d-none d-sm-inline">{{ comment.comment|wordcount }} words</small>
+                                    </td>
+                                    <td class="d-none d-sm-table-cell">
+                                        <span class="badge bg-{% if comment.status == 'approved' %}success{% elif comment.status == 'pending' %}warning{% else %}danger{% endif %}">
+                                            {{ comment.get_status_display }}
+                                        </span>
+                                    </td>
+                                    <td class="d-none d-lg-table-cell">
+                                        {{ comment.created_at|date:"M d, Y" }}<br>
+                                        <small class="text-muted">{{ comment.created_at|date:"H:i" }}</small>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm flex-wrap">
+                                            {% if comment.status != 'approved' %}
+                                            <form method="post" class="d-inline" action="{% url 'blog_app:blog_comments' blog.pk %}">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="comment_id" value="{{ comment.pk }}">
+                                                <input type="hidden" name="action" value="approve">
+                                                <button type="submit" class="btn btn-success btn-sm mb-1" 
+                                                        title="Approve Comment"
+                                                        onclick="return confirm('Approve this comment? It will be visible on the blog.')">
+                                                    <i class="fas fa-check"></i>
+                                                </button>
+                                            </form>
+                                            {% endif %}
+                                            
+                                            {% if comment.status != 'rejected' %}
+                                            <form method="post" class="d-inline" action="{% url 'blog_app:blog_comments' blog.pk %}">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="comment_id" value="{{ comment.pk }}">
+                                                <input type="hidden" name="action" value="reject">
+                                                <button type="submit" class="btn btn-warning btn-sm mb-1" 
+                                                        title="Reject Comment"
+                                                        onclick="return confirm('Reject this comment? It will not be visible on the blog.')">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                            </form>
+                                            {% endif %}
+                                            
+                                            <form method="post" class="d-inline" action="{% url 'blog_app:blog_comments' blog.pk %}">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="comment_id" value="{{ comment.pk }}">
+                                                <input type="hidden" name="action" value="delete">
+                                                <button type="submit" class="btn btn-danger btn-sm mb-1" 
+                                                        title="Delete Comment"
+                                                        onclick="return confirm('Are you sure you want to delete this comment permanently?')">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </form>
+
+                                            <!-- Quick AJAX Actions (Optional) -->
+                                            <div class="btn-group btn-group-sm d-none">
+                                                <button class="btn btn-outline-success btn-sm ajax-approve" 
+                                                        data-comment-id="{{ comment.pk }}"
+                                                        title="Quick Approve">
+                                                    <i class="fas fa-check"></i>
+                                                </button>
+                                                <button class="btn btn-outline-warning btn-sm ajax-reject" 
+                                                        data-comment-id="{{ comment.pk }}"
+                                                        title="Quick Reject">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                                <button class="btn btn-outline-danger btn-sm ajax-delete" 
+                                                        data-comment-id="{{ comment.pk }}"
+                                                        title="Quick Delete">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Status Filter Instructions -->
+                    <div class="alert alert-info mt-3">
+                        <small>
+                            <i class="fas fa-info-circle me-1"></i>
+                            Use the filter buttons above to show comments by status. Only <strong>Approved</strong> comments are visible to the public.
+                        </small>
+                    </div>
+
+                    {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-comment-slash fa-3x text-muted mb-3"></i>
+                        <p class="text-muted">No comments yet for this blog post.</p>
+                        <a href="{% url 'blog_app:blog_detail' blog.slug %}" target="_blank" class="btn btn-primary">
+                            <i class="fas fa-eye me-1"></i>View Blog to Add Comments
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Status filter functionality
+    const filterButtons = document.querySelectorAll('[data-filter]');
+    const commentRows = document.querySelectorAll('.comment-row');
+    
+    filterButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const filter = this.getAttribute('data-filter');
+            
+            // Update active button
+            filterButtons.forEach(btn => btn.classList.remove('active'));
+            this.classList.add('active');
+            
+            // Filter rows
+            commentRows.forEach(row => {
+                if (filter === 'all' || row.getAttribute('data-status') === filter) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+    });
+
+    // AJAX comment actions (optional enhancement)
+    const ajaxButtons = document.querySelectorAll('.ajax-approve, .ajax-reject, .ajax-delete');
+    
+    ajaxButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const commentId = this.getAttribute('data-comment-id');
+            const action = this.classList.contains('ajax-approve') ? 'approve' : 
+                          this.classList.contains('ajax-reject') ? 'reject' : 'delete';
+            
+            if (!confirm(`Are you sure you want to ${action} this comment?`)) {
+                return;
+            }
+            
+            fetch('{% url "blog_app:ajax_comment_action" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: `comment_id=${commentId}&action=${action}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload(); // Reload to see changes
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            })
+            .catch(error => {
+                alert('Error: ' + error);
+            });
+        });
+    });
+
+    // Toggle comment text expansion
+    const commentTexts = document.querySelectorAll('.comment-text');
+    commentTexts.forEach(text => {
+        if (text.textContent.length > 200) {
+            const shortText = text.textContent.substring(0, 200) + '...';
+            const fullText = text.textContent;
+            
+            text.textContent = shortText;
+            text.style.cursor = 'pointer';
+            
+            text.addEventListener('click', function() {
+                if (this.textContent === shortText) {
+                    this.textContent = fullText;
+                } else {
+                    this.textContent = shortText;
+                }
+            });
+        }
+    });
+});
+</script>
+
+<style>
+.comment-row:hover {
+    background-color: #f8f9fa !important;
+}
+
+.comment-text {
+    max-width: 300px;
+    word-wrap: break-word;
+}
+
+.btn-group-sm .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+}
+
+.table th {
+    border-top: none;
+    font-weight: 600;
+    background-color: #f8f9fa;
+}
+
+.card {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.badge {
+    font-size: 0.75em;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container-fluid {
+        padding: 0 10px;
+    }
+    
+    .card-body {
+        padding: 1rem !important;
+    }
+    
+    .table th,
+    .table td {
+        padding: 8px 6px !important;
+        font-size: 0.875rem;
+    }
+    
+    .btn-group {
+        justify-content: flex-start;
+    }
+    
+    .btn {
+        font-size: 0.875rem;
+        padding: 0.375rem 0.75rem;
+    }
+    
+    .btn-sm {
+        font-size: 0.775rem;
+        padding: 0.25rem 0.5rem;
+    }
+    
+    .comment-text {
+        max-width: 100%;
+        font-size: 0.9rem;
+    }
+    
+    .card-header .d-flex {
+        flex-direction: column;
+        gap: 10px;
+        align-items: flex-start !important;
+    }
+    
+    .card-header .btn-group {
+        align-self: stretch;
+    }
+}
+
+@media (max-width: 576px) {
+    .h4, .h5, .h6 {
+        font-size: 1.1rem;
+    }
+    
+    .card-header h6 {
+        font-size: 1rem;
+    }
+    
+    .table th,
+    .table td {
+        padding: 6px 4px !important;
+        font-size: 0.8rem;
+    }
+    
+    .btn-sm {
+        font-size: 0.775rem;
+        padding: 0.25rem 0.5rem;
+    }
+    
+    .comment-text {
+        font-size: 0.85rem;
+    }
+    
+    .btn-group-sm .btn {
+        padding: 0.2rem 0.4rem;
+        font-size: 0.7rem;
+    }
+}
+
+@media (max-width: 400px) {
+    .container-fluid {
+        padding: 0 5px;
+    }
+    
+    .btn-group {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .btn-group-sm .btn {
+        width: 100%;
+        margin-bottom: 5px;
+        justify-content: center;
+    }
+    
+    .card-header .btn-group {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+    
+    .card-header .btn-group .btn {
+        flex: 1;
+        min-width: 80px;
+    }
+    
+    .comment-text {
+        font-size: 0.8rem;
+    }
+}
+
+/* Mobile-first responsive utilities */
+.mb-1 {
+    margin-bottom: 0.25rem !important;
+}
+
+.mb-2 {
+    margin-bottom: 0.5rem !important;
+}
+
+.mb-3 {
+    margin-bottom: 1rem !important;
+}
+
+/* Responsive flexbox utilities */
+@media (min-width: 768px) {
+    .mb-md-0 {
+        margin-bottom: 0 !important;
+    }
+    
+    .mt-md-0 {
+        margin-top: 0 !important;
+    }
+}
+
+/* Flexbox utilities for responsive layout */
+.flex-wrap {
+    flex-wrap: wrap !important;
+}
+
+@media (max-width: 400px) {
+    .flex-wrap {
+        flex-direction: column;
+    }
+}
+
+/* Statistics cards responsive */
+@media (max-width: 576px) {
+    .card-body .h5 {
+        font-size: 1.25rem !important;
+    }
+    
+    .card-body .small {
+        font-size: 0.8rem !important;
+    }
+}
+
+/* Table responsive fixes */
+@media (max-width: 768px) {
+    .table-responsive {
+        border: 1px solid #dee2e6;
+        border-radius: 0.375rem;
+    }
+}
+
+/* Action buttons responsiveness */
+@media (max-width: 400px) {
+    .btn-group-sm .btn {
+        padding: 0.2rem 0.3rem;
+        font-size: 0.7rem;
+    }
+}
+
+/* Print optimization */
+@media print {
+    .btn,
+    .btn-group {
+        display: none !important;
+    }
+    
+    .card-header {
+        background: white !important;
+        color: black !important;
+    }
+    
+    .table {
+        font-size: 10px;
+    }
+}
+</style>
+{% endblock %}

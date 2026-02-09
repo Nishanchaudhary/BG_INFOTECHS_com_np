@@ -1,0 +1,302 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Back Button -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <a href="{% url 'company_app:services_faq_list' %}" class="btn btn-outline-primary btn-sm">
+                <i class="fas fa-arrow-left me-2"></i>Back to FAQs List
+            </a>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-10 col-xl-8">
+            <!-- FAQ Detail Card -->
+            <div class="card border-0 shadow-lg">
+                <div class="card-header bg-gradient-primary text-white py-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h1 class="h3 mb-2">
+                                <i class="fas fa-question-circle me-3"></i>FAQ Details
+                            </h1>
+                            <p class="mb-0 opacity-75">
+                                <i class="fas fa-info-circle me-2"></i>Complete information about this frequently asked question
+                            </p>
+                        </div>
+                        <div class="dropdown">
+                            <button class="btn btn-light btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-cog"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                {% if can_edit_services_faq %}
+                                <li>
+                                    <a href="{% url 'company_app:services_faq_edit' faq.pk %}" class="dropdown-item">
+                                        <i class="fas fa-edit text-warning me-2"></i>Edit FAQ
+                                    </a>
+                                </li>
+                                {% endif %}
+                                {% if can_delete_services_faq %}
+                                <li>
+                                    <a href="{% url 'company_app:services_faq_delete' faq.pk %}" class="dropdown-item text-danger">
+                                        <i class="fas fa-trash me-2"></i>Delete FAQ
+                                    </a>
+                                </li>
+                                {% endif %}
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a href="{% url 'company_app:services_faq_list' %}" class="dropdown-item">
+                                        <i class="fas fa-list me-2"></i>View All FAQs
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-body p-4">
+                    <!-- Status Badge -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            {% if faq.status == 'published' %}
+                            <span class="badge bg-success rounded-pill px-3 py-2">
+                                <i class="fas fa-check-circle me-2"></i>Published
+                            </span>
+                            {% elif faq.status == 'draft' %}
+                            <span class="badge bg-secondary rounded-pill px-3 py-2">
+                                <i class="fas fa-edit me-2"></i>Draft
+                            </span>
+                            {% elif faq.status == 'archived' %}
+                            <span class="badge bg-warning rounded-pill px-3 py-2">
+                                <i class="fas fa-archive me-2"></i>Archived
+                            </span>
+                            {% endif %}
+                            
+                            {% if faq.service %}
+                            <span class="badge bg-primary rounded-pill px-3 py-2 ms-2">
+                                <i class="fas fa-cube me-2"></i>{{ faq.service.title }}
+                            </span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Question Section -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <div class="card bg-light border-0">
+                                <div class="card-body">
+                                    <h3 class="h5 text-primary mb-3">
+                                        <i class="fas fa-question text-warning me-2"></i>Question
+                                    </h3>
+                                    <p class="lead mb-0 text-dark fw-semibold">{{ faq.question }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Answer Section -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <div class="card border-0" style="background-color: #f8f9fa;">
+                                <div class="card-body">
+                                    <h3 class="h5 text-success mb-3">
+                                        <i class="fas fa-lightbulb text-success me-2"></i>Answer
+                                    </h3>
+                                    <div class="faq-answer-content">
+                                        {{ faq.answer|safe|linebreaks }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Additional Information -->
+                    <div class="row">
+                        <div class="col-12 col-md-6 mb-3">
+                            <div class="card border-0 h-100">
+                                <div class="card-body text-center">
+                                    <div class="text-primary mb-2">
+                                        <i class="fas fa-calendar-plus fa-2x"></i>
+                                    </div>
+                                    <h6 class="text-muted mb-1">Created Date</h6>
+                                    <p class="fw-bold text-dark mb-0">{{ faq.created_at|date:"M d, Y" }}</p>
+                                    <small class="text-muted">{{ faq.created_at|date:"h:i A" }}</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-12 col-md-6 mb-3">
+                            <div class="card border-0 h-100">
+                                <div class="card-body text-center">
+                                    <div class="text-info mb-2">
+                                        <i class="fas fa-calendar-check fa-2x"></i>
+                                    </div>
+                                    <h6 class="text-muted mb-1">Last Updated</h6>
+                                    <p class="fw-bold text-dark mb-0">{{ faq.updated_at|date:"M d, Y" }}</p>
+                                    <small class="text-muted">{{ faq.updated_at|date:"h:i A" }}</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Service Information -->
+                    {% if faq.service %}
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div class="card border-primary">
+                                <div class="card-header bg-transparent border-primary">
+                                    <h5 class="mb-0">
+                                        <i class="fas fa-cube me-2 text-primary"></i>Related Service
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center">
+                                        <div class="flex-grow-1">
+                                            <h6 class="text-primary mb-1">{{ faq.service.title }}</h6>
+                                            {% if faq.service.description %}
+                                            <p class="text-muted small mb-0">{{ faq.service.description|safe }}</p>
+                                            {% endif %}
+                                        </div>
+                                        <div class="flex-shrink-0">
+                                            <a href="" class="btn btn-outline-primary btn-sm">
+                                                View Service
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Action Buttons -->
+                    <div class="row mt-5">
+                        <div class="col-12">
+                            <div class="d-flex flex-wrap gap-2 justify-content-center">
+                                <a href="{% url 'company_app:services_faq_list' %}" class="btn btn-outline-secondary">
+                                    <i class="fas fa-list me-2"></i>Back to List
+                                </a>
+                                
+                                {% if can_edit_services_faq %}
+                                <a href="{% url 'company_app:services_faq_edit' faq.pk %}" class="btn btn-warning">
+                                    <i class="fas fa-edit me-2"></i>Edit FAQ
+                                </a>
+                                {% endif %}
+                                
+                                {% if can_delete_services_faq %}
+                                <a href="{% url 'company_app:services_faq_delete' faq.pk %}" class="btn btn-danger">
+                                    <i class="fas fa-trash me-2"></i>Delete FAQ
+                                </a>
+                                {% endif %}
+                                
+                                <!-- Publish functionality removed to fix the error -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card Footer -->
+                <div class="card-footer bg-light py-3">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <small class="text-muted">
+                                <i class="fas fa-fingerprint me-1"></i>ID: {{ faq.pk }}
+                                {% if faq.slug %}
+                                | <i class="fas fa-link ms-2 me-1"></i>Slug: {{ faq.slug }}
+                                {% endif %}
+                            </small>
+                        </div>
+                        <div class="col-md-6 text-md-end">
+                            <small class="text-muted">
+                                Last modified: {{ faq.updated_at|timesince }} ago
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Container -->
+<div id="toastContainer" class="toast-container position-fixed top-0 end-0 p-3"></div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Toast notification function
+function showToast(message, type = 'info') {
+    const toastId = 'toast-' + Date.now();
+    const toastHtml = `
+        <div id="${toastId}" class="toast" role="alert">
+            <div class="toast-header">
+                <strong class="me-auto">Notification</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+            </div>
+            <div class="toast-body">
+                ${message}
+            </div>
+        </div>
+    `;
+    
+    $('#toastContainer').append(toastHtml);
+    const toastElement = document.getElementById(toastId);
+    const toast = new bootstrap.Toast(toastElement);
+    
+    // Add background color based on type
+    if (type === 'success') {
+        $(toastElement).find('.toast-body').addClass('text-success');
+    } else if (type === 'error') {
+        $(toastElement).find('.toast-body').addClass('text-danger');
+    }
+    
+    toast.show();
+    
+    // Remove toast from DOM after it's hidden
+    toastElement.addEventListener('hidden.bs.toast', function() {
+        $(this).remove();
+    });
+}
+
+$(document).ready(function() {
+    // Initialize tooltips
+    $('[data-bs-toggle="tooltip"]').tooltip();
+    
+    // Add smooth scrolling for anchor links
+    $('a[href^="#"]').on('click', function(event) {
+        event.preventDefault();
+        const target = $(this.getAttribute('href'));
+        if (target.length) {
+            $('html, body').stop().animate({
+                scrollTop: target.offset().top - 80
+            }, 1000);
+        }
+    });
+});
+
+// CSRF token function
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+// Show success messages from Django messages framework
+{% if messages %}
+    {% for message in messages %}
+        showToast('{{ message|escapejs }}', '{{ message.tags }}');
+    {% endfor %}
+{% endif %}
+</script>
+{% endblock %}

@@ -1,0 +1,304 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <!-- Delete Confirmation Card -->
+            <div class="card border-0 shadow-lg">
+                <!-- Header -->
+                <div class="card-header bg-danger text-white text-center py-4">
+                    <i class="fas fa-user-slash fa-2x mb-3"></i>
+                    <h4 class="mb-0">Delete User</h4>
+                </div>
+
+                <div class="card-body p-4">
+                    <!-- Warning Alert -->
+                    <div class="alert alert-danger border-0 text-center mb-4">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>Critical Action:</strong> This cannot be undone
+                    </div>
+
+                    <!-- User Info -->
+                    <div class="user-info text-center mb-4">
+                        <div class="user-avatar mb-3">
+                            {% if user_obj.profile_picture %}
+                                <img src="{{ user_obj.profile_picture.url }}" alt="{{ user_obj.username }}" 
+                                     class="rounded-circle" width="80" height="80">
+                            {% else %}
+                                <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center" 
+                                     style="width: 80px; height: 80px;">
+                                    <i class="fas fa-user fa-2x"></i>
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <h5 class="text-dark mb-2">{{ user_obj.get_full_name|default:user_obj.username }}</h5>
+                        <p class="text-muted mb-3">@{{ user_obj.username }}</p>
+
+                        <div class="user-details bg-light p-3 rounded">
+                            <div class="row text-start">
+                                <div class="col-6">
+                                    <small class="text-muted">Email</small>
+                                    <p class="mb-2 fw-bold text-truncate">{{ user_obj.email }}</p>
+                                </div>
+                                <div class="col-6">
+                                    <small class="text-muted">Role</small>
+                                    <p class="mb-2 fw-bold">
+                                        {% if user_obj.role %}
+                                            {{ user_obj.role.name }}
+                                        {% else %}
+                                            <span class="text-muted">No role</span>
+                                        {% endif %}
+                                    </p>
+                                </div>
+                                <div class="col-6">
+                                    <small class="text-muted">Status</small>
+                                    <p class="mb-0">
+                                        <span class="badge {% if user_obj.is_active %}bg-success{% else %}bg-secondary{% endif %}">
+                                            {% if user_obj.is_active %}Active{% else %}Inactive{% endif %}
+                                        </span>
+                                    </p>
+                                </div>
+                                <div class="col-6">
+                                    <small class="text-muted">Joined</small>
+                                    <p class="mb-0">{{ user_obj.date_joined|date:"M d, Y" }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Impact Warning -->
+                    <div class="alert alert-warning border-0 mb-4">
+                        <div class="d-flex">
+                            <i class="fas fa-info-circle me-3 mt-1"></i>
+                            <div>
+                                <strong>What will be deleted:</strong>
+                                <ul class="mb-0 mt-1">
+                                    <li>User account and profile</li>
+                                    <li>All user data and preferences</li>
+                                    <li>Login history and activity records</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Confirmation Form -->
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <!-- Confirmation Check -->
+                        <div class="confirmation-check mb-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="confirmDelete" required>
+                                <label class="form-check-label text-danger fw-bold" for="confirmDelete">
+                                    I understand this will permanently delete the user account
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-danger btn-lg" id="deleteBtn" disabled>
+                                <i class="fas fa-trash me-2"></i>
+                                Delete User Account
+                            </button>
+                            <a href="{% url 'bg_app:user_list' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>
+                                Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.card {
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.card-header {
+    border-radius: 0;
+}
+
+.alert-danger {
+    background: #f8d7da;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+}
+
+.alert-warning {
+    background: #fff3cd;
+    border: none;
+    border-radius: 10px;
+}
+
+.user-info {
+    padding: 1rem;
+}
+
+.user-avatar img {
+    object-fit: cover;
+    border: 3px solid #e9ecef;
+}
+
+.user-details {
+    border-left: 4px solid #0d6efd;
+}
+
+.badge {
+    font-size: 0.75rem;
+    padding: 4px 8px;
+}
+
+.btn {
+    border-radius: 10px;
+    font-weight: 600;
+    padding: 12px 20px;
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, #dc3545, #c82333);
+    border-color: #dc3545;
+}
+
+.btn-danger:hover {
+    background: linear-gradient(135deg, #c82333, #a71e2a);
+    border-color: #c82333;
+}
+
+.btn-danger:disabled {
+    background: #6c757d;
+    border-color: #6c757d;
+    transform: none;
+    cursor: not-allowed;
+}
+
+.btn-outline-secondary {
+    border-color: #6c757d;
+    color: #6c757d;
+}
+
+.btn-outline-secondary:hover {
+    background: #6c757d;
+    border-color: #6c757d;
+    color: white;
+}
+
+.form-check-input {
+    width: 18px;
+    height: 18px;
+    margin-top: 0.25rem;
+}
+
+.form-check-input:checked {
+    background-color: #dc3545;
+    border-color: #dc3545;
+}
+
+.form-check-label {
+    cursor: pointer;
+    user-select: none;
+}
+
+/* Pulse animation for enabled delete button */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+    100% { transform: scale(1); }
+}
+
+#deleteBtn:not(:disabled) {
+    animation: pulse 2s infinite;
+}
+
+/* Smooth entrance animation */
+.card {
+    opacity: 0;
+    transform: translateY(30px);
+    animation: fadeInUp 0.6s ease forwards;
+}
+
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .container {
+        padding: 20px 15px;
+    }
+    
+    .card-body {
+        padding: 1.5rem !important;
+    }
+    
+    .user-details .row .col-6 {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+}
+
+@media (max-width: 576px) {
+    .btn {
+        padding: 10px 16px;
+        font-size: 0.9rem;
+    }
+    
+    .form-check-label {
+        font-size: 0.9rem;
+    }
+    
+    .alert-warning ul {
+        padding-left: 1rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const confirmCheckbox = document.getElementById('confirmDelete');
+    const deleteBtn = document.getElementById('deleteBtn');
+    const form = document.querySelector('form');
+    
+    // Toggle delete button based on checkbox
+    confirmCheckbox.addEventListener('change', function() {
+        deleteBtn.disabled = !this.checked;
+    });
+    
+    // Form submission handler
+    form.addEventListener('submit', function(e) {
+        if (!confirm('WARNING: This will permanently delete the user account and all associated data. This action cannot be undone. Are you sure?')) {
+            e.preventDefault();
+            return false;
+        }
+        
+        // Show loading state
+        const originalText = deleteBtn.innerHTML;
+        deleteBtn.disabled = true;
+        deleteBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Deleting User...';
+        
+        return true;
+    });
+});
+</script>
+{% endblock %}

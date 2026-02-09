@@ -1,0 +1,356 @@
+{% extends 'base.html' %}
+{% block title %}{{ page_title }}{% endblock %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8">
+            <div class="card border-dark">
+                <div class="card-header bg-primary text-white border-dark">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-file-alt me-2"></i>{{ page_title }}
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if vacancy %}
+                    <div class="alert alert-info">
+                        <h6 class="alert-heading">
+                            <i class="fas fa-briefcase me-2"></i>Applying for: {{ vacancy.title }}
+                        </h6>
+                        <p class="mb-0 small">{{ vacancy.description | safe | truncatewords:30 }}</p>
+                    </div>
+                    {% endif %}
+
+                    <form method="post" enctype="multipart/form-data" novalidate>
+                        {% csrf_token %}
+                        
+                        {% if form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {% for error in form.non_field_errors %}
+                            <p class="mb-0"><i class="fas fa-exclamation-triangle me-2"></i>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+
+                        <div class="row">
+                            <!-- Personal Information -->
+                            <div class="col-md-6">
+                                <h6 class="border-bottom pb-2 mb-3">
+                                    <i class="fas fa-user me-2"></i>Personal Information
+                                </h6>
+                                
+                                <!-- Full Name -->
+                                <div class="mb-3">
+                                    <label for="{{ form.full_name.id_for_label }}" class="form-label">
+                                        Full Name <span class="text-danger">*</span>
+                                    </label>
+                                    {{ form.full_name }}
+                                    {% if form.full_name.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.full_name.errors %}
+                                        <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Email -->
+                                <div class="mb-3">
+                                    <label for="{{ form.email.id_for_label }}" class="form-label">
+                                        Email Address <span class="text-danger">*</span>
+                                    </label>
+                                    {{ form.email }}
+                                    {% if form.email.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.email.errors %}
+                                        <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Phone -->
+                                <div class="mb-3">
+                                    <label for="{{ form.phone.id_for_label }}" class="form-label">
+                                        Phone Number <span class="text-danger">*</span>
+                                    </label>
+                                    {{ form.phone }}
+                                    {% if form.phone.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.phone.errors %}
+                                        <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <!-- Application Details -->
+                            <div class="col-md-6">
+                                <h6 class="border-bottom pb-2 mb-3">
+                                    <i class="fas fa-file me-2"></i>Application Details
+                                </h6>
+
+                                <!-- Vacancy Selection (if not pre-selected) -->
+                                {% if not vacancy %}
+                                <div class="mb-3">
+                                    <label for="{{ form.vacancy.id_for_label }}" class="form-label">
+                                        Position Applying For <span class="text-danger">*</span>
+                                    </label>
+                                    {{ form.vacancy }}
+                                    {% if form.vacancy.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.vacancy.errors %}
+                                        <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                {% endif %}
+
+                                <!-- Resume -->
+                                <div class="mb-3">
+                                    <label for="{{ form.resume.id_for_label }}" class="form-label">
+                                        Resume/CV <span class="text-danger">*</span>
+                                    </label>
+                                    {{ form.resume }}
+                                    <div class="form-text">
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        Accepted formats: PDF, DOC, DOCX (Max: 5MB)
+                                    </div>
+                                    {% if form.resume.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.resume.errors %}
+                                        <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Cover Letter -->
+                        <div class="row">
+                            <div class="col-12">
+                                <h6 class="border-bottom pb-2 mb-3">
+                                    <i class="fas fa-edit me-2"></i>Cover Letter
+                                </h6>
+                                <div class="mb-3">
+                                    <label for="{{ form.cover_letter.id_for_label }}" class="form-label">
+                                        Cover Letter <span class="text-danger">*</span>
+                                    </label>
+                                    {{ form.cover_letter }}
+                                    <div class="form-text">
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        Tell us why you're interested in this position and what makes you a good fit.
+                                    </div>
+                                    {% if form.cover_letter.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.cover_letter.errors %}
+                                        <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Form Actions -->
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <a href="{% if vacancy %}{% url 'vacancy_app:vacancy_detail' vacancy.pk %}{% else %}{% url 'vacancy_app:application_list' %}{% endif %}" 
+                                       class="btn btn-outline-secondary">
+                                        <i class="fas fa-arrow-left me-1"></i>Back
+                                    </a>
+                                    <button type="submit" class="btn btn-success">
+                                        <i class="fas fa-paper-plane me-1"></i>Submit Application
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Available Positions Card -->
+            {% if not vacancy and active_vacancies %}
+            <div class="card border-dark mt-4">
+                <div class="card-header bg-info text-white border-dark">
+                    <h6 class="card-title mb-0">
+                        <i class="fas fa-list me-2"></i>Available Positions
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for vac in active_vacancies %}
+                        <div class="col-md-6 mb-3">
+                            <div class="card h-100 border">
+                                <div class="card-body">
+                                    <h6 class="card-title">{{ vac.title }}</h6>
+                                    <p class="card-text small text-muted">{{ vac.short_description|safe }}</p>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <small class="text-muted">
+                                            <i class="fas fa-map-marker-alt me-1"></i>{{ vac.address }}
+                                        </small>
+                                        <a href="{% url 'vacancy_app:application_create_for_vacancy' vac.pk %}" 
+                                           class="btn btn-sm btn-outline-primary">
+                                            Apply Now
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-label {
+        font-weight: 600;
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-control, .form-select {
+        border: 1px solid #ced4da;
+        border-radius: 0.375rem;
+        padding: 0.5rem 0.75rem;
+        font-size: 0.9rem;
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: #86b7fe;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    }
+
+    .form-text {
+        font-size: 0.8rem;
+        color: #6c757d;
+    }
+
+    .alert {
+        border-left: 4px solid;
+    }
+
+    .alert-info {
+        border-left-color: #0dcaf0;
+    }
+
+    .alert-danger {
+        border-left-color: #dc3545;
+    }
+
+    .card {
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    }
+
+    .card-header {
+        font-weight: 600;
+    }
+
+    textarea.form-control {
+        min-height: 120px;
+        resize: vertical;
+    }
+
+    /* File input styling */
+    input[type="file"] {
+        padding: 0.375rem 0.75rem;
+    }
+
+    /* Required field asterisk */
+    .text-danger {
+        font-weight: bold;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .col-md-6 {
+            margin-bottom: 1rem;
+        }
+        
+        .d-flex {
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .btn {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(document).ready(function() {
+        // Character counter for cover letter
+        $('#{{ form.cover_letter.id_for_label }}').on('input', function() {
+            var length = $(this).val().length;
+            var counter = $(this).siblings('.char-counter');
+            if (counter.length === 0) {
+                $(this).after('<div class="form-text char-counter"></div>');
+                counter = $(this).siblings('.char-counter');
+            }
+            counter.text(length + ' characters');
+            
+            if (length > 500) {
+                counter.addClass('text-success').removeClass('text-danger');
+            } else if (length > 100) {
+                counter.addClass('text-info').removeClass('text-danger');
+            } else {
+                counter.addClass('text-danger').removeClass('text-success text-info');
+            }
+        });
+
+        // File size validation
+        $('#{{ form.resume.id_for_label }}').on('change', function() {
+            var file = this.files[0];
+            if (file) {
+                var fileSize = file.size / 1024 / 1024; // MB
+                var fileName = file.name;
+                var fileExt = fileName.split('.').pop().toLowerCase();
+                var validExts = ['pdf', 'doc', 'docx'];
+                
+                if (!validExts.includes(fileExt)) {
+                    alert('Please select a valid file format (PDF, DOC, or DOCX).');
+                    $(this).val('');
+                    return;
+                }
+                
+                if (fileSize > 5) {
+                    alert('File size must be less than 5MB. Your file is ' + fileSize.toFixed(2) + 'MB.');
+                    $(this).val('');
+                    return;
+                }
+            }
+        });
+
+        // Form submission handling
+        $('form').on('submit', function() {
+            // Disable submit button to prevent double submission
+            $('button[type="submit"]').prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-1"></i>Submitting...');
+        });
+
+        // Auto-format phone number
+        $('#{{ form.phone.id_for_label }}').on('input', function() {
+            var phone = $(this).val().replace(/\D/g, '');
+            if (phone.length > 3 && phone.length <= 6) {
+                phone = phone.replace(/(\d{3})(\d{0,3})/, '$1-$2');
+            } else if (phone.length > 6) {
+                phone = phone.replace(/(\d{3})(\d{3})(\d{0,4})/, '$1-$2-$3');
+            }
+            $(this).val(phone);
+        });
+    });
+</script>
+{% endblock %}

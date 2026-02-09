@@ -1,0 +1,427 @@
+{% extends 'Frontend/base.html' %}
+{% load static %}
+{% block title %}About Us{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        background-color: #fff;
+    }
+
+    #handboy {
+        animation: swing ease-in-out 1.3s infinite alternate;
+        transform-origin: 98% 98%;
+        transform-box: fill-box;
+    }
+
+    #girllight {
+        animation: swing ease-in-out 1.3s infinite alternate;
+        transform-origin: 0% 97%;
+        transform-box: fill-box;
+    }
+
+    #hairgirl {
+        animation: swinghair ease-in-out 1.3s infinite alternate;
+        transform-origin: 60% 0%;
+        transform-box: fill-box;
+    }
+
+    #zero {
+        transform-origin: bottom;
+        transform-box: fill-box;
+    }
+
+    /*************swing************/
+    @keyframes swing {
+        0% {
+            transform: rotate(10deg);
+        }
+
+        100% {
+            transform: rotate(-10deg);
+        }
+    }
+
+    /*************swing hair************/
+    @keyframes swinghair {
+        0% {
+            transform: rotate(6deg);
+        }
+
+        100% {
+            transform: rotate(-6deg);
+        }
+    }
+</style>
+
+<style>
+    body {
+        background-color: #fff;
+    }
+
+    /* Page Not Found Animation Styles */
+    .page-not-found-container {
+        text-align: center;
+        margin-bottom: 30px;
+        padding: 20px;
+        position: relative;
+        z-index: 2;
+    }
+
+    .page-not-found-title {
+        font-size: 4rem;
+        font-weight: 800;
+        background: linear-gradient(45deg, #ff6b6b, #ffa726, #667eea, #764ba2);
+        background-size: 300% 300%;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: gradientShift 3s ease infinite, bounce 2s ease-in-out infinite;
+        margin-bottom: 20px;
+        text-transform: uppercase;
+        letter-spacing: 3px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .page-not-found-subtitle {
+        font-size: 1.3rem;
+        color: #666;
+        margin-bottom: 30px;
+        font-weight: 300;
+        animation: fadeInUp 1s ease-out 0.5s both;
+        line-height: 1.6;
+    }
+
+    .back-home-container {
+        text-align: center;
+        margin: 40px 0;
+        animation: slideInUp 1s ease-out 1s both;
+    }
+
+    .back-home-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        background: linear-gradient(45deg, #667eea, #764ba2);
+        color: white;
+        padding: 16px 35px;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        border: 2px solid transparent;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .back-home-btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        transition: left 0.5s;
+    }
+
+    .back-home-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 40px rgba(102, 126, 234, 0.6);
+        border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    .back-home-btn:hover::before {
+        left: 100%;
+    }
+
+    .back-home-btn i {
+        font-size: 1.3rem;
+        transition: transform 0.3s ease;
+    }
+
+    .back-home-btn:hover i {
+        transform: translateX(5px);
+    }
+
+    /* Animations */
+    @keyframes gradientShift {
+        0% {
+            background-position: 0% 50%;
+        }
+
+        50% {
+            background-position: 100% 50%;
+        }
+
+        100% {
+            background-position: 0% 50%;
+        }
+    }
+
+    @keyframes bounce {
+
+        0%,
+        100% {
+            transform: translateY(0);
+        }
+
+        50% {
+            transform: translateY(-10px);
+        }
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes slideInUp {
+        from {
+            opacity: 0;
+            transform: translateY(50px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* SVG Animation Container */
+    .svg-animation-container {
+        position: relative;
+        margin: 30px 0;
+        z-index: 1;
+    }
+
+    .svg-overlay-text {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        width: 100%;
+        z-index: 3;
+        pointer-events: none;
+    }
+
+    .overlay-title {
+        font-size: 3.5rem;
+        font-weight: 800;
+        background: linear-gradient(45deg, #ff6b6b, #ffa726, #667eea, #764ba2);
+        background-size: 300% 300%;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: gradientShift 3s ease infinite;
+        margin-bottom: 15px;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+    }
+
+    .overlay-subtitle {
+        font-size: 1.2rem;
+        color: #666;
+        font-weight: 300;
+        line-height: 1.5;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    /* Particle background for extra effect */
+    .particles {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: -1;
+    }
+
+    .particle {
+        position: absolute;
+        background: linear-gradient(45deg, #667eea, #764ba2);
+        border-radius: 50%;
+        animation: floatParticle 6s infinite linear;
+        opacity: 0.3;
+    }
+
+    @keyframes floatParticle {
+        0% {
+            transform: translateY(100vh) rotate(0deg);
+            opacity: 0;
+        }
+
+        10% {
+            opacity: 0.5;
+        }
+
+        90% {
+            opacity: 0.5;
+        }
+
+        100% {
+            transform: translateY(-100px) rotate(360deg);
+            opacity: 0;
+        }
+    }
+
+    /* Responsive design */
+    @media (max-width: 768px) {
+        .page-not-found-title {
+            font-size: 2.5rem;
+            letter-spacing: 2px;
+        }
+
+        .page-not-found-subtitle {
+            font-size: 1.1rem;
+        }
+
+        .back-home-btn {
+            padding: 14px 30px;
+            font-size: 1rem;
+        }
+
+        .overlay-title {
+            font-size: 2.5rem;
+        }
+
+        .overlay-subtitle {
+            font-size: 1rem;
+            padding: 0 20px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .overlay-title {
+            font-size: 2rem;
+        }
+
+        .overlay-subtitle {
+            font-size: 0.9rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="svg-animation-container" style="margin-top: 0px; padding-top: 0px;">
+    <div class="svg-overlay-text" style="margin-top: 10px;">
+        <div class="overlay-title">404 - Page Not Found</div>
+        <div class="overlay-subtitle">
+            Oops! The page you're looking for seems to have wandered off into the digital void.<br>
+            Don't worry, even the best explorers get lost sometimes!
+        </div>
+        <div class="back-home-container">
+            <a href="{% url 'frontend_app:home' %}" class="back-home-btn">
+                <i>🏠</i> Back to Homepage
+            </a>
+        </div>
+    </div>
+
+    <a target="_blank" href="{% url 'frontend_app:home' %}">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-12 col-md-12 mt-5 mb-5">
+                    <svg width="100%" height="auto" viewBox="0 0 636 324" fill="none"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <!-- Your complete SVG code remains exactly the same -->
+                        <g id="OBJECTS">
+                            <g id="Group">
+                                <path id="Vector"
+                                    d="M101.3 255.2C101.3 255.2 111.1 272.6 181.8 280.5C252.5 288.4 288.2 314.9 333.1 322.8C378 330.7 433.6 278.5 481.8 286.5C530 294.4 588.2 264.2 592.8 255.2H101.3Z"
+                                    fill="#2F1829" />
+                                <path id="Vector_2"
+                                    d="M611.9 251.7H601.4L140.8 251.8C140.8 251.8 136.1 248.1 128.9 241.8C125.8 239.1 122.2 235.9 118.3 232.3C116.9 231 115.4 229.6 113.9 228.2C100.2 215.3 83.6 198.2 70.1 180.1C55.9 161 45.1 140.6 44.8 122.6C44.8 122.2 44.8 121.8 44.8 121.4C45 104 48.4 85.1 56.9 67.7C61.9 57.5 68.5 47.8 77.3 39C100.1 16.2 137.1 0.300011 194.5 0.800011C261.4 1.30001 330.8 26.3 393.5 60.8C406.6 68 419.4 75.7 431.9 83.6C441.1 89.5 450.1 95.5 458.8 101.6C483.1 118.6 505.6 136.4 525.5 153.8C570.6 193.1 602.3 230.4 611.9 251.7Z"
+                                    fill="url(#paint0_linear)" />
+                                <!-- ... rest of your SVG paths remain exactly the same ... -->
+                            </g>
+                        </g>
+                        <defs>
+                            <!-- ... your gradient definitions remain the same ... -->
+                            <linearGradient id="paint0_linear" x1="327.54" y1="250.471" x2="330.184" y2="46.9149"
+                                gradientUnits="userSpaceOnUse">
+                                <stop stop-color="#E8D197" />
+                                <stop offset="1" stop-color="#FEF5DA" />
+                            </linearGradient>
+                            <!-- ... all other gradients remain the same ... -->
+                        </defs>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </a>
+</div>
+
+
+
+<!-- Particle Background -->
+<div class="particles" id="particles-container"></div>
+
+{% block extra_js %}
+<script>
+    // Create particles
+    function createParticles() {
+        const container = document.getElementById('particles-container');
+        const particleCount = 15;
+
+        for (let i = 0; i < particleCount; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+
+            // Random size between 3px and 8px
+            const size = Math.random() * 5 + 3;
+            particle.style.width = `${size}px`;
+            particle.style.height = `${size}px`;
+
+            // Random position
+            particle.style.left = `${Math.random() * 100}%`;
+
+            // Random animation delay and duration
+            const delay = Math.random() * 5;
+            const duration = Math.random() * 3 + 6;
+            particle.style.animationDelay = `${delay}s`;
+            particle.style.animationDuration = `${duration}s`;
+
+            container.appendChild(particle);
+        }
+    }
+
+    // Initialize particles when page loads
+    document.addEventListener('DOMContentLoaded', function () {
+        createParticles();
+
+        // Your existing animations
+        anime({
+            targets: '.row svg',
+            translateY: 10,
+            autoplay: true,
+            loop: true,
+            easing: 'easeInOutSine',
+            direction: 'alternate'
+        });
+
+        anime({
+            targets: '#zero',
+            translateX: 10,
+            autoplay: true,
+            loop: true,
+            easing: 'easeInOutSine',
+            direction: 'alternate',
+            scale: [{ value: 1 }, { value: 1.4 }, { value: 1, delay: 250 }],
+            rotateY: { value: '+=180', delay: 200 },
+        });
+    });
+</script>
+{% endblock %}
+
+{% endblock %}

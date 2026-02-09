@@ -1,0 +1,815 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-12 col-xl-10">
+            <div class="card border-dark shadow-sm">
+                <div class="card-header bg-success text-white border-dark">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0">
+                            <i class="fas {{ breadcrumb_icon|default:'fa-edit' }} me-2"></i>{{ page_title }}
+                        </h5>
+                        <a href="{% url 'package_app:package_list' %}" class="btn btn-light btn-sm">
+                            <i class="fas fa-arrow-left me-1"></i> Back to List
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="card-body p-4">
+                    <form method="post" enctype="multipart/form-data" id="package-form" novalidate>
+                        {% csrf_token %}
+                        
+                        {% if form.non_field_errors %}
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            {{ form.non_field_errors }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                        {% endif %}
+
+                        <div class="row">
+                            <!-- Left Column - Basic Information -->
+                            <div class="col-12 col-lg-6">
+                                <div class="card mb-4 border-success">
+                                    <div class="card-header bg-light-success text-dark">
+                                        <h6 class="mb-0">
+                                            <i class="fas fa-info-circle me-2"></i>Basic Information
+                                        </h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <!-- Icon Field -->
+                                        <div class="mb-3">
+                                            <label for="{{ form.icon.id_for_label }}" class="form-label">
+                                                <i class="fas fa-icons me-1"></i>Icon Class
+                                                <span class="text-danger">*</span>
+                                            </label>
+                                            {{ form.icon }}
+                                            {% if form.icon.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ form.icon.errors }}
+                                            </div>
+                                            {% endif %}
+                                            <div class="form-text">
+                                                Enter Font Awesome or Bootstrap Icons class (e.g., "fas fa-star", "bi bi-gem")
+                                            </div>
+                                            <div class="mt-2" id="icon-preview">
+                                                <small class="text-muted">Preview:</small>
+                                                <div id="icon-display" class="mt-1 fs-4 text-success"></div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Title Field -->
+                                        <div class="mb-3">
+                                            <label for="{{ form.title.id_for_label }}" class="form-label">
+                                                <i class="fas fa-heading me-1"></i>Package Title
+                                                <span class="text-danger">*</span>
+                                            </label>
+                                            {{ form.title }}
+                                            {% if form.title.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ form.title.errors }}
+                                            </div>
+                                            {% endif %}
+                                        </div>
+
+                                        <!-- Image Field -->
+                                        <div class="mb-3">
+                                            <label for="{{ form.image.id_for_label }}" class="form-label">
+                                                <i class="fas fa-image me-1"></i>Package Image
+                                                <span class="text-danger">*</span>
+                                            </label>
+                                            {{ form.image }}
+                                            {% if form.image.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ form.image.errors }}
+                                            </div>
+                                            {% endif %}
+                                            
+                                            <!-- Current Image Display with Remove Option -->
+                                            {% if package and package.image %}
+                                            <div class="mt-3" id="current-image-section">
+                                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                                    <small class="text-muted">Current Image:</small>
+                                                    <button type="button" class="btn btn-outline-danger btn-sm" id="remove-image-btn">
+                                                        <i class="fas fa-trash me-1"></i> Remove
+                                                    </button>
+                                                </div>
+                                                <div class="image-preview-container">
+                                                    <img src="{{ package.image.url }}" alt="{{ package.title }}" 
+                                                         class="img-thumbnail mt-1 current-image" 
+                                                         style="max-width: 200px; max-height: 200px;"
+                                                         id="current-image-preview">
+                                                    <input type="hidden" name="current_image" value="{{ package.image.name }}" id="current-image-input">
+                                                </div>
+                                                <div class="form-text text-info mt-1">
+                                                    <i class="fas fa-info-circle me-1"></i>
+                                                    If you upload a new image, it will replace the current one.
+                                                </div>
+                                            </div>
+                                            {% endif %}
+
+                                            <!-- New Image Preview -->
+                                            <div class="mt-3 d-none" id="new-image-preview-section">
+                                                <small class="text-muted">New Image Preview:</small>
+                                                <div class="mt-2">
+                                                    <img id="new-image-preview" class="img-thumbnail" 
+                                                         style="max-width: 200px; max-height: 200px; display: none;">
+                                                    <button type="button" class="btn btn-outline-secondary btn-sm mt-2 d-none" 
+                                                            id="cancel-new-image-btn">
+                                                        <i class="fas fa-times me-1"></i> Cancel New Image
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Short Description -->
+                                        <div class="mb-3">
+                                            <label for="{{ form.short_desc.id_for_label }}" class="form-label">
+                                                <i class="fas fa-align-left me-1"></i>Short Description
+                                                <span class="text-danger">*</span>
+                                            </label>
+                                            {{ form.short_desc }}
+                                            {% if form.short_desc.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ form.short_desc.errors }}
+                                            </div>
+                                            {% endif %}
+                                            <div class="form-text">
+                                                Brief description (max 300 characters). 
+                                                <span id="short-desc-counter" class="fw-bold">0</span>/300
+                                            </div>
+                                        </div>
+
+                                        <!-- Tags Field -->
+                                        <div class="mb-3">
+                                            <label for="{{ form.tags.id_for_label }}" class="form-label">
+                                                <i class="fas fa-tags me-1"></i>Tags
+                                            </label>
+                                            {{ form.tags }}
+                                            {% if form.tags.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ form.tags.errors }}
+                                            </div>
+                                            {% endif %}
+                                            <div class="form-text">
+                                                Separate tags with commas (e.g. "Most Popular,Popular")
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Pricing Information -->
+                                <div class="card mb-4 border-primary">
+                                    <div class="card-header bg-light-primary text-dark">
+                                        <h6 class="mb-0">
+                                         <i class="fa-solid fa-indian-rupee-sign me-2"></i>Pricing Information
+                                        </h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="{{ form.month_price.id_for_label }}" class="form-label">
+                                                        Monthly Price (₹)
+                                                        <span class="text-danger">*</span>
+                                                    </label>
+                                                    {{ form.month_price }}
+                                                    {% if form.month_price.errors %}
+                                                    <div class="invalid-feedback d-block">
+                                                        {{ form.month_price.errors }}
+                                                    </div>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="{{ form.year_price.id_for_label }}" class="form-label">
+                                                        Yearly Price (₹)
+                                                        <span class="text-danger">*</span>
+                                                    </label>
+                                                    {{ form.year_price }}
+                                                    {% if form.year_price.errors %}
+                                                    <div class="invalid-feedback d-block">
+                                                        {{ form.year_price.errors }}
+                                                    </div>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="alert alert-info mb-0">
+                                            <small>
+                                                <i class="fas fa-info-circle me-1"></i>
+                                                Yearly price should represent better value than monthly pricing.
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Right Column - Features & Details -->
+                            <div class="col-12 col-lg-6">
+                                <!-- Package Features -->
+                                <div class="card mb-4 border-warning">
+                                    <div class="card-header bg-light-warning text-dark">
+                                        <h6 class="mb-0">
+                                            <i class="fas fa-list-check me-2"></i>Package Features
+                                        </h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="{{ form.graphic_design.id_for_label }}" class="form-label">
+                                                        Graphic Design
+                                                    </label>
+                                                    {{ form.graphic_design }}
+                                                    {% if form.graphic_design.errors %}
+                                                    <div class="invalid-feedback d-block">
+                                                        {{ form.graphic_design.errors }}
+                                                    </div>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="{{ form.motion_graphic.id_for_label }}" class="form-label">
+                                                        Motion Graphic
+                                                    </label>
+                                                    {{ form.motion_graphic }}
+                                                    {% if form.motion_graphic.errors %}
+                                                    <div class="invalid-feedback d-block">
+                                                        {{ form.motion_graphic.errors }}
+                                                    </div>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="{{ form.shute_video.id_for_label }}" class="form-label">
+                                                        Shute Video
+                                                    </label>
+                                                    {{ form.shute_video }}
+                                                    {% if form.shute_video.errors %}
+                                                    <div class="invalid-feedback d-block">
+                                                        {{ form.shute_video.errors }}
+                                                    </div>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="{{ form.content_video.id_for_label }}" class="form-label">
+                                                        Content Video
+                                                    </label>
+                                                    {{ form.content_video }}
+                                                    {% if form.content_video.errors %}
+                                                    <div class="invalid-feedback d-block">
+                                                        {{ form.content_video.errors }}
+                                                    </div>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="{{ form.real.id_for_label }}" class="form-label">
+                                                        Reel
+                                                    </label>
+                                                    {{ form.real }}
+                                                    {% if form.real.errors %}
+                                                    <div class="invalid-feedback d-block">
+                                                        {{ form.real.errors }}
+                                                    </div>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="{{ form.bosting.id_for_label }}" class="form-label">
+                                                        Bosting
+                                                    </label>
+                                                    {{ form.bosting }}
+                                                    {% if form.bosting.errors %}
+                                                    <div class="invalid-feedback d-block">
+                                                        {{ form.bosting.errors }}
+                                                    </div>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Detailed Description -->
+                                <div class="card mb-4 border-info">
+                                    <div class="card-header bg-light-info text-dark">
+                                        <h6 class="mb-0">
+                                            <i class="fas fa-align-left me-2"></i>Detailed Description
+                                            <span class="text-danger">*</span>
+                                        </h6>
+                                    </div>
+                                    <div class="card-body">
+                                        {{ form.description }}
+                                        {% if form.description.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.description.errors }}
+                                        </div>
+                                        {% endif %}
+                                        <div class="form-text">
+                                            Provide detailed information about the package features and benefits.
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Status -->
+                                <div class="card mb-4 border-secondary">
+                                    <div class="card-header bg-light-secondary text-dark">
+                                        <h6 class="mb-0">
+                                            <i class="fas fa-toggle-on me-2"></i>Package Status
+                                        </h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="form-check form-switch">
+                                            {{ form.status }}
+                                            <label class="form-check-label" for="{{ form.status.id_for_label }}">
+                                                Active Package
+                                            </label>
+                                        </div>
+                                        <div class="form-text">
+                                            Inactive packages won't be visible to customers.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Form Actions -->
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <a href="{% url 'package_app:package_list' %}" class="btn btn-secondary">
+                                        <i class="fas fa-times me-1"></i> Cancel
+                                    </a>
+                                    <div>
+                                        <button type="submit" class="btn btn-success me-2">
+                                            <i class="fas fa-save me-1"></i> Save Package
+                                        </button>
+                                        <button type="submit" name="save_and_add" value="true" class="btn btn-outline-success">
+                                            <i class="fas fa-plus me-1"></i> Save & Add Another
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<!-- Summernote CSS -->
+<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
+<style>
+.card {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.card-header {
+    border-bottom: 2px solid;
+}
+
+.bg-light-success { background-color: #d1f2eb !important; }
+.bg-light-primary { background-color: #d1e7ff !important; }
+.bg-light-warning { background-color: #fff3cd !important; }
+.bg-light-info { background-color: #d1ecf1 !important; }
+.bg-light-secondary { background-color: #e2e3e5 !important; }
+
+.form-label {
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 0.5rem;
+}
+
+.form-control, .form-select {
+    border: 1px solid #ced4da;
+    border-radius: 0.375rem;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #28a745;
+    box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+}
+
+.form-check-input:checked {
+    background-color: #28a745;
+    border-color: #28a745;
+}
+
+.invalid-feedback {
+    font-size: 0.875rem;
+}
+
+/* Summernote customization */
+.note-editor {
+    border-radius: 0.375rem;
+    border: 1px solid #ced4da;
+}
+
+.note-editor:focus-within {
+    border-color: #28a745;
+    box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+}
+
+.note-toolbar {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.note-editable {
+    min-height: 200px;
+    padding: 1rem;
+}
+
+/* Icon preview */
+#icon-display {
+    min-height: 40px;
+    padding: 8px;
+    background-color: #f8f9fa;
+    border-radius: 0.375rem;
+    border: 1px dashed #dee2e6;
+}
+
+/* Character counter */
+#short-desc-counter {
+    color: #28a745;
+}
+
+/* Image preview and current image styles */
+.image-preview-container {
+    position: relative;
+    display: inline-block;
+}
+
+.current-image {
+    transition: opacity 0.3s ease;
+}
+
+.current-image.removing {
+    opacity: 0.5;
+}
+
+#new-image-preview {
+    border: 2px solid #28a745;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .card-body {
+        padding: 1rem;
+    }
+    
+    .btn-group {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .btn {
+        width: 100%;
+    }
+}
+
+/* Image preview */
+.img-thumbnail {
+    border: 2px solid #dee2e6;
+    border-radius: 0.5rem;
+}
+
+/* Alert customization */
+.alert {
+    border: none;
+    border-left: 4px solid;
+}
+
+.alert-info {
+    border-left-color: #17a2b8;
+    background-color: #d1ecf1;
+}
+
+.alert-danger {
+    border-left-color: #dc3545;
+    background-color: #f8d7da;
+}
+
+/* Toast positioning */
+.toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Summernote JS -->
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
+
+<script>
+$(document).ready(function() {
+    // Initialize Summernote for description field
+    $('#{{ form.description.id_for_label }}').summernote({
+        placeholder: 'Enter detailed package description...',
+        tabsize: 2,
+        height: 200,
+        toolbar: [
+            ['style', ['style']],
+            ['font', ['bold', 'underline', 'clear']],
+            ['fontname', ['fontname']],
+            ['color', ['color']],
+            ['para', ['ul', 'ol', 'paragraph']],
+            ['table', ['table']],
+            ['insert', ['link', 'picture', 'video']],
+            ['view', ['fullscreen', 'codeview', 'help']]
+        ],
+        callbacks: {
+            onInit: function() {
+                // Add custom styling
+                $('.note-editor').addClass('border rounded');
+            }
+        }
+    });
+
+    // Icon preview functionality
+    function updateIconPreview() {
+        const iconClass = $('#{{ form.icon.id_for_label }}').val().trim();
+        const iconDisplay = $('#icon-display');
+        
+        if (iconClass) {
+            iconDisplay.html(`<i class="${iconClass}"></i> <small class="text-muted ms-2">${iconClass}</small>`);
+        } else {
+            iconDisplay.html('<span class="text-muted">No icon selected</span>');
+        }
+    }
+
+    // Initialize icon preview
+    updateIconPreview();
+    
+    // Update icon preview on input
+    $('#{{ form.icon.id_for_label }}').on('input', updateIconPreview);
+
+    // Character counter for short description
+    function updateCharacterCount() {
+        const text = $('#{{ form.short_desc.id_for_label }}').val();
+        const count = text.length;
+        const counter = $('#short-desc-counter');
+        
+        counter.text(count);
+        
+        if (count > 300) {
+            counter.addClass('text-danger').removeClass('text-success');
+        } else {
+            counter.addClass('text-success').removeClass('text-danger');
+        }
+    }
+
+    // Initialize character count
+    updateCharacterCount();
+    
+    // Update character count on input
+    $('#{{ form.short_desc.id_for_label }}').on('input', updateCharacterCount);
+
+    // Image handling functionality
+    let imageRemoved = false;
+    let newImageSelected = false;
+
+    // Current image removal
+    $('#remove-image-btn').on('click', function() {
+        if (confirm('Are you sure you want to remove the current image? You will need to upload a new image.')) {
+            imageRemoved = true;
+            $('#current-image-preview').addClass('removing');
+            $('#remove-image-btn').prop('disabled', true).html('<i class="fas fa-trash me-1"></i> Removed');
+            
+            // Add hidden input to indicate image removal
+            if (!$('#remove-image-flag').length) {
+                $('<input>').attr({
+                    type: 'hidden',
+                    id: 'remove-image-flag',
+                    name: 'remove_image',
+                    value: 'true'
+                }).appendTo('form');
+            }
+            
+            showToast('Current image will be removed. Please upload a new image.', 'warning');
+        }
+    });
+
+    // New image selection and preview
+    $('#{{ form.image.id_for_label }}').on('change', function(e) {
+        const file = e.target.files[0];
+        const newImagePreview = $('#new-image-preview');
+        const newImageSection = $('#new-image-preview-section');
+        const cancelBtn = $('#cancel-new-image-btn');
+        
+        if (file) {
+            // Validate file type
+            const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+            if (!validTypes.includes(file.type)) {
+                showToast('Please select a valid image file (JPEG, PNG, GIF, WebP).', 'error');
+                $(this).val('');
+                return;
+            }
+            
+            // Validate file size (max 5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                showToast('Image size should be less than 5MB.', 'error');
+                $(this).val('');
+                return;
+            }
+            
+            newImageSelected = true;
+            
+            // Show preview
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                newImagePreview.attr('src', e.target.result).show();
+                newImageSection.removeClass('d-none');
+                cancelBtn.removeClass('d-none');
+            };
+            reader.readAsDataURL(file);
+            
+            // Hide current image section if exists
+            if ($('#current-image-section').length) {
+                $('#current-image-section').addClass('opacity-50');
+            }
+        }
+    });
+
+    // Cancel new image selection
+    $('#cancel-new-image-btn').on('click', function() {
+        $('#{{ form.image.id_for_label }}').val('');
+        $('#new-image-preview').hide().attr('src', '');
+        $('#new-image-preview-section').addClass('d-none');
+        $(this).addClass('d-none');
+        newImageSelected = false;
+        
+        // Restore current image section
+        if ($('#current-image-section').length) {
+            $('#current-image-section').removeClass('opacity-50');
+        }
+    });
+
+    // Form validation
+    $('#package-form').on('submit', function(e) {
+        let isValid = true;
+        const requiredFields = [
+            '{{ form.title.id_for_label }}',
+            '{{ form.icon.id_for_label }}',
+            '{{ form.short_desc.id_for_label }}',
+            '{{ form.month_price.id_for_label }}',
+            '{{ form.year_price.id_for_label }}',
+            '{{ form.description.id_for_label }}'
+        ];
+
+        // Check required fields
+        requiredFields.forEach(fieldId => {
+            const field = $(`#${fieldId}`);
+            if (!field.val().trim()) {
+                isValid = false;
+                field.addClass('is-invalid');
+            } else {
+                field.removeClass('is-invalid');
+            }
+        });
+
+        // Check image requirements
+        const imageField = $('#{{ form.image.id_for_label }}');
+        const hasCurrentImage = $('#current-image-preview').length && !imageRemoved;
+        const hasNewImage = newImageSelected;
+        
+        if (!hasCurrentImage && !hasNewImage) {
+            isValid = false;
+            imageField.addClass('is-invalid');
+            showToast('Please select a package image.', 'error');
+        } else {
+            imageField.removeClass('is-invalid');
+        }
+
+        // Check short description length
+        const shortDesc = $('#{{ form.short_desc.id_for_label }}').val();
+        if (shortDesc.length > 300) {
+            isValid = false;
+            $('#{{ form.short_desc.id_for_label }}').addClass('is-invalid');
+            showToast('Short description must be 300 characters or less.', 'error');
+        }
+
+        // Validate prices
+        const monthPrice = parseFloat($('#{{ form.month_price.id_for_label }}').val());
+        const yearPrice = parseFloat($('#{{ form.year_price.id_for_label }}').val());
+        
+        if (monthPrice && yearPrice && yearPrice >= monthPrice * 12) {
+            showToast('Yearly price should offer better value than monthly pricing.', 'warning');
+        }
+
+        if (!isValid) {
+            e.preventDefault();
+            
+            // Scroll to first error
+            const firstError = $('.is-invalid').first();
+            if (firstError.length) {
+                $('html, body').animate({
+                    scrollTop: firstError.offset().top - 100
+                }, 500);
+                firstError.focus();
+            }
+        } else {
+            // Show loading state
+            $('button[type="submit"]').prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-1"></i> Saving...');
+        }
+    });
+
+    // Toast notification function
+    function showToast(message, type = 'info') {
+        // Create toast container if it doesn't exist
+        if ($('.toast-container').length === 0) {
+            $('body').append('<div class="toast-container"></div>');
+        }
+        
+        const toastId = 'toast-' + Date.now();
+        const bgClass = type === 'error' ? 'bg-danger' : 
+                        type === 'warning' ? 'bg-warning' : 
+                        type === 'success' ? 'bg-success' : 'bg-info';
+        
+        const toastHtml = `
+            <div id="${toastId}" class="toast align-items-center text-white ${bgClass} border-0" role="alert">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        <i class="fas ${type === 'error' ? 'fa-exclamation-triangle' : 
+                                      type === 'warning' ? 'fa-exclamation-circle' : 
+                                      type === 'success' ? 'fa-check-circle' : 'fa-info-circle'} me-2"></i>
+                        ${message}
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                </div>
+            </div>
+        `;
+        
+        $('.toast-container').append(toastHtml);
+        const toastElement = document.getElementById(toastId);
+        const toast = new bootstrap.Toast(toastElement, { delay: 4000 });
+        toast.show();
+        
+        // Remove toast from DOM after it's hidden
+        toastElement.addEventListener('hidden.bs.toast', function() {
+            $(this).remove();
+        });
+    }
+
+    // Price validation
+    $('#{{ form.month_price.id_for_label }}, #{{ form.year_price.id_for_label }}').on('input', function() {
+        const value = $(this).val();
+        if (value && (isNaN(value) || value < 0)) {
+            $(this).addClass('is-invalid');
+        } else {
+            $(this).removeClass('is-invalid');
+        }
+    });
+
+    // Auto-format tags
+    $('#{{ form.tags.id_for_label }}').on('blur', function() {
+        let tags = $(this).val();
+        if (tags) {
+            // Remove extra spaces and format
+            tags = tags.split(',')
+                .map(tag => tag.trim())
+                .filter(tag => tag !== '')
+                .join(', ');
+            $(this).val(tags);
+        }
+    });
+
+    // Initialize form state
+    function initializeFormState() {
+        // Check if we're in edit mode and have a current image
+        const hasCurrentImage = $('#current-image-preview').length;
+        if (hasCurrentImage) {
+            // Image is already present, no need to require new one
+            $('#{{ form.image.id_for_label }}').removeAttr('required');
+        }
+    }
+
+    // Call initialization
+    initializeFormState();
+});
+</script>
+{% endblock %}

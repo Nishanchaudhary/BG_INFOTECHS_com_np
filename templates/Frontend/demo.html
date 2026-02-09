@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Mobile Navigation</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Your original CSS */
+        .mega-services-dropdown {
+            position: relative;
+        }
+
+        .mega-service-icon img {
+            border-radius: 50%;
+        }
+
+        .mega-services-menu {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%) translateY(10px);
+            width: 800px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            padding: 1.6rem;
+            margin-top: 1rem;
+        }
+
+        .mega-services-dropdown:hover .mega-services-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .mega-services-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+
+        .mega-service-card {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 1rem;
+            border-radius: 8px;
+            background: #f9f9f9;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: #333;
+            border: 1px solid #eee;
+            position: relative;
+        }
+
+        .mega-service-card:hover {
+            color: white;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 102, 255, 0.2);
+        }
+
+        .mega-service-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mega-service-card:hover .mega-service-icon {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .mega-service-title {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .mega-service-desc {
+            font-size: 0.85rem;
+            opacity: 0.8;
+            line-height: 1.4;
+        }
+
+        .mega-service-arrow {
+            position: absolute;
+            right: 1rem;
+            bottom: 1rem;
+            opacity: 0;
+            transform: translateX(-10px);
+            transition: all 0.3s ease;
+        }
+
+        .mega-service-card:hover .mega-service-arrow {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        @media (max-width: 992px) {
+            .mega-services-menu {
+                width: 90vw;
+                left: 5vw;
+                transform: translateY(10px);
+            }
+
+            .mega-services-dropdown:hover .mega-services-menu {
+                transform: translateY(0);
+            }
+
+            .mega-services-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .service-card {
+            background-color: #f8f9fa !important;
+        }
+
+        .dropdown-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-content {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: white;
+            min-width: 160px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            border-radius: 4px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            z-index: 1;
+        }
+
+        .dropdown-container:hover .dropdown-content {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-content a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            transition: background 0.3s ease;
+        }
+
+        .dropdown-content a:hover {
+            background: #f1f1f1;
+        }
+
+        .mobile-dropdown-content {
+            display: none;
+            padding-left: 20px;
+        }
+
+        .mobile-dropdown.active .mobile-dropdown-content {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .navbar {
+            position: relative;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem 4%;
+            background: #2A4B7C;
+            color: #FFFFFF;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links a {
+            position: relative;
+            color: #FFFFFF;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 1rem;
+            padding: 0.5rem 0;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links a::before {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 0;
+            background: linear-gradient(90deg, #00dbde 0%, #482af4 100%);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::before {
+            width: 100%;
+        }
+
+        .nav-links a:hover {
+            color: #5D9CEC;
+        }
+
+        .cta-button {
+            background: linear-gradient(90deg, #00c6ff 0%, #0072ff 100%);
+            color: white !important;
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(0, 198, 255, 0.5);
+            white-space: nowrap;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            animation: pulse-animation 2s infinite;
+        }
+
+        .cta-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, #0072ff 0%, #00c6ff 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: -1;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 198, 255, 0.7);
+        }
+
+        .cta-button:hover::before {
+            opacity: 1;
+        }
+
+        .cta-button:active {
+            transform: translateY(1px);
+        }
+
+        @keyframes pulse-animation {
+            0% {
+                box-shadow: 0 4px 20px rgba(0, 198, 255, 0.5);
+            }
+            50% {
+                box-shadow: 0 6px 25px rgba(0, 198, 255, 0.8);
+            }
+            100% {
+                box-shadow: 0 4px 20px rgba(0, 198, 255, 0.5);
+            }
+        }
+
+        .cta-button a {
+            color: white;
+            text-decoration: none;
+            display: inline-block;
+            transition: transform 0.2s ease;
+        }
+
+        .cta-button:hover a {
+            transform: scale(1.02);
+        }
+
+        .hamburger {
+            display: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 1001;
+        }
+
+        .hamburger div {
+            width: 25px;
+            height: 3px;
+            background: white;
+            margin: 5px;
+            transition: all 0.3s ease;
+        }
+
+        /* Mobile Menu - Enhanced */
+        .mobile-menu {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 80%;
+            max-width: 320px;
+            height: 100vh;
+            background: #16213e;
+            display: flex;
+            flex-direction: column;
+            padding: 80px 20px 30px;
+            gap: 0;
+            transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 998;
+            box-shadow: -5px 0 25px rgba(0, 0, 0, 0.3);
+            overflow-y: auto;
+        }
+
+        .mobile-menu.active {
+            right: 0;
+        }
+
+        .mobile-menu a {
+            color: white;
+            text-decoration: none;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            padding: 12px 15px;
+            border-radius: 6px;
+            margin: 4px 0;
+            display: block;
+        }
+
+        .mobile-menu a:hover {
+            color: #00dbde;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .mobile-cta {
+            background: linear-gradient(90deg, #2171fc 0%, #1b50fb 100%);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 50px;
+            font-weight: 600;
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 1002;
+            color: white;
+            background: rgba(255, 255, 255, 0.1);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-btn:hover {
+            color: #00dbde;
+            transform: rotate(90deg);
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s ease;
+            z-index: 997;
+        }
+
+        .overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Enhanced Mobile Dropdowns */
+        .mobile-nav-dropdown {
+            position: relative;
+        }
+
+        .mobile-nav-dropdown > a {
+            display: flex !important;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .mobile-nav-dropdown > a::after {
+            content: '\f078';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            font-size: 0.8rem;
+            transition: transform 0.3s ease;
+        }
+
+        .mobile-nav-dropdown.active > a::after {
+            transform: rotate(180deg);
+        }
+
+        .mobile-nav-dropdown-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease;
+        }
+
+        .mobile-nav-dropdown.active .mobile-nav-dropdown-content {
+            max-height: 500px;
+        }
+
+        .mobile-nav-dropdown-content a {
+            padding-left: 30px;
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        /* Mobile responsive styles */
+        @media (max-width: 992px) {
+            .nav-links, .cta-button {
+                display: none;
+            }
+
+            .hamburger {
+                display: block;
+            }
+
+            .hamburger.active div:nth-child(1) {
+                transform: rotate(-45deg) translate(-5px, 6px);
+            }
+
+            .hamburger.active div:nth-child(2) {
+                opacity: 0;
+            }
+
+            .hamburger.active div:nth-child(3) {
+                transform: rotate(45deg) translate(-5px, -6px);
+            }
+        }
+
+        /* Stagger animation for mobile menu items */
+        .mobile-menu a {
+            opacity: 0;
+            transform: translateX(20px);
+            transition: opacity 0.4s ease, transform 0.4s ease, background 0.3s ease;
+        }
+
+        .mobile-menu.active a {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .mobile-menu a:nth-child(1) { transition-delay: 0.1s; }
+        .mobile-menu a:nth-child(2) { transition-delay: 0.15s; }
+        .mobile-menu a:nth-child(3) { transition-delay: 0.2s; }
+        .mobile-menu a:nth-child(4) { transition-delay: 0.25s; }
+        .mobile-menu a:nth-child(5) { transition-delay: 0.3s; }
+        .mobile-menu a:nth-child(6) { transition-delay: 0.35s; }
+        .mobile-menu a:nth-child(7) { transition-delay: 0.4s; }
+        .mobile-menu a:nth-child(8) { transition-delay: 0.45s; }
+        .mobile-menu a:nth-child(9) { transition-delay: 0.5s; }
+        .mobile-menu a:nth-child(10) { transition-delay: 0.55s; }
+    </style>
+</head>
+<body>
+    <header class="sticky-top">
+        <nav class="navbar">
+            <a href="index.html" class="">
+                <img src="/assets/img/Logo.png" height="70px" alt="">
+            </a>
+
+            <div class="nav-links">
+                <a href="/index.html" class="fade-in active" style="animation-delay: 0.1s; color: #5D9CEC;">Home</a>
+                <a href="/about.html" class="fade-in" style="animation-delay: 0.4s;">About</a>
+
+                <!-- START: Mega Services Dropdown -->
+                <div class="mega-services-dropdown fade-in">
+                    <a href="#" class="nav-link mega-services-toggle">Services <i class="fas fa-chevron-down"></i></a>
+                    <div class="mega-services-menu">
+                        <div class="mega-services-grid">
+                            <a href="/web-development.html" class="mega-service-card">
+                                <div class="mega-service-icon"><img src="./assets/img/services/web-structure.gif" height="40px" alt=""></div>
+                                <div>
+                                    <h3 class="mega-service-title">Web Development</h3>
+                                    <p class="mega-service-desc text-dark">Custom websites and web applications built with modern technologies</p>
+                                    <span class="mega-service-arrow"><i class="fas fa-arrow-right"></i></span>
+                                </div>
+                            </a>
+
+                            <a href="graphic-designing.html" class="mega-service-card">
+                                <div class="mega-service-icon"><img src="./assets/img/services/design.gif" height="40px" alt=""></div>
+                                <div>
+                                    <h3 class="mega-service-title">Graphic Design</h3>
+                                    <p class="mega-service-desc text-dark">Stunning visuals that communicate your brand's message effectively</p>
+                                    <span class="mega-service-arrow"><i class="fas fa-arrow-right"></i></span>
+                                </div>
+                            </a>
+
+                            <a href="/mobile-apps.html" class="mega-service-card">
+                                <div class="mega-service-icon"><img src="./assets/img/services/seo.gif" height="40px" alt=""></div>
+                                <div>
+                                    <h3 class="mega-service-title ">Search Engine Optimization</h3>
+                                    <p class="mega-service-desc text-dark">Rank higher on search engines and grow organic traffic</p>
+                                    <span class="mega-service-arrow"><i class="fas fa-arrow-right"></i></span>
+                                </div>
+                            </a>
+
+                            <a href="/mobile-apps.html" class="mega-service-card">
+                                <div class="mega-service-icon"><img src="./assets/img/services/smartphone-coding.gif" height="40px" alt=""></div>
+                                <div>
+                                    <h3 class="mega-service-title">Mobile Apps</h3>
+                                    <p class="mega-service-desc text-dark">Cross-platform mobile applications for iOS and Android</p>
+                                    <span class="mega-service-arrow"><i class="fas fa-arrow-right"></i></span>
+                                </div>
+                            </a>
+
+                            <a href="smm.html" class="mega-service-card">
+                                <div class="mega-service-icon"><img src="./assets/img/services/social-media.gif" height="40px" alt=""></div>
+                                <div>
+                                    <h3 class="mega-service-title">Social Media Handling</h3>
+                                    <p class="mega-service-desc text-dark">Grow your brand across all social platforms</p>
+                                    <span class="mega-service-arrow"><i class="fas fa-arrow-right"></i></span>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <!-- END: Mega Services Dropdown -->
+
+                <div class="mega-services-dropdown fade-in">
+                    <a href="#" class="nav-link mega-services-toggle">Inside <i class="fas fa-chevron-down"></i></a>
+                    <div class="mega-services-menu">
+                        <div class="mega-services-grid">
+                            <a href="/training.html" class="mega-service-card">
+                                <div class="mega-service-icon"><img src="./assets/img/services/training.gif" height="40px" alt=""></div>
+                                <div>
+                                    <h3 class="mega-service-title">Training</h3>
+                                    <p class="mega-service-desc text-dark">Cross-platform mobile applications for iOS and Android</p>
+                                    <span class="mega-service-arrow"><i class="fas fa-arrow-right"></i></span>
+                                </div>
+                            </a>
+                            <a href="features.html" class="mega-service-card">
+                                <div class="mega-service-icon"><img src="./assets/img/services/premium.gif" height="40px" alt=""></div>
+                                <div>
+                                    <h3 class="mega-service-title">Features</h3>
+                                    <p class="mega-service-desc text-dark">Cross-platform mobile applications for iOS and Android</p>
+                                    <span class="mega-service-arrow"><i class="fas fa-arrow-right"></i></span>
+                                </div>
+                            </a>
+
+                            <a href="blog_details.html" class="mega-service-card">
+                                <div class="mega-service-icon"><img src="./assets/img/services/blog-post.gif" height="40px" alt=""></div>
+                                <div>
+                                    <h3 class="mega-service-title">Blog</h3>
+                                    <p class="mega-service-desc text-dark">Grow your brand across all social platforms</p>
+                                    <span class="mega-service-arrow"><i class="fas fa-arrow-right"></i></span>
+                                </div>
+                            </a>
+
+                            <a href="career.html" class="mega-service-card">
+                                <div class="mega-service-icon"><img src="./assets/img/services/career.gif" height="40px" alt=""></div>
+                                <div>
+                                    <h3 class="mega-service-title">Career</h3>
+                                    <p class="mega-service-desc text-dark">Join our team of innovators and help shape the future of technology.</p>
+                                    <span class="mega-service-arrow"><i class="fas fa-arrow-right"></i></span>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <a href="/digital_marketing.html" class="fade-in" style="animation-delay: 0.4s;">Digital Marketing</a>
+                <a href="/contact.html" class="fade-in" style="animation-delay: 0.5s;">Contact</a>
+            </div>
+
+            <button class="cta-button fade-in" style="animation-delay: 0.6s;"><a href="student_login.html" class="text-light">Students Login</a></button>
+
+            <div class="hamburger">
+                <div class="line1"></div>
+                <div class="line2"></div>
+                <div class="line3"></div>
+            </div>
+        </nav>
+
+        <!-- Enhanced Mobile Menu -->
+        <div class="mobile-menu">
+            <span class="close-btn">×</span>
+            <a href="index.html">Home</a>
+            <a href="about.html">About</a>
+            
+            <!-- Services Dropdown -->
+            <div class="mobile-nav-dropdown">
+                <a href="#">Services</a>
+                <div class="mobile-nav-dropdown-content">
+                    <a href="/web-development.html">Web Development</a>
+                    <a href="graphic-designing.html">Graphic Design</a>
+                    <a href="/mobile-apps.html">SEO</a>
+                    <a href="/mobile-apps.html">Mobile Apps</a>
+                    <a href="smm.html">Social Media Handling</a>
+                </div>
+            </div>
+            
+            <!-- Inside Dropdown -->
+            <div class="mobile-nav-dropdown">
+                <a href="#">Inside</a>
+                <div class="mobile-nav-dropdown-content">
+                    <a href="/training.html">Training</a>
+                    <a href="features.html">Features</a>
+                    <a href="blog_details.html">Blog</a>
+                    <a href="career.html">Career</a>
+                </div>
+            </div>
+            
+            <a href="/digital_marketing.html">Digital Marketing</a>
+            <a href="/contact.html">Contact</a>
+            <a href="student_login.html" class="mobile-cta">Students Login</a>
+        </div>
+
+        <div class="overlay"></div>
+    </header>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mobile menu toggle
+            const hamburger = document.querySelector('.hamburger');
+            const mobileMenu = document.querySelector('.mobile-menu');
+            const overlay = document.querySelector('.overlay');
+            const closeBtn = document.querySelector('.close-btn');
+            
+            function toggleMenu() {
+                hamburger.classList.toggle('active');
+                mobileMenu.classList.toggle('active');
+                overlay.classList.toggle('active');
+                document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
+            }
+            
+            hamburger.addEventListener('click', toggleMenu);
+            closeBtn.addEventListener('click', toggleMenu);
+            overlay.addEventListener('click', toggleMenu);
+            
+            // Mobile dropdown toggles
+            const dropdownToggles = document.querySelectorAll('.mobile-nav-dropdown > a');
+            
+            dropdownToggles.forEach(toggle => {
+                toggle.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const dropdown = this.parentElement;
+                    dropdown.classList.toggle('active');
+                    
+                    // Close other dropdowns when opening a new one
+                    document.querySelectorAll('.mobile-nav-dropdown').forEach(otherDropdown => {
+                        if (otherDropdown !== dropdown) {
+                            otherDropdown.classList.remove('active');
+                        }
+                    });
+                });
+            });
+            
+            // Close dropdowns when clicking outside on mobile
+            document.addEventListener('click', function(e) {
+                if (window.innerWidth <= 992) {
+                    if (!e.target.closest('.mobile-nav-dropdown') && !e.target.closest('.hamburger')) {
+                        document.querySelectorAll('.mobile-nav-dropdown').forEach(dropdown => {
+                            dropdown.classList.remove('active');
+                        });
+                    }
+                }
+            });
+            
+            // Prevent dropdowns from closing when clicking inside them
+            document.querySelectorAll('.mobile-nav-dropdown').forEach(dropdown => {
+                dropdown.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                });
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,522 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Delete Comment - BG Infotech{% endblock %}
+
+{% block page_title %}Delete Comment{% endblock %}
+
+{% block breadcrumb_active %}Delete Comment{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-12 col-xl-8 col-lg-10">
+            <!-- Main Delete Card -->
+            <div class="card card-danger shadow-lg border-0">
+                <!-- Card Header with Gradient -->
+                <div class="card-header py-4" style="background: linear-gradient(135deg, #dc3545 0%, #c82333 100%); border: none;">
+                    <div class="d-flex align-items-center">
+                        <div class="header-icon-container me-3">
+                            <i class="fas fa-trash-alt fa-2x text-white"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h3 class="card-title mb-0 text-white">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                Confirm Comment Deletion
+                            </h3>
+                            <p class="text-white-50 mb-0 mt-1">Permanent action - cannot be undone</p>
+                        </div>
+                        <div class="status-badge">
+                            <span class="badge bg-light text-danger">
+                                <i class="fas fa-shield-alt me-1"></i>
+                                Admin Action
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Card Body -->
+                <div class="card-body p-4 p-md-5">
+                    <!-- Warning Section -->
+                    <div class="alert alert-danger border-0 shadow-sm mb-4">
+                        <div class="d-flex">
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-radiation fa-2x text-danger"></i>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h5 class="alert-heading mb-2">
+                                    <i class="fas fa-skull-crossbones me-2"></i>
+                                    Critical Warning
+                                </h5>
+                                <p class="mb-2 fw-semibold">You are about to permanently delete this comment from the system.</p>
+                                <p class="mb-0 small">This action is irreversible and will completely remove all traces of the comment from the database.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Comment Preview Section -->
+                    <div class="comment-preview-section mb-4">
+                        <h5 class="section-title mb-3 text-uppercase fw-bold text-muted">
+                            <i class="fas fa-search me-2"></i>
+                            Comment Preview
+                        </h5>
+                        
+                        <div class="comment-card card border-0 shadow-sm">
+                            <div class="card-header bg-gradient-info text-white py-3">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar-container me-3">
+                                            <div class="avatar-circle bg-white text-info">
+                                                <i class="fas fa-user"></i>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-0 fw-bold">{{ comment.author_name }}</h6>
+                                            <small class="opacity-75">
+                                                <i class="fas fa-clock me-1"></i>
+                                                {{ comment.created_at|date:"M d, Y • H:i" }}
+                                            </small>
+                                        </div>
+                                    </div>
+                                    <div class="comment-meta">
+                                        <span class="badge bg-light text-dark">
+                                            <i class="fas fa-hashtag me-1"></i>
+                                            ID: {{ comment.id }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body p-4">
+                                <div class="comment-content">
+                                    <p class="mb-0 fs-6 lh-base">{{ comment.content|linebreaksbr }}</p>
+                                </div>
+                            </div>
+                            <div class="card-footer bg-light py-3">
+                                <div class="row text-center">
+                                    <div class="col-md-4 border-end">
+                                        <small class="text-muted">
+                                            <i class="fas fa-blog me-1"></i>
+                                            Blog: <strong>{{ blog.title|truncatewords:4 }}</strong>
+                                        </small>
+                                    </div>
+                                    <div class="col-md-4 border-end">
+                                        <small class="text-muted">
+                                            <i class="fas fa-user-edit me-1"></i>
+                                            Author: <strong>{{ comment.author_name }}</strong>
+                                        </small>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <small class="text-muted">
+                                            <i class="fas fa-calendar me-1"></i>
+                                            Posted: <strong>{{ comment.created_at|date:"M d, Y" }}</strong>
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Impact Analysis -->
+                    <div class="impact-analysis mb-4">
+                        <h5 class="section-title mb-3 text-uppercase fw-bold text-muted">
+                            <i class="fas fa-chart-line me-2"></i>
+                            Impact Analysis
+                        </h5>
+                        
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="impact-card card border-warning h-100">
+                                    <div class="card-body text-center p-3">
+                                        <div class="impact-icon mb-2">
+                                            <i class="fas fa-database fa-2x text-warning"></i>
+                                        </div>
+                                        <h6 class="fw-bold text-warning">Data Loss</h6>
+                                        <p class="small text-muted mb-0">Comment will be permanently removed from database</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="impact-card card border-info h-100">
+                                    <div class="card-body text-center p-3">
+                                        <div class="impact-icon mb-2">
+                                            <i class="fas fa-undo-alt fa-2x text-info"></i>
+                                        </div>
+                                        <h6 class="fw-bold text-info">No Recovery</h6>
+                                        <p class="small text-muted mb-0">Action cannot be undone or recovered</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Section -->
+                    <div class="action-section">
+                        <div class="row g-3">
+                            <div class="col-lg-6">
+                                <!-- Delete Form -->
+                                <form method="post" class="h-100">
+                                    {% csrf_token %}
+                                    <div class="d-grid h-100">
+                                        <button type="submit" class="btn btn-danger btn-lg py-3 fw-bold shadow delete-btn">
+                                            <i class="fas fa-trash-alt me-2"></i>
+                                            CONFIRM DELETE
+                                        </button>
+                                        <small class="text-center text-muted mt-2">
+                                            <i class="fas fa-lock me-1"></i>
+                                            Secure deletion process
+                                        </small>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="col-lg-6">
+                                <!-- Cancel Button -->
+                                <div class="d-grid h-100">
+                                    <a href="{% url 'blog_app:blog_comments' pk=blog.pk %}" 
+                                       class="btn btn-outline-secondary btn-lg py-3 fw-bold shadow cancel-btn">
+                                        <i class="fas fa-times me-2"></i>
+                                        CANCEL & RETURN
+                                    </a>
+                                    <small class="text-center text-muted mt-2">
+                                        <i class="fas fa-arrow-left me-1"></i>
+                                        Back to comments management
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Safety Note -->
+                        <div class="text-center mt-4 pt-3 border-top">
+                            <div class="safety-note">
+                                <i class="fas fa-life-ring me-2 text-primary"></i>
+                                <small class="text-muted">
+                                    <strong>Safety Tip:</strong> Consider rejecting the comment instead of deleting if you're unsure.
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card Footer -->
+                <div class="card-footer py-3 bg-light text-center">
+                    <div class="row align-items-center">
+                        <div class="col-md-4 text-md-start">
+                            <small class="text-muted">
+                                <i class="fas fa-user-shield me-1"></i>
+                                Action by: {{ user.get_full_name|default:user.username }}
+                            </small>
+                        </div>
+                        <div class="col-md-4">
+                            <small class="text-muted">
+                                <i class="fas fa-calendar-check me-1"></i>
+                                {{ current_time|date:"M d, Y • H:i" }}
+                            </small>
+                        </div>
+                        <div class="col-md-4 text-md-end">
+                            <small class="text-muted">
+                                <i class="fas fa-fingerprint me-1"></i>
+                                Session: {{ request.session.session_key|slice:":8" }}
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .card-danger {
+        border-radius: 1rem;
+        overflow: hidden;
+        animation: slideInUp 0.6s ease-out;
+    }
+
+    .header-icon-container {
+        width: 60px;
+        height: 60px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(10px);
+    }
+
+    .avatar-circle {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .section-title {
+        letter-spacing: 1px;
+        font-size: 0.85rem;
+    }
+
+    .comment-card {
+        border-radius: 0.75rem;
+        transition: all 0.3s ease;
+    }
+
+    .comment-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
+    }
+
+    .comment-content {
+        background: linear-gradient(135deg, #f8f9ff 0%, #ffffff 100%);
+        padding: 1.5rem;
+        border-radius: 0.5rem;
+        border-left: 4px solid #4e73df;
+    }
+
+    .impact-card {
+        border-radius: 0.75rem;
+        transition: all 0.3s ease;
+        border-width: 2px !important;
+    }
+
+    .impact-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .impact-icon {
+        transition: all 0.3s ease;
+    }
+
+    .impact-card:hover .impact-icon {
+        transform: scale(1.1);
+    }
+
+    .delete-btn {
+        background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+        border: none;
+        border-radius: 0.75rem;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .delete-btn:hover {
+        background: linear-gradient(135deg, #c82333 0%, #a71e2a 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(220, 53, 69, 0.4) !important;
+    }
+
+    .delete-btn:active {
+        transform: translateY(0);
+    }
+
+    .cancel-btn {
+        border-radius: 0.75rem;
+        border-width: 2px;
+        transition: all 0.3s ease;
+    }
+
+    .cancel-btn:hover {
+        background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(108, 117, 125, 0.3) !important;
+    }
+
+    .safety-note {
+        background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+        padding: 0.75rem 1.5rem;
+        border-radius: 2rem;
+        display: inline-block;
+        border: 1px solid #e1f5fe;
+    }
+
+    .status-badge .badge {
+        font-size: 0.75rem;
+        padding: 0.5rem 1rem;
+        border-radius: 2rem;
+    }
+
+    /* Animations */
+    @keyframes slideInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes pulseWarning {
+        0% {
+            box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.4);
+        }
+        70% {
+            box-shadow: 0 0 0 10px rgba(220, 53, 69, 0);
+        }
+        100% {
+            box-shadow: 0 0 0 0 rgba(220, 53, 69, 0);
+        }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .card-body {
+            padding: 1.5rem !important;
+        }
+        
+        .header-icon-container {
+            width: 50px;
+            height: 50px;
+        }
+        
+        .header-icon-container i {
+            font-size: 1.5rem !important;
+        }
+        
+        .comment-card .card-footer .row > div {
+            border: none !important;
+            margin-bottom: 0.5rem;
+        }
+        
+        .card-footer .row > div {
+            margin-bottom: 0.5rem;
+            text-align: center !important;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .card-header .d-flex {
+            flex-direction: column;
+            text-align: center;
+        }
+        
+        .header-icon-container {
+            margin: 0 auto 1rem auto !important;
+        }
+        
+        .status-badge {
+            margin-top: 1rem;
+        }
+        
+        .impact-card .card-body {
+            padding: 1rem !important;
+        }
+        
+        .btn-lg {
+            padding: 0.8rem 1rem !important;
+            font-size: 0.9rem !important;
+        }
+    }
+
+    /* Dark mode support */
+    @media (prefers-color-scheme: dark) {
+        .comment-content {
+            background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
+            color: #e2e8f0;
+        }
+        
+        .safety-note {
+            background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
+            border-color: #4a5568;
+        }
+    }
+
+    /* Loading animation for delete button */
+    .delete-btn.loading {
+        pointer-events: none;
+        opacity: 0.8;
+    }
+
+    .delete-btn.loading::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 20px;
+        height: 20px;
+        margin: -10px 0 0 -10px;
+        border: 2px solid transparent;
+        border-top: 2px solid #ffffff;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(document).ready(function() {
+        // Add current time to the template
+        const now = new Date();
+        $('.current-time').text(now.toLocaleString());
+
+        // Enhanced delete button handling
+        $('form').on('submit', function(e) {
+            const submitBtn = $(this).find('.delete-btn');
+            submitBtn.addClass('loading');
+            submitBtn.prop('disabled', true);
+            submitBtn.html('<i class="fas fa-spinner fa-spin me-2"></i>DELETING...');
+            
+            // Add pulse animation to warning
+            $('.alert-danger').css('animation', 'pulseWarning 2s infinite');
+        });
+
+        // Smooth animations
+        $('.card').addClass('animate__animated animate__fadeInUp');
+        
+        // Hover effects for cards
+        $('.impact-card, .comment-card').hover(
+            function() {
+                $(this).addClass('shadow-lg');
+            },
+            function() {
+                $(this).removeClass('shadow-lg');
+            }
+        );
+
+        // Add confirmation dialog for extra safety
+        $('form').on('submit', function(e) {
+            if (!confirm('⚠️ FINAL WARNING: This will permanently delete the comment. This action cannot be undone!\n\nClick OK to proceed with deletion.')) {
+                e.preventDefault();
+                const submitBtn = $(this).find('.delete-btn');
+                submitBtn.removeClass('loading');
+                submitBtn.prop('disabled', false);
+                submitBtn.html('<i class="fas fa-trash-alt me-2"></i>CONFIRM DELETE');
+            }
+        });
+
+        // Keyboard shortcuts
+        $(document).on('keydown', function(e) {
+            // Escape key to cancel
+            if (e.key === 'Escape') {
+                window.location.href = "{% url 'blog_app:blog_comments' pk=blog.pk %}";
+            }
+        });
+
+        // Add viewport check for mobile devices
+        function checkViewport() {
+            if (window.innerWidth < 768) {
+                $('body').addClass('mobile-view');
+            } else {
+                $('body').removeClass('mobile-view');
+            }
+        }
+
+        checkViewport();
+        $(window).resize(checkViewport);
+    });
+</script>
+{% endblock %}

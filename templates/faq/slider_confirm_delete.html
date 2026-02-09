@@ -1,0 +1,165 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8">
+            <!-- Breadcrumb -->
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'faq_app:slider_list' %}">Slider Management</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Delete Slider</li>
+                </ol>
+            </nav>
+
+            <!-- Delete Confirmation Card -->
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-gradient-danger text-white py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h4 class="card-title mb-0">
+                            <i class="fas fa-exclamation-triangle me-2"></i>Delete Slider
+                        </h4>
+                        <span class="badge bg-light text-dark fs-6">
+                            <i class="fas fa-id-card me-1"></i>ID: {{ slider.pk }}
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-body p-4 text-center">
+                    <!-- Warning Icon -->
+                    <div class="mb-4">
+                        <i class="fas fa-trash-alt text-danger" style="font-size: 4rem;"></i>
+                    </div>
+
+                    <!-- Slider Details -->
+                    <div class="slider-preview mb-4">
+                        {% if slider.image %}
+                        <div class="mb-3">
+                            <img src="{{ slider.image.url }}" alt="{{ slider.title }}" 
+                                 class="img-thumbnail" style="max-height: 150px;">
+                        </div>
+                        {% endif %}
+                        
+                        <h5 class="text-danger mb-2">{{ slider.title }}</h5>
+                        <p class="text-muted mb-3">{{ slider.short_description }}</p>
+                        
+                        <div class="row text-start">
+                            <div class="col-md-6">
+                                <p><strong>Status:</strong> 
+                                    <span class="badge {% if slider.status == 'active' %}bg-success{% else %}bg-secondary{% endif %}">
+                                        {{ slider.get_status_display }}
+                                    </span>
+                                </p>
+                                <p><strong>Display Order:</strong> {{ slider.order }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Created:</strong> {{ slider.created_at|date:"M d, Y H:i" }}</p>
+                                <p><strong>By:</strong> {{ slider.created_by.get_full_name|default:slider.created_by.username }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Warning Message -->
+                    <div class="alert alert-warning border-warning">
+                        <div class="d-flex">
+                            <i class="fas fa-exclamation-circle me-3 mt-1 fs-5"></i>
+                            <div class="text-start">
+                                <h6 class="alert-heading mb-2">Warning: This action cannot be undone!</h6>
+                                <p class="mb-0">
+                                    You are about to permanently delete the slider "<strong>{{ slider.title }}</strong>". 
+                                    This will remove all associated data including the image file.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <form method="post" class="mt-4">
+                        {% csrf_token %}
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <a href="{% url 'faq_app:slider_list' %}" class="btn btn-outline-secondary w-100 py-2">
+                                    <i class="fas fa-arrow-left me-2"></i>Cancel
+                                </a>
+                            </div>
+                            <div class="col-md-6">
+                                <button type="submit" class="btn btn-danger w-100 py-2" onclick="return confirmDelete()">
+                                    <i class="fas fa-trash me-2"></i>Delete Permanently
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.bg-gradient-danger {
+    background: linear-gradient(135deg, #dc3545 0%, #e83e8c 100%) !important;
+}
+
+.card {
+    border: none;
+    border-radius: 15px;
+}
+
+.card-header {
+    border-radius: 15px 15px 0 0 !important;
+}
+
+.alert-warning {
+    background-color: #fff3cd;
+    border-left: 4px solid #ffc107;
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+    border: none;
+    font-weight: 600;
+}
+
+.btn-danger:hover {
+    background: linear-gradient(135deg, #c82333 0%, #a71e2a 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+}
+
+.slider-preview {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 20px;
+    border: 2px dashed #dee2e6;
+}
+
+@media (max-width: 768px) {
+    .container-fluid {
+        padding: 10px;
+    }
+    
+    .card-body {
+        padding: 20px !important;
+    }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function confirmDelete() {
+    return confirm('Are you absolutely sure you want to delete "{{ slider.title }}"? This action cannot be undone.');
+}
+
+// Add loading state to delete button
+$('form').on('submit', function() {
+    const deleteBtn = $(this).find('button[type="submit"]');
+    deleteBtn.prop('disabled', true).html(
+        '<i class="fas fa-spinner fa-spin me-2"></i>Deleting...'
+    );
+});
+</script>
+{% endblock %}

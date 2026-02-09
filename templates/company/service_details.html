@@ -1,0 +1,1223 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">{{ page_title }}</h1>
+        <a href="{% url 'company_app:service_list' %}" class="btn btn-sm btn-secondary shadow-sm">
+            <i class="fas fa-arrow-left fa-sm text-white-50 me-1"></i> Back to Services
+        </a>
+    </div>
+
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'bg_app:dashboard_redirect' %}"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'company_app:service_list' %}"><i class="fas fa-cogs"></i> Services</a></li>
+            <li class="breadcrumb-item active" aria-current="page"><i class="fas fa-info-circle"></i> {{ breadcrumb_active }}</li>
+        </ol>
+    </nav>
+
+    <!-- Service Header Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white py-3">
+                    <h5 class="card-title mb-0"><i class="fa-solid fa-user-gear me-2"></i>Service Overview</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <!-- Service Image -->
+                        <div class="col-md-3 text-center mb-3 mb-md-0">
+                            {% if service.image %}
+                                <img src="{{ service.image.url }}" alt="{{ service.title }}" class="img-fluid rounded shadow-sm" style="max-height: 200px; object-fit: cover;">
+                            {% else %}
+                                <div class="bg-light rounded d-flex align-items-center justify-content-center shadow-sm" style="height: 150px;">
+                                    <i class="fas fa-image fa-3x text-muted"></i>
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Service Basic Info -->
+                        <div class="col-md-9">
+                            <div class="d-flex flex-column flex-md-row align-items-center align-items-md-start mb-3">
+                                <div class="d-flex align-items-center mb-2 mb-md-0">
+                                    {% if service.icon %}
+                                        <i class="{{ service.icon }} fa-2x text-primary me-3"></i>
+                                    {% endif %}
+                                    <h2 class="h4 h-md-2 text-primary mb-0 text-center text-md-start">{{ service.title }}</h2>
+                                </div>
+                                <span class="badge {% if service.status %}bg-success{% else %}bg-danger{% endif %} ms-md-3 fs-6 mt-2 mt-md-0">
+                                    {% if service.status %}Active{% else %}Inactive{% endif %}
+                                </span>
+                            </div>
+                            
+                            {% if service.sub_title %}
+                                <h5 class="h6 text-muted mb-3 text-center text-md-start"><i class="fas fa-quote-left me-2"></i>{{ service.sub_title }}</h5>
+                            {% endif %}
+                            
+                            <!-- Short Description Preview -->
+                            <div class="mb-3">
+                                <p class="lead mb-0 text-dark text-center text-md-start">
+                                    {% if service.description %}
+                                        {{ service.description|striptags|truncatewords:30 }}
+                                    {% else %}
+                                        <span class="text-muted">No description available</span>
+                                    {% endif %}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Projects Done Table -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header bg-light py-3">
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
+                        <div class="mb-2 mb-md-0">
+                            <h6 class="m-0 font-weight-bold text-primary mb-0">
+                                <i class="fa-solid fa-list-check me-2"></i>Projects Done for {{ service.title }}
+                            </h6>
+                        </div>
+                        <div class="btn-group flex-wrap">
+                            <a href="{% url 'company_app:project_done_create' %}?service={{ service.id }}" class="btn btn-sm btn-primary mb-1">
+                                <i class="fas fa-plus me-1"></i> Add Project
+                            </a>
+                            <button type="button" class="btn btn-sm btn-outline-primary mb-1" id="refreshProjectsTable">
+                                <i class="fas fa-sync-alt me-1"></i> Refresh
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-0 p-sm-2">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover" id="projectsDoneTable" width="100%" cellspacing="0" style="border: 2px solid #dee2e6;">
+                            <thead class="table-light">
+                                <tr>
+                                    <th width="80" class="text-center" style="border: 1px solid #dee2e6;">Image</th>
+                                    <th width="200" style="border: 1px solid #dee2e6;">Project Title</th>
+                                    <th width="150" style="border: 1px solid #dee2e6;">Client Company</th>
+                                    <th width="120" class="text-center" style="border: 1px solid #dee2e6;">Service</th>
+                                    <th width="120" class="text-center" style="border: 1px solid #dee2e6;">Category</th>
+                                    <th width="80" class="text-center" style="border: 1px solid #dee2e6;">Logo</th>
+                                    <th width="100" class="text-center" style="border: 1px solid #dee2e6;">Live Demo</th>
+                                    <th width="120" class="text-center" style="border: 1px solid #dee2e6;">Date Created</th>
+                                    <th width="100" class="text-center" style="border: 1px solid #dee2e6;">Status</th>
+                                    <th width="120" class="text-center" style="border: 1px solid #dee2e6;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Data will be loaded via DataTables AJAX -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Services Testimonials Table -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white py-3">
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
+                        <h5 class="card-title text-primary mb-0 mb-md-0">
+                            <i class="fas fa-comments me-2"></i>Testimonials for {{ service.title }}
+                        </h5>
+                        <div class="btn-group mt-2 mt-md-0">
+                            <a href="{% url 'company_app:services_testimonial_create' %}?service={{ service.id }}" class="btn btn-light btn-sm">
+                                <i class="fas fa-plus me-1"></i> Add Testimonial
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-0 p-sm-2">
+                    <div class="table-responsive">
+                        <table id="servicesTestimonialsTable" class="table table-hover table-striped table-bordered" style="width:100%; border: 2px solid #198754;">
+                            <thead class="table-success">
+                                <tr>
+                                    <th class="text-center" style="border: 1px solid #198754;">Image</th>
+                                    <th class="text-center" style="border: 1px solid #198754;">Name</th>
+                                    <th class="text-center" style="border: 1px solid #198754;">Designation</th>
+                                    <th class="text-center" style="border: 1px solid #198754;">Message</th>
+                                    <th class="text-center" style="border: 1px solid #198754;">Rating</th>
+                                    <th class="text-center" style="border: 1px solid #198754;">Status</th>
+                                    <th class="text-center" style="border: 1px solid #198754;">Created At</th>
+                                    <th class="text-center" style="border: 1px solid #198754;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Data will be loaded via DataTables AJAX -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Services FAQ Table -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header bg-info text-white py-3">
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
+                        <h5 class="card-title text-primary mb-0 mb-md-0">
+                            <i class="fas fa-question-circle me-2"></i>FAQs for {{ service.title }}
+                        </h5>
+                        <div class="btn-group mt-2 mt-md-0">
+                            <a href="{% url 'company_app:services_faq_create' %}?service={{ service.id }}" class="btn btn-light btn-sm">
+                                <i class="fas fa-plus me-1"></i> Add FAQ
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-0 p-sm-2">
+                    <div class="table-responsive">
+                        <table id="servicesFaqTable" class="table table-hover table-striped table-bordered" style="width:100%; border: 2px solid #0dcaf0;">
+                            <thead class="table-info">
+                                <tr>
+                                    <th class="text-center" style="border: 1px solid #0dcaf0;">Question</th>
+                                    <th class="text-center" style="border: 1px solid #0dcaf0;">Answer</th>
+                                    <th class="text-center" style="border: 1px solid #0dcaf0;">Status</th>
+                                    <th class="text-center" style="border: 1px solid #0dcaf0;">Created Date</th>
+                                    <th class="text-center" style="border: 1px solid #0dcaf0;">Updated Date</th>
+                                    <th class="text-center" style="border: 1px solid #0dcaf0;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Data will be loaded via DataTables AJAX -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Full Service Description -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header bg-light py-3">
+                    <h6 class="m-0 font-weight-bold text-primary mb-0">
+                        <i class="fas fa-file-alt me-2"></i>Service Detailed Description
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="service-description">
+                        {% if service.description %}
+                            {{ service.description|safe }}
+                        {% else %}
+                            <div class="text-center text-muted py-4">
+                                <i class="fas fa-file-alt fa-3x mb-3"></i>
+                                <p class="mb-0">No detailed description available for this service.</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Image View Modal -->
+<div class="modal fade" id="imageModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="imageModalTitle">Image Preview</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center">
+                <img id="modalImage" src="" alt="" class="img-fluid" style="max-height: 70vh;">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Container -->
+<div id="toastContainer" class="toast-container position-fixed top-0 end-0 p-3"></div>
+{% endblock %}
+
+{% block extra_css %}
+<!-- DataTables CSS -->
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.bootstrap5.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.4.1/css/responsive.bootstrap5.min.css">
+
+<style>
+.card {
+    border: none;
+    border-radius: 10px;
+}
+.card-header {
+    border-bottom: 1px solid #e3e6f0;
+    border-radius: 10px 10px 0 0 !important;
+}
+
+/* Table Styling with Enhanced Borders */
+.table {
+    border: 2px solid #dee2e6 !important;
+    border-collapse: separate !important;
+}
+
+.table th,
+.table td {
+    border: 1px solid #dee2e6 !important;
+    vertical-align: middle;
+    padding: 12px 8px !important;
+}
+
+.table thead th {
+    border-bottom: 2px solid #dee2e6 !important;
+    background-color: #f8f9fa;
+    font-weight: 600;
+}
+
+/* Specific table border colors */
+#servicesTestimonialsTable {
+    border-color: #198754 !important;
+    border-width: 2px !important;
+}
+
+#servicesTestimonialsTable th,
+#servicesTestimonialsTable td {
+    border-color: #198754 !important;
+    border-width: 1px !important;
+}
+
+#servicesTestimonialsTable thead th {
+    border-bottom: 2px solid #198754 !important;
+    background-color: #d1e7dd !important;
+}
+
+#servicesFaqTable {
+    border-color: #0dcaf0 !important;
+    border-width: 2px !important;
+}
+
+#servicesFaqTable th,
+#servicesFaqTable td {
+    border-color: #0dcaf0 !important;
+    border-width: 1px !important;
+}
+
+#servicesFaqTable thead th {
+    border-bottom: 2px solid #0dcaf0 !important;
+    background-color: #cff4fc !important;
+}
+
+/* Image Thumbnails */
+.project-thumbnail, .logo-thumbnail, .testimonial-thumbnail {
+    border-radius: 6px;
+    transition: transform 0.2s;
+    cursor: pointer;
+    border: 1px solid #dee2e6;
+}
+.project-thumbnail:hover, .logo-thumbnail:hover, .testimonial-thumbnail:hover {
+    transform: scale(1.05);
+}
+
+/* Toast Styling */
+.toast {
+    background-color: rgba(255, 255, 255, 0.95);
+    border-left: 4px solid;
+}
+.toast-success { border-left-color: #28a745; }
+.toast-error { border-left-color: #dc3545; }
+.toast-info { border-left-color: #17a2b8; }
+
+/* DataTables Processing */
+.dataTables_processing {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 5px;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    z-index: 1000;
+}
+
+/* Button Styling */
+.dt-buttons .btn {
+    margin-right: 8px;
+    margin-bottom: 10px;
+    border-radius: 6px;
+    font-weight: 500;
+}
+
+/* Export Button Group Styling */
+.dt-buttons {
+    margin-bottom: 15px;
+}
+
+.dt-button {
+    margin-right: 5px;
+    margin-bottom: 5px;
+    border: 1px solid;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container-fluid {
+        padding: 0 10px;
+    }
+    
+    .card-body {
+        padding: 0.75rem !important;
+    }
+    
+    .table th,
+    .table td {
+        padding: 8px 6px !important;
+        font-size: 0.875rem;
+    }
+    
+    .btn-group {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .btn {
+        font-size: 0.875rem;
+        padding: 0.375rem 0.75rem;
+    }
+    
+    .card-header .d-flex {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .card-header .btn-group {
+        align-self: stretch;
+    }
+    
+    .dataTables_wrapper .dataTables_filter input {
+        width: 100% !important;
+        margin-bottom: 10px;
+    }
+    
+    .dt-buttons {
+        text-align: center;
+    }
+    
+    .dt-button {
+        margin: 2px;
+        font-size: 0.8rem;
+        padding: 0.25rem 0.5rem;
+    }
+    
+    /* Mobile table adjustments */
+    .table-responsive {
+        border: 1px solid #dee2e6;
+        border-radius: 5px;
+    }
+    
+    /* Hide less important columns on mobile */
+    #projectsDoneTable thead th:nth-child(3),
+    #projectsDoneTable thead th:nth-child(4),
+    #projectsDoneTable thead th:nth-child(5),
+    #projectsDoneTable thead th:nth-child(6),
+    #projectsDoneTable thead th:nth-child(7) {
+        display: none;
+    }
+    
+    #projectsDoneTable tbody td:nth-child(3),
+    #projectsDoneTable tbody td:nth-child(4),
+    #projectsDoneTable tbody td:nth-child(5),
+    #projectsDoneTable tbody td:nth-child(6),
+    #projectsDoneTable tbody td:nth-child(7) {
+        display: none;
+    }
+    
+    #servicesTestimonialsTable thead th:nth-child(3),
+    #servicesTestimonialsTable thead th:nth-child(4),
+    #servicesTestimonialsTable thead th:nth-child(6) {
+        display: none;
+    }
+    
+    #servicesTestimonialsTable tbody td:nth-child(3),
+    #servicesTestimonialsTable tbody td:nth-child(4),
+    #servicesTestimonialsTable tbody td:nth-child(6) {
+        display: none;
+    }
+    
+    #servicesFaqTable thead th:nth-child(2),
+    #servicesFaqTable thead th:nth-child(4),
+    #servicesFaqTable thead th:nth-child(5) {
+        display: none;
+    }
+    
+    #servicesFaqTable tbody td:nth-child(2),
+    #servicesFaqTable tbody td:nth-child(4),
+    #servicesFaqTable tbody td:nth-child(5) {
+        display: none;
+    }
+}
+
+@media (max-width: 576px) {
+    .h3, .h4, .h5, .h6 {
+        font-size: 1.1rem;
+    }
+    
+    .card-header h5,
+    .card-header h6 {
+        font-size: 1rem;
+    }
+    
+    .table th,
+    .table td {
+        padding: 6px 4px !important;
+        font-size: 0.8rem;
+    }
+    
+    .btn-sm {
+        font-size: 0.775rem;
+        padding: 0.25rem 0.5rem;
+    }
+    
+    .breadcrumb {
+        font-size: 0.875rem;
+    }
+    
+    .toast-container {
+        padding: 10px !important;
+    }
+    
+    .toast {
+        font-size: 0.875rem;
+    }
+    
+    /* Further simplify tables on very small screens */
+    #projectsDoneTable thead th:nth-child(8),
+    #projectsDoneTable tbody td:nth-child(8) {
+        display: none;
+    }
+    
+    .dataTables_info,
+    .dataTables_paginate {
+        font-size: 0.8rem;
+    }
+}
+
+/* Extra small devices */
+@media (max-width: 400px) {
+    .container-fluid {
+        padding: 0 5px;
+    }
+    
+    .card-body {
+        padding: 0.5rem !important;
+    }
+    
+    .btn-group {
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    .btn {
+        width: 100%;
+    }
+    
+    .dt-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    .dt-button {
+        width: 100%;
+        margin: 0;
+    }
+}
+
+/* DataTables responsive fixes */
+table.dataTable.dtr-inline.collapsed > tbody > tr > td.dtr-control:before,
+table.dataTable.dtr-inline.collapsed > tbody > tr > th.dtr-control:before {
+    background-color: #0d6efd;
+    border: 2px solid white;
+    box-shadow: 0 0 3px #444;
+}
+
+table.dataTable.dtr-inline.collapsed > tbody > tr.parent > td.dtr-control:before,
+table.dataTable.dtr-inline.collapsed > tbody > tr.parent > th.dtr-control:before {
+    background-color: #dc3545;
+}
+
+/* Print optimization */
+@media print {
+    .dt-buttons, .dataTables_filter, .dataTables_length, .dataTables_info, .dataTables_paginate {
+        display: none !important;
+    }
+    
+    .table {
+        border: 1px solid #000 !important;
+        font-size: 10px;
+    }
+    
+    .table th,
+    .table td {
+        padding: 4px 6px !important;
+    }
+    
+    #servicesTestimonialsTable,
+    #servicesFaqTable {
+        border-color: #000 !important;
+    }
+    
+    #servicesTestimonialsTable th,
+    #servicesTestimonialsTable td,
+    #servicesFaqTable th,
+    #servicesFaqTable td {
+        border-color: #000 !important;
+    }
+    
+    .btn-group,
+    .card-header .d-flex .btn-group {
+        display: none !important;
+    }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<!-- DataTables JS -->
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.bootstrap5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.print.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.4.1/js/responsive.bootstrap5.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+
+<script>
+// CSRF token function
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+// Toast notification function
+function showToast(message, type = 'info') {
+    const toastId = 'toast-' + Date.now();
+    const toastHtml = `
+        <div id="${toastId}" class="toast" role="alert">
+            <div class="toast-header">
+                <strong class="me-auto">Notification</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+            </div>
+            <div class="toast-body">
+                ${message}
+            </div>
+        </div>
+    `;
+    
+    $('#toastContainer').append(toastHtml);
+    const toastElement = document.getElementById(toastId);
+    const toast = new bootstrap.Toast(toastElement);
+    
+    if (type === 'success') {
+        $(toastElement).addClass('toast-success');
+    } else if (type === 'error') {
+        $(toastElement).addClass('toast-error');
+    } else {
+        $(toastElement).addClass('toast-info');
+    }
+    
+    toast.show();
+    
+    toastElement.addEventListener('hidden.bs.toast', function() {
+        $(this).remove();
+    });
+}
+
+// Function to view image in modal
+function viewImage(imageUrl, imageTitle) {
+    $('#modalImage').attr('src', imageUrl);
+    $('#imageModalTitle').text(imageTitle || 'Image Preview');
+    $('#imageModal').modal('show');
+}
+
+$(document).ready(function() {
+    const serviceId = "{{ service.id }}";
+    const serviceTitle = "{{ service.title }}";
+
+    console.log('Current Service:', { id: serviceId, title: serviceTitle });
+
+    // Initialize Projects Done Table with Responsive
+    var projectsTable = $('#projectsDoneTable').DataTable({
+        "processing": true,
+        "serverSide": true,
+        "responsive": true,
+        "ajax": {
+            "url": "{% url 'company_app:project_done_datatables_api' %}",
+            "type": "GET",
+            "data": function(d) {
+                d.service_id = serviceId;
+            },
+            "error": function(xhr, error, code) {
+                console.error('Projects Table AJAX Error:', error);
+                showToast('Error loading projects data.', 'error');
+            }
+        },
+        "columns": [
+            {
+                "data": "project_image", 
+                "orderable": false, 
+                "searchable": false, 
+                "className": "text-center",
+                "render": function(data, type, row) {
+                    if (type === 'export') {
+                        return data ? 'Has Image' : 'No Image';
+                    }
+                    return data || '<div class="text-center text-muted"><i class="fas fa-image fa-lg"></i></div>';
+                }
+            },
+            {
+                "data": "title", 
+                "className": "fw-bold text-primary",
+                "render": function(data, type, row) {
+                    if (type === 'export') return data || 'No Title';
+                    return data || '<span class="text-muted">No Title</span>';
+                }
+            },
+            {
+                "data": "company",
+                "render": function(data, type, row) {
+                    if (type === 'export') return data || 'No Company';
+                    return data || '<span class="text-muted">No Company</span>';
+                }
+            },
+            {
+                "data": "service", 
+                "className": "text-center",
+                "render": function(data, type, row) {
+                    if (type === 'export') {
+                        const temp = document.createElement('div');
+                        temp.innerHTML = data || '';
+                        return temp.textContent || temp.innerText || 'No Service';
+                    }
+                    return data || '<span class="text-muted">No Service</span>';
+                }
+            },
+            {
+                "data": "category", 
+                "className": "text-center",
+                "render": function(data, type, row) {
+                    if (type === 'export') {
+                        const temp = document.createElement('div');
+                        temp.innerHTML = data || '';
+                        return temp.textContent || temp.innerText || 'No Category';
+                    }
+                    return data || '<span class="text-muted">No Category</span>';
+                }
+            },
+            {
+                "data": "company_logo", 
+                "orderable": false, 
+                "searchable": false, 
+                "className": "text-center",
+                "render": function(data, type, row) {
+                    if (type === 'export') return data ? 'Has Logo' : 'No Logo';
+                    return data || '<div class="text-center text-muted"><i class="fas fa-building fa-lg"></i></div>';
+                }
+            },
+            {
+                "data": "live_link", 
+                "orderable": false, 
+                "searchable": false, 
+                "className": "text-center",
+                "render": function(data, type, row) {
+                    if (type === 'export') return data ? 'Has Link' : 'No Link';
+                    return data || '<span class="text-muted">No Link</span>';
+                }
+            },
+            {
+                "data": "created_at", 
+                "className": "text-center"
+            },
+            {
+                "data": "status", 
+                "orderable": false, 
+                "className": "text-center",
+                "render": function(data, type, row) {
+                    if (type === 'export') {
+                        const temp = document.createElement('div');
+                        temp.innerHTML = data || '';
+                        return temp.textContent || temp.innerText || 'Unknown';
+                    }
+                    return data || '<span class="badge bg-secondary">Unknown</span>';
+                }
+            },
+            {
+                "data": "actions", 
+                "orderable": false, 
+                "searchable": false, 
+                "className": "text-center",
+                "render": function(data, type, row) {
+                    if (type === 'export') return '';
+                    return data || '<div class="text-muted">No Actions</div>';
+                }
+            }
+        ],
+        "order": [[7, 'desc']],
+        "pageLength": 10,
+        "dom": '<"row"<"col-sm-12 col-md-6"B><"col-sm-12 col-md-6"f>>rtip',
+        "buttons": [
+            {
+                extend: 'copy',
+                text: '<i class="fas fa-copy me-2"></i>Copy',
+                className: 'btn btn-secondary btn-sm',
+                exportOptions: { columns: [1, 2, 3, 4, 7, 8] },
+                title: `Projects Done - ${serviceTitle}`
+            },
+            {
+                extend: 'excel',
+                text: '<i class="fas fa-file-excel me-2"></i>Excel',
+                className: 'btn btn-success btn-sm',
+                exportOptions: { columns: [1, 2, 3, 4, 7, 8] },
+                filename: `projects_done_${serviceTitle.replace(/\s+/g, '_').toLowerCase()}`,
+                title: `Projects Done - ${serviceTitle}`
+            },
+            {
+                extend: 'pdf',
+                text: '<i class="fas fa-file-pdf me-2"></i>PDF',
+                className: 'btn btn-danger btn-sm',
+                exportOptions: { columns: [1, 2, 3, 4, 7, 8] },
+                filename: `projects_done_${serviceTitle.replace(/\s+/g, '_').toLowerCase()}`,
+                title: `Projects Done - ${serviceTitle}`,
+                customize: function(doc) {
+                    doc.defaultStyle.fontSize = 10;
+                    doc.styles.tableHeader.fontSize = 11;
+                    doc.pageMargins = [10, 10, 10, 10];
+                    doc.content[1].table.widths = ['*', '*', '*', '*', '*', '*'];
+                }
+            },
+            {
+                extend: 'print',
+                text: '<i class="fas fa-print me-2"></i>Print',
+                className: 'btn btn-info btn-sm',
+                exportOptions: { columns: [1, 2, 3, 4, 7, 8] },
+                title: `<h3>Projects Done - ${serviceTitle}</h3>`,
+                customize: function(win) {
+                    $(win.document.body).find('table').addClass('display').css('font-size', '10px');
+                    $(win.document.body).find('tr:nth-child(odd) td').each(function(index){
+                        $(this).css('background-color','#D0D0D0');
+                    });
+                    $(win.document.body).find('h1').css('text-align','center');
+                }
+            }
+        ],
+        "language": {
+            "search": '<i class="fas fa-search"></i> Search:',
+            "lengthMenu": "Show _MENU_ entries",
+            "info": "Showing _START_ to _END_ of _TOTAL_ projects",
+            "infoEmpty": `No projects available for ${serviceTitle}`,
+            "zeroRecords": "No matching projects found",
+            "processing": '<div class="spinner-border spinner-border-sm text-primary me-2"></div>Loading...'
+        },
+        "responsive": {
+            "details": {
+                "display": $.fn.dataTable.Responsive.display.modal({
+                    "header": function (row) {
+                        var data = row.data();
+                        return 'Project Details: ' + data.title;
+                    }
+                }),
+                "renderer": $.fn.dataTable.Responsive.renderer.tableAll()
+            }
+        }
+    });
+
+    // Initialize Testimonials Table with Responsive
+    var testimonialsTable = $('#servicesTestimonialsTable').DataTable({
+        "processing": true,
+        "serverSide": true,
+        "responsive": true,
+        "ajax": {
+            "url": "{% url 'company_app:services_testimonial_datatables_api' %}",
+            "type": "GET",
+            "data": function(d) {
+                d.service_id = serviceId;
+            },
+            "error": function(xhr, error, code) {
+                console.error('Testimonials Table AJAX Error:', error);
+                showToast('Error loading testimonials data.', 'error');
+            }
+        },
+        "columns": [
+            {
+                "data": "image", 
+                "className": "text-center", 
+                "orderable": false,
+                "searchable": false,
+                "render": function(data, type, row) {
+                    if (type === 'export') return data ? 'Has Image' : 'No Image';
+                    return data || '<div class="text-center text-muted"><i class="fas fa-user fa-lg"></i></div>';
+                }
+            },
+            {
+                "data": "name", 
+                "className": "text-center"
+            },
+            {
+                "data": "designation", 
+                "className": "text-center"
+            },
+            {
+                "data": "message", 
+                "className": "text-center", 
+                "orderable": false,
+                "render": function(data, type, row) {
+                    if (type === 'export') {
+                        const temp = document.createElement('div');
+                        temp.innerHTML = data || '';
+                        const text = temp.textContent || temp.innerText || '';
+                        return text.length > 50 ? text.substring(0, 50) + '...' : text;
+                    }
+                    return data || '<span class="text-muted">No Message</span>';
+                }
+            },
+            {
+                "data": "rating", 
+                "className": "text-center", 
+                "orderable": false,
+                "searchable": false,
+                "render": function(data, type, row) {
+                    if (type === 'export') {
+                        const starCount = (data.match(/fa-star/g) || []).length;
+                        return starCount + '/5';
+                    }
+                    return data || '<span class="text-muted">No Rating</span>';
+                }
+            },
+            {
+                "data": "status", 
+                "className": "text-center", 
+                "orderable": false,
+                "render": function(data, type, row) {
+                    if (type === 'export') {
+                        const temp = document.createElement('div');
+                        temp.innerHTML = data || '';
+                        return temp.textContent || temp.innerText || 'Unknown';
+                    }
+                    return data || '<span class="badge bg-secondary">Unknown</span>';
+                }
+            },
+            {
+                "data": "created_at", 
+                "className": "text-center"
+            },
+            {
+                "data": "actions", 
+                "className": "text-center", 
+                "orderable": false, 
+                "searchable": false,
+                "render": function(data, type, row) {
+                    if (type === 'export') return '';
+                    return data || '<div class="text-muted">No Actions</div>';
+                }
+            }
+        ],
+        "order": [[6, 'desc']],
+        "pageLength": 10,
+        "dom": '<"row"<"col-sm-12 col-md-6"B><"col-sm-12 col-md-6"f>>rtip',
+        "buttons": [
+            {
+                extend: 'copy',
+                text: '<i class="fas fa-copy me-2"></i>Copy',
+                className: 'btn btn-secondary btn-sm',
+                exportOptions: { columns: [1, 2, 3, 4, 5, 6] },
+                title: `Testimonials - ${serviceTitle}`
+            },
+            {
+                extend: 'excel',
+                text: '<i class="fas fa-file-excel me-2"></i>Excel',
+                className: 'btn btn-success btn-sm',
+                exportOptions: { columns: [1, 2, 3, 4, 5, 6] },
+                filename: `testimonials_${serviceTitle.replace(/\s+/g, '_').toLowerCase()}`,
+                title: `Testimonials - ${serviceTitle}`
+            },
+            {
+                extend: 'pdf',
+                text: '<i class="fas fa-file-pdf me-2"></i>PDF',
+                className: 'btn btn-danger btn-sm',
+                exportOptions: { columns: [1, 2, 3, 4, 5, 6] },
+                filename: `testimonials_${serviceTitle.replace(/\s+/g, '_').toLowerCase()}`,
+                title: `Testimonials - ${serviceTitle}`,
+                customize: function(doc) {
+                    doc.defaultStyle.fontSize = 10;
+                    doc.styles.tableHeader.fontSize = 11;
+                    doc.styles.tableHeader.fillColor = '#198754';
+                    doc.styles.tableHeader.color = '#ffffff';
+                    doc.pageMargins = [10, 10, 10, 10];
+                    doc.content[1].table.widths = ['*', '*', '*', '*', '*', '*'];
+                    
+                    // Add header
+                    doc.content.splice(0, 0, {
+                        text: `Testimonials Report - ${serviceTitle}`,
+                        style: 'header',
+                        alignment: 'center',
+                        margin: [0, 0, 0, 20]
+                    });
+                    
+                    doc.styles.header = {
+                        fontSize: 16,
+                        bold: true,
+                        color: '#198754'
+                    };
+                }
+            },
+            {
+                extend: 'print',
+                text: '<i class="fas fa-print me-2"></i>Print',
+                className: 'btn btn-info btn-sm',
+                exportOptions: { columns: [1, 2, 3, 4, 5, 6] },
+                title: `<h3>Testimonials - ${serviceTitle}</h3>`,
+                customize: function(win) {
+                    $(win.document.body).find('table').addClass('display').css('font-size', '10px');
+                    $(win.document.body).find('tr:nth-child(odd) td').each(function(index){
+                        $(this).css('background-color','#D0D0D0');
+                    });
+                    $(win.document.body).find('h1').css('text-align','center');
+                }
+            }
+        ],
+        "language": {
+            "search": '<i class="fas fa-search"></i> Search:',
+            "lengthMenu": "Show _MENU_ entries",
+            "info": "Showing _START_ to _END_ of _TOTAL_ testimonials",
+            "infoEmpty": `No testimonials available for ${serviceTitle}`,
+            "zeroRecords": "No matching testimonials found"
+        },
+        "responsive": {
+            "details": {
+                "display": $.fn.dataTable.Responsive.display.modal({
+                    "header": function (row) {
+                        var data = row.data();
+                        return 'Testimonial Details: ' + data.name;
+                    }
+                }),
+                "renderer": $.fn.dataTable.Responsive.renderer.tableAll()
+            }
+        }
+    });
+
+    // Initialize FAQ Table with Responsive
+    var faqTable = $('#servicesFaqTable').DataTable({
+        "processing": true,
+        "serverSide": true,
+        "responsive": true,
+        "ajax": {
+            "url": "{% url 'company_app:services_faq_datatables_api' %}",
+            "type": "GET",
+            "data": function(d) {
+                d.service_id = serviceId;
+            },
+            "error": function(xhr, error, code) {
+                console.error('FAQ Table AJAX Error:', error);
+                showToast('Error loading FAQ data.', 'error');
+            }
+        },
+        "columns": [
+            {
+                "data": "question", 
+                "className": "text-center",
+                "render": function(data, type, row) {
+                    if (type === 'export') {
+                        const temp = document.createElement('div');
+                        temp.innerHTML = data || '';
+                        return temp.textContent || temp.innerText || 'No Question';
+                    }
+                    return data || '<span class="text-muted">No Question</span>';
+                }
+            },
+            {
+                "data": "answer", 
+                "className": "text-center", 
+                "orderable": false,
+                "render": function(data, type, row) {
+                    if (type === 'export') {
+                        const temp = document.createElement('div');
+                        temp.innerHTML = data || '';
+                        const text = temp.textContent || temp.innerText || '';
+                        return text.length > 50 ? text.substring(0, 50) + '...' : text;
+                    }
+                    return data || '<span class="text-muted">No Answer</span>';
+                }
+            },
+            {
+                "data": "status", 
+                "className": "text-center",
+                "render": function(data, type, row) {
+                    if (type === 'export') {
+                        const temp = document.createElement('div');
+                        temp.innerHTML = data || '';
+                        return temp.textContent || temp.innerText || 'Unknown';
+                    }
+                    return data || '<span class="badge bg-secondary">Unknown</span>';
+                }
+            },
+            {
+                "data": "created_at", 
+                "className": "text-center"
+            },
+            {
+                "data": "updated_at", 
+                "className": "text-center"
+            },
+            {
+                "data": "actions", 
+                "className": "text-center", 
+                "orderable": false, 
+                "searchable": false,
+                "render": function(data, type, row) {
+                    if (type === 'export') return '';
+                    return data || '<div class="text-muted">No Actions</div>';
+                }
+            }
+        ],
+        "order": [[3, 'desc']],
+        "pageLength": 10,
+        "dom": '<"row"<"col-sm-12 col-md-6"B><"col-sm-12 col-md-6"f>>rtip',
+        "buttons": [
+            {
+                extend: 'copy',
+                text: '<i class="fas fa-copy me-2"></i>Copy',
+                className: 'btn btn-secondary btn-sm',
+                exportOptions: { columns: [0, 1, 2, 3, 4] },
+                title: `FAQs - ${serviceTitle}`
+            },
+            {
+                extend: 'excel',
+                text: '<i class="fas fa-file-excel me-2"></i>Excel',
+                className: 'btn btn-success btn-sm',
+                exportOptions: { columns: [0, 1, 2, 3, 4] },
+                filename: `faqs_${serviceTitle.replace(/\s+/g, '_').toLowerCase()}`,
+                title: `FAQs - ${serviceTitle}`
+            },
+            {
+                extend: 'pdf',
+                text: '<i class="fas fa-file-pdf me-2"></i>PDF',
+                className: 'btn btn-danger btn-sm',
+                exportOptions: { columns: [0, 1, 2, 3, 4] },
+                filename: `faqs_${serviceTitle.replace(/\s+/g, '_').toLowerCase()}`,
+                title: `FAQs - ${serviceTitle}`,
+                customize: function(doc) {
+                    doc.defaultStyle.fontSize = 10;
+                    doc.styles.tableHeader.fontSize = 11;
+                    doc.styles.tableHeader.fillColor = '#0dcaf0';
+                    doc.styles.tableHeader.color = '#000000';
+                    doc.pageMargins = [10, 10, 10, 10];
+                    doc.content[1].table.widths = ['*', '*', '*', '*', '*'];
+                    
+                    // Add header
+                    doc.content.splice(0, 0, {
+                        text: `FAQs Report - ${serviceTitle}`,
+                        style: 'header',
+                        alignment: 'center',
+                        margin: [0, 0, 0, 20]
+                    });
+                    
+                    doc.styles.header = {
+                        fontSize: 16,
+                        bold: true,
+                        color: '#0dcaf0'
+                    };
+                }
+            },
+            {
+                extend: 'print',
+                text: '<i class="fas fa-print me-2"></i>Print',
+                className: 'btn btn-info btn-sm',
+                exportOptions: { columns: [0, 1, 2, 3, 4] },
+                title: `<h3>FAQs - ${serviceTitle}</h3>`,
+                customize: function(win) {
+                    $(win.document.body).find('table').addClass('display').css('font-size', '10px');
+                    $(win.document.body).find('tr:nth-child(odd) td').each(function(index){
+                        $(this).css('background-color','#D0D0D0');
+                    });
+                    $(win.document.body).find('h1').css('text-align','center');
+                }
+            }
+        ],
+        "language": {
+            "search": '<i class="fas fa-search"></i> Search:',
+            "lengthMenu": "Show _MENU_ entries",
+            "info": "Showing _START_ to _END_ of _TOTAL_ FAQs",
+            "infoEmpty": `No FAQs available for ${serviceTitle}`,
+            "zeroRecords": "No matching FAQs found"
+        },
+        "responsive": {
+            "details": {
+                "display": $.fn.dataTable.Responsive.display.modal({
+                    "header": function (row) {
+                        var data = row.data();
+                        return 'FAQ Details: ' + data.question;
+                    }
+                }),
+                "renderer": $.fn.dataTable.Responsive.renderer.tableAll()
+            }
+        }
+    });
+
+    // Refresh buttons
+    $('#refreshProjectsTable').on('click', function() {
+        projectsTable.ajax.reload();
+        showToast('Projects table refreshed', 'success');
+    });
+
+    // Image click handlers
+    $(document).on('click', '.project-thumbnail, .logo-thumbnail, .testimonial-thumbnail', function() {
+        const imageUrl = $(this).attr('src');
+        const imageTitle = $(this).attr('alt') || 'Image Preview';
+        viewImage(imageUrl, imageTitle);
+    });
+
+    // Initialize tooltips
+    $('[data-bs-toggle="tooltip"]').tooltip();
+
+    // Handle responsive modal close button
+    $(document).on('click', '.dtr-modal-close', function() {
+        $('.dtr-modal').hide();
+        $('.dtr-modal-background').hide();
+    });
+
+    console.log('All tables initialized for service:', serviceTitle);
+});
+</script>
+{% endblock %}

@@ -1,0 +1,1022 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="page-title-box d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between">
+                <h4 class="mb-2 mb-md-0">{{ page_title }}</h4>
+                <div class="page-title-right">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-0">
+                            <li class="breadcrumb-item"><a href="{% url 'bg_app:dashboard_redirect' %}">Dashboard</a></li>
+                            <li class="breadcrumb-item active">{{ breadcrumb_active }}</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-dark">
+                <div class="card-header bg-primary text-white border-dark">
+                    <div class="row align-items-center">
+                        <div class="col-md-6 mb-2 mb-md-0">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-trophy me-2"></i>
+                                Services Success Metrics
+                            </h5>
+                        </div>
+                        <div class="col-md-6 text-md-end text-start">
+                            {% if perms.company_app.add_services_success %}
+                            <a href="{% url 'company_app:services_success_create' %}" class="btn btn-light btn-sm">
+                                <i class="fas fa-plus me-1"></i> Add New Success Metric
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <!-- Export Buttons Container - TOP ONLY -->
+                    <div class="p-2 p-sm-3 border-bottom bg-light">
+                        <div class="row align-items-center">
+                            <div class="col-md-6 mb-2 mb-md-0">
+                                <div class="btn-group flex-wrap" role="group" id="exportButtonsTop">
+                                    <!-- Manual buttons as fallback -->
+                                    <button class="btn btn-secondary btn-sm mb-1" id="btnCopy"><i class="fas fa-copy"></i> <span class="d-none d-sm-inline">Copy</span></button>
+                                    <button class="btn btn-success btn-sm mb-1" id="btnExcel"><i class="fas fa-file-excel"></i> <span class="d-none d-sm-inline">Excel</span></button>
+                                    <button class="btn btn-danger btn-sm mb-1" id="btnPdf"><i class="fas fa-file-pdf"></i> <span class="d-none d-sm-inline">PDF</span></button>
+                                    <button class="btn btn-info btn-sm mb-1" id="btnPrint"><i class="fas fa-print"></i> <span class="d-none d-sm-inline">Print</span></button>
+                                    <button class="btn btn-warning btn-sm mb-1" id="btnRefresh"><i class="fas fa-sync-alt"></i> <span class="d-none d-sm-inline">Refresh</span></button>
+                                </div>
+                            </div>
+
+
+                            
+
+
+                        </div>
+                    </div>
+
+                    <!-- DataTable -->
+                    <div class="table-responsive">
+                        <table id="servicesSuccessTable" class="table table-hover table-striped table-bordered border-dark" style="width:100%; margin:0;">
+                            <thead class="table-primary border-dark">
+                                <tr>
+                                    <th style="border: 1px solid #000; border-bottom: 2px solid #000; padding: 12px; text-align: center;">Title</th>
+                                    <th style="border: 1px solid #000; border-bottom: 2px solid #000; padding: 12px; text-align: center;">Icon</th>
+                                    <th style="border: 1px solid #000; border-bottom: 2px solid #000; padding: 12px; text-align: center;">Service</th>
+                                    <th style="border: 1px solid #000; border-bottom: 2px solid #000; padding: 12px; text-align: center;">Success Value</th>
+                                    <th style="border: 1px solid #000; border-bottom: 2px solid #000; padding: 12px; text-align: center;">Status</th>
+                                    <th style="border: 1px solid #000; border-bottom: 2px solid #000; padding: 12px; text-align: center;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="table-light border-dark">
+                                <!-- Data will be loaded via AJAX -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<!-- DataTables CSS -->
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.bootstrap5.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.4.1/css/responsive.bootstrap5.min.css">
+
+<style>
+#servicesSuccessTable {
+    border: 2px solid #000 !important;
+    border-collapse: separate !important;
+    background-color: white;
+}
+
+#servicesSuccessTable th,
+#servicesSuccessTable td {
+    border: 1px solid #000 !important;
+    vertical-align: middle !important;
+    padding: 12px 8px !important;
+}
+
+#servicesSuccessTable thead th {
+    border-bottom: 2px solid #000 !important;
+    background-color: #b8d4ff !important;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.img-thumbnail-table {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+/* Export buttons container styling */
+#exportButtonsTop {
+    margin-bottom: 0;
+}
+
+#exportButtonsTop .btn {
+    margin-right: 5px;
+    margin-bottom: 5px;
+}
+
+/* Loading overlay */
+.dataTables_processing {
+    background: rgba(255, 255, 255, 0.9) !important;
+    color: #000 !important;
+    font-weight: bold;
+    border-radius: 5px;
+    padding: 10px !important;
+}
+
+/* Pagination styling */
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+    padding: 0.375rem 0.75rem;
+    margin-left: 2px;
+    border: 1px solid #dee2e6;
+    border-radius: 0.375rem;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.current {
+    background: #0d6efd !important;
+    color: white !important;
+    border-color: #0d6efd !important;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+    background: #e9ecef !important;
+    border-color: #dee2e6 !important;
+    color: #000 !important;
+}
+
+/* Search box styling */
+.dataTables_wrapper .dataTables_filter input {
+    padding: 0.375rem 0.75rem;
+    border: 1px solid #ced4da;
+    border-radius: 0.375rem;
+}
+
+/* Custom top controls styling */
+.bg-light {
+    background-color: #f8f9fa !important;
+    border-bottom: 1px solid #dee2e6 !important;
+}
+
+/* PDF download loading */
+.pdf-loading {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0,0,0,0.8);
+    color: white;
+    padding: 20px;
+    border-radius: 5px;
+    z-index: 10000;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container-fluid {
+        padding: 0 10px;
+    }
+    
+    .card-body {
+        padding: 0 !important;
+    }
+    
+    .table th,
+    .table td {
+        padding: 8px 6px !important;
+        font-size: 0.875rem;
+    }
+    
+    #servicesSuccessTable th,
+    #servicesSuccessTable td {
+        padding: 8px 6px !important;
+        font-size: 0.875rem;
+    }
+    
+    .btn-group {
+        justify-content: flex-start;
+    }
+    
+    .btn {
+        font-size: 0.875rem;
+        padding: 0.375rem 0.75rem;
+    }
+    
+    .btn-sm {
+        font-size: 0.775rem;
+        padding: 0.25rem 0.5rem;
+    }
+    
+    .dataTables_wrapper .dataTables_filter input {
+        width: 100% !important;
+        margin-bottom: 10px;
+    }
+    
+    .page-title-box {
+        flex-direction: column;
+        align-items: flex-start !important;
+    }
+    
+    .page-title-right {
+        margin-top: 10px;
+    }
+    
+    .breadcrumb {
+        font-size: 0.875rem;
+        margin-bottom: 0;
+    }
+    
+    /* Hide less important columns on mobile */
+    #servicesSuccessTable thead th:nth-child(2),
+    #servicesSuccessTable thead th:nth-child(3) {
+        display: none;
+    }
+    
+    #servicesSuccessTable tbody td:nth-child(2),
+    #servicesSuccessTable tbody td:nth-child(3) {
+        display: none;
+    }
+}
+
+@media (max-width: 576px) {
+    .h4, .h5, .h6 {
+        font-size: 1.1rem;
+    }
+    
+    .card-header h5 {
+        font-size: 1rem;
+    }
+    
+    .table th,
+    .table td {
+        padding: 6px 4px !important;
+        font-size: 0.8rem;
+    }
+    
+    #servicesSuccessTable th,
+    #servicesSuccessTable td {
+        padding: 6px 4px !important;
+        font-size: 0.8rem;
+    }
+    
+    .btn-sm {
+        font-size: 0.775rem;
+        padding: 0.25rem 0.5rem;
+    }
+    
+    .p-2 {
+        padding: 0.5rem !important;
+    }
+    
+    .p-3 {
+        padding: 1rem !important;
+    }
+    
+    .dataTables_info,
+    .dataTables_paginate {
+        font-size: 0.8rem;
+    }
+    
+    /* Further simplify tables on very small screens */
+    #servicesSuccessTable thead th:nth-child(4) {
+        display: none;
+    }
+    
+    #servicesSuccessTable tbody td:nth-child(4) {
+        display: none;
+    }
+    
+    .export-buttons-mobile {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+}
+
+@media (max-width: 400px) {
+    .container-fluid {
+        padding: 0 5px;
+    }
+    
+    .btn-group {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    #exportButtonsTop .btn {
+        margin-right: 0;
+        margin-bottom: 5px;
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .dataTables_length label {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+    }
+    
+    .dataTables_length select {
+        margin: 0 !important;
+    }
+    
+    .card-header .row {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .card-header .col-md-6 {
+        text-align: left !important;
+    }
+}
+
+/* DataTables responsive fixes */
+table.dataTable.dtr-inline.collapsed > tbody > tr > td.dtr-control:before,
+table.dataTable.dtr-inline.collapsed > tbody > tr > th.dtr-control:before {
+    background-color: #0d6efd;
+    border: 2px solid white;
+    box-shadow: 0 0 3px #444;
+}
+
+table.dataTable.dtr-inline.collapsed > tbody > tr.parent > td.dtr-control:before,
+table.dataTable.dtr-inline.collapsed > tbody > tr.parent > th.dtr-control:before {
+    background-color: #dc3545;
+}
+
+/* Print optimization */
+@media print {
+    .dt-buttons, .dataTables_filter, .dataTables_length, .dataTables_info, .dataTables_paginate {
+        display: none !important;
+    }
+    
+    .table {
+        border: 1px solid #000 !important;
+        font-size: 10px;
+    }
+    
+    .table th,
+    .table td {
+        padding: 4px 6px !important;
+    }
+    
+    .btn-group,
+    .card-header .btn-group {
+        display: none !important;
+    }
+    
+    .bg-light {
+        display: none !important;
+    }
+}
+
+/* Mobile-first responsive utilities */
+.d-none.d-sm-inline {
+    display: none;
+}
+
+@media (min-width: 576px) {
+    .d-none.d-sm-inline {
+        display: inline !important;
+    }
+}
+
+/* Ensure proper spacing on all devices */
+.mb-1 {
+    margin-bottom: 0.25rem !important;
+}
+
+.mb-2 {
+    margin-bottom: 0.5rem !important;
+}
+
+/* Responsive text alignment */
+.text-md-end.text-start {
+    text-align: left;
+}
+
+@media (min-width: 768px) {
+    .text-md-end.text-start {
+        text-align: right !important;
+    }
+    
+    .mb-md-0 {
+        margin-bottom: 0 !important;
+    }
+}
+
+/* Flexbox utilities for responsive layout */
+.flex-wrap {
+    flex-wrap: wrap !important;
+}
+
+@media (max-width: 400px) {
+    .flex-wrap {
+        flex-direction: column;
+    }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<!-- DataTables JS -->
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.bootstrap5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.print.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.4.1/js/responsive.bootstrap5.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+
+<!-- jsPDF and AutoTable for PDF generation -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+
+<script>
+$(document).ready(function() {
+    // Store the table data globally for export functions
+    let tableData = [];
+    
+    // Initialize DataTable with proper configuration
+    var table = $('#servicesSuccessTable').DataTable({
+        "processing": true,
+        "serverSide": true,
+        "ajax": {
+            "url": "{% url 'company_app:services_success_datatables_api' %}",
+            "type": "GET",
+            "dataType": "json",
+            "data": function (d) {
+                return d;
+            },
+            "dataSrc": function (json) {
+                console.log('Data received from server:', json);
+                if (!json || !json.data) {
+                    console.error('Invalid data format received from server');
+                    return [];
+                }
+                // Store the data for exports
+                tableData = json.data;
+                return json.data;
+            },
+            "error": function(xhr, error, code) {
+                console.error('AJAX Error:', error);
+                console.error('Status:', code);
+                console.error('Response:', xhr.responseText);
+                alert('Error loading data. Please check console for details.');
+            }
+        },
+        "columns": [
+            { 
+                "data": "title", 
+                "name": "title", 
+                "className": "text-center",
+                "render": function(data, type, row) {
+                    return data || '<span class="text-muted">No title</span>';
+                }
+            },
+            { 
+                "data": "icon", 
+                "name": "icon", 
+                "className": "text-center", 
+                "orderable": false,
+                "render": function(data, type, row) {
+                    return data || '<span class="text-muted">No icon</span>';
+                }
+            },
+            { 
+                "data": "service", 
+                "name": "service", 
+                "className": "text-center", 
+                "orderable": false,
+                "render": function(data, type, row) {
+                    return data || '<span class="text-muted">No service</span>';
+                }
+            },
+            { 
+                "data": "success", 
+                "name": "success", 
+                "className": "text-center",
+                "render": function(data, type, row) {
+                    return data || '<span class="text-muted">No success value</span>';
+                }
+            },
+            { 
+                "data": "status", 
+                "name": "status", 
+                "className": "text-center", 
+                "orderable": false,
+                "render": function(data, type, row) {
+                    return data || '<span class="text-muted">No status</span>';
+                }
+            },
+            { 
+                "data": "actions", 
+                "name": "actions", 
+                "className": "text-center", 
+                "orderable": false, 
+                "searchable": false,
+                "render": function(data, type, row) {
+                    return data || '<span class="text-muted">No actions</span>';
+                }
+            }
+        ],
+        "order": [[0, 'asc']],
+        "pageLength": 10,
+        "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+        "responsive": true,
+        "dom": "<'row'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'f>>" +
+               "<'row'<'col-sm-12'tr>>" +
+               "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+        "language": {
+            "search": "Search:",
+            "searchPlaceholder": "Search in all columns...",
+            "lengthMenu": "Show _MENU_ entries",
+            "info": "Showing _START_ to _END_ of _TOTAL_ entries",
+            "infoEmpty": "Showing 0 to 0 of 0 entries",
+            "infoFiltered": "(filtered from _MAX_ total entries)",
+            "zeroRecords": "No matching records found",
+            "processing": '<div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div> Loading...',
+            "emptyTable": "No data available in table",
+            "loadingRecords": "Loading...",
+            "paginate": {
+                "first": '<i class="fas fa-angle-double-left"></i>',
+                "last": '<i class="fas fa-angle-double-right"></i>',
+                "next": '<i class="fas fa-angle-right"></i>',
+                "previous": '<i class="fas fa-angle-left"></i>'
+            }
+        },
+        "initComplete": function(settings, json) {
+            console.log('DataTables initialization complete', json);
+            
+            // Add custom CSS to search box
+            $('.dataTables_filter input').addClass('form-control form-control-sm')
+                .attr('placeholder', 'Search in all columns...')
+                .css('width', '300px');
+            
+            // Add custom CSS to length menu
+            $('.dataTables_length select').addClass('form-select form-select-sm');
+            
+            // Sync top length menu with DataTables
+            $('#servicesSuccessTable_length_top select').on('change', function() {
+                table.page.len($(this).val()).draw();
+            });
+            
+            // Update top length menu when DataTables length changes
+            table.on('length.dt', function(e, settings, len) {
+                $('#servicesSuccessTable_length_top select').val(len);
+                localStorage.setItem('servicesSuccessPageLength', len);
+            });
+            
+            // Load saved page length
+            var savedLength = localStorage.getItem('servicesSuccessPageLength');
+            if (savedLength) {
+                table.page.len(parseInt(savedLength)).draw();
+                $('#servicesSuccessTable_length_top select').val(savedLength);
+            }
+        },
+        "drawCallback": function(settings) {
+            // Initialize tooltips
+            $('[data-bs-toggle="tooltip"]').tooltip();
+            
+            // Update table data for exports
+            if (settings.json && settings.json.data) {
+                tableData = settings.json.data;
+            }
+        },
+        "responsive": {
+            "details": {
+                "display": $.fn.dataTable.Responsive.display.modal({
+                    "header": function (row) {
+                        var data = row.data();
+                        return 'Success Metric Details: ' + data.title;
+                    }
+                }),
+                "renderer": $.fn.dataTable.Responsive.renderer.tableAll()
+            }
+        }
+    });
+
+    // Helper function to extract text from HTML
+    function extractTextFromHTML(html) {
+        if (!html) return '';
+        var temp = document.createElement('div');
+        temp.innerHTML = html;
+        return temp.textContent || temp.innerText || '';
+    }
+
+    // Helper function to get clean data for export
+    function getCleanData() {
+        var cleanData = [];
+        table.rows({ search: 'applied' }).every(function() {
+            var rowData = this.data();
+            cleanData.push({
+                title: extractTextFromHTML(rowData.title),
+                icon: extractTextFromHTML(rowData.icon),
+                service: extractTextFromHTML(rowData.service),
+                success: extractTextFromHTML(rowData.success),
+                status: extractTextFromHTML(rowData.status).includes('Active') ? 'Active' : 'Inactive'
+            });
+        });
+        return cleanData;
+    }
+
+    // Copy button handler
+    $('#btnCopy').on('click', function() {
+        try {
+            var cleanData = getCleanData();
+            var csvContent = "Title\tIcon\tService\tSuccess Value\tStatus\n";
+            
+            cleanData.forEach(function(row) {
+                csvContent += [
+                    row.title,
+                    row.icon,
+                    row.service,
+                    row.success,
+                    row.status
+                ].join('\t') + '\n';
+            });
+            
+            // Copy to clipboard
+            navigator.clipboard.writeText(csvContent).then(function() {
+                alert('Table data copied to clipboard!');
+            }).catch(function() {
+                // Fallback for older browsers
+                var textarea = document.createElement('textarea');
+                textarea.value = csvContent;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                alert('Table data copied to clipboard!');
+            });
+            
+        } catch (e) {
+            console.error('Copy export error:', e);
+            alert('Error copying data. Please try again.');
+        }
+    });
+
+    // Excel button handler
+    $('#btnExcel').on('click', function() {
+        try {
+            var cleanData = getCleanData();
+            var csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += "Title,Icon,Service,Success Value,Status\n";
+            
+            cleanData.forEach(function(row) {
+                csvContent += [
+                    `"${row.title}"`,
+                    `"${row.icon}"`,
+                    `"${row.service}"`,
+                    `"${row.success}"`,
+                    `"${row.status}"`
+                ].join(',') + '\n';
+            });
+            
+            var encodedUri = encodeURI(csvContent);
+            var link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "services_success_metrics.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+        } catch (e) {
+            console.error('Excel export error:', e);
+            alert('Error exporting to Excel. Please try again.');
+        }
+    });
+
+    // PDF button handler - FIXED to download directly
+    $('#btnPdf').on('click', function() {
+        try {
+            // Show loading indicator
+            var $btn = $(this);
+            var originalText = $btn.html();
+            $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Generating PDF...');
+            
+            var cleanData = getCleanData();
+            var today = new Date().toLocaleDateString();
+            var totalRecords = cleanData.length;
+            
+            // Use jsPDF for direct PDF download
+            const { jsPDF } = window.jspdf;
+            
+            // Create new PDF document
+            const doc = new jsPDF({
+                orientation: 'landscape',
+                unit: 'mm',
+                format: 'a4'
+            });
+            
+            // Add title and header information
+            doc.setFontSize(16);
+            doc.setFont('helvetica', 'bold');
+            doc.text('Services Success Metrics', 14, 15);
+            
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'normal');
+            doc.text(`Generated on: ${today}`, 14, 22);
+            doc.text(`Total Records: ${totalRecords}`, 14, 27);
+            
+            // Prepare table data for jsPDF autoTable
+            const headers = [['Title', 'Icon', 'Service', 'Success Value', 'Status']];
+            
+            const tableBody = cleanData.map(row => [
+                row.title || '',
+                row.icon || '',
+                row.service || '',
+                row.success || '',
+                row.status || ''
+            ]);
+            
+            // Add table using autoTable plugin
+            doc.autoTable({
+                head: headers,
+                body: tableBody,
+                startY: 35,
+                theme: 'grid',
+                styles: {
+                    fontSize: 8,
+                    cellPadding: 3,
+                    overflow: 'linebreak'
+                },
+                headStyles: {
+                    fillColor: [41, 128, 185],
+                    textColor: 255,
+                    fontStyle: 'bold'
+                },
+                alternateRowStyles: {
+                    fillColor: [245, 245, 245]
+                },
+                columnStyles: {
+                    0: { cellWidth: 40 },
+                    1: { cellWidth: 30 },
+                    2: { cellWidth: 40 },
+                    3: { cellWidth: 40 },
+                    4: { cellWidth: 25 }
+                },
+                margin: { top: 35 }
+            });
+            
+            // Add footer
+            const pageCount = doc.internal.getNumberOfPages();
+            for (let i = 1; i <= pageCount; i++) {
+                doc.setPage(i);
+                doc.setFontSize(8);
+                doc.setFont('helvetica', 'italic');
+                doc.text(
+                    `Page ${i} of ${pageCount} - Generated by Business Management System`,
+                    doc.internal.pageSize.getWidth() / 2,
+                    doc.internal.pageSize.getHeight() - 10,
+                    { align: 'center' }
+                );
+            }
+            
+            // Generate filename with timestamp
+            const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
+            const filename = `services_success_metrics_${timestamp}.pdf`;
+            
+            // Save the PDF
+            doc.save(filename);
+            
+            // Re-enable button
+            $btn.prop('disabled', false).html(originalText);
+            
+        } catch (e) {
+            console.error('PDF export error:', e);
+            alert('Error generating PDF. Please try again.');
+            $('#btnPdf').prop('disabled', false).html('<i class="fas fa-file-pdf"></i> PDF');
+        }
+    });
+
+    // Print button handler
+    $('#btnPrint').on('click', function() {
+        try {
+            var cleanData = getCleanData();
+            var today = new Date().toLocaleDateString();
+            var totalRecords = cleanData.length;
+            
+            // Create HTML content for printing
+            var htmlContent = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Services Success Metrics - Print</title>
+                    <style>
+                        body {
+                            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                            margin: 25px;
+                            color: #000;
+                            background: white;
+                        }
+                        .print-header {
+                            text-align: center;
+                            margin-bottom: 25px;
+                            padding-bottom: 15px;
+                            border-bottom: 3px double #333;
+                        }
+                        .print-header h1 {
+                            color: #2c3e50;
+                            margin: 0 0 10px 0;
+                            font-size: 28px;
+                            font-weight: bold;
+                        }
+                        .print-header .subtitle {
+                            color: #666;
+                            margin: 5px 0;
+                            font-size: 14px;
+                        }
+                        .print-header .summary {
+                            background: #f8f9fa;
+                            padding: 10px;
+                            border-radius: 5px;
+                            margin: 10px 0;
+                            font-size: 13px;
+                        }
+                        table {
+                            width: 100%;
+                            border-collapse: collapse;
+                            margin: 20px 0;
+                            font-size: 12px;
+                            page-break-inside: auto;
+                        }
+                        thead {
+                            display: table-header-group;
+                        }
+                        tr {
+                            page-break-inside: avoid;
+                            page-break-after: auto;
+                        }
+                        th {
+                            background: #34495e !important;
+                            color: white !important;
+                            font-weight: bold;
+                            padding: 12px 8px;
+                            text-align: center;
+                            border: 1px solid #000 !important;
+                            font-size: 13px;
+                        }
+                        td {
+                            padding: 10px 8px;
+                            text-align: center;
+                            border: 1px solid #000 !important;
+                            vertical-align: middle;
+                        }
+                        tbody tr:nth-child(odd) {
+                            background-color: #f8f9fa;
+                        }
+                        tbody tr:nth-child(even) {
+                            background-color: white;
+                        }
+                        .print-footer {
+                            margin-top: 30px;
+                            text-align: center;
+                            color: #666;
+                            font-size: 11px;
+                            padding-top: 10px;
+                            border-top: 1px solid #ccc;
+                        }
+                        @media print {
+                            body { 
+                                margin: 15px; 
+                                -webkit-print-color-adjust: exact; 
+                            }
+                            .no-print { display: none; }
+                            table { 
+                                page-break-inside: auto; 
+                                border: 2px solid #000 !important;
+                            }
+                            tr { 
+                                page-break-inside: avoid; 
+                                page-break-after: auto; 
+                            }
+                            thead { 
+                                display: table-header-group; 
+                            }
+                            tfoot { 
+                                display: table-footer-group; 
+                            }
+                            @page {
+                                size: landscape;
+                                margin: 15mm;
+                            }
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="print-header">
+                        <h1>Services Success Metrics Report</h1>
+                        <div class="subtitle">
+                            <strong>Generated on:</strong> ${today} | 
+                            <strong>Total Records:</strong> ${totalRecords}
+                        </div>
+                        <div class="summary">
+                            This report contains all services success metrics data as of ${today}
+                        </div>
+                    </div>
+                    
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Icon</th>
+                                <th>Service</th>
+                                <th>Success Value</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+            
+            // Add table rows
+            cleanData.forEach(function(row) {
+                htmlContent += `
+                    <tr>
+                        <td>${row.title}</td>
+                        <td>${row.icon}</td>
+                        <td>${row.service}</td>
+                        <td>${row.success}</td>
+                        <td>${row.status}</td>
+                    </tr>
+                `;
+            });
+            
+            htmlContent += `
+                        </tbody>
+                    </table>
+                    
+                    <div class="print-footer">
+                        <p>Confidential Business Document - Generated by Business Management System</p>
+                        <p>Page 1 of 1 &copy; ${new Date().getFullYear()}</p>
+                    </div>
+                </body>
+                </html>
+            `;
+            
+            // Open in new window for printing
+            var printWindow = window.open('', '_blank');
+            printWindow.document.write(htmlContent);
+            printWindow.document.close();
+            
+            // Wait for content to load then print
+            setTimeout(function() {
+                printWindow.focus();
+                printWindow.print();
+            }, 500);
+            
+        } catch (e) {
+            console.error('Print error:', e);
+            alert('Error opening print dialog. Please check your browser settings.');
+        }
+    });
+
+    // Refresh button handler
+    $('#btnRefresh').on('click', function() {
+        try {
+            var $btn = $(this);
+            $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Refreshing...');
+            
+            table.ajax.reload(function(json) {
+                $btn.prop('disabled', false).html('<i class="fas fa-sync-alt"></i> Refresh');
+                
+                var alert = $('<div class="alert alert-success alert-dismissible fade show m-3">Data refreshed successfully!<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>');
+                $('.card-body').prepend(alert);
+                setTimeout(function() {
+                    alert.alert('close');
+                }, 3000);
+            });
+        } catch (e) {
+            console.error('Refresh error:', e);
+            $('#btnRefresh').prop('disabled', false).html('<i class="fas fa-sync-alt"></i> Refresh');
+            alert('Error refreshing data. Please try again.');
+        }
+    });
+
+    console.log('Table initialization completed successfully');
+});
+</script>
+{% endblock %}

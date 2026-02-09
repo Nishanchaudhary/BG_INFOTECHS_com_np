@@ -1,0 +1,102 @@
+{% extends 'Frontend/base.html' %}
+{% load static %}
+{% block title %}Features{% endblock %}
+
+{% block extra_css %}{% endblock %}
+
+{% block content %}
+<style>
+  .page-title {
+    background-image: linear-gradient(rgba(28, 29, 31, 0.65), rgba(23, 4, 69, 0.65)),
+    url("{% static 'img/breadcrumb.jpg' %}");
+    background-size: cover;
+    background-position: center;
+    padding: 30px 0px;
+  }
+</style>
+<main class="main">
+  <div class="page-title light-background">
+    <div class="container">
+      <h1>BG-Infotechs</h1>
+      <nav class="breadcrumbs">
+        <ol>
+          <li><a href="{% url 'frontend_app:home' %}"><i class="fas fa-home"></i> Home</a></li>
+          <li class="current">Features</li>
+        </ol>
+      </nav>
+    </div>
+  </div>
+
+  <!-- Features Section -->
+  <section id="features" class="features section">
+    <!-- Section Title -->
+    <div class="container section-title" data-aos="fade-up">
+      <h2>Features</h2>
+      <p>Empowering your business with digital solutions</p>
+    </div><!-- End Section Title -->
+    <div class="container" data-aos="fade-up" data-aos-delay="100">
+      <div class="row align-items-center">
+        <div class="col-lg-6" data-aos="fade-right" data-aos-delay="150">
+          <div class="intro-content">
+            <h2>Powerful features to accelerate your growth</h2>
+            <p>At BG Infotech, we combine expertise and technology to deliver scalable, secure, and smart software
+              solutions designed to help businesses grow efficiently in the digital age.</p>
+            <div class="feature-stats">
+              <div class="stat-item">
+                <span class="stat-number">150+</span>
+                <span class="stat-label">Projects Delivered</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-number">99.9%</span>
+                <span class="stat-label">System Uptime</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-number">24/7</span>
+                <span class="stat-label">Customer Support</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-6" data-aos="fade-left" data-aos-delay="200">
+          <div class="intro-image">
+            <img src="{% static 'img/features/Online tech talks-bro.png' %}"
+              style="height: 400px; width: 90%; object-fit: cover;" alt="Features" class="img-fluid">
+          </div>
+        </div>
+      </div>
+
+      <div class="features-grid">
+        {% for feature in features %}
+        <div class="feature-item" data-aos="flip-up" data-aos-delay="250">
+          <div class="feature-number">{{ forloop.counter }}</div>
+          <div class="feature-content">
+            <div class="feature-icon">
+              <i class="{{ feature.icon }}"></i>
+            </div>
+            <h4>{{ feature.title }}</h4>
+            <p>{{ feature.description | safe }} </p>
+            <div class="feature-tags">
+              {% with feature.get_tags_list as tags_list %}
+              {% if tags_list %}
+              {% for tag in tags_list %}
+              <span class="tag">{{ tag }}</span>
+              {% endfor %}
+              {% endif %}
+              {% endwith %}
+            </div>
+          </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center">
+          <p class="text-muted">No features available at the moment.</p>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    </div>
+
+  </section><!-- /Features Section -->
+
+
+</main>
+{% endblock %}

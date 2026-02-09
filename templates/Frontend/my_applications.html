@@ -1,0 +1,83 @@
+{% extends 'Frontend/base.html' %}
+{% load static %}
+{% block title %} Check Your Job Applications{% endblock %}
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h1 class="h3 mb-4 text-center">Check Your Job Applications</h1>
+                    
+                    <form method="post" class="mb-4">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-md-8">
+                                <input type="email" name="email" class="form-control" 
+                                       placeholder="Enter your email address" 
+                                       value="{{ email }}" required>
+                            </div>
+                            <div class="col-md-4 pt-2 ">
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="fas fa-search me-2"></i>Search
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+
+                    {% if messages %}
+                        {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    {% if applications %}
+                    <div class="applications-list">
+                        <h5 class="mb-3">Your Applications ({{ applications|length }})</h5>
+                        {% for application in applications %}
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h6 class="card-title mb-1">{{ application.vacancy.title }}</h6>
+                                        <p class="text-muted small mb-2">
+                                            Applied on {{ application.applied_at|date:"M d, Y" }}
+                                        </p>
+                                        <span class="badge 
+                                            {% if application.status == 'pending' %}bg-warning
+                                            {% elif application.status == 'reviewed' %}bg-info
+                                            {% elif application.status == 'accepted' %}bg-success
+                                            {% elif application.status == 'rejected' %}bg-danger
+                                            {% else %}bg-secondary{% endif %}">
+                                            {{ application.get_status_display }}
+                                        </span>
+                                    </div>
+                                    <div class="text-end">
+                                        <small class="text-muted d-block">{{ application.vacancy.get_job_type_display }}</small>
+                                        <small class="text-muted">₹ {{ application.vacancy.salary }}/Month</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% elif email %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                        <p class="text-muted">No applications found for this email address.</p>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-envelope fa-3x text-muted mb-3"></i>
+                        <p class="text-muted">Enter your email address to view your applications.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

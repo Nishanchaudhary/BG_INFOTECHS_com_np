@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Server Error - BG Infotechs</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ffa726 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .error-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 50px 40px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            max-width: 500px;
+            width: 100%;
+            backdrop-filter: blur(10px);
+            animation: slideIn 0.8s ease-out;
+        }
+        
+        .gif-container {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 30px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #ff6b6b, #ffa726);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: shake 2s ease-in-out infinite;
+        }
+        
+        .gif-container img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+        }
+        
+        .error-code {
+            font-size: 6rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, #ff6b6b, #ffa726);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+        
+        .error-title {
+            font-size: 2rem;
+            color: #333;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        .error-message {
+            color: #666;
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 25px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .home-btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+        
+        .reload-btn {
+            background: linear-gradient(45deg, #4ecdc4, #44a08d);
+            color: white;
+            box-shadow: 0 10px 30px rgba(78, 205, 196, 0.4);
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        @keyframes shake {
+            0%, 100% {
+                transform: translateX(0);
+            }
+            10%, 30%, 50%, 70%, 90% {
+                transform: translateX(-5px);
+            }
+            20%, 40%, 60%, 80% {
+                transform: translateX(5px);
+            }
+        }
+        
+        .server-animation {
+            margin: 20px 0;
+        }
+        
+        .server {
+            width: 80px;
+            height: 100px;
+            background: #333;
+            border-radius: 10px;
+            margin: 0 auto;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .server::before {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            height: 60px;
+            background: #ff6b6b;
+            border-radius: 5px;
+            animation: serverError 2s infinite;
+        }
+        
+        @keyframes serverError {
+            0%, 100% {
+                height: 60px;
+                background: #ff6b6b;
+            }
+            50% {
+                height: 20px;
+                background: #ff0000;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .error-container {
+                padding: 30px 20px;
+            }
+            
+            .error-code {
+                font-size: 4rem;
+            }
+            
+            .error-title {
+                font-size: 1.5rem;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 200px;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <div class="gif-container">
+            <img src="https://media.giphy.com/media/3o7aD2p1QEtLcBApxi/giphy.gif" alt="Server Error Animation" onerror="this.style.display='none'">
+        </div>
+        
+        <div class="server-animation">
+            <div class="server"></div>
+        </div>
+        
+        <div class="error-code">500</div>
+        <h1 class="error-title">Internal Server Error</h1>
+        <p class="error-message">
+            Our servers are taking an unexpected coffee break! 
+            We're working hard to get things back to normal. Please try again in a moment.
+        </p>
+        
+        <div class="action-buttons">
+            <a href="{% url 'frontend_app:home' %}" class="btn home-btn">
+                <i>🏠</i> Back to Home
+            </a>
+            <button onclick="window.location.reload()" class="btn reload-btn">
+                <i>🔄</i> Try Again
+            </button>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,431 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <nav aria-label="breadcrumb">
+                                <ol class="breadcrumb mb-2">
+                                    <li class="breadcrumb-item"><a href="{% url 'bg_app:user_list' %}" class="text-decoration-none"><i class="fas fa-users me-1"></i>Users</a></li>
+                                    <li class="breadcrumb-item"><a href="{% url 'bg_app:user_detail' user_obj.pk %}" class="text-decoration-none">{{ user_obj.username }}</a></li>
+                                    <li class="breadcrumb-item active text-primary">Permission Summary</li>
+                                </ol>
+                            </nav>
+                            <h2 class="mb-1"><i class="fas fa-key me-2 text-primary"></i>Permission Summary</h2>
+                            <p class="text-muted mb-0">Complete permission overview for {{ user_obj.get_full_name|default:user_obj.username }}</p>
+                        </div>
+                        <div class="col-md-4 text-md-end">
+                            <div class="btn-group">
+                                <a href="{% url 'bg_app:user_permissions' user_obj.pk %}" class="btn btn-warning">
+                                    <i class="fas fa-cog me-2"></i>Manage Permissions
+                                </a>
+                                <a href="{% url 'bg_app:user_detail' user_obj.pk %}" class="btn btn-secondary">
+                                    <i class="fas fa-arrow-left me-2"></i>Back to Profile
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- User Summary -->
+        <div class="col-lg-4 mb-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-gradient-primary text-white py-3">
+                    <h5 class="mb-0">
+                        <i class="fas fa-user-circle me-2"></i>
+                        User Information
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        {% if user_obj.profile_picture %}
+                            <img src="{{ user_obj.profile_picture.url }}" alt="{{ user_obj.username }}" 
+                                 class="img-thumbnail rounded-circle mb-3 border-3 border-white shadow" 
+                                 style="width: 100px; height: 100px; object-fit: cover;">
+                        {% else %}
+                            <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3 border-3 border-white shadow" 
+                                 style="width: 100px; height: 100px;">
+                                <i class="fas fa-user fa-2x text-muted"></i>
+                            </div>
+                        {% endif %}
+                        <h5 class="mb-1">{{ user_obj.get_full_name|default:user_obj.username }}</h5>
+                        <p class="text-muted mb-2">@{{ user_obj.username }}</p>
+                        <span class="badge bg-{% if user_obj.role.name == 'admin' %}danger{% elif user_obj.role.name == 'staff' %}success{% elif user_obj.role.name == 'student' %}info{% else %}secondary{% endif %} px-3 py-2">
+                            {% if user_obj.role %}
+                                {{ user_obj.role.get_name_display }}
+                            {% else %}
+                                No Role
+                            {% endif %}
+                        </span>
+                    </div>
+                    
+                    <div class="row text-center mt-4">
+                        <div class="col-6">
+                            <div class="border-end">
+                                <h4 class="text-primary mb-1">{{ direct_permissions.count }}</h4>
+                                <small class="text-muted">Direct Permissions</small>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div>
+                                <h4 class="text-success mb-1">{{ user_groups.count }}</h4>
+                                <small class="text-muted">Groups</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Permission Details -->
+        <div class="col-lg-8">
+            <!-- Total Permissions Card -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-light py-3">
+                    <h5 class="mb-0">
+                        <i class="fas fa-shield-alt me-2 text-success"></i>
+                        Total Effective Permissions
+                        <span class="badge bg-primary ms-2">{{ all_permissions|length }}</span>
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if permissions_by_app %}
+                    <div class="accordion" id="permissionsAccordion">
+                        {% for app_label, models in permissions_by_app.items %}
+                            {% with total_permissions=0 %}
+                                {% for model_name, permissions_list in models.items %}
+                                    {% with total_permissions=total_permissions|add:permissions_list|length %}
+                                    {% endwith %}
+                                {% endfor %}
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="heading{{ forloop.counter }}">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                                                data-bs-target="#collapse{{ forloop.counter }}" aria-expanded="false" 
+                                                aria-controls="collapse{{ forloop.counter }}">
+                                            <i class="fas fa-cube me-2 text-primary"></i>
+                                            <strong>{{ app_label|title }}</strong>
+                                            <span class="badge bg-secondary ms-2">
+                                                {{ models.items|length }} model(s)
+                                            </span>
+                                            <span class="badge bg-info ms-1">
+                                                {{ total_permissions }} permission(s)
+                                            </span>
+                                        </button>
+                                    </h2>
+                                    <div id="collapse{{ forloop.counter }}" class="accordion-collapse collapse" 
+                                         aria-labelledby="heading{{ forloop.counter }}" data-bs-parent="#permissionsAccordion">
+                                        <div class="accordion-body">
+                                            {% for model_name, permissions_list in models.items %}
+                                            <div class="mb-3">
+                                                <h6 class="text-muted mb-2">
+                                                    <i class="fas fa-table me-1 text-info"></i>
+                                                    {{ model_name|title }}
+                                                    <span class="badge bg-light text-dark ms-1">{{ permissions_list|length }} permissions</span>
+                                                </h6>
+                                                <div class="row">
+                                                    {% for permission in permissions_list %}
+                                                    <div class="col-md-6 mb-2">
+                                                        <div class="d-flex align-items-center">
+                                                            <i class="fas fa-check-circle text-success me-2"></i>
+                                                            <small class="text-break">{{ permission.name }}</small>
+                                                        </div>
+                                                        <small class="text-muted ms-4">{{ permission.codename }}</small>
+                                                    </div>
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                            {% if not forloop.last %}<hr>{% endif %}
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endwith %}
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-lock fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted">No Permissions Assigned</h5>
+                        <p class="text-muted">This user doesn't have any permissions assigned.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Permission Sources -->
+            <div class="row">
+                <!-- Direct Permissions -->
+                <div class="col-md-6 mb-4">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-header bg-light py-3">
+                            <h6 class="mb-0">
+                                <i class="fas fa-user-shield me-2 text-info"></i>
+                                Direct Permissions
+                                <span class="badge bg-info ms-1">{{ direct_permissions.count }}</span>
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            {% if direct_permissions %}
+                            <div class="permission-list">
+                                {% for permission in direct_permissions %}
+                                <div class="d-flex align-items-center mb-2 p-2 border rounded">
+                                    <i class="fas fa-key text-info me-2"></i>
+                                    <div class="flex-grow-1">
+                                        <small class="d-block fw-bold">{{ permission.name }}</small>
+                                        <small class="text-muted">{{ permission.content_type.app_label }}.{{ permission.content_type.model }}</small>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% else %}
+                            <div class="text-center py-3">
+                                <i class="fas fa-times-circle text-muted mb-2"></i>
+                                <p class="text-muted mb-0">No direct permissions</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Group Memberships -->
+                <div class="col-md-6 mb-4">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-header bg-light py-3">
+                            <h6 class="mb-0">
+                                <i class="fas fa-users me-2 text-success"></i>
+                                Group Memberships
+                                <span class="badge bg-success ms-1">{{ user_groups.count }}</span>
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            {% if user_groups %}
+                            <div class="group-list">
+                                {% for group in user_groups %}
+                                <div class="d-flex align-items-center mb-2 p-2 border rounded">
+                                    <i class="fas fa-user-friends text-success me-2"></i>
+                                    <div class="flex-grow-1">
+                                        <small class="d-block fw-bold">{{ group.name }}</small>
+                                        <small class="text-muted">{{ group.permissions.count }} permissions</small>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% else %}
+                            <div class="text-center py-3">
+                                <i class="fas fa-times-circle text-muted mb-2"></i>
+                                <p class="text-muted mb-0">No group memberships</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <div class="d-flex flex-wrap gap-2 justify-content-center">
+                        <a href="{% url 'bg_app:user_permissions' user_obj.pk %}" class="btn btn-warning">
+                            <i class="fas fa-cog me-2"></i>Manage Permissions
+                        </a>
+                        <a href="{% url 'bg_app:user_detail' user_obj.pk %}" class="btn btn-info">
+                            <i class="fas fa-user me-2"></i>View Profile
+                        </a>
+                        <a href="{% url 'bg_app:user_list' %}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Users
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Your existing CSS remains the same */
+.bg-gradient-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+}
+
+.accordion-button:not(.collapsed) {
+    background-color: #f8f9fa;
+    color: #0d6efd;
+    box-shadow: none;
+}
+
+.accordion-button:focus {
+    box-shadow: none;
+    border-color: rgba(0,0,0,.125);
+}
+
+.permission-list, .group-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.border-3 {
+    border-width: 3px !important;
+}
+
+.card {
+    transition: transform 0.2s ease-in-out;
+    border: none;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+
+.card-header {
+    border-bottom: 1px solid rgba(0,0,0,.125);
+}
+
+.btn-group .btn {
+    border-radius: 0.375rem;
+    margin: 0 0.125rem;
+}
+
+/* Custom scrollbar */
+.permission-list::-webkit-scrollbar,
+.group-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.permission-list::-webkit-scrollbar-track,
+.group-list::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.permission-list::-webkit-scrollbar-thumb,
+.group-list::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+}
+
+.permission-list::-webkit-scrollbar-thumb:hover,
+.group-list::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* Badge styles */
+.badge {
+    font-weight: 500;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .btn-group {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .btn-group .btn {
+        margin: 0.25rem 0;
+        width: 100%;
+    }
+    
+    .text-md-end {
+        text-align: left !important;
+        margin-top: 1rem;
+    }
+    
+    .col-md-6 {
+        margin-bottom: 1rem;
+    }
+    
+    .permission-list, .group-list {
+        max-height: 200px;
+    }
+}
+
+/* Animation for accordion */
+.accordion-collapse {
+    transition: all 0.3s ease;
+}
+
+/* Icon colors */
+.text-info {
+    color: #0dcaf0 !important;
+}
+
+.text-success {
+    color: #198754 !important;
+}
+
+.text-primary {
+    color: #0d6efd !important;
+}
+
+.text-warning {
+    color: #ffc107 !important;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add smooth scrolling for permission lists
+    const permissionLists = document.querySelectorAll('.permission-list, .group-list');
+    permissionLists.forEach(list => {
+        if (list.scrollHeight > 300) {
+            list.title = "Scroll to see all items";
+        }
+    });
+
+    // Auto-expand first accordion item if only one exists
+    const accordionItems = document.querySelectorAll('.accordion-item');
+    if (accordionItems.length === 1) {
+        const firstButton = document.querySelector('.accordion-button');
+        const firstCollapse = document.querySelector('.accordion-collapse');
+        if (firstButton && firstCollapse) {
+            firstButton.classList.remove('collapsed');
+            firstCollapse.classList.add('show');
+        }
+    }
+
+    // Add loading states for buttons
+    const buttons = document.querySelectorAll('.btn[href]');
+    buttons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            if (!this.classList.contains('disabled')) {
+                const originalText = this.innerHTML;
+                this.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Loading...';
+                this.classList.add('disabled');
+                
+                setTimeout(() => {
+                    this.innerHTML = originalText;
+                    this.classList.remove('disabled');
+                }, 2000);
+            }
+        });
+    });
+
+    // Enhance accordion experience
+    const accordionButtons = document.querySelectorAll('.accordion-button');
+    accordionButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const target = this.getAttribute('data-bs-target');
+            const collapseElement = document.querySelector(target);
+            if (collapseElement) {
+                collapseElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

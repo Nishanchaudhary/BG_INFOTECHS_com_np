@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>User Management System - Login</title>
+
+    <!-- Google Font: Source Sans Pro -->
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
+    {% load static %}
+    <style>
+        :root {
+            --primary-color: #4e73df;
+            --secondary-color: #224abe;
+            --accent-color: #36b9cc;
+            --light-bg: #f8f9fc;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+            font-family: 'Source Sans Pro', sans-serif;
+            margin: 0;
+            padding: 20px;
+            position: relative;
+        }
+
+        /* Animated Background Elements */
+        .bg-animation {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+        }
+
+        .bg-circle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(78, 115, 223, 0.1);
+            animation: float 15s infinite ease-in-out;
+        }
+
+        .circle-1 {
+            width: 200px;
+            height: 200px;
+            top: -50px;
+            right: -50px;
+            animation-delay: 0s;
+        }
+
+        .circle-2 {
+            width: 150px;
+            height: 150px;
+            bottom: -30px;
+            left: -30px;
+            animation-delay: 5s;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0) rotate(0deg);
+            }
+            33% {
+                transform: translateY(-20px) rotate(120deg);
+            }
+            66% {
+                transform: translateY(20px) rotate(240deg);
+            }
+        }
+
+        .login-container {
+            display: flex;
+            width: 85%;
+            max-width: 1000px;
+            height: 600px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+            position: relative;
+            animation: slideUp 0.8s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .login-left {
+            flex: 1;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-left::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: rgba(255, 255, 255, 0.1);
+            transform: rotate(45deg);
+            top: -50%;
+            left: -50%;
+            animation: shimmer 20s infinite linear;
+        }
+
+        @keyframes shimmer {
+            0% {
+                transform: rotate(45deg) translateX(-20%);
+            }
+            100% {
+                transform: rotate(45deg) translateX(20%);
+            }
+        }
+
+        .login-left-content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            animation: fadeInLeft 1s ease-out;
+        }
+
+        @keyframes fadeInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .login-left h2 {
+            font-weight: 700;
+            margin-bottom: 20px;
+            font-size: 32px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .login-left p {
+            font-size: 18px;
+            margin-bottom: 30px;
+            max-width: 350px;
+            opacity: 0.9;
+        }
+
+        .features-list {
+            text-align: left;
+            margin-top: 30px;
+        }
+
+        .features-list div {
+            display: flex;
+            align-items: center;
+            margin-bottom: 18px;
+            transition: transform 0.3s ease;
+        }
+
+        .features-list div:hover {
+            transform: translateX(10px);
+        }
+
+        .features-list i {
+            margin-right: 15px;
+            background: rgba(255, 255, 255, 0.2);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .features-list div:hover i {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+
+        .login-right {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 50px;
+            background: white;
+            animation: fadeInRight 1s ease-out;
+        }
+
+        @keyframes fadeInRight {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .login-logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .login-logo img {
+            max-width: 220px;
+            height: auto;
+            transition: transform 0.5s ease;
+        }
+
+        .login-logo img:hover {
+            transform: scale(1.05) rotate(2deg);
+        }
+
+        .login-card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .login-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+        }
+
+        .login-card-body {
+            padding: 40px;
+        }
+
+        .login-box-msg {
+            margin-bottom: 10px;
+            font-size: 18px;
+            color: #6e6e6e;
+            text-align: center;
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .input-group-text {
+            background: white;
+            border-right: none;
+            transition: all 0.3s ease;
+        }
+
+        .form-control {
+            border-left: none;
+            padding-left: 5px;
+            transition: all 0.3s ease;
+            height: 50px;
+        }
+
+        .form-control:focus {
+            box-shadow: none;
+            border-color: #ced4da;
+        }
+
+        .form-control:focus + .input-group-append .input-group-text {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .btn-login {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            border: none;
+            padding: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(78, 115, 223, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(78, 115, 223, 0.4);
+        }
+
+        .btn-login:active {
+            transform: translateY(-1px);
+        }
+
+        .remember-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .custom-checkbox {
+            position: relative;
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+        }
+
+        .custom-checkbox input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+            position: absolute;
+        }
+
+        .checkmark {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 20px;
+            width: 20px;
+            background-color: #f1f1f1;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            border: 2px solid #ddd;
+        }
+
+        .custom-checkbox input:checked ~ .checkmark {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            animation: checkAnim 0.2s ease;
+        }
+
+        @keyframes checkAnim {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.2);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .checkmark:after {
+            content: "";
+            position: absolute;
+            display: none;
+            left: 6px;
+            top: 2px;
+            width: 5px;
+            height: 10px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
+
+        .custom-checkbox input:checked ~ .checkmark:after {
+            display: block;
+        }
+
+        .remember-label {
+            font-size: 14px;
+            color: #6e6e6e;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .remember-label:hover {
+            color: var(--primary-color);
+        }
+
+        .form-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 25px;
+        }
+
+        .forgot-password {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .forgot-password:hover {
+            color: var(--secondary-color);
+            text-decoration: none;
+        }
+
+        .forgot-password:after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -2px;
+            left: 0;
+            background-color: var(--secondary-color);
+            transition: width 0.3s ease;
+        }
+
+        .forgot-password:hover:after {
+            width: 100%;
+        }
+
+        .register-link {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            position: relative;
+            display: inline-block;
+        }
+
+        .register-link:hover {
+            color: var(--secondary-color);
+            text-decoration: none;
+            transform: translateY(-2px);
+        }
+
+        .register-link:after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -2px;
+            left: 0;
+            background-color: var(--secondary-color);
+            transition: width 0.3s ease;
+        }
+
+        .register-link:hover:after {
+            width: 100%;
+        }
+
+        /* Popup Modal Styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background-color: white;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            transform: scale(0.9);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            padding: 25px;
+            text-align: center;
+            position: relative;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            font-weight: 700;
+            font-size: 24px;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 28px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .close-modal:hover {
+            transform: scale(1.2);
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .modal-body {
+            padding: 30px;
+        }
+
+        .modal-body p {
+            margin-bottom: 20px;
+            line-height: 1.6;
+            color: #555;
+            font-size: 16px;
+            text-align: center;
+        }
+
+        .contact-info {
+            background: linear-gradient(135deg, #f8f9fc 0%, #e9ecef 100%);
+            border-radius: 12px;
+            padding: 25px;
+            margin-top: 20px;
+            border-left: 4px solid var(--primary-color);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .contact-info h4 {
+            margin-top: 0;
+            color: var(--primary-color);
+            font-size: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        .contact-details {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            background: white;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .contact-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .contact-item i {
+            width: 40px;
+            color: var(--primary-color);
+            font-size: 18px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .contact-item span {
+            font-size: 16px;
+            color: #444;
+        }
+
+        .modal-footer {
+            padding: 20px 30px;
+            text-align: center;
+            border-top: 1px solid #eee;
+        }
+
+        .btn-modal {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            border: none;
+            padding: 12px 35px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(78, 115, 223, 0.3);
+            font-size: 16px;
+        }
+
+        .btn-modal:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(78, 115, 223, 0.4);
+        }
+
+        /* Alert animations */
+        .alert {
+            border-radius: 10px;
+            border: none;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            animation: slideInDown 0.5s ease;
+        }
+
+        @keyframes slideInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 992px) {
+            .login-container {
+                width: 90%;
+                height: auto;
+                flex-direction: column;
+                margin: 20px 0;
+            }
+
+            .login-left {
+                padding: 30px 20px;
+            }
+
+            .login-right {
+                padding: 30px 20px;
+            }
+
+            .circle-1, .circle-2 {
+                display: none;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .login-container {
+                width: 95%;
+                border-radius: 15px;
+            }
+
+            .login-card-body {
+                padding: 25px;
+            }
+
+            .modal-content {
+                width: 95%;
+            }
+
+            .form-footer {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+
+            .login-left h2 {
+                font-size: 26px;
+            }
+            
+            .contact-item {
+                flex-direction: column;
+                text-align: center;
+                gap: 8px;
+            }
+            
+            .contact-item i {
+                width: auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Animated Background -->
+    <div class="bg-animation">
+        <div class="bg-circle circle-1"></div>
+        <div class="bg-circle circle-2"></div>
+    </div>
+
+    <div class="login-container">
+        <div class="login-left">
+            <div class="login-left-content">
+                <h2>Welcome Back!</h2>
+                <p>Sign in to access your dashboard and manage your account</p>
+
+                <div class="features-list">
+                    <div>
+                        <i class="fas fa-users-cog"></i>
+                        <span>Manage users efficiently</span>
+                    </div>
+                    <div>
+                        <i class="fas fa-shield-alt"></i>
+                        <span>Control access permissions</span>
+                    </div>
+                    <div>
+                        <i class="fas fa-chart-line"></i>
+                        <span>Track user activities</span>
+                    </div>
+                    <div>
+                        <i class="fas fa-database"></i>
+                        <span>Secure data storage</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="login-right">
+            <div class="login-card">
+                <div class="login-card-body">
+                    <div class="login-logo">
+                        <!-- Logo with fallback text if image doesn't load -->
+                        <img src="{% static 'img/logo.png' %}" alt="Company Logo" class="brand-logo-full">
+                    </div>
+
+                    <p class="login-box-msg">Sign in to start your session</p>
+
+                    {% if messages %}
+                    {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible">
+                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                        {{ message }}
+                    </div>
+                    {% endfor %}
+                    {% endif %}
+
+                    <form method="post" action="{% url 'bg_app:login' %}">
+                        {% csrf_token %}
+                        <div class="input-group mb-3">
+                            <input type="text" class="form-control" placeholder="Username" name="username" required>
+                            <div class="input-group-append">
+                                <div class="input-group-text">
+                                    <span class="fas fa-user"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="input-group mb-3">
+                            <input type="password" class="form-control" placeholder="Password" name="password" required>
+                            <div class="input-group-append">
+                                <div class="input-group-text">
+                                    <span class="fas fa-lock"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-footer">
+                            <div class="remember-container">
+                                <label class="custom-checkbox">
+                                    <input type="checkbox" id="remember" name="remember">
+                                    <span class="checkmark"></span>
+                                </label>
+                                <span class="remember-label">Remember Me</span>
+                            </div>
+                            <a href="{% url 'bg_app:password_reset' %}" class="forgot-password">Forgot Password?</a>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary btn-block btn-login">Sign In</button>
+                            </div>
+                        </div>
+                    </form>
+
+                    <div class="text-center mt-3">
+                        <a href="#" class="register-link" id="register-link">
+                            <i class="fas fa-user-plus mr-1"></i> Register a new membership
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Registration Modal Popup -->
+    <div class="modal-overlay" id="registration-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Membership Registration</h3>
+                <button class="close-modal" id="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Thank you for your interest in joining our BG INFOTECHS. To register for a new membership, please
+                    contact our administrator with the following information:</p>
+                <div class="contact-info">
+                    <h4>Contact Administrator</h4>
+                    <div class="contact-details">
+                        <div class="contact-item">
+                            <i class="fas fa-user"></i>
+                            <span>System Administrator</span>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-envelope"></i>
+                            <span>info@bginfotechs.com</span>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-phone"></i>
+                            <span>+977 9842251119</span>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-clock"></i>
+                            <span>Available Sun-Fri, 9:00 AM - 6:00 PM</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-modal" id="ok-button">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Bootstrap 4 -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- AdminLTE App -->
+    <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            // Modal functionality
+            const modal = $('#registration-modal');
+            const registerLink = $('#register-link');
+            const closeModal = $('#close-modal');
+            const okButton = $('#ok-button');
+
+            registerLink.on('click', function (e) {
+                e.preventDefault();
+                modal.addClass('active').show();
+            });
+
+            closeModal.add(okButton).on('click', function () {
+                modal.removeClass('active').delay(300).hide(0);
+            });
+
+            // Close modal when clicking outside the modal content
+            modal.on('click', function (e) {
+                if (e.target === modal[0]) {
+                    modal.removeClass('active').delay(300).hide(0);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

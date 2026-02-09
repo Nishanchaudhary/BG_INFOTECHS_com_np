@@ -1,0 +1,716 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block page_title %}Admin Dashboard{% endblock %}
+
+{% block breadcrumb_active %}Admin Dashboard{% endblock %}
+
+{% block content %}
+
+<style>
+    .stat-card {
+        border: none !important;
+        border-radius: 20px !important;
+        overflow: hidden !important;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+        position: relative !important;
+        background: transparent !important;
+    }
+    
+    .stat-card::before {
+        content: '' !important;
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        background: linear-gradient(135deg, var(--card-gradient-start), var(--card-gradient-end)) !important;
+        z-index: 1 !important;
+        border-radius: 20px !important;
+    }
+    
+    .stat-card .card-body {
+        position: relative !important;
+        z-index: 2 !important;
+        padding: 1.5rem !important;
+    }
+    
+    .stat-card-primary {
+        --card-gradient-start: #667eea !important;
+        --card-gradient-end: #764ba2 !important;
+    }
+    
+    .stat-card-success {
+        --card-gradient-start: #11998e !important;
+        --card-gradient-end: #38ef7d !important;
+    }
+    
+    .stat-card-warning {
+        --card-gradient-start: #f7971e !important;
+        --card-gradient-end: #ffd200 !important;
+    }
+    
+    .stat-card-info {
+        --card-gradient-start: #4facfe !important;
+        --card-gradient-end: #00f2fe !important;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-10px) scale(1.02) !important;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2) !important;
+    }
+    
+    .stat-value {
+        font-size: 2.5rem !important;
+        font-weight: 800 !important;
+        line-height: 1 !important;
+        margin-bottom: 0.5rem !important;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2) !important;
+    }
+    
+    .stat-label {
+        font-size: 0.9rem !important;
+        font-weight: 600 !important;
+        margin-bottom: 0.75rem !important;
+        letter-spacing: 0.5px !important;
+    }
+    
+    .stat-trend {
+        font-size: 0.8rem !important;
+        font-weight: 600 !important;
+        display: flex !important;
+        align-items: center !important;
+    }
+    
+    .stat-icon {
+        position: relative !important;
+        width: 60px !important;
+        height: 60px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+    
+    .stat-icon .icon-bg {
+        position: absolute !important;
+        width: 100% !important;
+        height: 100% !important;
+        background: rgba(255, 255, 255, 0.2) !important;
+        border-radius: 15px !important;
+        transform: rotate(45deg) !important;
+        backdrop-filter: blur(10px) !important;
+    }
+    
+    .stat-icon i {
+        font-size: 1.5rem !important;
+        color: white !important;
+        position: relative !important;
+        z-index: 1 !important;
+        filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.2)) !important;
+    }
+    
+    .stat-footer {
+        border-top: 1px solid rgba(255, 255, 255, 0.2) !important;
+        padding-top: 1rem !important;
+    }
+    
+    .stat-link {
+        font-size: 0.85rem !important;
+        font-weight: 600 !important;
+        text-decoration: none !important;
+        transition: all 0.3s ease !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        opacity: 0.9 !important;
+    }
+    
+    .stat-link:hover {
+        opacity: 1 !important;
+        transform: translateX(5px) !important;
+    }
+    
+    .card-wave {
+        position: absolute !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        height: 30% !important;
+        background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%23ffffff' fill-opacity='0.1' d='M0,96L48,112C96,128,192,160,288,186.7C384,213,480,235,576,213.3C672,192,768,128,864,128C960,128,1056,192,1152,197.3C1248,203,1344,149,1392,122.7L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E") !important;
+        background-size: cover !important;
+        background-position: bottom !important;
+        opacity: 0.3 !important;
+        z-index: 1 !important;
+    }
+    
+    /* Pulse animation for cards */
+    @keyframes pulse-glow {
+        0% {
+            box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4);
+        }
+        70% {
+            box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
+        }
+        100% {
+            box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+        }
+    }
+    
+    .stat-card:hover .stat-icon {
+        animation: pulse-glow 2s infinite;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .stat-value {
+            font-size: 2rem !important;
+        }
+        
+        .stat-icon {
+            width: 50px !important;
+            height: 50px !important;
+        }
+        
+        .stat-icon i {
+            font-size: 1.25rem !important;
+        }
+    }
+    
+    @media (max-width: 576px) {
+        .stat-card .card-body {
+            padding: 1.25rem !important;
+        }
+        
+        .stat-value {
+            font-size: 1.75rem !important;
+        }
+        
+        .stat-label {
+            font-size: 0.8rem !important;
+        }
+    }
+</style>
+
+
+<div class="row">
+    <!-- Stats Cards -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card stat-card stat-card-primary shadow-lg h-100">
+            <div class="card-body position-relative">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div class="stat-content">
+                        <div class="stat-value text-white">{{ total_users }}</div>
+                        <div class="stat-label text-white-50">Total Users</div>
+                        <div class="stat-trend text-success">
+                            <i class="fas fa-arrow-up me-1 " style="color: #38ef7d !important;"></i>
+                            <span style="color: #38ef7d !important;" >12% increase</span>
+                        </div>
+                    </div>
+                    <div class="stat-icon">
+                        <div class="icon-bg"></div>
+                        <i class="fas fa-users"></i>
+                    </div>
+                </div>
+                <div class="stat-footer mt-3">
+                    <a href="{% url 'bg_app:user_list' %}" class="stat-link text-white">
+                        View Details <i class="fas fa-arrow-right ms-1"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="card-wave"></div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card stat-card stat-card-success shadow-lg h-100">
+            <div class="card-body position-relative">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div class="stat-content">
+                        <div class="stat-value text-white">{{ student_users }}</div>
+                        <div class="stat-label text-white-50">Total Students</div>
+                        <div class="stat-trend text-warning">
+                            <i class="fas fa-arrow-up me-1"></i>
+                            <span>8% increase</span>
+                        </div>
+                    </div>
+                    <div class="stat-icon">
+                        <div class="icon-bg"></div>
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                </div>
+                <div class="stat-footer mt-3">
+                    <a href="{% url 'bg_app:user_list' %}?role=student" class="stat-link text-white">
+                        View Details <i class="fas fa-arrow-right ms-1"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="card-wave"></div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card stat-card stat-card-warning shadow-lg h-100">
+            <div class="card-body position-relative">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div class="stat-content">
+                        <div class="stat-value text-white">{{ staff_users }}</div>
+                        <div class="stat-label text-white-50">Total Staff</div>
+                        <div class="stat-trend text-info">
+                            <i class="fas fa-arrow-up me-1"></i>
+                            <span>5% increase</span>
+                        </div>
+                    </div>
+                    <div class="stat-icon">
+                        <div class="icon-bg"></div>
+                        <i class="fas fa-user-tie"></i>
+                    </div>
+                </div>
+                <div class="stat-footer mt-3">
+                    <a href="{% url 'bg_app:user_list' %}?role=staff" class="stat-link text-white">
+                        View Details <i class="fas fa-arrow-right ms-1"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="card-wave"></div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card stat-card stat-card-info shadow-lg h-100">
+            <div class="card-body position-relative">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div class="stat-content">
+                        <div class="stat-value text-white">{{ active_users }}</div>
+                        <div class="stat-label text-white-50">Active Users</div>
+                        <div class="stat-trend text-success">
+                            <i class="fas fa-arrow-up me-1"></i>
+                            <span>15% increase</span>
+                        </div>
+                    </div>
+                    <div class="stat-icon">
+                        <div class="icon-bg"></div>
+                        <i class="fas fa-user-check"></i>
+                    </div>
+                </div>
+                <div class="stat-footer mt-3">
+                    <a href="{% url 'bg_app:user_list' %}?status=active" class="stat-link text-white">
+                        View Details <i class="fas fa-arrow-right ms-1"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="card-wave"></div>
+        </div>
+    </div>
+</div>
+
+
+<div class="row">
+    <!-- Recent Users -->
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow dashboard-card">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
+                <h5 class="mb-0 text-primary">
+                    <i class="fas fa-user-clock me-2"></i>Recently Registered Users
+                </h5>
+                <a href="{% url 'bg_app:user_list' %}" class="btn btn-sm btn-outline-primary">View All</a>
+            </div>
+            <div class="card-body p-0">
+                <div class="list-group list-group-flush">
+                    {% for recent_user in recent_users %}
+                    <div class="list-group-item d-flex align-items-center py-3">
+                        <div class="flex-shrink-0">
+                            {% if recent_user.profile_picture %}
+                                <img src="{{ recent_user.profile_picture.url }}" alt="User Image" class="rounded-circle" width="50" height="50">
+                            {% else %}
+                                <div class="avatar-placeholder rounded-circle d-flex align-items-center justify-content-center bg-light text-secondary" style="width: 50px; height: 50px;">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h6 class="mb-0">
+                                    <a href="{% url 'bg_app:user_detail' recent_user.id %}" class="text-decoration-none text-dark">
+                                        {{ recent_user.get_full_name|default:recent_user.username }}
+                                    </a>
+                                </h6>
+                                <span class="badge bg-{% if recent_user.status %}success{% else %}danger{% endif %} rounded-pill">
+                                    {% if recent_user.status %}Active{% else %}Inactive{% endif %}
+                                </span>
+                            </div>
+                            <p class="mb-0 text-muted small">
+                                <span class="badge bg-light text-dark">{{ recent_user.roll|title }}</span> 
+                                • Joined {{ recent_user.date_joined|date:"M d, Y" }}
+                            </p>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="list-group-item text-center py-4 text-muted">
+                        <i class="fas fa-users fa-2x mb-2"></i>
+                        <p class="mb-0">No users found</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Recent Students & Staff -->
+    <div class="col-lg-6">
+        <div class="card shadow dashboard-card mb-4">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
+                <h5 class="mb-0 text-success">
+                    <i class="fas fa-graduation-cap me-2"></i>Recent Students
+                </h5>
+                <a href="{% url 'bg_app:user_list' %}?role=student" class="btn btn-sm btn-outline-success">View All</a>
+            </div>
+            <div class="card-body p-0">
+                <div class="list-group list-group-flush">
+                    {% for student in recent_students %}
+                    <div class="list-group-item d-flex align-items-center py-3">
+                        <div class="flex-shrink-0">
+                            {% if student.user.profile_picture %}
+                                <img src="{{ student.user.profile_picture.url }}" alt="User Image" class="rounded-circle" width="50" height="50">
+                            {% else %}
+                                <div class="avatar-placeholder rounded-circle d-flex align-items-center justify-content-center bg-light text-secondary" style="width: 50px; height: 50px;">
+                                    <i class="fas fa-user-graduate"></i>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h6 class="mb-0">
+                                    <a href="{% url 'bg_app:user_detail' student.user.id %}" class="text-decoration-none text-dark">
+                                        {{ student.user.get_full_name|default:student.user.username }}
+                                    </a>
+                                </h6>
+                                <span class="badge bg-info text-dark">{{ student.enrollment_number }}</span>
+                            </div>
+                            <p class="mb-0 text-muted small">
+                                {{ student.training }} • 
+                                <span class="fw-bold">Fees: ₹{{ student.fees_paid }}/₹{{ student.total_fees }}</span>
+                            </p>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="list-group-item text-center py-4 text-muted">
+                        <i class="fas fa-graduation-cap fa-2x mb-2"></i>
+                        <p class="mb-0">No students found</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="card shadow dashboard-card">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
+                <h5 class="mb-0 text-warning">
+                    <i class="fas fa-user-tie me-2"></i>Recent Staff
+                </h5>
+                <a href="{% url 'bg_app:user_list' %}?role=staff" class="btn btn-sm btn-outline-warning">View All</a>
+            </div>
+            <div class="card-body p-0">
+                <div class="list-group list-group-flush">
+                    {% for staff in recent_staff %}
+                    <div class="list-group-item d-flex align-items-center py-3">
+                        <div class="flex-shrink-0">
+                            {% if staff.user.profile_picture %}
+                                <img src="{{ staff.user.profile_picture.url }}" alt="User Image" class="rounded-circle" width="50" height="50">
+                            {% else %}
+                                <div class="avatar-placeholder rounded-circle d-flex align-items-center justify-content-center bg-light text-secondary" style="width: 50px; height: 50px;">
+                                    <i class="fas fa-chalkboard-teacher"></i>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h6 class="mb-0">
+                                    <a href="{% url 'bg_app:user_detail' staff.user.id %}" class="text-decoration-none text-dark">
+                                        {{ staff.user.get_full_name|default:staff.user.username }}
+                                    </a>
+                                </h6>
+                                <span class="badge bg-warning text-dark">{{ staff.employee_id }}</span>
+                            </div>
+                            <p class="mb-0 text-muted small">
+                                {{ staff.position }} • 
+                                <span class="fw-bold">Salary: ₹{{ staff.paid_salary }}/₹{{ staff.salary }}</span>
+                            </p>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="list-group-item text-center py-4 text-muted">
+                        <i class="fas fa-user-tie fa-2x mb-2"></i>
+                        <p class="mb-0">No staff members found</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card shadow border-0 dashboard-card">
+            <div class="card-header bg-white py-3">
+                <h4 class="card-title mb-0 text-primary">
+                    <i class="fas fa-bolt me-2"></i>Quick Actions
+                </h4>
+                <p class="text-muted mb-0 small">Manage your system with these quick actions</p>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <!-- Add New User -->
+                    <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12">
+                        <a href="{% url 'bg_app:user_create' %}" class="quick-action-btn btn-primary-custom">
+                            <div class="action-icon mb-2">
+                                <i class="fas fa-user-plus fa-2x"></i>
+                            </div>
+                            <span class="action-text">Add New User</span>
+                            <small class="action-desc d-block text-white-50 mt-1">Create new user account</small>
+                        </a>
+                    </div>
+                    
+                    <!-- Manage Students -->
+                    <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12">
+                        <a href="{% url 'bg_app:user_list' %}?role=student" class="quick-action-btn btn-success-custom">
+                            <div class="action-icon mb-2">
+                                <i class="fas fa-graduation-cap fa-2x"></i>
+                            </div>
+                            <span class="action-text">Manage Students</span>
+                            <small class="action-desc d-block text-white-50 mt-1">View and manage students</small>
+                        </a>
+                    </div>
+                    
+                    <!-- Manage Staff -->
+                    <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12">
+                        <a href="{% url 'bg_app:user_list' %}?role=staff" class="quick-action-btn btn-warning-custom">
+                            <div class="action-icon mb-2">
+                                <i class="fas fa-user-tie fa-2x"></i>
+                            </div>
+                            <span class="action-text">Manage Staff</span>
+                            <small class="action-desc d-block text-white-50 mt-1">View and manage staff members</small>
+                        </a>
+                    </div>
+                    
+                    <!-- Company Settings -->
+                    <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12">
+                        <a href="{% url 'company_app:company_profile' %}" class="quick-action-btn btn-info-custom">
+                            <div class="action-icon mb-2">
+                                <i class="fas fa-building fa-2x"></i>
+                            </div>
+                            <span class="action-text">Company Settings</span>
+                            <small class="action-desc d-block text-white-50 mt-1">Configure company profile</small>
+                        </a>
+                    </div>
+                    
+                    <!-- Staff Permissions -->
+                    <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12">
+                        <a href="{% url 'bg_app:staff_permissions' %}" class="quick-action-btn btn-purple-custom">
+                            <div class="action-icon mb-2">
+                                <i class="fas fa-user-shield fa-2x"></i>
+                            </div>
+                            <span class="action-text">Staff Permissions</span>
+                            <small class="action-desc d-block text-white-50 mt-1">Manage access controls</small>
+                        </a>
+                    </div>
+                    
+                    <!-- Reports -->
+                    <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12">
+                        <a href="#" class="quick-action-btn btn-danger-custom">
+                            <div class="action-icon mb-2">
+                                <i class="fas fa-chart-bar fa-2x"></i>
+                            </div>
+                            <span class="action-text">Reports</span>
+                            <small class="action-desc d-block text-white-50 mt-1">Generate system reports</small>
+                        </a>
+                    </div>
+                    
+                    <!-- User Activity -->
+                    <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12">
+                        <a href="#" class="quick-action-btn btn-teal-custom">
+                            <div class="action-icon mb-2">
+                                <i class="fas fa-history fa-2x"></i>
+                            </div>
+                            <span class="action-text">User Activity</span>
+                            <small class="action-desc d-block text-white-50 mt-1">View user logs</small>
+                        </a>
+                    </div>
+                    
+                    <!-- Backup -->
+                    <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12">
+                        <a href="#" class="quick-action-btn btn-dark-custom">
+                            <div class="action-icon mb-2">
+                                <i class="fas fa-database fa-2x"></i>
+                            </div>
+                            <span class="action-text">Backup</span>
+                            <small class="action-desc d-block text-white-50 mt-1">System backup & restore</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .dashboard-card {
+        border-radius: 12px !important;
+        border: none !important;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .dashboard-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1) !important;
+    }
+    
+    .stat-card {
+        border-radius: 10px !important;
+        transition: transform 0.3s ease;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-3px);
+    }
+
+    
+    .text-gray-800 {
+        color: #5a5c69 !important;
+    }
+    
+    .text-gray-300 {
+        color: #dddfeb !important;
+    }
+    
+    .avatar-placeholder {
+        border: 1px solid #e3e6f0;
+    }
+    
+    .quick-action-btn {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        height: 100% !important;
+        padding: 25px 15px !important;
+        border-radius: 10px !important;
+        text-decoration: none !important;
+        color: white !important;
+        transition: all 0.3s ease !important;
+        position: relative !important;
+        overflow: hidden !important;
+        border: none !important;
+        text-align: center !important;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .quick-action-btn::before {
+        content: '' !important;
+        position: absolute !important;
+        top: 0 !important;
+        left: -100% !important;
+        width: 100% !important;
+        height: 100% !important;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent) !important;
+        transition: all 0.5s ease !important;
+    }
+    
+    .quick-action-btn:hover::before {
+        left: 100% !important;
+    }
+    
+    .quick-action-btn:hover {
+        transform: translateY(-5px) !important;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.2) !important;
+        text-decoration: none !important;
+        color: white !important;
+    }
+    
+    .action-icon {
+        transition: transform 0.3s ease !important;
+    }
+    
+    .quick-action-btn:hover .action-icon {
+        transform: scale(1.1) !important;
+    }
+    
+    .action-text {
+        font-size: 1.1rem !important;
+        font-weight: 600 !important;
+        margin-bottom: 5px !important;
+    }
+    
+    .action-desc {
+        font-size: 0.85rem !important;
+        opacity: 0.9 !important;
+    }
+    
+    .btn-primary-custom {
+        background: linear-gradient(45deg, #4361ee, #3a0ca3) !important;
+    }
+    
+    .btn-success-custom {
+        background: linear-gradient(45deg, #2ecc71, #27ae60) !important;
+    }
+    
+    .btn-warning-custom {
+        background: linear-gradient(45deg, #f39c12, #e67e22) !important;
+    }
+    
+    .btn-info-custom {
+        background: linear-gradient(45deg, #3498db, #2980b9) !important;
+    }
+    
+    .btn-purple-custom {
+        background: linear-gradient(45deg, #6f42c1, #8e44ad) !important;
+    }
+    
+    .btn-danger-custom {
+        background: linear-gradient(45deg, #e74c3c, #c0392b) !important;
+    }
+    
+    .btn-teal-custom {
+        background: linear-gradient(45deg, #20c997, #17a2b8) !important;
+    }
+    
+    .btn-dark-custom {
+        background: linear-gradient(45deg, #2c3e50, #34495e) !important;
+    }
+    
+    .card-header {
+        border-bottom: 1px solid rgba(0,0,0,0.05) !important;
+    }
+    
+    .list-group-item {
+        border: none !important;
+        transition: background-color 0.2s ease;
+    }
+    
+    .list-group-item:hover {
+        background-color: #f8f9fa;
+    }
+    
+    @media (max-width: 576px) {
+        .action-text {
+            font-size: 1rem !important;
+        }
+        
+        .action-desc {
+            display: none !important;
+        }
+        
+        .quick-action-btn {
+            padding: 15px 10px !important;
+        }
+        
+        .row.g-3 {
+            row-gap: 0.75rem !important;
+        }
+        
+        .h5 {
+            font-size: 1.25rem !important;
+        }
+    }
+</style>
+{% endblock %}

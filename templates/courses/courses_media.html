@@ -1,0 +1,598 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-12">
+            <div class="card border-dark shadow-lg">
+                <div class="card-header bg-info text-white border-dark">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-photo-video me-2"></i>
+                            {{ page_title }}
+                        </h5>
+                        {% if media_permissions.can_add %}
+                        <a href="{% url 'course_app:media_create' course.pk %}" class="btn btn-light btn-sm">
+                            <i class="fas fa-plus me-2"></i>Add New Media
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="card-body p-4">
+                    <!-- Course Info -->
+                    <div class="row mb-4">
+                        <div class="col-md-8">
+                            <div class="card border-primary">
+                                <div class="card-body">
+                                    <div class="row align-items-center">
+                                        <div class="col-auto">
+                                            {% if course.image %}
+                                            <img src="{{ course.image.url }}" alt="{{ course.title }}" class="rounded" style="width: 80px; height: 60px; object-fit: cover;">
+                                            {% else %}
+                                            <div class="bg-light rounded d-flex align-items-center justify-content-center" style="width: 80px; height: 60px;">
+                                                <i class="fas fa-book text-muted fa-2x"></i>
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                        <div class="col">
+                                            <h6 class="mb-1 fw-bold">{{ course.title }}</h6>
+                                            <p class="mb-1 text-muted">{{ course.short_description }}</p>
+                                            <div class="d-flex gap-2 mt-2">
+                                                <span class="badge bg-primary">
+                                                    <i class="fas fa-clock me-1"></i>{{ course.duration_display }}
+                                                </span>
+                                                {% if course.has_discount %}
+                                                <span class="badge bg-success">
+                                                    <i class="fas fa-tag me-1"></i>₹ {{ course.offer_price }}
+                                                </span>
+                                                <span class="badge bg-danger">
+                                                    -{{ course.discount_percentage }}%
+                                                </span>
+                                                {% else %}
+                                                <span class="badge bg-secondary">
+                                                    <i class="fas fa-tag me-1"></i>₹ {{ course.price }}
+                                                </span>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card border-success">
+                                <div class="card-body text-center">
+                                    <h6 class="text-success mb-2">
+                                        <i class="fas fa-chart-bar me-2"></i>Media Statistics
+                                    </h6>
+                                    <div class="row text-center">
+                                        <div class="col-6">
+                                            <div class="border-end">
+                                                <h4 class="text-primary mb-0">{{ media_list.count }}</h4>
+                                                <small class="text-muted">Total Media</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <h4 class="text-success mb-0">{{ active_media_count }}</h4>
+                                            <small class="text-muted">Active</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Media List -->
+                    <div class="card mb-4 border-warning">
+                        <div class="card-header bg-light border-warning">
+                            <h6 class="mb-0">
+                                <i class="fas fa-images text-warning me-2"></i>
+                                Media Files
+                                <span class="badge bg-primary ms-2">{{ media_list.count }} items</span>
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            {% if media_list %}
+                            <div class="row g-3" id="media-list">
+                                {% for media in media_list %}
+                                <div class="col-lg-6 col-xl-4 media-item" data-media-id="{{ media.pk }}">
+                                    <div class="card h-100 border {% if media.status %}border-success{% else %}border-secondary{% endif %}">
+                                        <div class="card-header bg-light d-flex justify-content-between align-items-center py-2">
+                                            <small class="fw-bold">
+                                                <i class="fas {{ media.file_type_icon }} me-1"></i>
+                                                {{ media.get_media_type_display }}
+                                            </small>
+                                            <div class="btn-group" role="group">
+                                                {% if media_permissions.can_change %}
+                                                <a href="{% url 'course_app:media_update' course.pk media.pk %}" class="btn btn-sm btn-outline-warning" data-bs-toggle="tooltip" title="Edit Media">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                {% endif %}
+                                                {% if media_permissions.can_delete %}
+                                                <a href="{% url 'course_app:media_delete' course.pk media.pk %}" class="btn btn-sm btn-outline-danger" data-bs-toggle="tooltip" title="Delete Media">
+                                                    <i class="fas fa-trash"></i>
+                                                </a>
+                                                {% endif %}
+                                                <button type="button" class="btn btn-sm btn-outline-info dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                                    <i class="fas fa-cog"></i>
+                                                </button>
+                                                <ul class="dropdown-menu dropdown-menu-end">
+                                                    {% if media_permissions.can_change %}
+                                                    <li>
+                                                        <a class="dropdown-item status-change-btn" href="#" data-media-id="{{ media.pk }}" data-current-status="{{ media.status }}">
+                                                            <i class="fas fa-power-off me-2 {% if media.status %}text-success{% else %}text-danger{% endif %}"></i>
+                                                            {% if media.status %}Deactivate{% else %}Activate{% endif %}
+                                                        </a>
+                                                    </li>
+                                                    {% endif %}
+                                                    <li>
+                                                        <a class="dropdown-item" href="{{ media.file.url }}" target="_blank" download>
+                                                            <i class="fas fa-download me-2 text-primary"></i>Download
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <div class="card-body">
+                                            <!-- Media Preview -->
+                                            <div class="mb-3 text-center">
+                                                {% if media.media_type == 'image' %}
+                                                <div class="image-preview-container">
+                                                    <img src="{{ media.file.url }}" alt="{{ media.caption }}" class="img-thumbnail w-100 preview-media" style="max-height: 150px; object-fit: cover; cursor: pointer;" onclick="openImageModal('{{ media.file.url }}', '{{ media.caption|default:"Image Preview" }}')">
+                                                </div>
+                                                {% else %}
+                                                <div class="video-preview-container">
+                                                    <div class="video-wrapper">
+                                                        <video class="preview-media w-100" style="max-height: 150px; background: #000; cursor: pointer;" onclick="openVideoModal('{{ media.file.url }}', '{{ media.caption|default:"Video Preview" }}')">
+                                                            <source src="{{ media.file.url }}" type="video/mp4">
+                                                            Your browser does not support the video tag.
+                                                        </video>
+                                                        <div class="video-overlay" onclick="openVideoModal('{{ media.file.url }}', '{{ media.caption|default:"Video Preview" }}')">
+                                                            <div class="play-button">
+                                                                <i class="fas fa-play fa-2x text-white"></i>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                {% endif %}
+                                            </div>
+
+                                            <!-- Media Details -->
+                                            <div class="media-details">
+                                                <h6 class="fw-bold mb-2 text-truncate" title="{{ media.caption|default:'No Caption' }}">
+                                                    {{ media.caption|default:"No Caption" }}
+                                                </h6>
+                                                
+                                                <div class="row small text-muted mb-2">
+                                                    <div class="col-6">
+                                                        <i class="fas fa-sort-numeric-up me-1"></i>
+                                                        Order: {{ media.order }}
+                                                    </div>
+                                                    <div class="col-6 text-end">
+                                                        {% if media.status %}
+                                                        <span class="badge bg-success">
+                                                            <i class="fas fa-check-circle me-1"></i>Active
+                                                        </span>
+                                                        {% else %}
+                                                        <span class="badge bg-danger">
+                                                            <i class="fas fa-times-circle me-1"></i>Inactive
+                                                        </span>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+
+                                                <div class="small text-muted">
+                                                    <i class="fas fa-calendar me-1"></i>
+                                                    Created: {{ media.created_at|date:"M d, Y H:i" }}
+                                                </div>
+
+                                                <div class="small text-muted mt-1">
+                                                    <i class="fas fa-file me-1"></i>
+                                                    {{ media.file.name|slice:"-20:" }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% else %}
+                            <div class="text-center py-5">
+                                <i class="fas fa-inbox fa-4x text-muted mb-3"></i>
+                                <h5 class="text-muted">No media files found</h5>
+                                <p class="text-muted mb-4">Get started by adding your first media file</p>
+                                {% if media_permissions.can_add %}
+                                <a href="{% url 'course_app:media_create' course.pk %}" class="btn btn-primary btn-lg">
+                                    <i class="fas fa-plus me-2"></i>Add First Media File
+                                </a>
+                                {% endif %}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Navigation -->
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <a href="{% url 'course_app:courses_list' %}" class="btn btn-outline-secondary">
+                                    <i class="fas fa-arrow-left me-2"></i>Back to Courses
+                                </a>
+                                {% if media_permissions.can_add %}
+                                <a href="{% url 'course_app:media_create' course.pk %}" class="btn btn-success">
+                                    <i class="fas fa-plus me-2"></i>Add New Media
+                                </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Image Preview Modal -->
+<div class="modal fade" id="imagePreviewModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header bg-dark text-white">
+                <h5 class="modal-title" id="imageModalTitle">Image Preview</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" onclick="closeImageModal()"></button>
+            </div>
+            <div class="modal-body text-center p-0">
+                <img id="modalImagePreview" src="" alt="Preview" class="img-fluid" style="max-height: 80vh; object-fit: contain;">
+            </div>
+            <div class="modal-footer bg-dark">
+                <button type="button" class="btn btn-secondary" onclick="closeImageModal()">
+                    <i class="fas fa-times me-2"></i>Close
+                </button>
+                <a id="downloadImageBtn" href="#" class="btn btn-primary" download>
+                    <i class="fas fa-download me-2"></i>Download
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Video Preview Modal -->
+<div class="modal fade" id="videoPreviewModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header bg-dark text-white">
+                <h5 class="modal-title" id="videoModalTitle">Video Preview</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" onclick="closeVideoModal()"></button>
+            </div>
+            <div class="modal-body text-center p-0 bg-black">
+                <video id="modalVideoPlayer" controls class="w-100" style="max-height: 70vh;">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+            <div class="modal-footer bg-dark">
+                <button type="button" class="btn btn-secondary" onclick="closeVideoModal()">
+                    <i class="fas fa-times me-2"></i>Close
+                </button>
+                <a id="downloadVideoBtn" href="#" class="btn btn-primary" download>
+                    <i class="fas fa-download me-2"></i>Download
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.media-item .card {
+    transition: all 0.3s ease;
+    border-radius: 0.5rem;
+}
+
+.media-item .card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.img-thumbnail {
+    border-radius: 0.375rem;
+    border: 2px solid #dee2e6;
+}
+
+/* Video Preview Styles */
+.video-wrapper {
+    position: relative;
+    background: #000;
+    border-radius: 0.375rem;
+    overflow: hidden;
+}
+
+.video-wrapper video {
+    border-radius: 0.375rem;
+    cursor: pointer;
+}
+
+.video-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.video-overlay:hover {
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.play-button {
+    width: 60px;
+    height: 60px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(5px);
+    transition: all 0.3s ease;
+}
+
+.play-button:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
+}
+
+.preview-media {
+    transition: transform 0.2s ease;
+}
+
+.preview-media:hover {
+    transform: scale(1.02);
+}
+
+/* Button group styles */
+.btn-group .btn {
+    border-radius: 0.375rem;
+    margin-left: 2px;
+}
+
+.btn-group .btn:first-child {
+    margin-left: 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .media-item .col-lg-6 {
+        margin-bottom: 1rem;
+    }
+    
+    .card-body {
+        padding: 1rem !important;
+    }
+    
+    .d-flex {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .video-wrapper video {
+        max-height: 120px;
+    }
+    
+    .btn-group {
+        width: 100%;
+        justify-content: flex-end;
+    }
+}
+
+/* Status badges */
+.badge {
+    font-size: 0.75em;
+}
+
+/* Modal styles */
+.modal-content {
+    border-radius: 0.5rem;
+    border: none;
+}
+
+.modal-header {
+    border-bottom: 1px solid #444;
+}
+
+.modal-footer {
+    border-top: 1px solid #444;
+}
+
+/* Text truncation */
+.text-truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Loading animation */
+.loading-spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #3498db;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Close button styles */
+.btn-close-white {
+    filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+.btn-close-white:hover {
+    filter: invert(1) grayscale(100%) brightness(300%);
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Initialize modals
+let imageModal = null;
+let videoModal = null;
+
+// Initialize modals when document is ready
+document.addEventListener('DOMContentLoaded', function() {
+    imageModal = new bootstrap.Modal(document.getElementById('imagePreviewModal'));
+    videoModal = new bootstrap.Modal(document.getElementById('videoPreviewModal'));
+});
+
+// Open image in modal
+function openImageModal(imageUrl, caption) {
+    const modalImage = document.getElementById('modalImagePreview');
+    const downloadBtn = document.getElementById('downloadImageBtn');
+    const modalTitle = document.getElementById('imageModalTitle');
+    
+    modalImage.src = imageUrl;
+    downloadBtn.href = imageUrl;
+    downloadBtn.download = imageUrl.split('/').pop();
+    modalTitle.textContent = caption || 'Image Preview';
+    
+    if (imageModal) {
+        imageModal.show();
+    }
+}
+
+// Open video in modal
+function openVideoModal(videoUrl, caption) {
+    const modalVideo = document.getElementById('modalVideoPlayer');
+    const downloadBtn = document.getElementById('downloadVideoBtn');
+    const modalTitle = document.getElementById('videoModalTitle');
+    
+    // Stop any currently playing video
+    if (modalVideo) {
+        modalVideo.pause();
+        modalVideo.currentTime = 0;
+    }
+    
+    // Set new video source
+    modalVideo.src = videoUrl;
+    downloadBtn.href = videoUrl;
+    downloadBtn.download = videoUrl.split('/').pop();
+    modalTitle.textContent = caption || 'Video Preview';
+    
+    if (videoModal) {
+        videoModal.show();
+    }
+}
+
+// Close image modal
+function closeImageModal() {
+    if (imageModal) {
+        imageModal.hide();
+    }
+    // Clean up
+    const modalImage = document.getElementById('modalImagePreview');
+    if (modalImage) {
+        modalImage.src = '';
+    }
+}
+
+// Close video modal
+function closeVideoModal() {
+    if (videoModal) {
+        videoModal.hide();
+    }
+    // Clean up
+    const modalVideo = document.getElementById('modalVideoPlayer');
+    if (modalVideo) {
+        modalVideo.pause();
+        modalVideo.currentTime = 0;
+        modalVideo.removeAttribute('src');
+    }
+}
+
+// Add event listeners for modal hidden events
+document.addEventListener('DOMContentLoaded', function() {
+    const imageModalElement = document.getElementById('imagePreviewModal');
+    const videoModalElement = document.getElementById('videoPreviewModal');
+    
+    if (imageModalElement) {
+        imageModalElement.addEventListener('hidden.bs.modal', function() {
+            const modalImage = document.getElementById('modalImagePreview');
+            if (modalImage) {
+                modalImage.src = '';
+            }
+        });
+    }
+    
+    if (videoModalElement) {
+        videoModalElement.addEventListener('hidden.bs.modal', function() {
+            const modalVideo = document.getElementById('modalVideoPlayer');
+            if (modalVideo) {
+                modalVideo.pause();
+                modalVideo.currentTime = 0;
+                modalVideo.removeAttribute('src');
+            }
+        });
+    }
+});
+
+// Toggle media status
+$(document).ready(function() {
+    $(document).on('click', '.status-change-btn', function(e) {
+        e.preventDefault();
+        const mediaId = $(this).data('media-id');
+        const currentStatus = $(this).data('current-status');
+        const newStatus = !currentStatus;
+        
+        if (confirm(`Are you sure you want to ${newStatus ? 'activate' : 'deactivate'} this media?`)) {
+            // Show loading state
+            const originalText = $(this).html();
+            $(this).html('<div class="loading-spinner"></div>');
+            $(this).prop('disabled', true);
+            
+            $.ajax({
+                url: "{% url 'course_app:toggle_media_status' course.pk 0 %}".replace('0', mediaId),
+                type: 'POST',
+                data: {
+                    'status': newStatus,
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                success: function(response) {
+                    if (response.success) {
+                        // Reload to show updated status
+                        location.reload();
+                    } else {
+                        alert('Error: ' + response.error);
+                        // Restore button state
+                        $(this).html(originalText);
+                        $(this).prop('disabled', false);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    alert('Error updating media status: ' + error);
+                    // Restore button state
+                    $('.status-change-btn[data-media-id="' + mediaId + '"]').html(originalText);
+                    $('.status-change-btn[data-media-id="' + mediaId + '"]').prop('disabled', false);
+                }
+            });
+        }
+    });
+
+    // Initialize tooltips
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl)
+    });
+});
+</script>
+{% endblock %}

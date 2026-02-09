@@ -1,0 +1,489 @@
+{% extends 'Frontend/base.html' %}
+{% load static %}
+{% block title %}Trainings - BG Infotechs{% endblock %}
+{% block extra_css %}
+<style>
+    :root {
+        --primary11: #4361ee;
+        --primary-dark11: #3a56d4;
+        --secondary11: #7209b7;
+        --accent11: #f72585;
+        --light11: #f8f9fa;
+        --dark11: #212529;
+        --success11: #4cc9f0;
+        --gradient11: linear-gradient(135deg, var(--primary11), var(--secondary11));
+        --shadow11: 0 10px 30px rgba(0, 0, 0, 0.08);
+        --shadow-hover11: 0 15px 40px rgba(0, 0, 0, 0.12);
+    }
+
+    /* Header Section */
+    .bg-enrollment {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        min-height: 100vh;
+    }
+
+    .enroll-header {
+        padding: 2rem 0;
+        background-image: url('assets/img/webdesign.jpg');
+        background-repeat: no-repeat;
+        color: white;
+        position: relative;
+        background-position: center;
+        background-size: cover;
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 545px;
+    }
+
+    .enroll-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.6);
+    }
+
+    .breadcrumb {
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50px;
+        padding: 0.5rem 1rem;
+        backdrop-filter: blur(10px);
+    }
+
+    .breadcrumb-item a {
+        color: rgba(255, 255, 255, 0.9);
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .breadcrumb-item a:hover {
+        color: white;
+        transform: translateY(-1px);
+    }
+
+    .breadcrumb-item.active {
+        color: white;
+        font-weight: 500;
+    }
+
+    .header-content {
+        text-align: center;
+        padding: 3rem 0;
+        position: relative;
+        z-index: 1;
+    }
+
+    .enroll-title {
+        font-size: 3rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        animation: fadeInUp 0.8s ease-out;
+    }
+
+    .header-content .lead {
+        font-size: 1.2rem;
+        opacity: 0.9;
+        max-width: 600px;
+        margin: 0 auto;
+        animation: fadeInUp 0.8s ease-out 0.2s both;
+    }
+
+    /* Form Container */
+    .form-container {
+        background: white;
+        border-radius: 20px;
+        padding: 2.5rem;
+        box-shadow: var(--shadow11);
+        margin-bottom: 3rem;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .form-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 5px;
+        background: var(--gradient11);
+    }
+
+    .form-container:hover {
+        box-shadow: var(--shadow-hover11);
+        transform: translateY(-5px);
+    }
+
+    .form-title {
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        color: var(--dark11);
+        position: relative;
+        padding-bottom: 0.5rem;
+    }
+
+    .form-title::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 50px;
+        height: 3px;
+        background: var(--primary11);
+        border-radius: 10px;
+    }
+
+    /* Course Summary */
+    .course-summary {
+        background: #f8f9fa;
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        border-left: 4px solid var(--primary11);
+        transition: all 0.3s ease;
+    }
+
+    .course-summary:hover {
+        transform: translateX(5px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    }
+
+    .course-image-small {
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 1rem;
+        font-size: 1.5rem;
+        border-radius: 50%;
+    }
+
+    .course-info-small h4 {
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+        color: var(--dark11);
+    }
+
+    .course-price {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--primary11);
+    }
+
+    .course-price span {
+        font-size: 1rem;
+        color: #6c757d;
+        text-decoration: line-through;
+        margin-left: 0.5rem;
+    }
+
+    /* Form Elements */
+    .form-label {
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+        color: #495057;
+    }
+
+    .form-control {
+        padding: 0.75rem 1rem;
+        border: 2px solid #e9ecef;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+        font-size: 1rem;
+    }
+
+    .form-control:focus {
+        border-color: var(--primary11);
+        box-shadow: 0 0 0 0.2rem rgba(67, 97, 238, 0.15);
+    }
+
+    .form-check-input:checked {
+        background-color: var(--primary11);
+        border-color: var(--primary11);
+    }
+
+    /* Buttons */
+    .btn-enroll {
+        background: linear-gradient(90deg, #00c6ff 0%, #0072ff 100%);
+        color: white;
+        border: none;
+        padding: 1rem 2rem;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 1.1rem;
+        width: 100%;
+        margin-top: 1.5rem;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-enroll::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        transition: all 0.6s ease;
+    }
+
+    .btn-enroll:hover::before {
+        left: 100%;
+    }
+
+    .btn-enroll:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(67, 97, 238, 0.3);
+    }
+
+    .btn-enroll:active {
+        transform: translateY(-1px);
+    }
+
+    .btn-success {
+        background: var(--success11);
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 50px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .btn-success:hover {
+        background: #3ab0d6;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(76, 201, 240, 0.4);
+    }
+
+    /* Alert Messages */
+    .alert {
+        border-radius: 12px;
+        border: none;
+        padding: 1rem 1.5rem;
+    }
+
+    .alert-success {
+        background: rgba(76, 201, 240, 0.1);
+        color: var(--success11);
+        border-left: 4px solid var(--success11);
+    }
+
+    .alert-danger {
+        background: rgba(247, 37, 133, 0.1);
+        color: var(--accent11);
+        border-left: 4px solid var(--accent11);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .enroll-title {
+            font-size: 2.25rem;
+        }
+
+        .course-summary {
+            flex-direction: column;
+            text-align: center;
+            gap: 1rem;
+        }
+
+        .course-image-small {
+            margin: 0 auto;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<main class="main">
+    <div class="page-title light-background">
+        <div class="container">
+            <h1 data-aos="fade-right">BG-Infotechs</h1>
+            <nav class="breadcrumbs" data-aos="fade-right" data-aos-delay="100">
+                <ol>
+                    <li><a href="{% url 'frontend_app:home' %}"><i class="fas fa-home"></i> Home</a></li>
+                    <li class="current">Trainings</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Enrollment Page -->
+    <div class="bg-enrollment">
+        <!-- Enrollment Form Section -->
+        <section class="enrollment-form-section">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-lg-10">
+                        <!-- Display Messages -->
+                        {% if messages %}
+                        <div class="mb-4">
+                            {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+
+                        <div class="form-container">
+                            <h2 class="form-title">Student Information</h2>
+                            <div class="course-summary d-flex align-items-center">
+                                <div class="course-image-small">
+                                    <img src="{% static 'img/programmer.gif' %}" class="img-fluid" alt="">
+                                </div>
+                                <div class="course-info-small">
+                                    <h4>{{ course.title }}</h4>
+                                    <p class="mb-0 text-dark">{{ course.duration_display }}</p>
+                                </div>
+                                <div class="ms-auto">
+                                    <div class="course-contact-info d-flex align-items-center">
+                                        <i class="fas fa-info-circle me-2" style="color:#007bff;"></i>
+                                        <span class="text-dark">Contact us for fees</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Use proper form submission with correct action URL -->
+                            <form method="POST" action="{% url 'frontend_app:process_enrollment' course.id %}">
+                                {% csrf_token %}
+                                
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="first_name" class="form-label">First Name *</label>
+                                            <input type="text" class="form-control" id="first_name" name="first_name" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="last_name" class="form-label">Last Name *</label>
+                                            <input type="text" class="form-control" id="last_name" name="last_name" required>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="email" class="form-label">Email Address *</label>
+                                            <input type="email" class="form-control" id="email" name="email" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="contact_number" class="form-label">Phone Number *</label>
+                                            <input type="tel" class="form-control" id="contact_number" name="contact_number" required>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="address" class="form-label">Address</label>
+                                    <textarea class="form-control border-2 text-dark " id="address" name="address" rows="3"></textarea>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="education" class="form-label">Highest Education</label>
+                                            <select class="form-control border-2" id="education" name="education">
+                                                <option value="">Select Education Level</option>
+                                                <option value="high_school">High School Diploma</option>
+                                                <option value="bachelor">Bachelor's Degree</option>
+                                                <option value="master">Master's Degree</option>
+                                                <option value="phd">PhD</option>
+                                                <option value="other">Other</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="experience" class="form-label">IT Experience</label>
+                                            <select class="form-control border-2 " id="experience" name="experience">
+                                                <option value="">Select Experience Level</option>
+                                                <option value="none">No Experience</option>
+                                                <option value="less_than_1_year">Beginner (Less than 1 year)</option>
+                                                <option value="1_3_years">Intermediate (1-3 years)</option>
+                                                <option value="3_5_years">Advanced (3-5 years)</option>
+                                                <option value="more_than_5_years">Expert (More than 5 years)</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">How did you hear about us?</label>
+                                    <div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input border-2 " type="radio" name="source" id="friend" value="friend">
+                                            <label class="form-check-label text-dark" for="friend">Friend/Colleague</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input border-2 " type="radio" name="source" id="social" value="social_media">
+                                            <label class="form-check-label text-dark" for="social">Social Media</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input border-2 " type="radio" name="source" id="website" value="website">
+                                            <label class="form-check-label text-dark" for="website">Website</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input border-2 " type="radio" name="source" id="other" value="other">
+                                            <label class="form-check-label text-dark" for="other">Other</label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-check mt-4">
+                                    <input class="form-check-input border-2 " type="checkbox" id="terms" name="terms" required>
+                                    <label class="form-check-label" style="color:black;" for="terms">
+                                        I agree to the <a href="{% url 'frontend_app:terms_conditions' %}">Terms and Conditions</a> and <a href="{% url 'frontend_app:privacy_policy' %}">Privacy Policy</a>
+                                    </label>
+                                </div>
+
+                                <button type="submit" class="btn-enroll">
+                                    <i class="fas fa-lock me-2"></i> Complete Enrollment
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</main>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Add animation to form elements on scroll
+    document.addEventListener('DOMContentLoaded', function () {
+        const formElements = document.querySelectorAll('.form-control, .course-summary');
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, { threshold: 0.1 });
+
+        formElements.forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(20px)';
+            el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            observer.observe(el);
+        });
+    });
+</script>
+{% endblock %}

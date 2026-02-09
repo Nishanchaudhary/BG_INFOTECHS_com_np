@@ -1,0 +1,237 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="card border-dark">
+        <div class="card-header bg-success text-white border-dark">
+            <h5 class="card-title mb-0">
+                <i class="fas fa-list me-2"></i>{{ page_title }}
+            </h5>
+        </div>
+        <div class="card-body p-0">
+            <!-- DataTable -->
+            <div class="table-responsive">
+                <table id="features-table" class="table table-hover table-striped table-bordered border-dark" style="width:100%; margin:0;">
+                    <thead class="table-success border-dark">
+                        <tr>
+                            <th style="border: 1px solid #000; border-bottom: 2px solid #000; padding: 12px; text-align: center;">Title</th>
+                            <th style="border: 1px solid #000; border-bottom: 2px solid #000; padding: 12px; text-align: center;">Description</th>
+                            <th style="border: 1px solid #000; border-bottom: 2px solid #000; padding: 12px; text-align: center;">Tags</th>
+                            <th style="border: 1px solid #000; border-bottom: 2px solid #000; padding: 12px; text-align: center;">Icon</th>
+                            <th style="border: 1px solid #000; border-bottom: 2px solid #000; padding: 12px; text-align: center;">Status</th>
+                            <th style="border: 1px solid #000; border-bottom: 2px solid #000; padding: 12px; text-align: center;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="table-light border-dark">
+                        <!-- Data will be loaded via AJAX -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<!-- DataTables CSS -->
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.bootstrap5.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.4.1/css/responsive.bootstrap5.min.css">
+
+<style>
+
+
+#features-table {
+    border: 2px solid #000 !important;
+    border-collapse: separate !important;
+    background-color: white;
+}
+
+#features-table th,
+#features-table td {
+    border: 1px solid #000 !important;
+    vertical-align: middle !important;
+    padding: 12px 8px !important;
+}
+
+#features-table thead th {
+    border-bottom: 2px solid #000 !important;
+    background-color: #7bf0bb !important;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+#loading-overlay {
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 5px;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+
+}
+
+
+/* DataTables processing indicator styling */
+.dataTables_processing {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    border-radius: 5px;
+    padding: 20px;
+    display: none !important;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    z-index: 1000;
+}
+
+/* Make sure the processing indicator is visible */
+div.dataTables_processing {
+    color: #000 !important;
+    font-weight: bold;
+    font-size: 1.1em;
+    display: none !important;
+}
+
+
+#features-table {
+    border: 2px solid #000 !important;
+    border-collapse: separate !important;
+}
+
+#features-table th,
+#features-table td {
+    border: 1px solid #000 !important;
+    vertical-align: middle !important;
+}
+
+#features-table thead th {
+    border-bottom: 2px solid #000 !important;
+    background-color: #d1e7dd !important;
+}
+
+#features-table tbody tr {
+    border-bottom: 1px solid #000 !important;
+}
+
+.description-text {
+    cursor: help;
+}
+
+.badge {
+    font-size: 0.75em;
+}
+
+.btn-group-vertical .btn {
+    margin-bottom: 2px;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- DataTables JS -->
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.bootstrap5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.print.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+
+<script>
+
+$(document).ready(function() {
+    var table = $('#features-table').DataTable({
+        "processing": true,
+        "serverSide": true,
+        "ajax": {
+            "url": "{% url 'company_app:features_datatables_api' %}",
+            "type": "GET",
+            "dataType": "json",
+            "error": function(xhr, error, code) {
+                console.log(xhr);
+                console.log(error);
+                console.log(code);
+            }
+        },
+        "columns": [
+            {"data": "title", "name": "title", "className": "text-center"},
+            {"data": "description", "name": "description", "className": "text-center", "orderable": false},
+            {"data": "tags", "name": "tags", "className": "text-center", "orderable": false},
+            {"data": "icon", "name": "icon", "className": "text-center", "orderable": false},
+            {"data": "status", "name": "status", "className": "text-center", "orderable": false},
+            {"data": "actions", "name": "actions", "className": "text-center", "orderable": false, "searchable": false}
+        ],
+        "order": [[0, 'asc']],
+        "pageLength": 10,
+        "responsive": true,
+        "dom": '<"row"<"col-sm-12 col-md-6"B><"col-sm-12 col-md-6"f>>rtip',
+        "buttons": [
+            {
+                extend: 'copy',
+                text: '<i class="fas fa-copy"></i> Copy',
+                className: 'btn btn-secondary btn-sm'
+            },
+            {
+                extend: 'excel',
+                text: '<i class="fas fa-file-excel"></i> Excel',
+                className: 'btn btn-success btn-sm'
+            },
+            {
+                extend: 'pdf',
+                text: '<i class="fas fa-file-pdf"></i> PDF',
+                className: 'btn btn-danger btn-sm'
+            },
+            {
+                extend: 'print',
+                text: '<i class="fas fa-print"></i> Print',
+                className: 'btn btn-info btn-sm'
+            },
+            {
+                text: '<i class="fas fa-plus"></i> Add Feature',
+                className: 'btn btn-primary btn-sm',
+                action: function (e, dt, node, config) {
+                    window.location.href = "{% url 'company_app:feature_create' %}";
+                }
+            }
+        ],
+        "language": {
+            "search": "Search:",
+            "lengthMenu": "Show _MENU_ entries",
+            "info": "Showing _START_ to _END_ of _TOTAL_ entries",
+            "infoEmpty": "Showing 0 to 0 of 0 entries",
+            "infoFiltered": "(filtered from _MAX_ total entries)",
+            "zeroRecords": "No matching records found",
+            "paginate": {
+                "first": "First",
+                "last": "Last",
+                "next": "Next",
+                "previous": "Previous"
+            }
+        },
+        "initComplete": function() {
+            // Add custom CSS to search box
+            $('.dataTables_filter input').addClass('form-control form-control-sm')
+                .attr('placeholder', 'Search in all columns...')
+                .css('width', '300px');
+        }
+    });
+
+    // Initialize tooltips when table is drawn
+    table.on('draw', function() {
+        $('[data-bs-toggle="tooltip"]').tooltip();
+    });
+
+    // Custom styling for buttons
+    $('.dt-buttons').addClass('btn-group');
+    $('.dt-button').addClass('btn btn-sm');
+});
+</script>
+{% endblock %}

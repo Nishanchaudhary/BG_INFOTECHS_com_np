@@ -1,0 +1,863 @@
+{% extends 'Frontend/base.html' %}
+{% load static %}
+
+{% block title %}{{ service.title|default:"Digital Marketing Projects" }} - Our Portfolio{% endblock %}
+
+{% block meta_description %}Explore our digital marketing projects portfolio. See how we've helped businesses grow
+through SEO, social media, content marketing, and more.{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        --accent-color: #ff6b6b;
+        --dark-color: #2d3748;
+        --light-color: #f8f9fa;
+        --shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        --shadow-hover: 0 20px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Hero Section */
+    .hero-section {
+        background: var(--primary-gradient);
+        color: white;
+        padding: 100px 0;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23ffffff' fill-opacity='0.1' fill-rule='evenodd'/%3E%3C/svg%3E");
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 2;
+    }
+
+    .hero-badge {
+        background: rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50px;
+        padding: 8px 20px;
+        display: inline-block;
+        margin-bottom: 20px;
+        font-size: 0.9rem;
+    }
+
+    /* Project Cards */
+    .project-card {
+        border: none;
+        border-radius: 20px;
+        overflow: hidden;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        box-shadow: var(--shadow);
+        height: 100%;
+        background: white;
+        position: relative;
+    }
+
+    .project-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: var(--primary-gradient);
+        transform: scaleX(0);
+        transition: transform 0.3s ease;
+    }
+
+    .project-card:hover {
+        transform: translateY(-12px);
+        box-shadow: var(--shadow-hover);
+    }
+
+    .project-card:hover::before {
+        transform: scaleX(1);
+    }
+
+    .project-image {
+        height: 220px;
+        object-fit: cover;
+        width: 100%;
+        transition: transform 0.4s ease;
+    }
+
+    .project-card:hover .project-image {
+        transform: scale(1.05);
+    }
+
+    .project-logo {
+        width: 70px;
+        height: 70px;
+        object-fit: contain;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        border: 3px solid white;
+        background: white;
+    }
+
+    .badge-custom {
+        background: var(--primary-gradient);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 500;
+        padding: 6px 12px;
+    }
+
+    /* Filter Section */
+    .filter-section {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: var(--shadow);
+        position: sticky;
+        top: 20px;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .category-btn {
+        width: 100%;
+        text-align: left;
+        margin-bottom: 12px;
+        border: none;
+        padding: 15px 20px;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+        background: var(--light-color);
+        color: var(--dark-color);
+        border: 2px solid transparent;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .category-btn:hover,
+    .category-btn.active {
+        background: var(--primary-gradient);
+        color: white;
+        transform: translateX(8px);
+        border-color: transparent;
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+    }
+
+    .category-count {
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        border-radius: 20px;
+        width: 30px;
+        height: 30px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+
+    .category-btn:not(.active) .category-count {
+        background: var(--primary-gradient);
+        color: white;
+    }
+
+    /* Search Box */
+    .search-box {
+        position: relative;
+        margin-bottom: 30px;
+    }
+
+    .search-input {
+        border-radius: 15px;
+        padding: 15px 50px 15px 20px;
+        border: 2px solid #e9ecef;
+        transition: all 0.3s ease;
+        background: var(--light-color);
+        font-size: 0.95rem;
+    }
+
+    .search-input:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.3rem rgba(102, 126, 234, 0.1);
+        background: white;
+    }
+
+    .search-btn {
+        position: absolute;
+        right: 5px;
+        top: 50%;
+        transform: translateY(-50%);
+        border: none;
+        background: var(--primary-gradient);
+        color: white;
+        border-radius: 12px;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+    }
+
+    .search-btn:hover {
+        transform: translateY(-50%) scale(1.05);
+    }
+
+    /* Testimonials */
+    .testimonial-card {
+        border: none;
+        border-radius: 20px;
+        background: var(--primary-gradient);
+        color: white;
+        padding: 30px;
+        margin: 20px 0;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .testimonial-card::before {
+        content: '"';
+        position: absolute;
+        top: 10px;
+        right: 20px;
+        font-size: 80px;
+        opacity: 0.1;
+        font-family: Georgia, serif;
+    }
+
+    .testimonial-image {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid rgba(255, 255, 255, 0.3);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .star-rating {
+        color: #ffd700;
+        font-size: 1.1rem;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    }
+
+    /* FAQ Section */
+    .faq-item {
+        border: none;
+        border-radius: 15px;
+        margin-bottom: 15px;
+        box-shadow: var(--shadow);
+        overflow: hidden;
+    }
+
+    .faq-question {
+        background: white;
+        border: none;
+        padding: 20px 25px;
+        border-radius: 15px;
+        font-weight: 600;
+        color: var(--dark-color);
+        transition: all 0.3s ease;
+    }
+
+    .faq-question:not(.collapsed) {
+        background: var(--primary-gradient);
+        color: white;
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+    }
+
+    .faq-answer {
+        padding: 25px;
+        background: var(--light-color);
+        border-radius: 0 0 15px 15px;
+        line-height: 1.7;
+    }
+
+    /* Pagination */
+    .pagination-custom .page-link {
+        border: none;
+        color: #667eea;
+        margin: 0 4px;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+        font-weight: 500;
+        min-width: 45px;
+        text-align: center;
+    }
+
+    .pagination-custom .page-item.active .page-link {
+        background: var(--primary-gradient);
+        border: none;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+
+    .pagination-custom .page-link:hover {
+        background: #667eea;
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    /* Loading Animation */
+    .loading-spinner {
+        display: none;
+        text-align: center;
+        padding: 60px 0;
+    }
+
+    .loading-spinner.show {
+        display: block;
+    }
+
+    .spinner-border {
+        width: 3rem;
+        height: 3rem;
+    }
+
+    /* Results Header */
+    .results-header {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        box-shadow: var(--shadow);
+        margin-bottom: 30px;
+        border-left: 4px solid #667eea;
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 80px 20px;
+        color: #6c757d;
+        background: white;
+        border-radius: 20px;
+        box-shadow: var(--shadow);
+    }
+
+    .empty-state i {
+        font-size: 5rem;
+        margin-bottom: 25px;
+        color: #dee2e6;
+        background: var(--light-color);
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Stats Section */
+    .stats-section {
+        background: var(--light-color);
+        border-radius: 20px;
+        padding: 40px;
+        margin: 50px 0;
+    }
+
+    .stat-item {
+        text-align: center;
+        padding: 20px;
+    }
+
+    .stat-number {
+        font-size: 3rem;
+        font-weight: 700;
+        background: var(--primary-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 10px;
+    }
+
+    .stat-label {
+        color: var(--dark-color);
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-size: 0.9rem;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .hero-section {
+            padding: 80px 0;
+        }
+
+        .hero-section h1 {
+            font-size: 2.5rem;
+        }
+
+        .filter-section {
+            position: static;
+            margin-bottom: 30px;
+        }
+
+        .project-card {
+            margin-bottom: 25px;
+        }
+
+        .category-btn {
+            padding: 12px 15px;
+        }
+
+        .results-header {
+            padding: 20px;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .hero-section h1 {
+            font-size: 2rem;
+        }
+
+        .search-input {
+            padding: 12px 45px 12px 15px;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+        }
+    }
+
+    /* Animation Classes */
+    .fade-in {
+        animation: fadeInUp 0.6s ease-out forwards;
+        opacity: 0;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Floating Elements */
+    .floating {
+        animation: floating 3s ease-in-out infinite;
+    }
+
+    @keyframes floating {
+
+        0%,
+        100% {
+            transform: translateY(0);
+        }
+
+        50% {
+            transform: translateY(-10px);
+        }
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: var(--primary-gradient);
+        border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: #5a67d8;
+    }
+</style>
+<style>
+    .page-title {
+        background-image: linear-gradient(rgba(28, 29, 31, 0.65), rgba(23, 4, 69, 0.65)),
+        url("{% static 'img/breadcrumb.jpg' %}");
+        background-size: cover;
+        background-position: center;
+        padding: 30px 0px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-title light-background" style="padding: 30px 0px!important;">
+    <div class="container">
+        <h1>{{ service.title|default:"All Career" }}</h1>
+        <nav class="breadcrumbs" data-aos="fade-right" data-aos-delay="100">
+            <ol>
+                <li><a href="{% url 'frontend_app:home' %}"><i class="fas fa-home"></i> Home</a></li>
+                <li><a href="{% url 'frontend_app:digital_marketing' %}"><i class="fa-solid fa-graduation-cap"></i>
+                        Digital Marketing</a></li>
+                <li class="current">{{ service.title|default:"All Digital Marketing" }}</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8 mx-auto text-center hero-content">
+                <span class="hero-badge">
+                    <i class="fas fa-rocket me-2"></i>Digital Marketing Excellence
+                </span>
+                <h1 class="display-4 text-white fw-bold mb-4">
+                    {{ service.title|default:"Digital Marketing" }} <span class="text-warning">Projects</span>
+                </h1>
+
+                <div class="mt-4">
+                    <span class="badge bg-light text-dark me-2 p-2">🚀 SEO</span>
+                    <span class="badge bg-light text-dark me-2 p-2 mt-2 ">📱 Social Media</span>
+                    <span class="badge bg-light text-dark me-2 p-2 mt-2 ">🎯 PPC</span>
+                    <span class="badge bg-light text-dark p-2 mt-2 ">📧 Email Marketing</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<div class="container">
+    <div class="stats-section">
+        <div class="row text-center">
+            <div class="col-md-3 col-6">
+                <div class="stat-item">
+                    <div class="stat-number">{{ paginator.count }}+</div>
+                    <div class="stat-label">Projects Completed</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="stat-item">
+                    <div class="stat-number">{{ categories|length }}+</div>
+                    <div class="stat-label">Categories</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="stat-item">
+                    <div class="stat-number">{{ service_testimonials|length }} + </div>
+                    <div class="stat-label">Happy Clients</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="stat-item">
+                    <div class="stat-number">100%</div>
+                    <div class="stat-label">Satisfaction</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content -->
+<div class="container py-5">
+    <div class="row">
+        <!-- Sidebar Filters -->
+        <div class="col-lg-4 mb-4">
+            <div class="filter-section floating">
+                <!-- Search Box -->
+                <form method="GET" action="." id="searchForm">
+                    <div class="search-box">
+                        <input type="text" name="search" class="form-control search-input"
+                            placeholder="🔍 Search projects..." value="{{ search_query }}" id="searchInput">
+                        <button type="submit" class="search-btn">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Categories -->
+                <h5 class="mb-3 fw-bold text-dark">
+                    <i class="fas fa-filter me-2"></i>Filter by Category
+                </h5>
+                <div class="category-list">
+                    <button type="button" class="category-btn {% if not category_filter %}active{% endif %}"
+                        data-category="">
+                        <span>📁 All Categories</span>
+                        <span class="category-count">{{ paginator.count }}</span>
+                    </button>
+
+                    {% for category in categories %}
+                    <button type="button"
+                        class="category-btn {% if category_filter == category.id|stringformat:'i' %}active{% endif %}"
+                        data-category="{{ category.id }}">
+                        <span>📂 {{ category.title }}</span>
+                        <span class="category-count">
+                            {% for cat_id, count in category_counts.items %}
+                            {% if cat_id == category.id %}
+                            {{ count }}
+                            {% endif %}
+                            {% endfor %}
+                        </span>
+                    </button>
+                    {% endfor %}
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Projects Grid -->
+        <div class="col-lg-8">
+            <!-- Results Header -->
+            <div class="results-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h4 class="mb-1 fw-bold text-dark">
+                            <i class="fas fa-rocket me-2"></i>Our Projects
+                        </h4>
+                        <p class="text-muted mb-0">
+                            Showing <span class="fw-bold text-primary">{{ projects|length }}</span> of
+                            <span class="fw-bold text-primary">{{ paginator.count }}</span> projects
+                            {% if active_category %} in <span class="badge bg-primary">{{ active_category.title
+                                }}</span>{% endif %}
+                            {% if search_query %} matching "<span class="fw-bold">{{ search_query }}</span>"{% endif %}
+                        </p>
+                    </div>
+                    <div class="text-end">
+                        <small class="text-muted">Updated recently</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Projects Grid -->
+            <div id="projectsContainer">
+                {% if projects %}
+                <div class="row" id="projectsGrid">
+                    {% for project in projects %}
+                    <div class="col-md-6 mb-4 fade-in"
+                        style="animation-delay: {% if forloop.counter0|divisibleby:2 %}0.2s{% else %}0s{% endif %};">
+                        <div class="project-card h-100">
+                            <div class="position-relative overflow-hidden">
+                                {% if project.image %}
+                                <img src="{{ project.image.url }}" alt="{{ project.title }}" class="project-image">
+                                {% else %}
+                                <div class="project-image bg-light d-flex align-items-center justify-content-center">
+                                    <i class="fas fa-image text-muted fs-1"></i>
+                                </div>
+                                {% endif %}
+                                <div class="position-absolute top-0 end-0 m-3">
+                                    <span class="badge badge-custom">
+                                        <i class="fas fa-tag me-1"></i>{{ project.service.title }}
+                                    </span>
+                                </div>
+                                <div class="position-absolute bottom-0 start-0 end-0 p-3"
+                                    style="background: linear-gradient(to top, rgba(0,0,0,0.5), transparent);">
+                                    {% if project.category %}
+                                    <span class="badge bg-light text-dark">
+                                        {{ project.category.title }}
+                                    </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex align-items-center mb-3">
+                                    {% if project.logo %}
+                                    <img src="{{ project.logo.url }}" alt="{{ project.company }} logo"
+                                        class="project-logo me-3">
+                                    {% else %}
+                                    <div
+                                        class="project-logo me-3 bg-light d-flex align-items-center justify-content-center">
+                                        <i class="fas fa-building text-muted"></i>
+                                    </div>
+                                    {% endif %}
+                                    <div class="flex-grow-1">
+                                        <h5 class="card-title mb-1 fw-bold text-dark">{{ project.title }}</h5>
+                                        <p class="text-muted mb-0">
+                                            <i class="fas fa-building me-1"></i>{{ project.company }}
+                                        </p>
+                                    </div>
+                                </div>
+                                <p class="card-text text-muted mb-3">{{ project.description|safe|truncatewords:25 }}</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <small class="text-muted">
+                                        <i class="fas fa-calendar me-1"></i>
+                                        {{ project.created_at|date:"M Y" }}
+                                    </small>
+                                    {% if project.live_link %}
+                                    <a href="{{ project.live_link }}" target="_blank" class="btn btn-primary btn-sm">
+                                        View Live <i class="fas fa-external-link-alt ms-1"></i>
+                                    </a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <!-- Empty State -->
+
+                
+                <div class="empty-state fade-in">
+                    <i class="fas fa-search"></i>
+                    <h4 class="fw-bold text-dark mb-3">No projects found</h4>
+                    <p class="text-muted mb-4">
+                        {% if search_query %}
+                        No projects matching "{{ search_query }}" were found.
+                        {% else %}
+                        No projects available at the moment. Please check back later.
+                        {% endif %}
+                    </p>
+        
+                </div>
+
+
+                {% endif %}
+
+                <!-- Pagination -->
+                {% if is_paginated %}
+                <nav aria-label="Project pagination" class="mt-5">
+                    <ul class="pagination pagination-custom justify-content-center">
+                        {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link"
+                                href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if category_filter %}&category={{ category_filter }}{% endif %}">
+                                <i class="fas fa-chevron-left"></i>
+                            </a>
+                        </li>
+                        {% endif %}
+
+                        {% for num in paginator.page_range %}
+                        {% if page_obj.number == num %}
+                        <li class="page-item active">
+                            <span class="page-link">{{ num }}</span>
+                        </li>
+                        {% else %}
+                        {% if num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %} <li class="page-item">
+                            <a class="page-link"
+                                href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}{% if category_filter %}&category={{ category_filter }}{% endif %}">
+                                {{ num }}
+                            </a>
+                            </li>
+                            {% endif %}
+                            {% endif %}
+                            {% endfor %}
+
+                            {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link"
+                                    href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if category_filter %}&category={{ category_filter }}{% endif %}">
+                                    <i class="fas fa-chevron-right"></i>
+                                </a>
+                            </li>
+                            {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+            </div>
+
+            <!-- Loading Spinner -->
+            <div class="loading-spinner" id="loadingSpinner">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-3 text-muted fw-bold">Loading amazing projects...</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Category filter buttons
+        const categoryButtons = document.querySelectorAll('.category-btn');
+        const searchForm = document.getElementById('searchForm');
+        const searchInput = document.getElementById('searchInput');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        const projectsContainer = document.getElementById('projectsContainer');
+
+        // Category filter handler
+        categoryButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                const categoryId = this.getAttribute('data-category');
+                const urlParams = new URLSearchParams(window.location.search);
+
+                if (categoryId) {
+                    urlParams.set('category', categoryId);
+                } else {
+                    urlParams.delete('category');
+                }
+
+                // Remove page parameter when changing filters
+                urlParams.delete('page');
+
+                window.location.href = '?' + urlParams.toString();
+            });
+        });
+
+        // Search input debounce
+        let searchTimeout;
+        searchInput.addEventListener('input', function () {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                const urlParams = new URLSearchParams(window.location.search);
+
+                if (this.value) {
+                    urlParams.set('search', this.value);
+                } else {
+                    urlParams.delete('search');
+                }
+
+                // Remove page parameter when searching
+                urlParams.delete('page');
+
+                window.location.href = '?' + urlParams.toString();
+            }, 500);
+        });
+
+        // Clear filters function
+        window.clearFilters = function () {
+            window.location.href = window.location.pathname;
+        };
+
+        // Smooth scroll to top on filter change
+        const currentUrl = new URLSearchParams(window.location.search);
+        if (currentUrl.get('search') || currentUrl.get('category') || currentUrl.get('page')) {
+            window.scrollTo({
+                top: projectsContainer.offsetTop - 100,
+                behavior: 'smooth'
+            });
+        }
+
+        // Add animation to project cards on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animation = 'fadeInUp 0.6s ease-out forwards';
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.fade-in').forEach(card => {
+            observer.observe(card);
+        });
+
+        // Add floating animation to filter section
+        const filterSection = document.querySelector('.filter-section');
+        if (filterSection) {
+            filterSection.classList.add('floating');
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,1077 @@
+{% extends 'Frontend/base.html' %}
+{% load static %}
+{% block title %}All Career Opportunities - BG-Infotechs{% endblock %}
+
+{% block extra_css %}
+<style>
+    .careers-hero {
+        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        color: white;
+        padding: 5rem 0;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .careers-hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #007bff, #28a745, #17a2b8);
+        background-size: 200% 100%;
+        animation: shimmer 3s ease-in-out infinite;
+    }
+
+    .careers-hero h1 {
+        font-size: 3.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        background: linear-gradient(135deg, #ffffff, #e3f2fd);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .careers-hero p {
+        font-size: 1.3rem;
+        opacity: 0.9;
+        max-width: 600px;
+        margin: 0 auto 2rem;
+    }
+
+    .search-container {
+        max-width: 700px;
+        margin: 2rem auto;
+        position: relative;
+    }
+
+    .search-box {
+        position: relative;
+    }
+
+    .search-input {
+        padding: 18px 70px 18px 30px;
+        border: 2px solid rgba(255, 255, 255, 0.2);
+        border-radius: 50px;
+        width: 100%;
+        font-size: 16px;
+        transition: all 0.3s ease;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        color: white;
+    }
+
+    .search-input::placeholder {
+        color: rgba(255, 255, 255, 0.7);
+    }
+
+    .search-input:focus {
+        border-color: #3498db;
+        box-shadow: 0 0 25px rgba(52, 152, 219, 0.4);
+        outline: none;
+        background: rgba(255, 255, 255, 0.15);
+    }
+
+    .search-btn {
+        position: absolute;
+        right: 8px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: linear-gradient(135deg, #3498db, #2980b9);
+        border: none;
+        color: white;
+        padding: 12px 25px;
+        border-radius: 25px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 600;
+        box-shadow: 0 4px 15px rgba(52, 152, 219, 0.4);
+    }
+
+    .search-btn:hover {
+        transform: translateY(-50%) scale(1.05);
+        box-shadow: 0 6px 20px rgba(52, 152, 219, 0.6);
+    }
+
+    .results-count {
+        text-align: center;
+        margin: 2rem 0 3rem;
+        color: #2c3e50;
+        font-size: 1.2rem;
+        font-weight: 500;
+    }
+
+    .no-results {
+        text-align: center;
+        padding: 80px 20px;
+        color: #6c757d;
+        display: none;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        margin: 2rem 0;
+    }
+
+    .no-results i {
+        font-size: 5rem;
+        margin-bottom: 25px;
+        color: #bdc3c7;
+        background: linear-gradient(135deg, #bdc3c7, #95a5a6);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    /* Job Card Styling - Enhanced from reference */
+    .job-card {
+        background: white;
+        border-radius: 20px;
+        padding: 2.5rem;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        position: relative;
+        overflow: hidden;
+        height: 100%;
+    }
+
+    .job-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 6px;
+        height: 100%;
+        background: linear-gradient(135deg, #3498db, #2c3e50);
+    }
+
+    .job-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+    }
+
+    .job-card::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+        transition: left 0.6s;
+    }
+
+    .job-card:hover::after {
+        left: 100%;
+    }
+
+    .job-card-content {
+        position: relative;
+        z-index: 2;
+    }
+
+    .job-title {
+        color: #2c3e50;
+        font-weight: 700;
+        font-size: 1.6rem;
+        margin-bottom: 1.5rem;
+        line-height: 1.3;
+        background: linear-gradient(135deg, #2c3e50, #3498db);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .job-meta-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .job-meta-item {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        color: #6c757d;
+        font-size: 0.95rem;
+    }
+
+    .job-meta-item i {
+        color: #3498db;
+        width: 18px;
+        text-align: center;
+    }
+
+    .skill-tag {
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        color: #495057;
+        padding: 0.5rem 1rem;
+        border-radius: 12px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        margin-right: 0.5rem;
+        margin-bottom: 0.5rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        border: 1px solid #dee2e6;
+        transition: all 0.3s ease;
+    }
+
+    .skill-tag:hover {
+        background: linear-gradient(135deg, #3498db, #2980b9);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+    }
+
+    .apply-btn {
+        background: linear-gradient(135deg, #27ae60, #229954);
+        border: none;
+        color: white;
+        padding: 0.9rem 2rem;
+        border-radius: 25px;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.7rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 6px 20px rgba(39, 174, 96, 0.4);
+        font-size: 0.95rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .apply-btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: left 0.5s;
+    }
+
+    .apply-btn:hover::before {
+        left: 100%;
+    }
+
+    .apply-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(39, 174, 96, 0.6);
+        color: white;
+    }
+
+    .featured-badge {
+        position: absolute;
+        top: 1.5rem;
+        right: 1.5rem;
+        background: linear-gradient(45deg, #ff6b6b, #ff8e53);
+        color: white;
+        padding: 0.5rem 1.2rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        animation: pulse 2s infinite;
+        z-index: 2;
+    }
+
+    .warning-badge {
+        position: absolute;
+        top: 1.5rem;
+        right: 1.5rem;
+        background: linear-gradient(45deg, #f39c12, #e67e22);
+        color: white;
+        padding: 0.5rem 1.2rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        animation: pulse 2s infinite;
+        z-index: 2;
+    }
+
+    .expired-badge {
+        position: absolute;
+        top: 1.5rem;
+        right: 1.5rem;
+        background: linear-gradient(45deg, #95a5a6, #7f8c8d);
+        color: white;
+        padding: 0.5rem 1.2rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        z-index: 2;
+    }
+
+    .job-type-badge {
+        padding: 0.3rem 1rem;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        white-space: nowrap;
+    }
+
+    .job-type-badge.full-time {
+        background: linear-gradient(135deg, #28a745, #20c997);
+        color: white;
+    }
+
+    .job-type-badge.part-time {
+        background: linear-gradient(135deg, #ffc107, #fd7e14);
+        color: white;
+    }
+
+    .job-type-badge.contract {
+        background: linear-gradient(135deg, #6f42c1, #e83e8c);
+        color: white;
+    }
+
+    .job-type-badge.remote {
+        background: linear-gradient(135deg, #17a2b8, #6f42c1);
+        color: white;
+    }
+
+    @keyframes pulse {
+        0% {
+            transform: scale(1);
+        }
+
+        50% {
+            transform: scale(1.05);
+        }
+
+        100% {
+            transform: scale(1);
+        }
+    }
+
+    @keyframes shimmer {
+
+        0%,
+        100% {
+            background-position: -200% 0;
+        }
+
+        50% {
+            background-position: 200% 0;
+        }
+    }
+
+    .job-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 2rem;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+    }
+
+    .skills-container {
+        flex: 1;
+    }
+
+    .job-description {
+        color: #6c757d;
+        line-height: 1.7;
+        margin-bottom: 1.5rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .pagination-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 4rem;
+        gap: 2rem;
+        flex-wrap: wrap;
+    }
+
+    .pagination {
+        display: flex;
+        gap: 0.7rem;
+        align-items: center;
+    }
+
+    .pagination-link {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 50px;
+        height: 50px;
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        color: #64748b;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        background: white;
+    }
+
+    .pagination-link:hover {
+        border-color: #3498db;
+        color: #3498db;
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+    }
+
+    .pagination-current {
+        background: linear-gradient(135deg, #3498db, #2980b9);
+        border-color: #3498db;
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+    }
+
+    .pagination-info {
+        color: #64748b;
+        font-size: 1.1rem;
+        font-weight: 500;
+        background: white;
+        padding: 0.8rem 1.5rem;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    }
+
+    .active-filters {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+        margin-bottom: 2rem;
+        padding: 1.5rem;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+        border-left: 4px solid #3498db;
+    }
+
+    .filter-tag {
+        background: linear-gradient(135deg, #3498db, #2980b9);
+        color: white;
+        padding: 0.6rem 1.2rem;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+        box-shadow: 0 3px 10px rgba(52, 152, 219, 0.3);
+    }
+
+    .remove-filter {
+        color: white;
+        text-decoration: none;
+        font-weight: bold;
+        cursor: pointer;
+        padding: 3px;
+        border-radius: 50%;
+        width: 22px;
+        height: 22px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background-color 0.3s ease;
+        font-size: 1.1rem;
+    }
+
+    .remove-filter:hover {
+        background-color: rgba(255, 255, 255, 0.3);
+    }
+
+    .clear-all {
+        color: #e74c3c;
+        text-decoration: none;
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin-left: auto;
+        transition: color 0.3s ease;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        border: 2px solid #e74c3c;
+    }
+
+    .clear-all:hover {
+        color: white;
+        background: #e74c3c;
+    }
+
+    /* Grid specific styles */
+    .jobs-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+        gap: 2.5rem;
+    }
+
+    .job-card-wrapper {
+        animation: fadeInUp 0.6s ease-out;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Stagger animation for multiple cards */
+    .job-card-wrapper:nth-child(odd) {
+        animation-delay: 0.1s;
+    }
+
+    .job-card-wrapper:nth-child(even) {
+        animation-delay: 0.2s;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1200px) {
+        .jobs-grid {
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+        }
+    }
+
+    @media (max-width: 992px) {
+        .careers-hero h1 {
+            font-size: 3rem;
+        }
+
+        .job-meta-grid {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        .job-actions {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .skills-container {
+            width: 100%;
+            margin-bottom: 1.5rem;
+        }
+
+        .pagination-container {
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .jobs-grid {
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+
+        .job-card {
+            padding: 2rem;
+        }
+
+        .job-title {
+            font-size: 1.5rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .careers-hero {
+            padding: 4rem 0;
+        }
+
+        .careers-hero h1 {
+            font-size: 2.5rem;
+        }
+
+        .careers-hero p {
+            font-size: 1.1rem;
+        }
+
+        .search-input {
+            padding: 15px 60px 15px 25px;
+        }
+
+        .search-btn {
+            padding: 10px 20px;
+        }
+
+        .job-card {
+            padding: 1.8rem;
+        }
+
+        .job-title {
+            font-size: 1.4rem;
+        }
+
+        .active-filters {
+            padding: 1.2rem;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .careers-hero h1 {
+            font-size: 2.2rem;
+        }
+
+        .jobs-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .job-card {
+            padding: 1.5rem;
+        }
+
+        .search-input {
+            padding: 12px 50px 12px 20px;
+            font-size: 14px;
+        }
+
+        .pagination-link {
+            width: 45px;
+            height: 45px;
+            font-size: 0.9rem;
+        }
+
+        .featured-badge,
+        .warning-badge,
+        .expired-badge {
+            top: 1rem;
+            right: 1rem;
+            padding: 0.4rem 1rem;
+            font-size: 0.75rem;
+        }
+    }
+
+    @media (max-width: 400px) {
+        .job-meta-item {
+            font-size: 0.85rem;
+        }
+
+        .job-title {
+            font-size: 1.3rem;
+        }
+
+        .apply-btn {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .filter-tag {
+            font-size: 0.8rem;
+            padding: 0.5rem 1rem;
+        }
+    }
+</style>
+<style>
+    .apply-btn-active {
+        background: linear-gradient(135deg, #28a745, #20c997);
+        color: white;
+        padding: 12px 30px;
+        border: none;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 16px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+        display: inline-flex;
+        align-items: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .apply-btn-active:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+        color: white;
+        text-decoration: none;
+    }
+
+    .apply-btn-active:before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: left 0.5s;
+    }
+
+    .apply-btn-active:hover:before {
+        left: 100%;
+    }
+
+    .apply-btn-expired {
+        background: linear-gradient(135deg, #dc3545, #c82333);
+        color: white;
+        padding: 12px 30px;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 16px;
+        cursor: not-allowed;
+        opacity: 0.8;
+        box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+        display: inline-flex;
+        align-items: center;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<style>
+    .page-title {
+        background-image: linear-gradient(rgba(28, 29, 31, 0.65), rgba(23, 4, 69, 0.65)),
+        url("{% static 'img/breadcrumb.jpg' %}");
+        background-size: cover;
+        background-position: center;
+        padding: 30px 0px;
+    }
+</style>
+<div class="page-title light-background">
+    <div class="container">
+        <h1>{{ service.title|default:"All Career" }}</h1>
+        <nav class="breadcrumbs" data-aos="fade-right" data-aos-delay="100">
+            <ol>
+                <li><a href="{% url 'frontend_app:home' %}"><i class="fas fa-home"></i> Home</a></li>
+                <li><a href="{% url 'frontend_app:career' %}"><i class="fa-solid fa-user-tie"></i> Career</a></li>
+                <li class="current">{{ service.title|default:"All Career" }}</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<!-- Hero Section -->
+<section class="careers-hero">
+    <div class="container">
+        <h1>Join Our Team</h1>
+        <p>Discover exciting career opportunities and be part of our innovative team at BG-Infotechs</p>
+
+        <!-- Search Box -->
+        <div class="search-container">
+            <div class="search-box">
+                <input type="text" id="careerSearch" class="search-input"
+                    placeholder="Search jobs by title, skills, or address..." value="{{ search_query|default:'' }}">
+                <button type="button" class="search-btn" id="searchButton">
+                    <i class="fas fa-search"></i> Search
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Main Content -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <!-- Results Count -->
+        <div class="results-count" id="resultsCount">
+            Showing {{ vacancies.start_index }} - {{ vacancies.end_index }} of {{ vacancies.paginator.count }} open
+            positions
+            {% if search_query %} for "{{ search_query }}"{% endif %}
+        </div>
+
+        <!-- Active Filters -->
+        <div class="active-filters" id="activeFilters">
+            {% if search_query %}
+            <span class="text-black fw-bold">Active filters:</span>
+            <span class="filter-tag">
+                Search: "{{ search_query }}"
+                <span class="remove-filter" data-type="search">×</span>
+            </span>
+            <a href="{% url 'frontend_app:all_careers' %}" class="clear-all">Clear all</a>
+            {% endif %}
+        </div>
+
+        <!-- No Results Message -->
+        <div class="no-results" id="noResults">
+            <i class="fas fa-search"></i>
+            <h4>No positions found</h4>
+            <p>Try adjusting your search criteria or browse all available positions</p>
+            <a href="{% url 'frontend_app:all_careers' %}" class="apply-btn mt-3">
+                <i class="fas fa-eye"></i> View All Positions
+            </a>
+        </div>
+
+        <!-- Jobs Grid -->
+        <div class="jobs-grid" id="jobsGrid">
+            {% for job in vacancies %}
+            <div class="job-card-wrapper ">
+                <div class="job-card " data-title="{{ job.title|lower }}" data-type="{{ job.job_type|lower }}"
+                    data-address="{{ job.address|lower }}" data-skills="{{ job.skills|lower }}"
+                    data-description="{{ job.description|lower }}">
+
+
+
+                    <div class="job-card-content">
+                        <!-- Job Header -->
+                        <div class="d-flex align-items-start justify-content-between mb-3 flex-column flex-sm-row">
+                            <h3 class="job-title">{{ job.title }}</h3>
+                            <div class="job-type-badge featured-badge {{ job.job_type|lower }}">
+                                {{ job.job_type }}
+                            </div>
+                        </div>
+
+                        <!-- Job Meta Information -->
+                        <div class="job-meta-grid mb-3">
+                            <div class="job-meta-item">
+                                <i class="fas fa-map-marker-alt text-primary"></i>
+                                <span>{{ job.address }}</span>
+                            </div>
+                            <div class="job-meta-item">
+                                <i class="fas fa-clock text-warning"></i>
+                                <span>Posted {{ job.created_at|date:"M d, Y" }}</span>
+                            </div>
+                            <div class="job-meta-item">
+                                <i class="fa-solid fa-hourglass-end text-info"></i>
+                                <span>Expires {{ job.expired_date|date:"M d, Y" }}</span>
+                            </div>
+                            <div class="job-meta-item">
+                                <i class="fas fa-briefcase text-success"></i>
+                                <span>{{ job.job_type }}</span>
+                            </div>
+                        </div>
+
+                        <!-- Job Description -->
+                        <p class="job-description">{{ job.short_description|safe }}</p>
+
+                        <!-- Skills Tags -->
+                        <div class="skills-container mb-4">
+                            {% for skill in job.get_skills_list %}
+                            {% if skill %}
+                            <span class="skill-tag">
+                                <i class="fas fa-tag me-1"></i>{{ skill }}
+                            </span>
+                            {% endif %}
+                            {% endfor %}
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div
+                            class="d-flex justify-content-between align-items-center pt-3 pb-3 border-top flex-column flex-sm-row">
+                            {% if job.expiry_status != "expired" %}
+                            <a href="{% url 'frontend_app:career_details' pk=job.pk %}" class="apply-btn-active">
+                                <i class="bi bi-send-fill me-2"></i>
+                                Apply Now
+                                <i class="fas fa-arrow-right ms-2"></i>
+                            </a>
+                            {% else %}
+                            <button class="apply-btn-expired" disabled>
+                                <i class="fas fa-lock me-2"></i>
+                                Position Closed
+                            </button>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Hover Effect Border -->
+                    <div class="hover-border"></div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12">
+                <div class="no-results" style="display: block;">
+                    <i class="fas fa-briefcase"></i>
+                    <h4>No Open Positions</h4>
+                    <p>There are currently no open positions. Please check back later.</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        {% if vacancies.has_other_pages %}
+        <div class="pagination-container">
+            <nav class="pagination" aria-label="Career pagination">
+                {% if vacancies.has_previous %}
+                <a href="?page=1{% if search_query %}&search={{ search_query }}{% endif %}"
+                    class="pagination-link pagination-first" data-page="1">
+                    <i class="fas fa-angle-double-left"></i>
+                </a>
+                <a href="?page={{ vacancies.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}"
+                    class="pagination-link pagination-prev" data-page="{{ vacancies.previous_page_number }}">
+                    <i class="fas fa-angle-left"></i>
+                </a>
+                {% endif %}
+
+                {% for num in vacancies.paginator.page_range %}
+                {% if vacancies.number == num %}
+                <span class="pagination-link pagination-current">{{ num }}</span>
+                {% elif num > vacancies.number|add:'-3' and num < vacancies.number|add:'3' %} <a
+                    href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}"
+                    class="pagination-link" data-page="{{ num }}">{{ num }}</a>
+                    {% endif %}
+                    {% endfor %}
+
+                    {% if vacancies.has_next %}
+                    <a href="?page={{ vacancies.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}"
+                        class="pagination-link pagination-next" data-page="{{ vacancies.next_page_number }}">
+                        <i class="fas fa-angle-right"></i>
+                    </a>
+                    <a href="?page={{ vacancies.paginator.num_pages }}{% if search_query %}&search={{ search_query }}{% endif %}"
+                        class="pagination-link pagination-last" data-page="{{ vacancies.paginator.num_pages }}">
+                        <i class="fas fa-angle-double-right"></i>
+                    </a>
+                    {% endif %}
+            </nav>
+
+            <div class="pagination-info">
+                Page {{ vacancies.number }} of {{ vacancies.paginator.num_pages }}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Search functionality
+        const careerSearch = document.getElementById('careerSearch');
+        const searchButton = document.getElementById('searchButton');
+        const noResults = document.getElementById('noResults');
+        const resultsCount = document.getElementById('resultsCount');
+        const jobCards = document.querySelectorAll('.job-card');
+        const activeFilters = document.getElementById('activeFilters');
+        const jobsGrid = document.getElementById('jobsGrid');
+
+        // Initialize with current values
+        let currentSearchTerm = '{{ search_query|escapejs }}' || '';
+
+        function performSearch() {
+            const searchTerm = careerSearch.value.toLowerCase().trim();
+            let visibleCount = 0;
+
+            jobCards.forEach(function (card) {
+                const title = card.getAttribute('data-title') || '';
+                const jobType = card.getAttribute('data-type') || '';
+                const address = card.getAttribute('data-address') || '';
+                const skills = card.getAttribute('data-skills') || '';
+                const description = card.getAttribute('data-description') || '';
+
+                const matchesSearch = searchTerm === '' ||
+                    title.includes(searchTerm) ||
+                    jobType.includes(searchTerm) ||
+                    address.includes(searchTerm) ||
+                    skills.includes(searchTerm) ||
+                    description.includes(searchTerm);
+
+                if (matchesSearch) {
+                    card.closest('.job-card-wrapper').style.display = 'block';
+                    visibleCount++;
+                } else {
+                    card.closest('.job-card-wrapper').style.display = 'none';
+                }
+            });
+
+            // Show/hide no results message
+            if (visibleCount === 0 && jobCards.length > 0) {
+                noResults.style.display = 'block';
+                jobsGrid.style.display = 'none';
+            } else {
+                noResults.style.display = 'none';
+                jobsGrid.style.display = 'grid';
+            }
+
+            // Update results count
+            updateResultsCount(visibleCount, searchTerm);
+
+            // Update active filters display
+            updateActiveFilters(searchTerm);
+
+            // Update URL without page reload for client-side search
+            if (searchTerm !== currentSearchTerm) {
+                updateURL(searchTerm);
+            }
+        }
+
+        function updateResultsCount(visibleCount, searchTerm) {
+            const totalItems = jobCards.length;
+
+            if (searchTerm === '') {
+                resultsCount.textContent = `Showing {{ vacancies.start_index }} - {{ vacancies.end_index }} of {{ vacancies.paginator.count }} open positions`;
+            } else {
+                resultsCount.textContent = `Found ${visibleCount} position${visibleCount !== 1 ? 's' : ''} for "${searchTerm}"`;
+            }
+        }
+
+        function updateActiveFilters(searchTerm) {
+            if (!activeFilters) return;
+
+            let filtersHTML = '';
+
+            if (searchTerm) {
+                filtersHTML += `
+                <span class="text-black fw-bold">Active filters:</span>
+                <span class="filter-tag">
+                    Search: "${searchTerm}"
+                    <span class="remove-filter" data-type="search">×</span>
+                </span>
+                <a href="{% url 'frontend_app:all_careers' %}" class="clear-all">Clear all</a>
+            `;
+            }
+
+            activeFilters.innerHTML = filtersHTML;
+
+            // Add event listeners to remove filter buttons
+            document.querySelectorAll('.remove-filter').forEach(button => {
+                button.addEventListener('click', function () {
+                    const filterType = this.getAttribute('data-type');
+                    if (filterType === 'search') {
+                        careerSearch.value = '';
+                        performSearch();
+                    }
+                });
+            });
+        }
+
+        function updateURL(searchTerm) {
+            const params = new URLSearchParams();
+            if (searchTerm) params.append('search', searchTerm);
+
+            const newUrl = `${window.location.pathname}?${params.toString()}`;
+            window.history.replaceState(null, '', newUrl);
+        }
+
+        // Event listeners for search
+        careerSearch.addEventListener('input', performSearch);
+        searchButton.addEventListener('click', performSearch);
+
+        // Enter key to search
+        careerSearch.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+
+        // Initialize
+        if (currentSearchTerm) {
+            performSearch();
+        }
+
+        // Add click event listeners to pagination links for smooth navigation
+        document.addEventListener('click', function (e) {
+            if (e.target.closest('.pagination-link') && !e.target.closest('.pagination-link').classList.contains('pagination-current')) {
+                e.preventDefault();
+                const link = e.target.closest('.pagination-link');
+                window.location.href = link.href;
+            }
+        });
+    });
+</script>
+{% endblock %}

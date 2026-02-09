@@ -1,0 +1,814 @@
+{% extends 'Frontend/base.html' %}
+{% load static %}
+{% block title %}All Mobile Apps{% endblock %}
+{% block extra_css %}{% endblock %}
+{% block content %}
+<main class="main">
+    <div class="page-title light-background">
+        <div class="container">
+            <h1>Our Mobile App Portfolio</h1>
+            <nav class="breadcrumbs" data-aos="fade-right" data-aos-delay="100">
+                <ol>
+                    <li><a href="{% url 'frontend_app:home' %}"><i class="fas fa-home"></i> Home</a></li>
+                    <li><a href="{% url 'frontend_app:mobile_apps' %}"> <i class="fa-solid fa-mobile-screen"></i> Mobile Apps</a></li>
+                    <li class="current">All Projects</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Portfolio Search Section -->
+    <section class="py-5 bg-light">
+        <div class="container">
+            <div class="row justify-content-center mb-5">
+                <div class="col-lg-8 text-center">
+                    <h2 class="bg-infotechs-section-title mb-3">Explore Our Mobile App Projects</h2>
+                    <p class="text-muted">Browse through our diverse portfolio of mobile applications built for various industries and platforms.</p>
+                </div>
+            </div>
+
+            <!-- Enhanced Search Control -->
+            <div class="row justify-content-center mb-4">
+                <div class="col-lg-8 col-md-10">
+                    <div class="bg-infotechs-search-container">
+                        <div class="search-wrapper">
+                            <div class="search-icon">
+                                <i class="fas fa-search"></i>
+                            </div>
+                            <input type="text" id="projectSearch" class="search-input" 
+                                   placeholder="Search projects by name, company, technology, or category...">
+                            <div class="search-actions">
+                                <button class="btn-clear" id="clearSearch" style="display: none;">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                                <button class="btn-search" id="searchButton">
+                                    <i class="fas fa-arrow-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="search-suggestions">
+                            <span class="suggestion-label">Try searching for:</span>
+                            <div class="suggestion-tags">
+                                <span class="suggestion-tag" data-search="ios">iOS Apps</span>
+                                <span class="suggestion-tag" data-search="android">Android Apps</span>
+                                <span class="suggestion-tag" data-search="react">React Native</span>
+                                <span class="suggestion-tag" data-search="flutter">Flutter</span>
+                                <span class="suggestion-tag" data-search="ecommerce">E-Commerce</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results Counter and Sort -->
+            <div class="row align-items-center mb-4">
+                <div class="col-md-6">
+                    <p class="text-muted mb-0" id="resultsCounter">
+                        Showing <span id="projectsCount" class="fw-bold text-infotechs-primary">0</span> 
+                        of <span id="totalProjects" class="fw-bold">{{ mobile_projects|length }}</span> projects
+                    </p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <div class="sort-options">
+                        <label class="text-muted me-2">Sort by:</label>
+                        <select class="form-select form-select-sm d-inline-block w-auto" id="sortOptions">
+                            <option value="recent">Most Recent</option>
+                            <option value="name">Project Name</option>
+                            <option value="company">Company</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Portfolio Grid -->
+    <section class="py-5">
+        <div class="container">
+            <div class="row" id="portfolioGrid">
+                {% if mobile_projects %}
+                    {% for project in mobile_projects %}
+                    <div class="col-lg-4 col-md-6 mb-4 portfolio-item" 
+                         data-platform="{{ project.service.title|lower }}" 
+                         data-category="{% if project.category %}{{ project.category.title|lower }}{% else %}mobile{% endif %}"
+                         data-tech="{{ project.service.title|lower }}"
+                         data-name="{{ project.title|lower }}"
+                         data-company="{{ project.company|lower }}"
+                         data-year="{{ project.created_at|date:'Y' }}">
+                        <div class="bg-infotechs-portfolio-card">
+                            <div class="portfolio-image-container">
+                                {% if project.image %}
+                                    <img src="{{ project.image.url }}" alt="{{ project.title }}" class="img-fluid portfolio-image">
+                                {% else %}
+                                    <img src="https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" 
+                                         alt="{{ project.title }}" class="img-fluid portfolio-image">
+                                {% endif %}
+                                <div class="portfolio-overlay">
+                                    <div class="portfolio-badges">
+                                        {% if project.category %}
+                                        <span  class="badge category-badge bg-infotechs-secondary">
+                                            <i class=" fas fa-mobile  me-1"> {{ project.category.title }} </i>
+                                        </span>
+                                        {% endif %}
+                                    </div>
+                                    <div class="portfolio-content">
+                                        <p class="mb-2" >{{ project.description|truncatewords:15 }}</p>
+                                      
+                                        <div class="portfolio-actions mt-3">
+                                            {% if project.live_link %}
+                                                <a href="{{ project.live_link }}" target="_blank" class="btn btn-sm bg-infotechs-primary border-2  text-white me-2" >
+                                                    <i class="fas fa-external-link-alt text-white me-1"></i> View App
+                                                </a>
+                                            {% endif %}
+                                                
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="portfolio-card-footer">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h6 class="mb-0">{{ project.title }}</h6>
+                                    <div class="portfolio-stats">
+                                        <small class="text-muted">
+                                            <i class="fas fa-calendar me-1"></i>{{ project.created_at|date:"Y" }}
+                                        </small>
+                                    </div>
+                                </div>
+                                <small class="text-muted">{{ project.company }}</small>
+                                <div class="portfolio-features mt-2">
+                                    <small class="text-infotechs-primary">
+                                        <i class="fas fa-star me-1"></i>
+                                        {% if 'ios' in project.service.title|lower %}iOS App
+                                        {% elif 'android' in project.service.title|lower %}Android App
+                                        {% else %}Mobile App{% endif %}
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <!-- Fallback projects if no data exists -->
+                    <div class="col-lg-4 col-md-6 mb-4 portfolio-item" data-platform="ios" data-category="ecommerce" data-tech="swift" data-name="fitshop" data-company="activewear inc" data-year="2023">
+                        <div class="bg-infotechs-portfolio-card">
+                            <div class="portfolio-image-container">
+                                <img src="https://images.unsplash.com/photo-1551650975-87deedd944c3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1974&q=80" 
+                                     alt="FitShop" class="img-fluid portfolio-image">
+                                <div class="portfolio-overlay">
+                                    <div class="portfolio-badges">
+                                        <span class="badge platform-badge bg-ios">
+                                            <i class="fab fa-apple me-1"></i>iOS
+                                        </span>
+                                        <span class="badge category-badge bg-infotechs-secondary">E-Commerce</span>
+                                    </div>
+                                    <div class="portfolio-content">
+                                        <h5 class="text-light fw-bold">FitShop</h5>
+                                        <p class="text-light mb-2">Fitness apparel e-commerce app with AR try-on features.</p>
+                                        <div class="portfolio-tech">
+                                            <small class="text-light">Swift</small>
+                                            <span class="text-light mx-1">•</span>
+                                            <small class="text-light">UIKit</small>
+                                            <span class="text-light mx-1">•</span>
+                                            <small class="text-light">ARKit</small>
+                                        </div>
+                                        <div class="portfolio-actions mt-3">
+                                            <a href="#" class="btn btn-sm bg-infotechs-primary me-2">
+                                                <i class="fas fa-external-link-alt me-1"></i> View App
+                                            </a>
+                                            <a href="#" class="btn btn-sm bg-infotechs-btn-outline">
+                                                <i class="fas fa-info-circle me-1"></i> Details
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="portfolio-card-footer">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h6 class="mb-0">FitShop</h6>
+                                    <div class="portfolio-stats">
+                                        <small class="text-muted">
+                                            <i class="fas fa-calendar me-1"></i>2023
+                                        </small>
+                                    </div>
+                                </div>
+                                <small class="text-muted">ActiveWear Inc.</small>
+                                <div class="portfolio-features mt-2">
+                                    <small class="text-infotechs-primary">
+                                        <i class="fas fa-star me-1"></i>
+                                        iOS App
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4 col-md-6 mb-4 portfolio-item" data-platform="android" data-category="healthcare" data-tech="kotlin" data-name="medtracker" data-company="healthtech solutions" data-year="2023">
+                        <div class="bg-infotechs-portfolio-card">
+                            <div class="portfolio-image-container">
+                                <img src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" 
+                                     alt="MedTracker" class="img-fluid portfolio-image">
+                                <div class="portfolio-overlay">
+                                    <div class="portfolio-badges">
+                                        <span class="badge platform-badge bg-android">
+                                            <i class="fab fa-android me-1"></i>Android
+                                        </span>
+                                        <span class="badge category-badge bg-infotechs-secondary">Healthcare</span>
+                                    </div>
+                                    <div class="portfolio-content">
+                                        <h5 class="text-light fw-bold">MedTracker</h5>
+                                        <p class="text-light mb-2">Medication reminder and health monitoring application.</p>
+                                        <div class="portfolio-tech">
+                                            <small class="text-light">Kotlin</small>
+                                            <span class="text-light mx-1">•</span>
+                                            <small class="text-light">Java</small>
+                                            <span class="text-light mx-1">•</span>
+                                            <small class="text-light">Firebase</small>
+                                        </div>
+                                        <div class="portfolio-actions mt-3">
+                                            <a href="#" class="btn btn-sm bg-infotechs-primary me-2">
+                                                <i class="fas fa-external-link-alt me-1"></i> View App
+                                            </a>
+                                            <a href="#" class="btn btn-sm bg-infotechs-btn-outline">
+                                                <i class="fas fa-info-circle me-1"></i> Details
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="portfolio-card-footer">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h6 class="mb-0">MedTracker</h6>
+                                    <div class="portfolio-stats">
+                                        <small class="text-muted">
+                                            <i class="fas fa-calendar me-1"></i>2023
+                                        </small>
+                                    </div>
+                                </div>
+                                <small class="text-muted">HealthTech Solutions</small>
+                                <div class="portfolio-features mt-2">
+                                    <small class="text-infotechs-primary">
+                                        <i class="fas fa-star me-1"></i>
+                                        Android App
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4 col-md-6 mb-4 portfolio-item" data-platform="cross-platform" data-category="finance" data-tech="react native" data-name="finwise" data-company="wealthbuild inc" data-year="2023">
+                        <div class="bg-infotechs-portfolio-card">
+                            <div class="portfolio-image-container">
+                                <img src="https://images.unsplash.com/photo-1611224923853-80b023f02d71?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2069&q=80" 
+                                     alt="FinWise" class="img-fluid portfolio-image">
+                                <div class="portfolio-overlay">
+                                    <div class="portfolio-badges">
+                                        <span class="badge platform-badge bg-cross-platform">
+                                            <i class="fas fa-mobile me-1"></i>Cross-Platform
+                                        </span>
+                                        <span class="badge category-badge bg-infotechs-secondary">Finance</span>
+                                    </div>
+                                    <div class="portfolio-content">
+                                        <h5 class="text-light fw-bold">FinWise</h5>
+                                        <p class="text-light mb-2">Personal finance management and investment tracking app.</p>
+                                        <div class="portfolio-tech">
+                                            <small class="text-light">React Native</small>
+                                            <span class="text-light mx-1">•</span>
+                                            <small class="text-light">TypeScript</small>
+                                            <span class="text-light mx-1">•</span>
+                                            <small class="text-light">Redux</small>
+                                        </div>
+                                        <div class="portfolio-actions mt-3">
+                                            <a href="#" class="btn btn-sm bg-infotechs-primary me-2">
+                                                <i class="fas fa-external-link-alt me-1"></i> View App
+                                            </a>
+                                            <a href="#" class="btn btn-sm bg-infotechs-btn-outline">
+                                                <i class="fas fa-info-circle me-1"></i> Details
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="portfolio-card-footer">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h6 class="mb-0">FinWise</h6>
+                                    <div class="portfolio-stats">
+                                        <small class="text-muted">
+                                            <i class="fas fa-calendar me-1"></i>2023
+                                        </small>
+                                    </div>
+                                </div>
+                                <small class="text-muted">WealthBuild Inc.</small>
+                                <div class="portfolio-features mt-2">
+                                    <small class="text-infotechs-primary">
+                                        <i class="fas fa-star me-1"></i>
+                                        Cross-Platform App
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- No Results Message -->
+            <div class="row d-none" id="noResults">
+                <div class="col-12 text-center py-5">
+                    <div class="no-results-icon mb-4">
+                        <i class="fas fa-search fa-4x text-muted"></i>
+                    </div>
+                    <h4 class="text-muted mb-3">No projects found</h4>
+                    <p class="text-muted mb-4">Try adjusting your search terms or browse all projects</p>
+                    <button class="btn bg-infotechs-primary" id="resetSearch">
+                        <i class="fas fa-redo me-2"></i> Clear Search
+                    </button>
+                </div>
+            </div>
+
+            <!-- Load More Button -->
+            {% if mobile_projects|length > 6 %}
+            <div class="row mt-5">
+                <div class="col-12 text-center">
+                    <button class="btn bg-infotechs-btn-outline btn-lg" id="loadMore">
+                        <i class="fas fa-plus me-2"></i> Load More Projects
+                    </button>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section id="contact" class="bg-infotechs-cta-section mb-5">
+        <div class="container bg-infotechs-cta-content">
+            <div class="row justify-content-center">
+                <div class="col-lg-8 text-center">
+                    <h3 class="fw-bold mb-4 text-light">Have a Mobile App Idea?</h3>
+                    <p class="lead mb-5 text-light">Let's discuss how we can bring your vision to life with a custom mobile application.</p>
+                    <div class="d-flex gap-3 justify-content-center flex-wrap">
+                        <a href="tel:{{company_profile.company_phone}}" class="btn bg-infotechs-btn-outline btn-lg px-4">
+                            <i class="fas fa-phone me-2"></i> Call Us
+                        </a>
+                        <a href="{% url 'frontend_app:contact' %}" class="btn bg-infotechs-btn-primary btn-lg px-4">
+                            <i class="fas fa-envelope me-2"></i> Start a Project
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize elements
+        const searchInput = document.getElementById('projectSearch');
+        const searchButton = document.getElementById('searchButton');
+        const clearSearch = document.getElementById('clearSearch');
+        const sortOptions = document.getElementById('sortOptions');
+        const portfolioItems = document.querySelectorAll('.portfolio-item');
+        const noResults = document.getElementById('noResults');
+        const resetSearch = document.getElementById('resetSearch');
+        const suggestionTags = document.querySelectorAll('.suggestion-tag');
+        const projectsCount = document.getElementById('projectsCount');
+        const totalProjects = document.getElementById('totalProjects');
+
+        // Initialize total projects count
+        totalProjects.textContent = portfolioItems.length;
+
+        // Search function
+        function performSearch() {
+            const searchTerm = searchInput.value.toLowerCase().trim();
+            
+            let visibleCount = 0;
+            
+            portfolioItems.forEach(item => {
+                const itemName = item.dataset.name;
+                const itemPlatform = item.dataset.platform;
+                const itemCategory = item.dataset.category;
+                const itemTech = item.dataset.tech;
+                const itemCompany = item.dataset.company;
+                
+                const matchesSearch = searchTerm === '' || 
+                    itemName.includes(searchTerm) || 
+                    itemTech.includes(searchTerm) ||
+                    itemPlatform.includes(searchTerm) ||
+                    itemCategory.includes(searchTerm) ||
+                    itemCompany.includes(searchTerm);
+                
+                if (matchesSearch) {
+                    item.style.display = 'block';
+                    visibleCount++;
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+            
+            // Show/hide no results message
+            if (visibleCount === 0 && searchTerm !== '') {
+                noResults.classList.remove('d-none');
+            } else {
+                noResults.classList.add('d-none');
+            }
+            
+            // Update projects count
+            projectsCount.textContent = visibleCount;
+            
+            // Show/hide clear button
+            if (searchTerm !== '') {
+                clearSearch.style.display = 'block';
+            } else {
+                clearSearch.style.display = 'none';
+            }
+            
+            // Sort projects
+            sortProjects();
+        }
+
+        // Sort projects
+        function sortProjects() {
+            const container = document.getElementById('portfolioGrid');
+            const items = Array.from(portfolioItems).filter(item => item.style.display !== 'none');
+            
+            items.sort((a, b) => {
+                switch(sortOptions.value) {
+                    case 'recent':
+                        return parseInt(b.dataset.year) - parseInt(a.dataset.year);
+                    case 'name':
+                        return a.dataset.name.localeCompare(b.dataset.name);
+                    case 'company':
+                        return a.dataset.company.localeCompare(b.dataset.company);
+                    default:
+                        return parseInt(b.dataset.year) - parseInt(a.dataset.year);
+                }
+            });
+            
+            // Reappend items in sorted order
+            items.forEach(item => container.appendChild(item));
+        }
+
+        // Event listeners
+        searchInput.addEventListener('input', performSearch);
+        searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+        
+        searchButton.addEventListener('click', performSearch);
+        
+        clearSearch.addEventListener('click', function() {
+            searchInput.value = '';
+            performSearch();
+            searchInput.focus();
+        });
+        
+        sortOptions.addEventListener('change', function() {
+            performSearch();
+        });
+        
+        resetSearch.addEventListener('click', function() {
+            searchInput.value = '';
+            performSearch();
+            searchInput.focus();
+        });
+        
+        // Suggestion tags
+        suggestionTags.forEach(tag => {
+            tag.addEventListener('click', function() {
+                searchInput.value = this.dataset.search;
+                performSearch();
+            });
+        });
+
+        // Load more functionality (placeholder)
+        document.getElementById('loadMore')?.addEventListener('click', function() {
+            // This would typically load more projects via AJAX
+            alert('Load more functionality would be implemented here with AJAX');
+        });
+
+        // Initialize search
+        performSearch();
+    });
+</script>
+
+<style>
+    /* Your existing CSS styles remain exactly the same */
+    .bg-infotechs-search-container {
+        position: relative;
+    }
+
+    .search-wrapper {
+        position: relative;
+        background: white;
+        border-radius: 50px;
+        padding: 8px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        border: 2px solid transparent;
+        transition: all 0.3s ease;
+    }
+
+    .search-wrapper:focus-within {
+        border-color: var(--bg-infotechs-primary);
+        box-shadow: 0 5px 25px rgba(var(--bg-infotechs-primary-rgb), 0.2);
+    }
+
+    .search-icon {
+        position: absolute;
+        left: 20px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #6c757d;
+        z-index: 1;
+    }
+
+    .search-input {
+        border: none;
+        outline: none;
+        padding: 12px 50px 12px 50px;
+        font-size: 1.1rem;
+        width: 100%;
+        background: transparent;
+        border-radius: 50px;
+    }
+
+    .search-input::placeholder {
+        color: #adb5bd;
+    }
+
+    .search-actions {
+        position: absolute;
+        right: 8px;
+        top: 50%;
+        transform: translateY(-50%);
+        display: flex;
+        gap: 5px;
+    }
+
+    .btn-clear, .btn-search {
+        border: none;
+        background: transparent;
+        padding: 8px;
+        border-radius: 50%;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .btn-clear {
+        color: #6c757d;
+    }
+
+    .btn-clear:hover {
+        background: #f8f9fa;
+        color: #dc3545;
+    }
+
+    .btn-search {
+        background: var(--bg-infotechs-primary);
+        color: white;
+        width: 40px;
+        height: 40px;
+    }
+
+    .btn-search:hover {
+        background: var(--bg-infotechs-primary-dark);
+        transform: translateX(2px);
+    }
+
+    .search-suggestions {
+        margin-top: 15px;
+        text-align: center;
+    }
+
+    .suggestion-label {
+        font-size: 0.9rem;
+        color: #6c757d;
+        margin-right: 10px;
+    }
+
+    .suggestion-tags {
+        display: inline-flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .suggestion-tag {
+        background: white;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        color: var(--bg-infotechs-primary);
+        border: 1px solid var(--bg-infotechs-primary);
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .suggestion-tag:hover {
+        background: var(--bg-infotechs-primary);
+        color: white;
+        transform: translateY(-1px);
+    }
+
+    /* Results Counter */
+    #resultsCounter {
+        font-size: 1rem;
+    }
+
+    .text-infotechs-primary {
+        color: var(--bg-infotechs-primary) !important;
+    }
+
+    /* Sort Options */
+    .sort-options {
+        display: inline-flex;
+        align-items: center;
+    }
+
+    .sort-options label {
+        font-size: 0.9rem;
+    }
+
+    /* Portfolio Card Enhancements */
+    .bg-infotechs-portfolio-card {
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        transition: all 0.4s ease;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        background: white;
+    }
+
+    .bg-infotechs-portfolio-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+    }
+
+    .portfolio-image-container {
+        position: relative;
+        overflow: hidden;
+        height: 260px;
+    }
+
+    .portfolio-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.6s ease;
+    }
+
+    .bg-infotechs-portfolio-card:hover .portfolio-image {
+        transform: scale(1.08);
+    }
+
+    .portfolio-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.1) 30%, rgba(0,0,0,0.8) 100%);
+        opacity: 0;
+        transition: opacity 0.4s ease;
+        padding: 25px;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+    }
+
+    .bg-infotechs-portfolio-card:hover .portfolio-overlay {
+        opacity: 1;
+    }
+
+    .portfolio-badges {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .platform-badge, .category-badge {
+        font-size: 0.75rem;
+        padding: 6px 12px;
+        backdrop-filter: blur(10px);
+    }
+
+    .bg-ios {
+        background: rgba(0,0,0,0.9) !important;
+        color: white !important;
+    }
+
+    .bg-android {
+        background: rgba(61,220,132,0.9) !important;
+        color: #000 !important;
+    }
+
+    .bg-cross-platform {
+        background: rgba(97,218,251,0.9) !important;
+        color: #000 !important;
+    }
+
+    .portfolio-content h5 {
+        font-size: 1.3rem;
+        margin-bottom: 10px;
+        font-weight: 700;
+    }
+
+    .portfolio-tech {
+        font-size: 0.9rem;
+        opacity: 0.95;
+    }
+
+    .portfolio-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 20px;
+    }
+
+    .portfolio-actions .btn {
+        font-size: 0.85rem;
+        padding: 8px 16px;
+        border-radius: 8px;
+        flex: 1;
+    }
+
+    .portfolio-card-footer {
+        padding: 20px;
+        background: white;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .portfolio-card-footer h6 {
+        font-size: 1.1rem;
+        color: #333;
+        font-weight: 600;
+    }
+
+    .portfolio-features {
+        border-top: 1px solid #f0f0f0;
+        padding-top: 10px;
+    }
+
+    /* No Results Styling */
+    .no-results-icon {
+        opacity: 0.5;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .search-wrapper {
+            border-radius: 20px;
+        }
+        
+        .search-input {
+            padding: 10px 45px 10px 45px;
+            font-size: 1rem;
+        }
+        
+        .portfolio-image-container {
+            height: 220px;
+        }
+        
+        .portfolio-overlay {
+            padding: 20px;
+        }
+        
+        .portfolio-content h5 {
+            font-size: 1.1rem;
+        }
+        
+        .portfolio-actions {
+            flex-direction: column;
+        }
+        
+        .suggestion-tags {
+            justify-content: center;
+        }
+        
+        .sort-options {
+            justify-content: flex-end;
+            margin-top: 10px;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .search-suggestions {
+            text-align: left;
+        }
+        
+        .suggestion-label {
+            display: block;
+            margin-bottom: 8px;
+        }
+    }
+</style>
+{% endblock %}
+{% endblock %}

@@ -1,0 +1,207 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title mb-0">
+                        <i class="fas fa-key me-2"></i>{{ page_title }}
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>User Information</h6>
+                            <p><strong>Username:</strong> {{ staff_user.username }}</p>
+                            <p><strong>Full Name:</strong> {{ staff_user.get_full_name|default:"Not specified" }}</p>
+                            <p><strong>Email:</strong> {{ staff_user.email }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Current Status</h6>
+                            <p>
+                                <strong>Status:</strong> 
+                                <span class="badge bg-{% if staff_user.is_active %}success{% else %}danger{% endif %}">
+                                    {% if staff_user.is_active %}Active{% else %}Inactive{% endif %}
+                                </span>
+                            </p>
+                            <p><strong>Groups:</strong> {{ staff_user.groups.count }}</p>
+                            <p><strong>Direct Permissions:</strong> {{ staff_user.user_permissions.count }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Permissions Form -->
+    <div class="row">
+        <div class="col-12">
+            <form method="post" id="permissions-form">
+                {% csrf_token %}
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-user-check me-2"></i>User Status
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" name="is_active" id="is_active" 
+                                   {% if staff_user.is_active %}checked{% endif %}>
+                            <label class="form-check-label" for="is_active">
+                                Active User Account
+                            </label>
+                        </div>
+                        <small class="text-muted">
+                            When inactive, user cannot login to the system.
+                        </small>
+                    </div>
+                </div>
+
+                <!-- Groups Section -->
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-users me-2"></i>Group Memberships
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted">
+                            The groups this user belongs to. A user will get all permissions granted to each of their groups. 
+                            Hold down "Control", or "Command" on a Mac, to select more than one.
+                        </p>
+                        
+                        <div class="row">
+                            <div class="col-md-5">
+                                <h6>Available Groups</h6>
+                                <div class="border rounded p-3" style="max-height: 300px; overflow-y: auto;">
+                                    {% for group in all_groups %}
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="group_{{ group.id }}" 
+                                               id="group_{{ group.id }}" value="{{ group.id }}"
+                                               {% if group.id in user_groups %}checked{% endif %}>
+                                        <label class="form-check-label" for="group_{{ group.id }}">
+                                            {{ group.name }}
+                                        </label>
+                                    </div>
+                                    {% empty %}
+                                    <p class="text-muted">No groups available.</p>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Permissions Section -->
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-shield-alt me-2"></i>User Permissions
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted">
+                            Available user permissions. Choose user permissions by selecting them. 
+                            Specific permissions for this user. Hold down "Control", or "Command" on a Mac, to select more than one.
+                        </p>
+
+                        <div class="row">
+                            <div class="col-12">
+                                {% for app_label, models in permissions_by_app.items %}
+                                <div class="app-section mb-4">
+                                    <h6 class="text-primary mb-3">
+                                        <i class="fas fa-cube me-2"></i>{{ app_label|title }}
+                                    </h6>
+                                    
+                                    {% for model_name, data in models.items %}
+                                    <div class="model-section mb-3">
+                                        <h6 class="text-secondary ps-3">
+                                            {{ data.content_type.name|default:model_name|title }}
+                                        </h6>
+                                        
+                                        <div class="row ps-4">
+                                            {% for permission in data.permissions %}
+                                            <div class="col-md-6 col-lg-4 mb-2">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" 
+                                                           name="perm_{{ permission.id }}" 
+                                                           id="perm_{{ permission.id }}"
+                                                           value="{{ permission.id }}"
+                                                           {% if permission.id in user_permissions %}checked{% endif %}>
+                                                    <label class="form-check-label" for="perm_{{ permission.id }}" 
+                                                           style="font-size: 0.9rem;">
+                                                        {{ permission.name }}
+                                                        <br>
+                                                        <small class="text-muted">
+                                                            {{ permission.codename }}
+                                                        </small>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                    {% if not forloop.last %}<hr>{% endif %}
+                                    {% endfor %}
+                                </div>
+                                {% if not forloop.last %}<hr>{% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="card mt-4">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'bg_app:staff_permissions' %}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Back to Staff List
+                            </a>
+                            <div>
+                                <button type="reset" class="btn btn-outline-secondary me-2">
+                                    <i class="fas fa-undo me-2"></i>Reset
+                                </button>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save me-2"></i>Save Permissions
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    // Select all checkboxes for a specific type
+    $('.select-all-groups').on('click', function() {
+        const target = $(this).data('target');
+        $(target).prop('checked', true);
+    });
+    
+    $('.deselect-all-groups').on('click', function() {
+        const target = $(this).data('target');
+        $(target).prop('checked', false);
+    });
+
+    // Form submission handling
+    $('#permissions-form').on('submit', function() {
+        // Show loading state
+        $('button[type="submit"]').prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-2"></i>Saving...');
+    });
+});
+</script>
+{% endblock %}

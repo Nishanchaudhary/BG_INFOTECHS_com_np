@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Access Denied - BG Infotechs</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #ffd89b 0%, #19547b 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .error-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 50px 40px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            max-width: 500px;
+            width: 100%;
+            backdrop-filter: blur(10px);
+            animation: bounceIn 0.8s ease-out;
+        }
+        
+        .gif-container {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 30px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #ffd89b, #19547b);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: rotate 4s linear infinite;
+        }
+        
+        .gif-container img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+        }
+        
+        .error-code {
+            font-size: 6rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, #ffd89b, #19547b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+        
+        .error-title {
+            font-size: 2rem;
+            color: #333;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        .error-message {
+            color: #666;
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        
+        .home-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: linear-gradient(45deg, #ffd89b, #19547b);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(255, 216, 155, 0.4);
+        }
+        
+        .home-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(255, 216, 155, 0.6);
+        }
+        
+        .lock-animation {
+            margin: 20px 0;
+        }
+        
+        .lock {
+            width: 60px;
+            height: 70px;
+            background: #333;
+            border-radius: 10px;
+            margin: 0 auto;
+            position: relative;
+        }
+        
+        .lock::before {
+            content: '';
+            position: absolute;
+            top: -20px;
+            left: 15px;
+            width: 30px;
+            height: 30px;
+            background: #333;
+            border-radius: 50%;
+        }
+        
+        .lock::after {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: 25px;
+            width: 10px;
+            height: 20px;
+            background: #ffd89b;
+            border-radius: 5px;
+            animation: lockShake 2s infinite;
+        }
+        
+        @keyframes bounceIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.3);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.05);
+            }
+            70% {
+                transform: scale(0.9);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        @keyframes rotate {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        
+        @keyframes lockShake {
+            0%, 100% {
+                transform: rotate(0deg);
+            }
+            25% {
+                transform: rotate(10deg);
+            }
+            75% {
+                transform: rotate(-10deg);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .error-container {
+                padding: 30px 20px;
+            }
+            
+            .error-code {
+                font-size: 4rem;
+            }
+            
+            .error-title {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <div class="gif-container">
+            <img src="https://media.giphy.com/media/XREp3Jc6gvYdy/giphy.gif" alt="Access Denied Animation" onerror="this.style.display='none'">
+        </div>
+        
+        <div class="lock-animation">
+            <div class="lock"></div>
+        </div>
+        
+        <div class="error-code">403</div>
+        <h1 class="error-title">Access Denied</h1>
+        <p class="error-message">
+            This area is off-limits! You don't have permission to access this page. 
+            If you believe this is a mistake, please contact the administrator.
+        </p>
+        
+        <a href="{% url 'frontend_app:home' %}" class="home-btn">
+            <i>🏠</i> Back to Safety
+        </a>
+    </div>
+</body>
+</html>

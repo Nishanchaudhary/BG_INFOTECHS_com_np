@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block page_title %}Delete User - {{ user_obj.username }}{% endblock %}
+{% block breadcrumb_active %}Delete User{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-6 offset-md-3">
+        <div class="card card-danger">
+            <div class="card-header">
+                <h3 class="card-title">Confirm Deletion</h3>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-danger">
+                    <h5><i class="icon fas fa-exclamation-triangle"></i> Warning!</h5>
+                    Are you sure you want to delete the user <strong>{{ user_obj.username }}</strong>?
+                    This action cannot be undone.
+                </div>
+                
+                <div class="user-info mb-3">
+                    <p><strong>Name:</strong> {{ user_obj.get_full_name }}</p>
+                    <p><strong>Email:</strong> {{ user_obj.email }}</p>
+                    <p><strong>Role:</strong> {{ user_obj.roll }}</p>
+                </div>
+                
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-trash"></i> Confirm Delete
+                        </button>
+                        <a href="{% url 'bg_app:user_list' %}" class="btn btn-default">
+                            <i class="fas fa-times"></i> Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

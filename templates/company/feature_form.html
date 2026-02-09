@@ -1,0 +1,351 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Page Header with Back Button on Right -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">
+            <i class="fas fa-star me-2 text-warning"></i>{{ page_title }}
+        </h1>
+        <a href="{% url 'company_app:feature_list' %}" class="d-none d-sm-inline-block btn btn-outline-secondary shadow-sm">
+            <i class="fas fa-arrow-left me-2"></i>Back to Features
+        </a>
+    </div>
+
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb bg-light p-3 rounded">
+            <li class="breadcrumb-item">
+                <a href="{% url 'company_app:feature_list' %}" class="text-decoration-none">
+                    <i class="fas fa-list me-1 text-primary"></i>Features
+                </a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">
+                <i class="fas fa-pen me-1 text-success"></i>{{ breadcrumb_active }}
+            </li>
+        </ol>
+    </nav>
+
+    <!-- Form Card -->
+    <div class="card shadow-lg border-0">
+        <div class="card-header bg-gradient-primary text-white py-3">
+            <h6 class="m-0 font-weight-bold text-white ">
+                <i class="fas fa-feather-alt text-white me-2"></i>Feature Details
+            </h6>
+        </div>
+        <div class="card-body p-4">
+            <form method="post" class="needs-validation" novalidate>
+                {% csrf_token %}
+                
+                <!-- Display form errors -->
+                {% if form.errors %}
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-exclamation-triangle me-2 fs-5"></i>
+                        <strong>Please correct the errors below:</strong>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    <ul class="mt-2 mb-0">
+                        {% for field, errors in form.errors.items %}
+                            {% for error in errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <!-- Title Field -->
+                        <div class="form-group mb-4">
+                            <label for="{{ form.title.id_for_label }}" class="form-label fw-bold text-dark">
+                                <i class="fas fa-heading me-2 text-primary"></i>{{ form.title.label }}
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">
+                                    <i class="fas fa-tag text-muted"></i>
+                                </span>
+                                {{ form.title }}
+                            </div>
+                            {% if form.title.help_text %}
+                                <small class="form-text text-muted mt-1">
+                                    <i class="fas fa-info-circle me-1"></i>{{ form.title.help_text }}
+                                </small>
+                            {% endif %}
+                        </div>
+
+                        <!-- Description Field - Full Width with Summernote -->
+                        <div class="form-group mb-4">
+                            <label for="{{ form.description.id_for_label }}" class="form-label fw-bold text-dark">
+                                <i class="fas fa-align-left me-2 text-info"></i>{{ form.description.label }}
+                            </label>
+                            <div class="description-container w-100">
+                                {{ form.description }}
+                            </div>
+                            {% if form.description.help_text %}
+                                <small class="form-text text-muted mt-1">
+                                    <i class="fas fa-info-circle me-1"></i>{{ form.description.help_text }}
+                                </small>
+                            {% endif %}
+                            <div class="form-text char-counter-description mt-1"></div>
+                        </div>
+
+                        <!-- Tags Field -->
+                        <div class="form-group mb-4">
+                            <label for="{{ form.tags.id_for_label }}" class="form-label fw-bold text-dark">
+                                <i class="fas fa-tags me-2 text-warning"></i>{{ form.tags.label }}
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">
+                                    <i class="fas fa-hashtag text-muted"></i>
+                                </span>
+                                {{ form.tags }}
+                            </div>
+                            {% if form.tags.help_text %}
+                                <small class="form-text text-muted mt-1">
+                                    <i class="fas fa-info-circle me-1"></i>{{ form.tags.help_text }}
+                                </small>
+                            {% endif %}
+                        </div>
+
+                        <!-- Icon Field -->
+                        <div class="form-group mb-4">
+                            <label for="{{ form.icon.id_for_label }}" class="form-label fw-bold text-dark">
+                                <i class="fas fa-icons me-2 text-success"></i>{{ form.icon.label }}
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">
+                                    <i class="fas fa-palette text-muted"></i>
+                                </span>
+                                {{ form.icon }}
+                            </div>
+                            {% if form.icon.help_text %}
+                                <small class="form-text text-muted mt-1">
+                                    <i class="fas fa-info-circle me-1"></i>{{ form.icon.help_text }}
+                                </small>
+                            {% endif %}
+                        </div>
+
+                        <!-- Status Field -->
+                        <div class="form-group mb-4">
+                            <div class="card border-0 bg-light">
+                                <div class="card-body">
+                                    <div class="form-check form-switch d-flex align-items-center">
+                                        {{ form.status }}
+                                        <label class="form-check-label ms-3 fw-bold text-dark" for="{{ form.status.id_for_label }}">
+                                            <i class="fas fa-toggle-on me-2 text-primary"></i>{{ form.status.label }}
+                                        </label>
+                                    </div>
+                                    {% if form.status.help_text %}
+                                        <small class="form-text text-muted mt-2 d-block">
+                                            <i class="fas fa-info-circle me-1"></i>{{ form.status.help_text }}
+                                        </small>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Buttons -->
+                <div class="form-group mt-4 pt-4 border-top">
+                    <div class="d-flex gap-3">
+                        <button type="submit" class="btn btn-primary btn-lg px-4 shadow-sm">
+                            <i class="fas fa-save me-2"></i>Save Feature
+                        </button>
+                        <a href="{% url 'company_app:feature_list' %}" class="btn btn-outline-secondary btn-lg px-4">
+                            <i class="fas fa-times me-2"></i>Cancel
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<!-- Summernote CSS -->
+<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.css" rel="stylesheet">
+<style>
+    .form-control, .form-select {
+        border-radius: 0.5rem;
+        border-left: 0;
+        padding: 0.75rem;
+        transition: all 0.3s ease;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+        border-color: #4e73df;
+    }
+    
+    .input-group-text {
+        border-radius: 0.5rem 0 0 0.5rem !important;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-right: 0;
+    }
+    
+    .card {
+        border-radius: 1rem;
+        border: none;
+    }
+    
+    .card-header {
+        border-radius: 1rem 1rem 0 0 !important;
+    }
+    
+    .form-check-input:checked {
+        background-color: #4e73df;
+        border-color: #4e73df;
+        transform: scale(1.1);
+    }
+    
+    .form-check-input {
+        transition: all 0.3s ease;
+        width: 3rem;
+        height: 1.5rem;
+    }
+    
+    .btn {
+        border-radius: 0.75rem;
+        transition: all 0.3s ease;
+    }
+    
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    
+    .breadcrumb {
+        border-radius: 0.75rem;
+    }
+    
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, #4e73df 0%, #224abe 100%) !important;
+    }
+
+    /* Summernote Styles */
+    .note-editor.note-frame {
+        border: 1px solid #ced4da !important;
+        border-radius: 0.5rem !important;
+    }
+
+    .note-editor .note-toolbar {
+        background-color: #f8f9fa !important;
+        border-bottom: 1px solid #dee2e6 !important;
+    }
+
+    .note-editor .note-btn {
+        background: white !important;
+        border: 1px solid #dee2e6 !important;
+    }
+
+    .char-counter {
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+    }
+
+    .char-counter.text-danger {
+        color: #dc3545 !important;
+        font-weight: bold;
+    }
+
+    .char-counter.text-success {
+        color: #198754 !important;
+    }
+
+    /* Description Field Specific Styles */
+    .description-container {
+        width: 100% !important;
+    }
+    
+    /* Ensure proper width for all description field elements */
+    #{{ form.description.id_for_label }} {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Summernote JS -->
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.js"></script>
+
+<script>
+$(document).ready(function() {
+    // Initialize Summernote editor
+    $('#{{ form.description.id_for_label }}').summernote({
+        height: 300,
+        toolbar: [
+            ['style', ['style']],
+            ['font', ['bold', 'italic', 'underline', 'clear']],
+            ['fontname', ['fontname']],
+            ['fontsize', ['fontsize']],
+            ['color', ['color']],
+            ['para', ['ul', 'ol', 'paragraph']],
+            ['table', ['table']],
+            ['insert', ['link', 'picture', 'video']],
+            ['view', ['fullscreen', 'codeview', 'help']]
+        ],
+        callbacks: {
+            onChange: function(contents) {
+                updateDescriptionCounter();
+            },
+            onInit: function() {
+                updateDescriptionCounter();
+            }
+        }
+    });
+
+    // Character counter for description
+    function updateDescriptionCounter() {
+        var descriptionText = $('#{{ form.description.id_for_label }}').summernote('code');
+        var plainText = $(descriptionText).text();
+        var length = plainText.length;
+        var minLength = 10;
+        var counter = $('.char-counter-description');
+        
+        counter.text(length + ' characters (minimum ' + minLength + ')');
+        
+        if (length < minLength) {
+            counter.addClass('text-danger');
+        } else {
+            counter.removeClass('text-danger').addClass('text-success');
+        }
+    }
+
+    // Add validation styles
+    const forms = document.querySelectorAll('.needs-validation');
+    
+    Array.from(forms).forEach(form => {
+        form.addEventListener('submit', event => {
+            if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            form.classList.add('was-validated');
+        }, false);
+    });
+    
+    // Add real-time validation feedback
+    const inputs = document.querySelectorAll('.form-control, .form-select');
+    inputs.forEach(input => {
+        input.addEventListener('blur', function() {
+            if (this.checkValidity()) {
+                this.classList.add('is-valid');
+                this.classList.remove('is-invalid');
+            } else {
+                this.classList.add('is-invalid');
+                this.classList.remove('is-valid');
+            }
+        });
+    });
+
+    // Initialize character counter on page load
+    updateDescriptionCounter();
+});
+</script>
+{% endblock %}

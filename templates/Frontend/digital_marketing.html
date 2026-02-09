@@ -1,0 +1,1333 @@
+{% extends 'Frontend/base.html' %}
+{% load static %}
+{% block title %}Digital-Marketing{% endblock %}
+{% block extra_css %}
+
+<style>
+    .smm-pricing-section {
+        background-color: #f0f2f5;
+        font-family: 'Poppins', sans-serif;
+        overflow-x: hidden;
+    }
+
+    :root {
+        --smm-color-primary: #017EB6;
+        --smm-color-accent: #9C0004;
+        --smm-color-gold: #D4AF37;
+        --smm-color-diamond-glow: rgba(1, 126, 182, 0.4);
+    }
+
+    .smm-pricing-title {
+        font-weight: 700;
+        color: #1a294d;
+    }
+
+    .smm-pricing-subtitle {
+        color: #555;
+        max-width: 600px;
+        margin: auto;
+    }
+
+    .smm-pricing-card {
+        border: none;
+        border-radius: 20px;
+        background: #ffffff;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.07);
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        text-align: center;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .smm-pricing-card:hover {
+        transform: translateY(-15px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .smm-pricing-header {
+        padding: 30px 20px;
+        color: #fff;
+        border-bottom: 5px solid transparent;
+    }
+
+    .smm-pricing-icon {
+        font-size: 3rem;
+        margin-bottom: 15px;
+        text-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        transition: transform 0.3s ease;
+    }
+
+    .smm-pricing-card:hover .smm-pricing-icon {
+        transform: scale(1.1) rotate(-5deg);
+    }
+
+    .smm-pricing-plan-title {
+        font-size: 1.75rem;
+        font-weight: 600;
+        margin-bottom: 5px;
+        color: #fff;
+    }
+
+    .smm-pricing-price {
+        font-size: 2.8rem;
+        font-weight: 700;
+        margin: 10px 0;
+    }
+
+    .smm-pricing-period {
+        font-size: 1rem;
+        font-weight: 400;
+        opacity: 0.8;
+    }
+
+    .smm-pricing-gold .smm-pricing-header {
+        background: linear-gradient(135deg, #FFD700, #FBB03B);
+        border-bottom-color: #D4AF37;
+    }
+
+    .smm-pricing-platinum .smm-pricing-header {
+        background: linear-gradient(135deg, var(--smm-color-primary), #005A8D);
+        border-bottom-color: var(--smm-color-primary);
+    }
+
+    .smm-pricing-diamond .smm-pricing-header {
+        background: linear-gradient(135deg, #105079, #000000);
+        border-bottom-color: #2d2d2d;
+    }
+
+    .smm-pricing-badge {
+        position: absolute;
+        top: 20px;
+        right: -40px;
+        background: var(--smm-color-accent);
+        color: #fff;
+        padding: 8px 40px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        transform: rotate(45deg);
+        box-shadow: 0 5px 10px rgba(156, 0, 4, 0.4);
+        text-transform: uppercase;
+        z-index: 2;
+    }
+
+    .smm-pricing-features {
+        list-style: none;
+        padding: 25px;
+        margin: 0;
+    }
+
+    .smm-pricing-features li {
+        padding: 12px 0;
+        color: #333;
+        border-bottom: 1px solid #eee;
+        transition: background 0.2s ease-in-out;
+    }
+
+    .smm-pricing-features li:hover {
+        background: #f9f9f9;
+    }
+
+    .smm-pricing-features li:last-child {
+        border-bottom: none;
+    }
+
+    .smm-pricing-features .fa-check {
+        color: var(--smm-color-primary);
+        margin-right: 12px;
+    }
+
+    .smm-pricing-btn {
+        display: inline-block;
+        padding: 12px 30px;
+        border-radius: 50px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        margin: 20px 0 30px 0;
+        border: 2px solid transparent;
+        background-color: red;
+        position: relative;
+        z-index: 1;
+    }
+
+    .smm-btn-gold {
+        background: var(--smm-color-gold);
+        color: #fff;
+        border-color: var(--smm-color-gold);
+    }
+
+    .smm-btn-gold:hover {
+        background: #c5a135;
+        color: #fff;
+        transform: scale(1.05);
+        box-shadow: 0 5px 15px rgba(212, 175, 55, 0.4);
+    }
+
+    .smm-btn-platinum {
+        background: var(--smm-color-primary);
+        color: #fff;
+        border-color: var(--smm-color-primary);
+    }
+
+    .smm-btn-platinum:hover {
+        background: #005A8D;
+        color: #fff;
+        transform: scale(1.05);
+        box-shadow: 0 5px 15px rgba(1, 126, 182, 0.4);
+    }
+
+    .smm-btn-diamond {
+        background: #333;
+        color: #fff;
+        border-color: #333;
+    }
+
+    .smm-btn-diamond:hover {
+        background: #000;
+        color: #fff;
+        transform: scale(1.05);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+    }
+
+    .smm-pricing-platinum::after,
+    .smm-pricing-diamond::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -150%;
+        width: 75%;
+        height: 100%;
+        background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 255, 255, 0) 100%);
+        transform: skewX(-25deg);
+        transition: left 0.75s ease;
+    }
+
+    .smm-pricing-platinum:hover::after,
+    .smm-pricing-diamond:hover::after {
+        left: 150%;
+    }
+
+    @keyframes smm-fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .smm-pricing-card {
+        animation: smm-fadeInUp 0.5s ease-out forwards;
+        opacity: 0;
+    }
+
+    .smm-pricing-gold {
+        animation-delay: 0.1s;
+    }
+
+    .smm-pricing-platinum {
+        animation-delay: 0.2s;
+    }
+
+    .smm-pricing-diamond {
+        animation-delay: 0.3s;
+    }
+
+    .smm-popup-overlay {
+        position: fixed;
+        top: 40px;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        backdrop-filter: blur(5px);
+    }
+
+    .smm-popup-content {
+        background: #fff;
+        border-radius: 15px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        width: 90%;
+        max-width: 800px;
+        position: relative;
+        animation: smm-popup-scale 0.4s ease-out;
+    }
+
+    @keyframes smm-popup-scale {
+        from {
+            transform: scale(0.8);
+            opacity: 0;
+        }
+
+        to {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+
+    .smm-popup-inner {
+        display: flex;
+    }
+
+    .smm-popup-image-side {
+        width: 45%;
+        background-color: #7DA8CA;
+        border-radius: 15px 0 0 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+
+    .smm-popup-image-side img {
+        max-width: 100%;
+    }
+
+    .smm-popup-form-side {
+        width: 55%;
+        padding: 40px;
+        margin-top: 20px;
+    }
+
+    .smm-popup-form-side h2 {
+        font-weight: 700;
+        color: #333;
+    }
+
+    .smm-popup-form-side p {
+        color: #666;
+        margin-bottom: 25px;
+    }
+
+    .smm-form-group {
+        margin-bottom: 20px;
+    }
+
+    .smm-form-group input,
+    .smm-form-group select {
+        width: 100%;
+        padding: 12px 15px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .smm-form-group input:focus,
+    .smm-form-group select:focus {
+        outline: none;
+        border-color: var(--smm-color-primary);
+        box-shadow: 0 0 0 3px var(--smm-color-diamond-glow);
+    }
+
+    .smm-submit-btn {
+        width: 100%;
+        padding: 15px;
+        background: var(--smm-color-accent);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.3s, transform 0.2s;
+    }
+
+    .smm-submit-btn:hover {
+        background: #7a0003;
+        transform: translateY(-2px);
+    }
+
+    .smm-close-btn {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background: none;
+        border: none;
+        font-size: 2rem;
+        color: #999;
+        cursor: pointer;
+        line-height: 1;
+    }
+
+    .smm-close-btn:hover {
+        color: #333;
+    }
+
+    @media (max-width: 768px) {
+        .smm-popup-inner {
+            flex-direction: column;
+        }
+
+        .smm-popup-image-side {
+            display: none;
+        }
+
+        .smm-popup-form-side {
+            width: 100%;
+        }
+    }
+</style>
+
+<!-- Success message toast + submit handler (replaces default alert) -->
+<style>
+    #smmSuccessMessage {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: #28a745;
+        color: #fff;
+        padding: 12px 18px;
+        border-radius: 8px;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+        z-index: 2001;
+        display: none;
+        opacity: 0;
+        transition: opacity 0.3s ease, transform 0.3s ease;
+        transform: translateY(-6px);
+        font-weight: 600;
+    }
+
+    #smmSuccessMessage.show {
+        display: block;
+        opacity: 1;
+        transform: translateY(0);
+    }
+</style>
+
+
+<style>
+    /* Force button visibility */
+    .smm-pricing-btn {
+        display: inline-block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        position: relative !important;
+        padding: 12px 30px !important;
+        border-radius: 50px !important;
+        font-weight: 600 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.5px !important;
+        text-decoration: none !important;
+        transition: all 0.3s ease !important;
+        margin: 20px 0 30px 0 !important;
+        border: 2px solid transparent !important;
+        cursor: pointer !important;
+        color: white !important;
+        font-size: 16px !important;
+        line-height: 1.5 !important;
+        text-align: center !important;
+        z-index: 1 !important;
+    }
+
+    /* Button colors */
+    .smm-btn-gold {
+        background: #D4AF37 !important;
+        border-color: #D4AF37 !important;
+    }
+
+    .smm-btn-gold:hover {
+        background: #c5a135 !important;
+        transform: scale(1.05) !important;
+        box-shadow: 0 5px 15px rgba(212, 175, 55, 0.4) !important;
+    }
+
+    .smm-btn-platinum {
+        background: #017EB6 !important;
+        border-color: #017EB6 !important;
+    }
+
+    .smm-btn-platinum:hover {
+        background: #005A8D !important;
+        transform: scale(1.05) !important;
+        box-shadow: 0 5px 15px rgba(1, 126, 182, 0.4) !important;
+    }
+
+    .smm-btn-diamond {
+        background: #333 !important;
+        border-color: #333 !important;
+    }
+
+    .smm-btn-diamond:hover {
+        background: #000 !important;
+        transform: scale(1.05) !important;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4) !important;
+    }
+
+    /* Card header backgrounds */
+    .smm-pricing-gold .smm-pricing-header {
+        background: linear-gradient(135deg, #FFD700, #FBB03B) !important;
+        border-bottom-color: #D4AF37 !important;
+    }
+
+    .smm-pricing-platinum .smm-pricing-header {
+        background: linear-gradient(135deg, #017EB6, #005A8D) !important;
+        border-bottom-color: #017EB6 !important;
+    }
+
+    .smm-pricing-diamond .smm-pricing-header {
+        background: linear-gradient(135deg, #105079, #000000) !important;
+        border-bottom-color: #2d2d2d !important;
+    }
+</style>
+
+{% endblock %}
+
+{% block content %}
+
+<main class="main">
+    <div class="page-title light-background" style="padding: 30px 0px!important;" >
+        <div class="container">
+            <h1>{{ service.title|default:"Digital Marketing" }}</h1>
+            <nav class="breadcrumbs" data-aos="fade-right" data-aos-delay="100">
+                <ol>
+                    <li><a href="{% url 'frontend_app:home' %}"><i class="fas fa-home"></i> Home</a></li>
+                    <li class="current">{{ service.title|default:"Digital Marketing" }}</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Services Section -->
+    <section id="services" class="py-5 py-lg-7 bg-light">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8 text-center mb-5 heading-section" data-aos="fade-up">
+                    <span class="badge custom-brown-badge text-uppercase mb-2">OUR SERVICES</span>
+                    <h3 class="fw-bold mb-4 brown-underline">Complete Digital Marketing Solutions</h3>
+                    <p class="text-muted">We offer a comprehensive range of digital marketing services to help your
+                        business grow online.</p>
+                </div>
+            </div>
+            <div class="row g-4">
+                <!-- Service Card 1 -->
+                <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="100">
+                    <div class="bgd-service-card h-100 d-flex flex-column p-4">
+                        <div class="bgd-service-icon-wrapper">
+                            <div class="bgd-service-icon">
+                                <img src="{% static 'img/icons/icons/seo.gif' %}" width="60px"
+                                    style="border-radius: 50%;" alt="">
+                            </div>
+                        </div>
+                        <h4 class="text-center">SEO Optimization</h4>
+                        <p class="text-muted mb-3 flex-grow-1">Improve your search engine rankings and drive organic
+                            traffic to your website with our proven SEO strategies.</p>
+                        <a href="#" class="text-primary text-decoration-none fw-medium mt-auto">Learn More <i
+                                class="fas fa-arrow-right ms-2"></i></a>
+                    </div>
+                </div>
+
+                <!-- Service Card 2 -->
+                <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="200">
+                    <div class="bgd-service-card h-100 d-flex flex-column p-4">
+                        <div class="bgd-service-icon-wrapper">
+                            <div class="bgd-service-icon">
+                                <img src=" {% static 'img/icons/icons/ads.gif' %}" width="60px"
+                                    style="border-radius: 50%;" alt="">
+                            </div>
+                        </div>
+                        <h4 class="text-center">PPC Advertising</h4>
+                        <p class="text-muted mb-3 flex-grow-1">Launch targeted pay-per-click campaigns that deliver
+                            measurable results and maximize your advertising budget.</p>
+                        <a href="#" class="text-primary text-decoration-none fw-medium mt-auto">Learn More <i
+                                class="fas fa-arrow-right ms-2"></i></a>
+                    </div>
+                </div>
+
+                <!-- Service Card 3 -->
+                <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="300">
+                    <div class="bgd-service-card h-100 d-flex flex-column p-4">
+                        <div class="bgd-service-icon-wrapper">
+                            <div class="bgd-service-icon">
+                                <img src="{% static 'img/icons/icons/hashtags.gif' %}" width="60px"
+                                    style="border-radius: 50%;" alt="">
+                            </div>
+                        </div>
+                        <h4 class="text-center">Social Media Marketing</h4>
+                        <p class="text-muted mb-3 flex-grow-1">Build brand awareness and engage with your audience
+                            through strategic social media campaigns.</p>
+                        <a href="#" class="text-primary text-decoration-none fw-medium mt-auto">Learn More <i
+                                class="fas fa-arrow-right ms-2"></i></a>
+                    </div>
+                </div>
+
+                <!-- Service Card 4 -->
+                <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="400">
+                    <div class="bgd-service-card h-100 d-flex flex-column p-4">
+                        <div class="bgd-service-icon-wrapper">
+                            <div class="bgd-service-icon">
+                                <img src=" {% static 'img/icons/icons/email-marketing.gif'%} " width="60px"
+                                    style="border-radius: 50%;" alt="">
+                            </div>
+                        </div>
+                        <h4 class="text-center">Email Marketing</h4>
+                        <p class="text-muted mb-3 flex-grow-1">Nurture leads and convert customers with personalized
+                            email campaigns that deliver results.</p>
+                        <a href="email-marketing.html" class="text-primary text-decoration-none fw-medium mt-auto">Learn
+                            More <i class="fas fa-arrow-right ms-2"></i></a>
+                    </div>
+                </div>
+
+                <!-- Service Card 5 -->
+                <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="500">
+                    <div class="bgd-service-card h-100 d-flex flex-column p-4">
+                        <div class="bgd-service-icon-wrapper">
+                            <div class="bgd-service-icon">
+                                <img src="{% static 'img/icons/icons/content-marketing.gif' %}" width="60px"
+                                    style="border-radius: 50%;" alt="">
+                            </div>
+                        </div>
+                        <h4 class="text-center">Content Marketing</h4>
+                        <p class="text-muted mb-3 flex-grow-1">Attract and retain customers with high-quality
+                            content that establishes your brand as an industry leader.</p>
+                        <a href="#" class="text-primary text-decoration-none fw-medium mt-auto">Learn More <i
+                                class="fas fa-arrow-right ms-2"></i></a>
+                    </div>
+                </div>
+
+                <!-- Service Card 6 -->
+                <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="600">
+                    <div class="bgd-service-card h-100 d-flex flex-column p-4">
+                        <div class="bgd-service-icon-wrapper">
+                            <div class="bgd-service-icon">
+                                <img src="{% static 'img/icons/icons/data-analysis.gif' %}" width="60px"
+                                    style="border-radius: 50%;" alt="">
+                            </div>
+                        </div>
+                        <h4 class="text-center">Analytics & Reporting</h4>
+                        <p class="text-muted mb-3 flex-grow-1">Make data-driven decisions with comprehensive
+                            analytics and performance reports.</p>
+                        <a href="#" class="text-primary text-decoration-none fw-medium mt-auto">Learn More <i
+                                class="fas fa-arrow-right ms-2"></i></a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-5 py-lg-7 bg-light">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6 mb-5 mb-lg-0" data-aos="fade-right">
+                    <img src="https://img.freepik.com/free-vector/digital-marketing-concept-illustration_114360-8432.jpg"
+                        alt="About Us" class=" img-fluid-custom-hero rounded-4">
+                </div>
+                <div class="col-lg-6 heading-section justify-content-end " data-aos="fade-left" data-aos-delay="200">
+                    <span class="badge custom-brown-badge text-uppercase mb-2 text-center">ABOUT US</span>
+                    <h3 class="fw-bold mb-4">We Help Businesses Grow Online</h3>
+                    <p class="mb-4 text-muted">
+                        {% if service.description %}
+                        {{ service.description | safe }}
+                        {% else %}
+                        BG-Infotechs is a digital marketing agency dedicated to helping businesses of all sizes achieve
+                        their online marketing goals. Our team of experts combines creativity, technology, and
+                        data-driven strategies to deliver measurable results.
+                        {% endif %}
+                    </p>
+                    <ul class="list-unstyled mb-4">
+                        <li class="mb-2 text-muted" data-aos="fade-left" data-aos-delay="300"><i
+                                class="fas fa-check-circle text-primary me-2"></i> 5+ Years of Industry Experience
+                        </li>
+                        <li class="mb-2 text-muted" data-aos="fade-left" data-aos-delay="400"><i
+                                class="fas fa-check-circle text-primary me-2"></i> Certified Digital Marketing
+                            Professionals</li>
+                        <li class="mb-2 text-muted" data-aos="fade-left" data-aos-delay="500"><i
+                                class="fas fa-check-circle text-primary me-2"></i> Customized Strategies for Each Client
+                        </li>
+                        <li class="mb-2 text-muted" data-aos="fade-left" data-aos-delay="600"><i
+                                class="fas fa-check-circle text-primary me-2"></i> Transparent Reporting & Analytics
+                        </li>
+                        <li class="mb-2 text-muted" data-aos="fade-left" data-aos-delay="700"><i
+                                class="fas fa-check-circle text-primary me-2"></i> Dedicated Account Managers</li>
+                    </ul>
+                    <a href="{% url 'frontend_app:about' %}" class="btn btn-primary rounded-5" data-aos="fade-up"
+                        data-aos-delay="800">Learn More About Us</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Portfolio Section -->
+    <section id="portfolio" class="py-5 py-lg-7">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8 text-center mb-5 heading-section" data-aos="fade-up">
+                    <span class="badge custom-brown-badge text-uppercase mb-2">OUR WORK</span>
+                    <h3 class="fw-bold mb-4">Recent Projects</h3>
+                    <p class="text-muted">Take a look at some of our successful digital marketing campaigns.</p>
+                </div>
+            </div>
+
+            <!-- Portfolio Items -->
+            <div class="row g-4 bgd-portfolio-container">
+                {% for project in recent_projects %}
+                <div class="col-lg-3 col-md-6 bgd-portfolio-item" data-aos="fade-up"
+                    data-aos-delay="{{ forloop.counter }}00">
+                    <div class="bgd-portfolio-card">
+                        {% if project.image %}
+                        <img src="{{ project.image.url }}" alt="{{ project.title }}"
+                            class="img-fluid bgd-portfolio-img">
+                        {% else %}
+                        <img src="{% static 'img/turned-gray-laptop-computer.jpg' %}" alt="{{ project.title }}"
+                            class="img-fluid bgd-portfolio-img">
+                        {% endif %}
+                        <div class="bgd-portfolio-overlay">
+                            <h4>{{ project.title }}</h4>
+                            <p>{{ project.description|truncatewords:10 }}</p>
+                            {% if project.live_link %}
+                            <a href="{{ project.live_link }}" target="_blank" class="btn btn-sm btn-primary mt-2">View
+                                Project</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <!-- Fallback projects if no projects in database -->
+                <div class="col-lg-3 col-md-6 bgd-portfolio-item" data-aos="fade-up" data-aos-delay="100">
+                    <div class="bgd-portfolio-card">
+                        <img src="{% static 'img/turned-gray-laptop-computer.jpg' %}" alt="Project 1"
+                            class="img-fluid bgd-portfolio-img">
+                        <div class="bgd-portfolio-overlay">
+                            <h4>SEO Campaign</h4>
+                            <p>Increased organic traffic by 300%</p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            {% if recent_projects %}
+            <div class="text-center mt-5">
+                <a href="{% url 'frontend_app:all_digital_marketing' %}"
+                    class="btn btn-primary rounded-pill portfolio-btn px-4 py-2">
+                    <span class="view-more-text">View More Projects</span>
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="package" class="smm-pricing-section py-5">
+        <div class="container">
+            <div class="text-center mb-4">
+                <h1 class="fw-bold section-title2">Our Packages</h1>
+                <p class="text-muted mb-5">Strategic solutions tailored to elevate your brand's digital presence</p>
+            </div>
+
+            <div class="row g-4 justify-content-center">
+                {% for package in packages %}
+                <div class="col-lg-4 col-md-6">
+                    <div class="smm-pricing-card h-100" data-package-type="{{ forloop.counter }}">
+                        {% if package.tags %}
+                        <div class="smm-pricing-badge" style="text-align:center !important; font-size:smaller; margin-top: 10px;">{{ package.tags }}</div>
+                        {% endif %}
+
+                        <div class="smm-pricing-header">
+                            <i class="smm-pricing-icon {{ package.icon|default:'fas fa-crown' }}"></i>
+                            <h4 class="smm-pricing-plan-title">{{ package.title }}</h4>
+                            <div class="smm-pricing-price">Rs.{{ package.month_price }}<span
+                                    class="smm-pricing-period">/month</span></div>
+                            <small>{{ package.short_desc }}</small>
+                        </div>
+                        <div class="card-body d-flex flex-column">
+                            <ul class="smm-pricing-features text-start">
+                                {% if package.graphic_design %}
+                                <li><i class="fas fa-check"></i> {{ package.graphic_design }}</li>
+                                {% endif %}
+                                {% if package.motion_graphic %}
+                                <li><i class="fas fa-check"></i> {{ package.motion_graphic }}</li>
+                                {% endif %}
+                                {% if package.shute_video %}
+                                <li><i class="fas fa-check"></i> {{ package.shute_video }}</li>
+                                {% endif %}
+                                {% if package.content_video %}
+                                <li><i class="fas fa-check"></i> {{ package.content_video }}</li>
+                                {% endif %}
+                                {% if package.real %}
+                                <li><i class="fas fa-check"></i> {{ package.real }}</li>
+                                {% endif %}
+                                {% if package.bosting %}
+                                <li><i class="fas fa-check"></i> {{ package.bosting }}</li>
+                                {% endif %}
+                                {% if package.description %}
+                                <li><i class="fas fa-check"></i> {{ package.description|safe }}</li>
+                                {% endif %}
+                            </ul>
+                            <button class="smm-pricing-btn subscribe-btn mt-auto" data-plan="{{ package.title }}"
+                                data-package-id="{{ package.id }}">
+                                Select Plan
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <!-- Fallback packages if no packages in database -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="smm-pricing-card smm-pricing-gold h-100">
+                        <div class="smm-pricing-badge">Most Popular</div>
+                        <div class="smm-pricing-header">
+                            <i class="smm-pricing-icon fas fa-crown"></i>
+                            <h4 class="smm-pricing-plan-title">Gold</h4>
+                            <div class="smm-pricing-price">Rs.11,999<span class="smm-pricing-period">/month</span></div>
+                            <small>Enhanced social media presence</small>
+                        </div>
+                        <div class="card-body d-flex flex-column">
+                            <ul class="smm-pricing-features text-start">
+                                <li><i class="fas fa-check"></i> 20 Creative Graphic Designs</li>
+                                <li><i class="fas fa-check"></i> Page & Social Media Management</li>
+                                <li><i class="fas fa-check"></i> Creative Content Creation</li>
+                                <li><i class="fas fa-check"></i> 2 Reels/GIF per Month</li>
+                                <li><i class="fas fa-check"></i> Free Festival & Birthday Posts</li>
+                            </ul>
+                            <button class="smm-pricing-btn smm-btn-gold subscribe-btn mt-auto" data-plan="Gold"
+                                data-package-id="1">
+                                Select Plan
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <!-- Custom Package Form -->
+    <section class="sm-pricing-section">
+        <div class="container">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <img src="{% static 'img/5215757-removebg-preview.png' %}" class="img-fluid"
+                        style="margin-top: 70px !important;" alt="">
+                </div>
+                <div class="col-md-6">
+                    <form class="sm-custom-package-form mt-5" method="POST">
+                        {% csrf_token %}
+                        <h3 class="sm-form-title">Create Your <span>Custom Package</span></h3>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="name_business_name" class="sm-form-label">Name/Business Name <span
+                                            class="text-danger">*</span></label>
+                                    {{ custom_package_form.name_business_name }}
+                                    {% if custom_package_form.name_business_name.errors %}
+                                    <div class="text-danger small">
+                                        {{ custom_package_form.name_business_name.errors }}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                <div class="mb-3">
+                                    <label for="email" class="sm-form-label">Email</label>
+                                    {{ custom_package_form.email }}
+                                    {% if custom_package_form.email.errors %}
+                                    <div class="text-danger small">
+                                        {{ custom_package_form.email.errors }}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                <div class="mb-3">
+                                    <label for="no_of_graphics" class="sm-form-label">No. of Graphics</label>
+                                    {{ custom_package_form.no_of_graphics }}
+                                    {% if custom_package_form.no_of_graphics.errors %}
+                                    <div class="text-danger small">
+                                        {{ custom_package_form.no_of_graphics.errors }}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="phone_number" class="sm-form-label">Phone No. <span
+                                            class="text-danger">*</span></label>
+                                    {{ custom_package_form.phone_number }}
+                                    {% if custom_package_form.phone_number.errors %}
+                                    <div class="text-danger small">
+                                        {{ custom_package_form.phone_number.errors }}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                <div class="mb-3">
+                                    <label for="business_category" class="sm-form-label">Business Category</label>
+                                    {{ custom_package_form.business_category }}
+                                    {% if custom_package_form.business_category.errors %}
+                                    <div class="text-danger small">
+                                        {{ custom_package_form.business_category.errors }}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                <div class="mb-3">
+                                    <label for="no_of_videos" class="sm-form-label">No. of Videos/GIFs</label>
+                                    {{ custom_package_form.no_of_videos }}
+                                    {% if custom_package_form.no_of_videos.errors %}
+                                    <div class="text-danger small">
+                                        {{ custom_package_form.no_of_videos.errors }}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-12 text-center mt-3">
+                                <button type="submit" name="custom_package_submit" class="btn sm-btn-submit px-4">Apply
+                                    Now</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    {% if service_testimonials %}
+    <section class="py-5 bg-light">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8 text-center mb-5 heading-section" data-aos="fade-up">
+                    <span class="badge custom-brown-badge text-uppercase mb-2">TESTIMONIALS</span>
+                    <h3 class="fw-bold mb-4">What Our Clients Say</h3>
+                    <p class="text-muted">Hear from businesses that have transformed their digital presence with us.</p>
+                </div>
+            </div>
+            <div class="row g-4">
+                {% for testimonial in service_testimonials %}
+                <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="{{ forloop.counter }}00">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body text-center">
+                            <div class="mb-3">
+                                {% for i in "12345" %}
+                                {% if forloop.counter <= testimonial.rating %} <i class="fas fa-star text-warning"></i>
+                                    {% else %}
+                                    <i class="far fa-star text-warning"></i>
+                                    {% endif %}
+                                    {% endfor %}
+                            </div>
+                            <p class="card-text mb-3">"{{ testimonial.message }}"</p>
+                            <div class="d-flex align-items-center justify-content-center">
+                                {% if testimonial.image %}
+                                <img src="{{ testimonial.image.url }}" alt="{{ testimonial.name }}"
+                                    class="rounded-circle me-3" width="50" height="50">
+                                {% endif %}
+                                <div>
+                                    <h6 class="mb-0">{{ testimonial.name }}</h6>
+                                    {% if testimonial.designation %}
+                                    <small class="text-muted">{{ testimonial.designation }}</small>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- FAQ Section -->
+    <section class="sm-faq-section">
+        <div class="container-fluid">
+            <div class="text-center mb-5">
+                <h2 class="sm-faq-title">Frequently Asked <span>Questions</span></h2>
+                <p class="sm-faq-subtitle">Find answers to common questions about our digital marketing services.</p>
+            </div>
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="accordion" id="sm-faqAccordion">
+                            {% for faq in faqs %}
+                            <div class="accordion-item mb-3 border-0 shadow-sm">
+                                <h2 class="accordion-header" id="sm-heading{{ forloop.counter }}">
+                                    <button class="accordion-button sm-accordion-button collapsed" type="button"
+                                        data-bs-toggle="collapse" data-bs-target="#sm-collapse{{ forloop.counter }}"
+                                        aria-expanded="false" aria-controls="sm-collapse{{ forloop.counter }}">
+                                        {{ faq.question }}
+                                    </button>
+                                </h2>
+                                <div id="sm-collapse{{ forloop.counter }}" class="accordion-collapse collapse"
+                                    aria-labelledby="sm-heading{{ forloop.counter }}" data-bs-parent="#sm-faqAccordion">
+                                    <div class="accordion-body sm-accordion-body">
+                                        {{ faq.answer }}
+                                    </div>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <!-- Fallback FAQs if no FAQs in database -->
+                            <div class="accordion-item mb-3 border-0 shadow-sm">
+                                <h2 class="accordion-header" id="sm-headingOne">
+                                    <button class="accordion-button sm-accordion-button collapsed" type="button"
+                                        data-bs-toggle="collapse" data-bs-target="#sm-collapseOne" aria-expanded="false"
+                                        aria-controls="sm-collapseOne">
+                                        What's included in your digital marketing packages?
+                                    </button>
+                                </h2>
+                                <div id="sm-collapseOne" class="accordion-collapse collapse"
+                                    aria-labelledby="sm-headingOne" data-bs-parent="#sm-faqAccordion">
+                                    <div class="accordion-body sm-accordion-body">
+                                        Our packages include comprehensive digital marketing services including SEO,
+                                        social media management, content creation, and performance analytics.
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <img src="{% static 'img/38071986-removebg-preview.png' %}" class="img-fluid"
+                            style="height: 450px !important; margin-top: -20px !important;" alt="">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Clients Section -->
+    <section class="py-5 py-lg-7">
+        <div class="container">
+            <div class="text-center mb-5">
+                <span class="badge custom-brown-badge text-uppercase mb-3">TRUSTED BY</span>
+                <h2 class="fw-bold brown-underline mb-4">Our Valued Clients</h2>
+                <p class="text-muted fs-5">We're proud to work with amazing businesses across various industries</p>
+            </div>
+
+            <div class="row">
+                <div class="col-12">
+                    <div class="client-logos-slider">
+                        <div class="client-logos-track">
+                            {% for project in related_projects_logo %}
+                            <div class="client-logo-item">
+                                {% if project.logo %}
+                                <img src="{{ project.logo.url }}" alt="{{ project.company }}" class="img-fluid">
+                                {% else %}
+                                <img src="{% static 'img/Logo.png' %}" alt="{{ project.company }}" class="img-fluid">
+                                {% endif %}
+                            </div>
+                            {% empty %}
+                            <!-- Fallback client logos -->
+                            {% for i in "12345678" %}
+                            <div class="client-logo-item">
+                                <img src="{% static 'img/Logo.png' %}" alt="Client {{ i }}" class="img-fluid">
+                            </div>
+                            {% endfor %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section py-5 py-lg-7 bg-dark text-white position-relative overflow-hidden">
+        <div class="position-absolute top-0 start-0 w-100 h-100">
+            <div class="cta-shape-1 position-absolute bg-primary rounded-circle"></div>
+            <div class="cta-shape-2 position-absolute bg-success rounded-circle"></div>
+        </div>
+        <div class="container position-relative">
+            <div class="row justify-content-center">
+                <div class="col-lg-9 text-center">
+                    <span class="custom-badge">
+                        <h6 class="mb-0">LIMITED TIME OFFER</h6>
+                    </span>
+                    <h4 class="fw-bold mb-2 text-black mt-2">Ready to Transform Your Digital Presence?</h4>
+                    <p class="mb-5 text-muted">Struggling to get leads? We turn clicks into customers. Book your free
+                        audit now.</p>
+                    <div class="d-flex flex-column flex-sm-row justify-content-center gap-3">
+                        <a href="{% url 'frontend_app:contact' %}"
+                            class="btn btn-outline-primary btn-lg px-4 py-3 fw-bold rounded-pill hover-lift">Let's
+                            Connect</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<div id="smmSuccessMessage" role="status" aria-live="polite"></div>
+
+<!-- Popup Form HTML -->
+<div class="smm-popup-overlay mt-2"  id="smmPopupOverlay">
+    <div class="smm-popup-content">
+        <button class="smm-close-btn" id="smmClosePopup">&times;</button>
+        <div class="smm-popup-inner">
+            <div class="smm-popup-image-side">
+                <img src="{% static 'img/pricing.jpg' %}" alt="Subscription" />
+            </div>
+
+            <!-- Scroll feature add  -->
+
+            <div class="smm-popup-form-side overflow-auto" style="max-height: 425px;" >
+                <h2>Subscribe Now</h2>
+                <p>Please fill in your details to get started with your selected plan.</p>
+                <form id="smmPlanForm" method="POST" action="{% url 'frontend_app:digital_marketing' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="form_type" value="package_subscriber">
+                    <div class="smm-form-group">
+                        {{ plan_subscriber_form.name_business_name }}
+                        {% if plan_subscriber_form.name_business_name.errors %}
+                        <div class="text-danger small">
+                            {{ plan_subscriber_form.name_business_name.errors }}
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="smm-form-group">
+                        {{ plan_subscriber_form.phone_number }}
+                        {% if plan_subscriber_form.phone_number.errors %}
+                        <div class="text-danger small">
+                            {{ plan_subscriber_form.phone_number.errors }}
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="smm-form-group">
+                        {{ plan_subscriber_form.email }}
+                        {% if plan_subscriber_form.email.errors %}
+                        <div class="text-danger small">
+                            {{ plan_subscriber_form.email.errors }}
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="smm-form-group">
+                        <label for="id_package" class="form-label">Select Package</label>
+                        <select id="id_package" name="{{ plan_subscriber_form.package.html_name }}" class="form-select">
+                            <option value="" disabled {% if not plan_subscriber_form.package.value %}selected{% endif %}>Select Package</option>
+                            {% for p in packages %}
+                            <option value="{{ p.id }}"
+                                {% if plan_subscriber_form.package.value|stringformat:"s" == p.id|stringformat:"s" %}selected{% endif %}>
+                                {{ p.title }}{% if p.month_price %} — Rs.{{ p.month_price }}{% endif %}
+                            </option>
+                            {% endfor %}
+                        </select>
+                        {% if plan_subscriber_form.package.errors %}
+                        <div class="text-danger small">
+                            {{ plan_subscriber_form.package.errors }}
+                        </div>
+                        {% endif %}
+                    </div>
+                    <button type="submit" class="smm-submit-btn" name="package_submit">Complete Subscription</button>
+                </form>
+            </div>
+            <!-- scroll end  -->
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Fix pricing cards and buttons
+        const pricingCards = document.querySelectorAll('.smm-pricing-card');
+
+        pricingCards.forEach((card, index) => {
+            // Add proper classes based on position
+            const packageType = card.getAttribute('data-package-type');
+            let planClass, btnClass;
+
+            if (packageType === '1' || index === 0) {
+                planClass = 'smm-pricing-gold';
+                btnClass = 'smm-btn-gold';
+            } else if (packageType === '2' || index === 1) {
+                planClass = 'smm-pricing-platinum';
+                btnClass = 'smm-btn-platinum';
+            } else {
+                planClass = 'smm-pricing-diamond';
+                btnClass = 'smm-btn-diamond';
+            }
+
+            // Add classes to card and button
+            card.classList.add(planClass);
+
+            const button = card.querySelector('.smm-pricing-btn');
+            if (button) {
+                button.classList.add(btnClass);
+
+                // Ensure button is visible and has proper styling
+                button.style.display = 'block';
+                button.style.visibility = 'visible';
+                button.style.opacity = '1';
+                button.style.position = 'relative';
+            }
+
+            // Ensure header has proper background
+            const header = card.querySelector('.smm-pricing-header');
+            if (header) {
+                header.style.display = 'block';
+                header.style.visibility = 'visible';
+            }
+        });
+
+        // Additional button styling fix
+        const buttons = document.querySelectorAll('.smm-pricing-btn');
+        buttons.forEach(button => {
+            // Force button styling
+            button.style.cssText = `
+            display: inline-block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            position: relative !important;
+            padding: 12px 30px !important;
+            border-radius: 50px !important;
+            font-weight: 600 !important;
+            text-transform: uppercase !important;
+            letter-spacing: 0.5px !important;
+            text-decoration: none !important;
+            transition: all 0.3s ease !important;
+            margin: 20px 0 30px 0 !important;
+            border: 2px solid transparent !important;
+            cursor: pointer !important;
+            color: white !important;
+            font-size: 16px !important;
+            line-height: 1.5 !important;
+            text-align: center !important;
+            z-index: 1 !important;
+        `;
+        });
+    });
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const popupOverlay = document.getElementById('smmPopupOverlay');
+        const closePopupButton = document.getElementById('smmClosePopup');
+        const selectPlanButtons = document.querySelectorAll('.smm-pricing-btn');
+        const planSelect = document.getElementById('id_package');
+        const form = document.getElementById('smmPlanForm');
+        const successToast = document.getElementById('smmSuccessMessage');
+
+        function showSuccessMessage(msg, duration = 3000) {
+            if (successToast) {
+                successToast.textContent = msg;
+                successToast.classList.add('show');
+                setTimeout(() => {
+                    successToast.classList.remove('show');
+                }, duration);
+            }
+        }
+
+        const openPopup = (planName, packageId) => {
+            if (planSelect) {
+                // Set the selected package in the dropdown
+                planSelect.value = packageId;
+            }
+            if (popupOverlay) {
+                popupOverlay.style.display = 'flex';
+            }
+        };
+
+        const closePopup = () => {
+            if (popupOverlay) {
+                popupOverlay.style.display = 'none';
+            }
+        };
+
+        selectPlanButtons.forEach(button => {
+            button.addEventListener('click', function (e) {
+                const planName = this.getAttribute('data-plan');
+                const packageId = this.getAttribute('data-package-id');
+                openPopup(planName, packageId);
+            });
+        });
+
+        if (closePopupButton) {
+            closePopupButton.addEventListener('click', closePopup);
+        }
+
+        if (popupOverlay) {
+            popupOverlay.addEventListener('click', function (e) {
+                if (e.target === popupOverlay) {
+                    closePopup();
+                }
+            });
+        }
+
+        // Handle form submission success messages
+        {% if messages %}
+        {% for message in messages %}
+        {% if message.tags == 'success' %}
+        showSuccessMessage('{{ message }}', 5000);
+        {% endif %}
+        {% endfor %}
+        {% endif %}
+    });
+</script>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.smm-pricing-btn').forEach(function (btn) {
+            if (!btn.getAttribute('data-package') && btn.getAttribute('data-plan')) {
+                btn.setAttribute('data-package', btn.getAttribute('data-plan'));
+            }
+        });
+
+        // If JS elsewhere sets the select's value directly (e.g. planName + ' Plan'), selecting the matching option works.
+        // If an unmatched value is set, keep it by adding an option so form still submits meaningful data.
+        const smmSelect = document.getElementById('smmPlan');
+        if (smmSelect) {
+            const observer = new MutationObserver(() => {
+                // No-op: available if you want to react to DOM changes
+            });
+            observer.observe(smmSelect, { attributes: true, childList: true, subtree: true });
+        }
+    });
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const popupOverlay = document.getElementById('smmPopupOverlay');
+        const closePopupButton = document.getElementById('smmClosePopup');
+        const selectPlanButtons = document.querySelectorAll('.smm-pricing-btn');
+        const planInput = document.getElementById('smmPlan');
+        const form = document.getElementById('smmPlanForm');
+
+        const openPopup = (planName) => {
+            planInput.value = planName + ' Plan';
+            popupOverlay.style.display = 'flex';
+        };
+
+        const closePopup = () => {
+            popupOverlay.style.display = 'none';
+        };
+
+        selectPlanButtons.forEach(button => {
+            button.addEventListener('click', function (e) {
+                const planName = this.getAttribute('data-package');
+                openPopup(planName);
+            });
+        });
+
+        closePopupButton.addEventListener('click', closePopup);
+
+        popupOverlay.addEventListener('click', function (e) {
+            if (e.target === popupOverlay) {
+                closePopup();
+            }
+        });
+    });
+</script>
+
+<script>
+    // Get current page URL path
+    const currentPage = window.location.pathname.split("/").pop();
+    const navLinks = document.querySelectorAll(".nav-link-item, .nav-links a, .mobile-menu a");
+
+    navLinks.forEach(link => {
+        const linkPage = link.getAttribute("href").split("/").pop();
+        if (linkPage === currentPage) {
+            link.classList.add("active");
+        } else {
+            link.classList.remove("active");
+        }
+    });
+</script>
+{% endblock %}
+{% endblock %}

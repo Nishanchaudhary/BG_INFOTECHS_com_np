@@ -1,0 +1,225 @@
+<!-- courses/media_form.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-dark shadow-lg">
+                <div class="card-header bg-info text-white border-dark">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-photo-video me-2"></i>
+                        {{ page_title }}
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <!-- Course Info -->
+                    <div class="card border-primary mb-4">
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-auto">
+                                    {% if course.image %}
+                                    <img src="{{ course.image.url }}" alt="{{ course.title }}" 
+                                         class="rounded" style="width: 60px; height: 45px; object-fit: cover;">
+                                    {% else %}
+                                    <div class="bg-light rounded d-flex align-items-center justify-content-center" 
+                                         style="width: 60px; height: 45px;">
+                                        <i class="fas fa-book text-muted"></i>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                <div class="col">
+                                    <h6 class="mb-0 fw-bold">{{ course.title }}</h6>
+                                    <small class="text-muted">{{ course.short_description }}</small>
+                                </div>
+                                <div class="col-auto">
+                                    <a href="{% url 'course_app:course_media_list' course.pk %}" 
+                                       class="btn btn-sm btn-outline-light">
+                                        <i class="fas fa-arrow-left me-1"></i>Back
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if messages %}
+                    <div class="mb-4">
+                        {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                            <i class="fas fa-{% if message.tags == 'success' %}check-circle{% else %}exclamation-triangle{% endif %} me-2"></i>
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    <form method="post" enctype="multipart/form-data" id="mediaForm">
+                        {% csrf_token %}
+                        
+                        <!-- Debug: Remove this if you see it -->
+                        <!-- NO HIDDEN COURSE FIELD HERE -->
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Media Type <span class="text-danger">*</span></label>
+                                    {{ form.media_type }}
+                                    {% if form.media_type.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {{ form.media_type.errors|join:", " }}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Order</label>
+                                    {{ form.order }}
+                                    {% if form.order.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {{ form.order.errors|join:", " }}
+                                    </div>
+                                    {% endif %}
+                                    <small class="form-text text-muted">Leave blank for auto-assignment</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">
+                                File {% if not media %}<span class="text-danger">*</span>{% endif %}
+                            </label>
+                            {{ form.file }}
+                            {% if form.file.errors %}
+                            <div class="text-danger small mt-1">
+                                {{ form.file.errors|join:", " }}
+                            </div>
+                            {% endif %}
+                            
+                            {% if media and media.file %}
+                            <div class="mt-2 p-3 bg-light rounded border">
+                                <div class="d-flex align-items-center">
+                                    <div class="flex-grow-1">
+                                        <small class="text-muted d-block mb-1">
+                                            <strong>Current file:</strong>
+                                        </small>
+                                        <small>
+                                            <a href="{{ media.file.url }}" target="_blank" class="text-primary text-decoration-none">
+                                                <i class="fas fa-file me-1"></i>{{ media.file.name|truncatechars:40 }}
+                                            </a>
+                                        </small>
+                                    </div>
+                                    <div class="ms-3">
+                                        <a href="{{ media.file.url }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-eye me-1"></i>View
+                                        </a>
+                                    </div>
+                                </div>
+                                {% if form.file.help_text %}
+                                <small class="form-text text-muted d-block mt-2">
+                                    <i class="fas fa-info-circle me-1"></i>{{ form.file.help_text }}
+                                </small>
+                                {% endif %}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Caption</label>
+                            {{ form.caption }}
+                            {% if form.caption.errors %}
+                            <div class="text-danger small mt-1">
+                                {{ form.caption.errors|join:", " }}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3 form-check form-switch">
+                            {{ form.status }}
+                            <label class="form-check-label fw-bold ms-2" for="{{ form.status.id_for_label }}">
+                                Active Status
+                            </label>
+                        </div>
+
+                        <div class="d-flex justify-content-between pt-3 border-top">
+                            <a href="{% url 'course_app:course_media_list' course.pk %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Back to Media List
+                            </a>
+                            <div>
+                                <button type="submit" class="btn btn-success px-4">
+                                    <i class="fas fa-save me-2"></i>
+                                    {% if media %}Update{% else %}Save{% endif %} Media
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('mediaForm');
+    const fileInput = form.querySelector('input[type="file"]');
+    const isUpdate = {% if media %}true{% else %}false{% endif %};
+    
+    // Client-side validation
+    form.addEventListener('submit', function(e) {
+        let isValid = true;
+        
+        // Check required fields
+        const requiredFields = form.querySelectorAll('[required]');
+        requiredFields.forEach(function(field) {
+            if (!field.value.trim()) {
+                isValid = false;
+                field.classList.add('is-invalid');
+                
+                // Add error message
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'invalid-feedback';
+                errorDiv.textContent = 'This field is required.';
+                field.parentNode.appendChild(errorDiv);
+            }
+        });
+        
+        // For create, check file
+        if (!isUpdate) {
+            if (!fileInput.files || fileInput.files.length === 0) {
+                isValid = false;
+                fileInput.classList.add('is-invalid');
+                
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'invalid-feedback';
+                errorDiv.textContent = 'Please select a file to upload.';
+                fileInput.parentNode.appendChild(errorDiv);
+            }
+        }
+        
+        if (!isValid) {
+            e.preventDefault();
+            // Scroll to first error
+            const firstError = form.querySelector('.is-invalid');
+            if (firstError) {
+                firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                firstError.focus();
+            }
+        }
+    });
+    
+    // Remove invalid class when user starts typing
+    form.querySelectorAll('input, select, textarea').forEach(function(field) {
+        field.addEventListener('input', function() {
+            this.classList.remove('is-invalid');
+            const errorDiv = this.parentNode.querySelector('.invalid-feedback');
+            if (errorDiv) {
+                errorDiv.remove();
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

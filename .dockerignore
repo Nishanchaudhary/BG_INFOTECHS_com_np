@@ -1,0 +1,19 @@
+# .dockerignore
+.git/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.env
+*.sqlite3
+db.sqlite3
+media/
+static_files/
+*.log
+local_settings.py
+.DS_Store
+.vscode/
+.idea/

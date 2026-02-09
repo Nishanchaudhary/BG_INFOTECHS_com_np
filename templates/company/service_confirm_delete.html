@@ -1,0 +1,195 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">{{ page_title }}</h1>
+        <a href="{% url 'company_app:service_list' %}" class="d-none d-sm-inline-block btn btn-sm btn-secondary shadow-sm">
+            <i class="fas fa-arrow-left fa-sm text-white-50"></i> Back to List
+        </a>
+    </div>
+
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'company_app:service_list' %}">Services</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ breadcrumb_active }}</li>
+        </ol>
+    </nav>
+
+    <!-- Delete Confirmation -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-danger">
+                <i class="fas fa-exclamation-triangle mr-2"></i>Confirm Delete
+            </h6>
+        </div>
+        <div class="card-body">
+            <div class="alert alert-warning">
+                <h5><i class="fas fa-exclamation-triangle"></i> Warning!</h5>
+                <p>You are about to delete the following service:</p>
+                
+                <div class="row mt-4">
+                    <div class="col-md-8">
+                        <ul class="list-unstyled">
+                            <li class="mb-2">
+                                <strong><i class="fas fa-heading mr-2"></i>Title:</strong> 
+                                <span class="text-dark">{{ service.title }}</span>
+                            </li>
+                            {% if service.sub_title %}
+                            <li class="mb-2">
+                                <strong><i class="fas fa-subscript mr-2"></i>Sub Title:</strong> 
+                                <span class="text-dark">{{ service.sub_title }}</span>
+                            </li>
+                            {% endif %}
+                            <li class="mb-2">
+                                <strong><i class="fas fa-info-circle mr-2"></i>Status:</strong> 
+                                <span class="badge badge-{% if service.status %}success{% else %}secondary{% endif %}">
+                                    {% if service.status %}Active{% else %}Inactive{% endif %}
+                                </span>
+                            </li>
+                            <li class="mb-2">
+                                <strong><i class="fas fa-calendar-alt mr-2"></i>Created:</strong> 
+                                <span class="text-dark">{{ service.created_at|date:"M d, Y" }}</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        {% if service.image %}
+                        <img src="{{ service.image.url }}" alt="{{ service.title }}" 
+                             class="img-fluid rounded shadow-sm" style="max-height: 150px;">
+                        {% else %}
+                        <div class="bg-light rounded p-4 text-muted">
+                            <i class="fas fa-image fa-3x mb-2"></i>
+                            <p class="mb-0">No Image</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="mt-3 p-3 bg-light rounded">
+                    <strong>Description:</strong>
+                    <p class="mb-0 mt-1">{{ service.description | safe |truncatewords:30 }}</p>
+                </div>
+                
+                <hr>
+                <p class="mb-0 text-danger font-weight-bold">
+                    <i class="fas fa-skull-crossbones mr-1"></i>
+                    This action cannot be undone. All data associated with this service will be permanently deleted.
+                </p>
+            </div>
+            
+            <form method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <button type="submit" class="btn btn-danger btn-lg">
+                        <i class="fas fa-trash mr-2"></i> Confirm Delete
+                    </button>
+                    <a href="{% url 'company_app:service_list' %}" class="btn btn-secondary btn-lg ml-2">
+                        <i class="fas fa-times mr-2"></i> Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Related Information -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-info">
+                <i class="fas fa-info-circle mr-2"></i>Important Information
+            </h6>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <h6 class="font-weight-bold text-primary">What will be deleted:</h6>
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-check text-danger mr-2"></i>Service record from database</li>
+                        <li><i class="fas fa-check text-danger mr-2"></i>Service image file</li>
+                        <li><i class="fas fa-check text-danger mr-2"></i>All service metadata</li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <h6 class="font-weight-bold text-success">Considerations:</h6>
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-exclamation-triangle text-warning mr-2"></i>Backup important data first</li>
+                        <li><i class="fas fa-exclamation-triangle text-warning mr-2"></i>Check for dependencies</li>
+                        <li><i class="fas fa-exclamation-triangle text-warning mr-2"></i>Notify team members if needed</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .breadcrumb {
+        background-color: #f8f9fc;
+        border-radius: 0.35rem;
+        padding: 0.75rem 1rem;
+    }
+    
+    .alert-warning {
+        border-left: 4px solid #f6c23e;
+    }
+    
+    .btn-lg {
+        padding: 0.75rem 1.5rem;
+        font-size: 1.1rem;
+    }
+    
+    .list-unstyled li {
+        padding: 0.25rem 0;
+    }
+    
+    .bg-light {
+        background-color: #f8f9fa !important;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(document).ready(function() {
+        // Add confirmation dialog enhancement
+        $('form').on('submit', function(e) {
+            const submitBtn = $(this).find('button[type="submit"]');
+            const serviceTitle = "{{ service.title }}";
+            
+            // Double confirmation for safety
+            if (!confirm(`Are you absolutely sure you want to delete "${serviceTitle}"? This action cannot be undone.`)) {
+                e.preventDefault();
+                return false;
+            }
+            
+            // Show loading state
+            submitBtn.prop('disabled', true);
+            submitBtn.html('<i class="fas fa-spinner fa-spin mr-2"></i> Deleting...');
+            
+            return true;
+        });
+        
+        // Add escape key to cancel
+        $(document).keyup(function(e) {
+            if (e.key === "Escape") {
+                window.location.href = "{% url 'company_app:service_list' %}";
+            }
+        });
+        
+        // Add smooth animations
+        $('.card').hover(
+            function() {
+                $(this).css('transform', 'translateY(-2px)');
+                $(this).css('transition', 'all 0.3s ease');
+            },
+            function() {
+                $(this).css('transform', 'translateY(0)');
+            }
+        );
+    });
+</script>
+{% endblock %}

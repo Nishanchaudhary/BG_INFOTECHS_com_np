@@ -1,0 +1,892 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}User Details{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <nav aria-label="breadcrumb">
+                                <ol class="breadcrumb mb-2">
+                                    <li class="breadcrumb-item"><a href="{% url 'bg_app:user_list' %}"
+                                            class="text-decoration-none"><i class="fas fa-users me-1"></i>Users</a></li>
+                                    <li class="breadcrumb-item active text-primary">{{ user_obj.username }}</li>
+                                </ol>
+                            </nav>
+                            <h2 class="mb-1"><i class="fas fa-user-circle me-2 text-primary"></i>User Details</h2>
+                            <p class="text-muted mb-0">Complete information about {{ user_obj.get_full_name|default:user_obj.username }}</p>
+                        </div>
+                        <div class="col-md-4 text-md-end">
+                            <div class="d-flex flex-wrap gap-2 justify-content-md-end">
+                                {% if perms.bg_app.change_user or user.is_superuser %}
+                                <a href="{% url 'bg_app:user_edit' user_obj.pk %}" class="btn btn-warning btn-lg flex-fill flex-md-grow-0">
+                                    <i class="fas fa-edit me-2"></i>Edit User
+                                </a>
+                                {% endif %}
+                                <a href="{% url 'bg_app:user_list' %}" class="btn btn-secondary btn-lg flex-fill flex-md-grow-0">
+                                    <i class="fas fa-arrow-left me-2"></i>Back
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Profile Sidebar -->
+        <div class="col-lg-4 mb-4">
+            <div class="card border-0 shadow-sm h-100 profile-card">
+                <div class="card-header bg-gradient-primary text-white py-4 position-relative overflow-hidden">
+                    <div class="position-absolute top-0 end-0 w-100 h-100 opacity-10">
+                        <div class="pattern-dots"></div>
+                    </div>
+                    <div class="text-center position-relative">
+                        {% if user_obj.profile_picture %}
+                        <div class="avatar-container mb-3">
+                            <img src="{{ user_obj.profile_picture.url }}" alt="{{ user_obj.username }}"
+                                class="img-thumbnail rounded-circle border-4 border-white shadow profile-avatar">
+                        </div>
+                        {% else %}
+                        <div class="avatar-placeholder mb-3">
+                            <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center border-4 border-white shadow profile-avatar">
+                                <i class="fas fa-user fa-4x text-muted"></i>
+                            </div>
+                        </div>
+                        {% endif %}
+                        <h4 class="mb-1 fw-bold">{{ user_obj.get_full_name|default:user_obj.username }}</h4>
+                        <div class="mb-2">
+                            <span class="role-badge badge fs-6 px-3 py-2 rounded-pill shadow-sm">
+                                <i class="role-icon fas me-1"></i>
+                                {% if user_obj.role %}
+                                    {{ user_obj.role.get_name_display }}
+                                {% else %}
+                                    No Role
+                                {% endif %}
+                            </span>
+                        </div>
+                        <p class="mb-0 opacity-75">
+                            <i class="fas fa-calendar-alt me-1"></i>
+                            Member since {{ user_obj.date_joined|date:"M d, Y" }}
+                        </p>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <!-- Quick Stats -->
+                    <div class="row text-center quick-stats">
+                        <div class="col-6 mb-3">
+                            <div class="border-end pe-3">
+                                <h5 class="text-primary mb-1 fw-bold">{{ user_obj.login_count }}</h5>
+                                <small class="text-muted">Total Logins</small>
+                            </div>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <div class="ps-3">
+                                <h5 class="text-success mb-1">
+                                    {% if user_obj.is_active %}
+                                    <i class="fas fa-check-circle text-success"></i>
+                                    {% else %}
+                                    <i class="fas fa-times-circle text-danger"></i>
+                                    {% endif %}
+                                </h5>
+                                <small class="text-muted">Account Status</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Status Badge -->
+                    <div class="text-center mb-4">
+                        <span class="status-badge badge px-3 py-2 fs-6 rounded-pill">
+                            <i class="fas me-1"></i>
+                            {% if user_obj.is_active %}Active Account{% else %}Inactive Account{% endif %}
+                        </span>
+                    </div>
+
+                    <!-- Dynamic Action Buttons -->
+                    <div class="action-buttons">
+                        {% if user_obj.role and user_obj.role.name == 'student' %}
+                            <!-- Student Action Buttons -->
+                            <div class="d-grid gap-2">
+                                {% if not profile %}
+                                    {% if perms.bg_app.add_student or user.is_superuser %}
+                                    <a href="{% url 'bg_app:create_student' user_obj.pk %}" class="btn btn-info btn-lg">
+                                        <i class="fas fa-user-plus me-2"></i>Create Student Info
+                                    </a>
+                                    {% endif %}
+                                {% else %}
+                                    {% if perms.bg_app.change_student or user.is_superuser %}
+                                    <a href="{% url 'bg_app:edit_student' user_obj.pk %}" class="btn btn-warning btn-lg">
+                                        <i class="fas fa-edit me-2"></i>Edit Student Info
+                                    </a>
+                                    {% endif %}
+                                {% endif %}
+                            </div>
+                            
+                        {% elif user_obj.role and user_obj.role.name == 'staff' %}
+                            <!-- Staff Action Buttons -->
+                            <div class="d-grid gap-2">
+                                {% if not profile %}
+                                    {% if perms.bg_app.add_staff or user.is_superuser %}
+                                    <a href="{% url 'bg_app:create_staff' user_obj.pk %}" class="btn btn-info btn-lg">
+                                        <i class="fas fa-user-plus me-2"></i>Create Staff Info
+                                    </a>
+                                    {% endif %}
+                                {% else %}
+                                    {% if perms.bg_app.change_staff or user.is_superuser %}
+                                    <a href="{% url 'bg_app:edit_staff' user_obj.pk %}" class="btn btn-warning btn-lg">
+                                        <i class="fas fa-edit me-2"></i>Edit Staff Info
+                                    </a>
+                                    {% endif %}
+                                {% endif %}
+                            </div>
+                        {% endif %}
+
+                        <!-- Permission Management Button -->
+                        {% if perms.bg_app.change_user or user.is_superuser %}
+                        <div class="d-grid gap-2 mt-3">
+                            <a href="{% url 'bg_app:user_permissions' user_obj.pk %}" class="btn btn-outline-primary btn-lg">
+                                <i class="fas fa-key me-2"></i>Manage Permissions
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-lg-8">
+            <!-- Basic Information Card -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-light py-3 d-flex align-items-center">
+                    <i class="fas fa-id-card me-2 text-primary fs-5"></i>
+                    <h5 class="mb-0 fw-bold">Basic Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <!-- Username -->
+                            <div class="info-item mb-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="icon-container bg-primary text-white rounded-circle p-2 me-3">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <small class="text-muted d-block">Username</small>
+                                        <strong class="fs-6">{{ user_obj.username }}</strong>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Email -->
+                            <div class="info-item mb-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="icon-container bg-info text-white rounded-circle p-2 me-3">
+                                        <i class="fas fa-envelope"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <small class="text-muted d-block">Email Address</small>
+                                        <strong class="fs-6">{{ user_obj.email }}</strong>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Phone -->
+                            <div class="info-item mb-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="icon-container bg-warning text-white rounded-circle p-2 me-3">
+                                        <i class="fas fa-phone"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <small class="text-muted d-block">Phone Number</small>
+                                        <strong class="fs-6">{{ user_obj.phone_number|default:"Not provided" }}</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <!-- Role -->
+                            <div class="info-item mb-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="icon-container bg-success text-white rounded-circle p-2 me-3">
+                                        <i class="fas fa-user-tag"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <small class="text-muted d-block">Role</small>
+                                        <strong class="fs-6">
+                                            {% if user_obj.role %}
+                                                {{ user_obj.role.get_name_display }}
+                                            {% else %}
+                                                No Role Assigned
+                                            {% endif %}
+                                        </strong>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Joined Date -->
+                            <div class="info-item mb-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="icon-container bg-success text-white rounded-circle p-2 me-3">
+                                        <i class="fas fa-calendar-check"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <small class="text-muted d-block">Joined Date</small>
+                                        <strong class="fs-6">{{ user_obj.date_joined|date:"F d, Y" }}</strong>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Last Login -->
+                            <div class="info-item mb-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="icon-container bg-secondary text-white rounded-circle p-2 me-3">
+                                        <i class="fas fa-sign-in-alt"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <small class="text-muted d-block">Last Login</small>
+                                        <strong class="fs-6">{{ user_obj.last_login|date:"M d, Y H:i"|default:"Never logged in" }}</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Address Section -->
+                    {% if user_obj.address %}
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <div class="info-item">
+                                <div class="d-flex align-items-start">
+                                    <div class="icon-container bg-danger text-white rounded-circle p-2 me-3 mt-1">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <small class="text-muted d-block">Address</small>
+                                        <br>
+                                        <strong class="text-break address-text">{{ user_obj.address|linebreaksbr }}</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Profile Specific Information -->
+            {% if profile %}
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-light py-3 d-flex align-items-center">
+                    <i class="profile-type-icon fas me-2 text-primary fs-5"></i>
+                    <h5 class="mb-0 fw-bold">{{ profile_type|title }} Profile Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% if profile_type == 'student' %}
+                        <!-- Student Profile Info -->
+                        <div class="col-md-6">
+                            <div class="info-item mb-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="icon-container bg-info text-white rounded-circle p-2 me-3">
+                                        <i class="fas fa-id-card"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <small class="text-muted d-block">Enrollment Number</small>
+                                        <strong class="fs-6">{{ profile.enrollment_number }}</strong>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="info-item mb-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="icon-container bg-success text-white rounded-circle p-2 me-3">
+                                        <i class="fas fa-graduation-cap"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <small class="text-muted d-block">Qualification</small>
+                                        <strong class="fs-6">{{ profile.qualification }}</strong>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="info-item mb-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="icon-container bg-warning text-white rounded-circle p-2 me-3">
+                                        <i class="fas fa-book"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <small class="text-muted d-block">Training</small>
+                                        <strong class="fs-6">{{ profile.training }}</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-item mb-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="icon-container bg-primary text-white rounded-circle p-2 me-3">
+                                        <i class="fas fa-money-bill-wave"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <small class="text-muted d-block">Total Fees</small>
+                                        <strong class="fs-6">₹ {{ profile.total_fees }}</strong>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="info-item mb-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="icon-container bg-success text-white rounded-circle p-2 me-3">
+                                        <i class="fas fa-check-circle"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <small class="text-muted d-block">Fees Paid</small>
+                                        <strong class="fs-6">₹ {{ profile.fees_paid }}</strong>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="info-item mb-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="icon-container bg-danger text-white rounded-circle p-2 me-3">
+                                        <i class="fas fa-exclamation-circle"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <small class="text-muted d-block">Fees Due</small>
+                                        <strong class="fs-6 text-danger">₹ {{ profile.fees_due }}</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% elif profile_type == 'staff' %}
+                        <!-- Staff Profile Info -->
+                        <div class="col-md-6">
+                            <div class="info-item mb-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="icon-container bg-info text-white rounded-circle p-2 me-3">
+                                        <i class="fas fa-id-badge"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <small class="text-muted d-block">Employee ID</small>
+                                        <strong class="fs-6">{{ profile.employee_id }}</strong>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="info-item mb-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="icon-container bg-success text-white rounded-circle p-2 me-3">
+                                        <i class="fas fa-building"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <small class="text-muted d-block">Department</small>
+                                        <strong class="fs-6">{{ profile.department }}</strong>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="info-item mb-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="icon-container bg-warning text-white rounded-circle p-2 me-3">
+                                        <i class="fas fa-briefcase"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <small class="text-muted d-block">Position</small>
+                                        <strong class="fs-6">{{ profile.position }}</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-item mb-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="icon-container bg-primary text-white rounded-circle p-2 me-3">
+                                        <i class="fas fa-money-bill-wave"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <small class="text-muted d-block">Salary</small>
+                                        <strong class="fs-6">₹ {{ profile.salary }}</strong>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="info-item mb-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="icon-container bg-success text-white rounded-circle p-2 me-3">
+                                        <i class="fas fa-check-circle"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <small class="text-muted d-block">Paid Salary</small>
+                                        <strong class="fs-6">₹ {{ profile.paid_salary }}</strong>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="info-item mb-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="icon-container bg-danger text-white rounded-circle p-2 me-3">
+                                        <i class="fas fa-exclamation-circle"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <small class="text-muted d-block">Salary Due</small>
+                                        <strong class="fs-6 text-danger">₹ {{ profile.salary_due }}</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Footer Action Buttons -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <div class="d-flex flex-wrap gap-2 justify-content-center">
+                        {% if perms.bg_app.change_user or user.is_superuser %}
+                        <a href="{% url 'bg_app:user_edit' user_obj.pk %}" class="btn btn-warning btn-lg px-4 flex-fill flex-md-grow-0">
+                            <i class="fas fa-edit me-2"></i>Edit User
+                        </a>
+                        {% endif %}
+                        
+                        <!-- Student Buttons -->
+                        {% if user_obj.role and user_obj.role.name == 'student' %}
+                            {% if not profile %}
+                                {% if perms.bg_app.add_student or user.is_superuser %}
+                                <a href="{% url 'bg_app:create_student' user_obj.pk %}" class="btn btn-info btn-lg px-4 flex-fill flex-md-grow-0">
+                                    <i class="fas fa-user-plus me-2"></i>Create Student Info
+                                </a>
+                                {% endif %}
+                            {% else %}
+                                {% if perms.bg_app.change_student or user.is_superuser %}
+                                <a href="{% url 'bg_app:edit_student' user_obj.pk %}" class="btn btn-warning btn-lg px-4 flex-fill flex-md-grow-0">
+                                    <i class="fas fa-edit me-2"></i>Edit Student Info
+                                </a>
+                                {% endif %}
+                            {% endif %}
+                            
+                        <!-- Staff Buttons -->
+                        {% elif user_obj.role and user_obj.role.name == 'staff' %}
+                            {% if not profile %}
+                                {% if perms.bg_app.add_staff or user.is_superuser %}
+                                <a href="{% url 'bg_app:create_staff' user_obj.pk %}" class="btn btn-info btn-lg px-4 flex-fill flex-md-grow-0">
+                                    <i class="fas fa-user-plus me-2"></i>Create Staff Info
+                                </a>
+                                {% endif %}
+                            {% else %}
+                                {% if perms.bg_app.change_staff or user.is_superuser %}
+                                <a href="{% url 'bg_app:edit_staff' user_obj.pk %}" class="btn btn-warning btn-lg px-4 flex-fill flex-md-grow-0">
+                                    <i class="fas fa-edit me-2"></i>Edit Staff Info
+                                </a>
+                                {% endif %}
+                            {% endif %}
+                        {% endif %}
+                        
+                        <!-- Permission Management -->
+                        {% if perms.bg_app.change_user or user.is_superuser %}
+                        <a href="{% url 'bg_app:user_permissions' user_obj.pk %}" class="btn btn-outline-primary btn-lg px-4 flex-fill flex-md-grow-0">
+                            <i class="fas fa-key me-2"></i>Manage Permissions
+                        </a>
+                        {% endif %}
+                        
+                        <a href="{% url 'bg_app:user_list' %}" class="btn btn-secondary btn-lg px-4 flex-fill flex-md-grow-0">
+                            <i class="fas fa-arrow-left me-2"></i>Back to List
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --primary-gradient: linear-gradient(135deg, #667eeab3 0%, #764ba2ae 100%);
+        --success-gradient: linear-gradient(135deg, #4facfece 0%, #00f2fe 100%);
+        --warning-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        --info-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        --danger-gradient: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+        --secondary-gradient: linear-gradient(135deg, #a8a8a8 0%, #696969 100%);
+    }
+
+    .bg-gradient-primary {
+        background: var(--primary-gradient) !important;
+    }
+
+    .profile-avatar {
+        width: 150px;
+        height: 150px;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+
+    .profile-card:hover .profile-avatar {
+        transform: scale(1.05);
+    }
+
+    .icon-container {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        transition: all 0.3s ease;
+    }
+
+    .info-item:hover .icon-container {
+        transform: scale(1.1);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+
+    .info-item {
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #f8f9fa;
+        transition: background-color 0.2s ease;
+    }
+
+    .info-item:hover {
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+    }
+
+    .info-item:last-child {
+        border-bottom: none;
+    }
+
+    .card {
+        border: none;
+        transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.175) !important;
+    }
+
+    .quick-stats .border-end {
+        border-right: 2px solid #e9ecef !important;
+    }
+
+    .role-badge {
+        background: var(--success-gradient);
+        border: 2px solid rgba(255,255,255,0.3);
+    }
+
+    .status-badge {
+        background: {% if user_obj.is_active %}var(--success-gradient){% else %}var(--warning-gradient){% endif %};
+        border: 2px solid rgba(255,255,255,0.3);
+    }
+
+    .address-text {
+        max-height: 120px;
+        overflow-y: auto;
+        background: #f8f9fa;
+        padding: 0.75rem;
+        border-radius: 8px;
+        border-left: 4px solid #dc3545;
+    }
+
+    .pattern-dots {
+        background-image: radial-gradient(#ffffff 1px, transparent 1px);
+        background-size: 20px 20px;
+        opacity: 0.1;
+    }
+
+    .btn {
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        border: none;
+    }
+
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    .btn-info {
+        background: var(--info-gradient);
+        border: none;
+    }
+
+    .btn-warning {
+        background: var(--warning-gradient);
+        border: none;
+        color: white;
+    }
+
+    .btn-outline-primary {
+        background: transparent;
+        border: 2px solid #0d6efd;
+        color: #0d6efd;
+    }
+
+    .btn-outline-primary:hover {
+        background: #0d6efd;
+        color: white;
+    }
+
+    .breadcrumb {
+        background: transparent;
+        padding: 0;
+    }
+
+    .breadcrumb-item a {
+        color: #6c757d;
+        transition: color 0.2s ease;
+        font-weight: 500;
+    }
+
+    .breadcrumb-item a:hover {
+        color: #0d6efd;
+        transform: translateX(2px);
+    }
+
+    /* Dynamic role-based styling */
+    .role-badge[data-role="admin"] {
+        background: var(--danger-gradient);
+    }
+
+    .role-badge[data-role="staff"] {
+        background: var(--info-gradient);
+    }
+
+    .role-badge[data-role="student"] {
+        background: var(--success-gradient);
+    }
+
+    .role-badge[data-role="other"] {
+        background: var(--secondary-gradient);
+    }
+
+    /* Custom scrollbar */
+    .address-text::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .address-text::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 3px;
+    }
+
+    .address-text::-webkit-scrollbar-thumb {
+        background: #c1c1c1;
+        border-radius: 3px;
+    }
+
+    .address-text::-webkit-scrollbar-thumb:hover {
+        background: #a8a8a8;
+    }
+
+    /* Loading animation */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .card {
+        animation: fadeInUp 0.6s ease-out;
+    }
+
+    /* Action buttons specific styles */
+    .action-buttons .btn {
+        margin-bottom: 0.5rem;
+    }
+
+    .d-grid.gap-2 {
+        gap: 0.75rem !important;
+    }
+
+    /* Responsive design improvements */
+    @media (max-width: 768px) {
+        .container-fluid {
+            padding: 0.5rem;
+        }
+
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+        }
+
+        .btn-lg {
+            padding: 0.75rem 1.5rem;
+            font-size: 0.9rem;
+        }
+
+        .card-body {
+            padding: 1rem;
+        }
+
+        .quick-stats .border-end {
+            border-right: none !important;
+            border-bottom: 2px solid #e9ecef;
+            padding-bottom: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .info-item {
+            padding: 1rem 0;
+        }
+
+        .icon-container {
+            width: 35px;
+            height: 35px;
+        }
+
+        .d-flex.flex-wrap .btn {
+            min-width: 100%;
+            margin-bottom: 0.5rem;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+        }
+
+        h4 {
+            font-size: 1.25rem;
+        }
+
+        .action-buttons .btn {
+            font-size: 0.9rem;
+            padding: 0.75rem;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+        }
+
+        .card-header {
+            padding: 1rem;
+        }
+
+        .btn-group {
+            flex-direction: column;
+        }
+
+        .text-md-end {
+            text-align: left !important;
+        }
+
+        .action-buttons .d-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    /* Print styles */
+    @media print {
+        .btn, .action-buttons {
+            display: none !important;
+        }
+        
+        .card {
+            box-shadow: none !important;
+            border: 1px solid #dee2e6 !important;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add smooth scrolling for address section
+        const addressText = document.querySelector('.address-text');
+        if (addressText && addressText.scrollHeight > 120) {
+            addressText.title = "Scroll to see full address";
+        }
+
+        // Add loading states for buttons
+        const buttons = document.querySelectorAll('.btn');
+        buttons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                if (this.href && !this.classList.contains('disabled')) {
+                    const originalText = this.innerHTML;
+                    this.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Loading...';
+                    this.classList.add('disabled');
+                    
+                    setTimeout(() => {
+                        this.innerHTML = originalText;
+                        this.classList.remove('disabled');
+                    }, 3000);
+                }
+            });
+        });
+
+        // Add role-based styling
+        const roleBadge = document.querySelector('.role-badge');
+        if (roleBadge) {
+            const role = '{{ user_obj.role.name|default:"other" }}'.toLowerCase();
+            roleBadge.setAttribute('data-role', role);
+            
+            // Set appropriate icon
+            const roleIcon = roleBadge.querySelector('.role-icon');
+            if (roleIcon) {
+                const iconMap = {
+                    'admin': 'fa-crown',
+                    'staff': 'fa-user-tie', 
+                    'student': 'fa-user-graduate',
+                    'other': 'fa-user'
+                };
+                roleIcon.className = `role-icon fas ${iconMap[role] || 'fa-user'} me-1`;
+            }
+        }
+
+        // Set profile type icon
+        const profileTypeIcon = document.querySelector('.profile-type-icon');
+        if (profileTypeIcon) {
+            const profileType = '{{ profile_type }}'.toLowerCase();
+            if (profileType === 'student') {
+                profileTypeIcon.className = 'profile-type-icon fas fa-user-graduate me-2 text-primary fs-5';
+            } else if (profileType === 'staff') {
+                profileTypeIcon.className = 'profile-type-icon fas fa-user-tie me-2 text-primary fs-5';
+            }
+        }
+
+        // Set status badge icon
+        const statusBadge = document.querySelector('.status-badge');
+        if (statusBadge) {
+            const isActive = {% if user_obj.is_active %}true{% else %}false{% endif %};
+            const statusIcon = statusBadge.querySelector('i');
+            if (statusIcon) {
+                statusIcon.className = `fas ${isActive ? 'fa-check-circle' : 'fa-times-circle'} me-1`;
+            }
+        }
+
+        // Show confirmation for create actions when profile exists
+        const createButtons = document.querySelectorAll('a[href*="create_student"], a[href*="create_staff"]');
+        createButtons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                {% if profile %}
+                if (!confirm('A profile already exists for this user. Creating a new one will overwrite the existing profile. Continue?')) {
+                    e.preventDefault();
+                }
+                {% endif %}
+            });
+        });
+
+        // Add hover effects for cards
+        const cards = document.querySelectorAll('.card');
+        cards.forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transition = 'all 0.3s ease';
+            });
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,752 @@
+{% extends 'base.html' %}
+{% block title %}Vacancy List{% endblock %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="card border-dark">
+        <div class="card-header bg-primary text-white border-dark d-flex flex-column flex-md-row justify-content-between align-items-center">
+            <div class="d-flex flex-column flex-md-row align-items-center mb-2 mb-md-0">
+                <h5 class="card-title mb-0 me-md-3 mb-2 mb-md-0">
+                    <i class="fas fa-briefcase me-2"></i>{{ page_title }}
+                </h5>
+                <div class="d-flex align-items-center text-black gap-2">
+                    <a href="{% url 'vacancy_app:vacancy_create' %}" class="btn btn-success btn-sm">
+                        <i class="fas fa-plus me-1"></i>Add Vacancy
+                    </a>
+                    
+                    <small class="text-black"><i class="fas fa-info-circle me-1"></i>Total Vacancies: <span
+                        id="total-vacancies">0</span></small>
+
+                </div>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <!-- DataTable -->
+            <div class="table-responsive">
+                <table id="vacancies-table" class="table table-hover table-striped table-bordered border-dark"
+                    style="width:100%; margin:0;">
+                    <thead class="table-primary border-dark">
+                        <tr>
+                            <th>Title</th>
+                            <th>Job Type</th>
+                            <th>Address</th>
+                            <th>Description</th>
+                            <th>Skills</th>
+                            <th>Salary</th>
+                            <th>Status</th>
+                            <th>Expiry Date</th>
+                            <th>Author</th>
+                            <th>Created</th>
+                            <th>Updated</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="table-light border-dark">
+                        <!-- Data will be loaded via AJAX -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<!-- DataTables CSS -->
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.bootstrap5.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.4.1/css/responsive.bootstrap5.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/colreorder/1.6.2/css/colReorder.bootstrap5.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedheader/3.3.2/css/fixedHeader.bootstrap5.min.css">
+
+<style>
+    #vacancies-table {
+        border: 2px solid #000 !important;
+        border-collapse: separate !important;
+        background-color: white;
+    }
+
+    #vacancies-table th,
+    #vacancies-table td {
+        border: 1px solid #000 !important;
+        vertical-align: middle !important;
+        padding: 8px 6px !important;
+        font-size: 0.85rem;
+    }
+
+    #vacancies-table thead th {
+        border-bottom: 2px solid #000 !important;
+        background-color: #b8d4ff !important;
+        font-weight: 600;
+        font-size: 0.8rem;
+        text-align: center;
+    }
+
+    .description-tooltip,
+    .skills-tooltip {
+        cursor: pointer;
+        color: #007bff;
+        padding: 2px 4px;
+        border-radius: 3px;
+        transition: background-color 0.2s;
+        font-size: 0.8rem;
+    }
+
+    .description-tooltip:hover,
+    .skills-tooltip:hover {
+        background-color: #f8f9fa;
+        text-decoration: underline;
+    }
+
+    .status-toggle-btn {
+        min-width: 100px;
+        font-size: 0.75rem;
+        padding: 0.2rem 0.4rem;
+    }
+
+    .btn-group-sm .btn {
+        padding: 0.2rem 0.4rem;
+        font-size: 0.75rem;
+    }
+
+    .overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.8);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+    }
+
+    .dropdown-menu {
+        min-width: 120px;
+        font-size: 0.8rem;
+    }
+
+    .badge {
+        font-size: 0.7rem;
+    }
+
+    /* DataTables button styling */
+    .dt-buttons .btn {
+        font-size: 0.75rem;
+        margin: 1px;
+    }
+
+    /* Column visibility dropdown */
+    .dt-button-collection {
+        max-height: 400px;
+        overflow-y: auto;
+    }
+
+    /* Fixed header */
+    table.dataTable thead tr th {
+        border-bottom: 2px solid #000 !important;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 1200px) {
+        #vacancies-table th,
+        #vacancies-table td {
+            padding: 6px 4px !important;
+            font-size: 0.8rem;
+        }
+        
+        .card-header {
+            padding: 10px 15px !important;
+        }
+        
+        .status-toggle-btn {
+            min-width: 90px;
+            font-size: 0.7rem;
+        }
+    }
+
+    @media (max-width: 992px) {
+        #vacancies-table th,
+        #vacancies-table td {
+            padding: 5px 3px !important;
+            font-size: 0.75rem;
+        }
+        
+        .dataTables_wrapper .dt-buttons {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        
+        .dataTables_wrapper .dt-buttons .btn {
+            margin: 2px;
+            font-size: 0.7rem;
+            padding: 0.2rem 0.4rem;
+        }
+        
+        .btn-group-sm .btn {
+            padding: 0.15rem 0.3rem;
+            font-size: 0.7rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        #vacancies-table th,
+        #vacancies-table td {
+            padding: 4px 2px !important;
+            font-size: 0.7rem;
+        }
+        
+        .card-header h5 {
+            font-size: 1rem;
+        }
+        
+        .table-responsive {
+            font-size: 0.8rem;
+        }
+        
+        .status-toggle-btn {
+            min-width: 80px;
+            font-size: 0.65rem;
+            padding: 0.15rem 0.3rem;
+        }
+        
+        /* DataTables responsive child row styling */
+        .dtr-details {
+            width: 100% !important;
+        }
+        
+        .dtr-details li {
+            border-bottom: 1px solid #eee;
+            padding: 6px 0;
+        }
+        
+        .dtr-details .dtr-title {
+            font-weight: 600;
+            min-width: 80px;
+            display: inline-block;
+            font-size: 0.75rem;
+        }
+        
+        .dtr-details .dtr-data {
+            font-size: 0.75rem;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .card-header {
+            padding: 8px 12px !important;
+        }
+        
+        .table-responsive {
+            font-size: 0.75rem;
+        }
+        
+        #vacancies-table th,
+        #vacancies-table td {
+            padding: 3px 1px !important;
+        }
+        
+        .btn {
+            font-size: 0.7rem;
+        }
+        
+        .dataTables_filter input {
+            width: 100% !important;
+            margin-top: 8px;
+        }
+        
+        .dataTables_length {
+            margin-bottom: 8px;
+        }
+        
+        /* Stack buttons vertically on very small screens */
+        .dt-buttons .btn {
+            display: block;
+            width: 100%;
+            margin: 1px 0;
+        }
+    }
+
+    /* Custom scrollbar for table */
+    .table-responsive::-webkit-scrollbar {
+        height: 6px;
+    }
+
+    .table-responsive::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 8px;
+    }
+
+    .table-responsive::-webkit-scrollbar-thumb {
+        background: #c1c1c1;
+        border-radius: 8px;
+    }
+
+    .table-responsive::-webkit-scrollbar-thumb:hover {
+        background: #a8a8a8;
+    }
+
+    /* DataTables responsive styling */
+    table.dataTable.dtr-inline.collapsed > tbody > tr > td.dtr-control:before,
+    table.dataTable.dtr-inline.collapsed > tbody > tr > th.dtr-control:before {
+        background-color: #4e73df;
+        border: 2px solid white;
+        box-shadow: 0 0 3px #444;
+        font-size: 0.8rem;
+    }
+
+    table.dataTable.dtr-inline.collapsed > tbody > tr.parent > td.dtr-control:before,
+    table.dataTable.dtr-inline.collapsed > tbody > tr.parent > th.dtr-control:before {
+        background-color: #e74a3b;
+    }
+
+    /* Mobile action buttons */
+    .mobile-actions {
+        display: none;
+    }
+
+    @media (max-width: 768px) {
+        .desktop-actions {
+            display: none;
+        }
+        
+        .mobile-actions {
+            display: flex;
+            justify-content: center;
+            gap: 2px;
+        }
+        
+        .mobile-actions .btn {
+            padding: 0.1rem 0.25rem;
+            font-size: 0.6rem;
+        }
+    }
+
+    /* Loading states */
+    .dataTables_processing {
+        background: linear-gradient(90deg, transparent, rgba(78, 115, 223, 0.1), transparent) !important;
+        background-size: 200% 100% !important;
+        animation: loading 1.5s infinite !important;
+    }
+
+    @keyframes loading {
+        0% { background-position: 200% 0; }
+        100% { background-position: -200% 0; }
+    }
+
+    /* Ensure proper row hover on mobile */
+    .table-hover tbody tr:hover {
+        background-color: rgba(0, 123, 255, 0.1) !important;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<!-- DataTables JS -->
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.bootstrap5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.print.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.colVis.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.4.1/js/responsive.bootstrap5.min.js"></script>
+<script src="https://cdn.datatables.net/colreorder/1.6.2/js/dataTables.colReorder.min.js"></script>
+<script src="https://cdn.datatables.net/fixedheader/3.3.2/js/dataTables.fixedHeader.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+
+<script>
+    $(document).ready(function () {
+        var table = $('#vacancies-table').DataTable({
+            "processing": true,
+            "serverSide": true,
+            "ajax": {
+                "url": "{% url 'vacancy_app:vacancies_datatables' %}",
+                "type": "GET",
+                "dataType": "json",
+                "dataSrc": function (json) {
+                    // Update total vacancies count
+                    $('#total-vacancies').text(json.recordsTotal);
+                    return json.data;
+                },
+                "error": function (xhr, error, code) {
+                    console.log('DataTables Error:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Data Loading Error',
+                        text: 'Unable to load vacancy data. Please try again.',
+                        timer: 3000
+                    });
+                }
+            },
+            "columns": [
+                {
+                    "data": "title",
+                    "name": "title",
+                    "className": "text-left",
+                    "responsivePriority": 1,
+                    "render": function (data, type, row) {
+                        if (type === 'display') {
+                            // Extract text from HTML if needed
+                            var text = $(data).text() || data;
+                            return text.length > 50 ? text.substr(0, 50) + '...' : text;
+                        }
+                        return data;
+                    }
+                },
+                {
+                    "data": "job_type",
+                    "name": "job_type",
+                    "className": "text-center",
+                    "responsivePriority": 3,
+                    "visible": true
+                },
+                {
+                    "data": "address",
+                    "name": "address",
+                    "className": "text-center",
+                    "responsivePriority": 4,
+                    "visible": true
+                },
+                {
+                    "data": "description",
+                    "name": "description",
+                    "className": "text-center",
+                    "orderable": false,
+                    "responsivePriority": 7,
+                    "visible": false
+                },
+                {
+                    "data": "skills",
+                    "name": "skills",
+                    "className": "text-center",
+                    "orderable": false,
+                    "responsivePriority": 5,
+                    "visible": true
+                },
+                {
+                    "data": "salary",
+                    "name": "salary",
+                    "className": "text-center",
+                    "responsivePriority": 6,
+                    "visible": true
+                },
+                {
+                    "data": "status",
+                    "name": "status",
+                    "className": "text-center",
+                    "orderable": false,
+                    "responsivePriority": 2,
+                    "visible": true
+                },
+                {
+                    "data": "expired_date",
+                    "name": "expired_date",
+                    "className": "text-center",
+                    "responsivePriority": 8,
+                    "visible": true
+                },
+                {
+                    "data": "author",
+                    "name": "author",
+                    "className": "text-center",
+                    "responsivePriority": 10,
+                    "visible": false
+                },
+                {
+                    "data": "created_at",
+                    "name": "created_at",
+                    "className": "text-center",
+                    "responsivePriority": 11,
+                    "visible": false
+                },
+                {
+                    "data": "updated_at",
+                    "name": "updated_at",
+                    "className": "text-center",
+                    "responsivePriority": 12,
+                    "visible": false
+                },
+                {
+                    "data": "actions",
+                    "name": "actions",
+                    "className": "text-center",
+                    "orderable": false,
+                    "searchable": false,
+                    "responsivePriority": 1,
+                    "visible": true,
+                    "render": function(data, type, row) {
+                        if (type === 'display') {
+                            return `
+                                <div class="desktop-actions">
+                                    ${data || ''}
+                                </div>
+                                <div class="mobile-actions">
+                                    ${data || ''}
+                                </div>
+                            `;
+                        }
+                        return data;
+                    }
+                }
+            ],
+            "order": [[0, 'asc']],
+            "pageLength": 10,
+            "lengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],
+            "responsive": {
+                details: {
+                    display: $.fn.dataTable.Responsive.display.modal({
+                        header: function (row) {
+                            var data = row.data();
+                            return 'Vacancy Details: ' + data.title;
+                        }
+                    }),
+                    renderer: function (api, rowIdx, columns) {
+                        var data = $.map(columns, function (col, i) {
+                            return '<tr>' +
+                                '<td class="fw-bold">' + col.title + ':' + '</td> ' +
+                                '<td>' + (col.data || '') + '</td>' +
+                                '</tr>';
+                        }).join('');
+
+                        return $('<table class="table table-sm"/>').append(data);
+                    }
+                },
+                breakpoints: [
+                    { name: 'desktop', width: Infinity },
+                    { name: 'tablet', width: 1200 },
+                    { name: 'mobile', width: 768 }
+                ]
+            },
+            "dom": '<"row"<"col-sm-12 col-md-6"B><"col-sm-12 col-md-6"f>>' +
+                   '<"row"<"col-sm-12"tr>>' +
+                   '<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
+            "buttons": [
+                {
+                    extend: 'colvis',
+                    text: '<i class="fas fa-columns"></i> Columns',
+                    className: 'btn btn-secondary btn-sm',
+                    columns: ':not(:last-child)',
+                    collectionLayout: 'fixed two-column'
+                },
+                {
+                    extend: 'copy',
+                    text: '<i class="fas fa-copy"></i> Copy',
+                    className: 'btn btn-secondary btn-sm',
+                    exportOptions: {
+                        columns: ':visible:not(:last-child)'
+                    }
+                },
+                {
+                    extend: 'excel',
+                    text: '<i class="fas fa-file-excel"></i> Excel',
+                    className: 'btn btn-success btn-sm',
+                    exportOptions: {
+                        columns: ':visible:not(:last-child)'
+                    },
+                    filename: 'vacancies_list_' + new Date().toISOString().slice(0, 10)
+                },
+                {
+                    extend: 'pdf',
+                    text: '<i class="fas fa-file-pdf"></i> PDF',
+                    className: 'btn btn-danger btn-sm',
+                    exportOptions: {
+                        columns: ':visible:not(:last-child)'
+                    },
+                    filename: 'vacancies_list_' + new Date().toISOString().slice(0, 10),
+                    orientation: 'landscape',
+                    pageSize: 'A4'
+                },
+                {
+                    extend: 'print',
+                    text: '<i class="fas fa-print"></i> Print',
+                    className: 'btn btn-info btn-sm',
+                    exportOptions: {
+                        columns: ':visible:not(:last-child)'
+                    },
+                    customize: function (win) {
+                        $(win.document.body).find('table').addClass('display').css('font-size', '10px');
+                        $(win.document.body).find('tr:nth-child(odd) td').css('background-color', '#f9f9f9');
+                        $(win.document.body).find('h1').text('Vacancy List - ' + new Date().toLocaleDateString());
+                    }
+                },
+                {
+                    text: '<i class="fas fa-sync-alt"></i> Refresh',
+                    className: 'btn btn-warning btn-sm',
+                    action: function (e, dt, node, config) {
+                        table.ajax.reload(null, false);
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Refreshed',
+                            text: 'Data has been refreshed successfully',
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
+                    }
+                }
+            ],
+            "colReorder": true,
+            "fixedHeader": true,
+            "language": {
+                "search": "Search:",
+                "lengthMenu": "Show _MENU_ entries",
+                "info": "Showing _START_ to _END_ of _TOTAL_ entries",
+                "infoEmpty": "Showing 0 to 0 of 0 entries",
+                "infoFiltered": "(filtered from _MAX_ total entries)",
+                "zeroRecords": "No matching vacancies found",
+                "emptyTable": "No vacancy data available",
+                "processing": '<i class="fas fa-spinner fa-spin"></i> Loading...',
+                "paginate": {
+                    "first": "First",
+                    "last": "Last",
+                    "next": "Next",
+                    "previous": "Previous"
+                }
+            },
+            "initComplete": function (settings, json) {
+                // Style search input
+                $('.dataTables_filter input')
+                    .addClass('form-control form-control-sm')
+                    .attr('placeholder', 'Search in title, description, skills, address...')
+                    .css('width', '300px')
+                    .wrap('<div class="input-group"></div>')
+                    .before('<span class="input-group-text"><i class="fas fa-search"></i></span>');
+
+                // Style length menu
+                $('.dataTables_length select').addClass('form-control form-control-sm');
+
+                // Update total count if available
+                if (json && json.recordsTotal) {
+                    $('#total-vacancies').text(json.recordsTotal);
+                }
+            },
+            "drawCallback": function (settings) {
+                // Initialize tooltips
+                $('[data-bs-toggle="tooltip"]').tooltip();
+
+                // Description click functionality
+                $('.description-tooltip').off('click').on('click', function (e) {
+                    e.preventDefault();
+                    var description = $(this).data('description') || 'No description available';
+                    Swal.fire({
+                        title: 'Full Description',
+                        html: '<div style="text-align: left; max-height: 400px; overflow-y: auto; padding: 15px; background: #f8f9fa; border-radius: 5px; border: 1px solid #dee2e6; white-space: pre-wrap;">' +
+                            description + '</div>',
+                        icon: 'info',
+                        confirmButtonText: 'Close',
+                        width: '700px'
+                    });
+                });
+
+                // Skills click functionality
+                $('.skills-tooltip').off('click').on('click', function (e) {
+                    e.preventDefault();
+                    var skills = $(this).data('skills') || 'No skills specified';
+                    Swal.fire({
+                        title: 'Required Skills',
+                        html: '<div style="text-align: left; max-height: 400px; overflow-y: auto; padding: 15px; background: #f8f9fa; border-radius: 5px; border: 1px solid #dee2e6;">' +
+                            '<strong>Skills:</strong><br>' + (skills.includes(',') ? '• ' + skills.replace(/,/g, '<br>• ') : '• ' + skills) + '</div>',
+                        icon: 'info',
+                        confirmButtonText: 'Close',
+                        width: '500px'
+                    });
+                });
+
+                // Status change functionality
+                $('.status-change-btn').off('click').on('click', function (e) {
+                    e.preventDefault();
+                    var vacancyId = $(this).data('vacancy-id');
+                    var newStatus = $(this).data('status');
+                    var button = $(this).closest('.dropdown').find('.status-toggle-btn');
+
+                    Swal.fire({
+                        title: 'Change Status?',
+                        text: `Are you sure you want to change the status to ${newStatus}?`,
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: 'Yes, change it!',
+                        cancelButtonText: 'Cancel'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            $.ajax({
+                                url: "{% url 'vacancy_app:toggle_vacancy_status' 0 %}".replace('0', vacancyId),
+                                type: 'POST',
+                                data: {
+                                    'status': newStatus,
+                                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                                },
+                                beforeSend: function () {
+                                    button.prop('disabled', true).addClass('disabled');
+                                    button.html('<i class="fas fa-spinner fa-spin me-1"></i>Updating...');
+                                },
+                                success: function (response) {
+                                    if (response.success) {
+                                        table.ajax.reload(null, false);
+                                        Swal.fire({
+                                            icon: 'success',
+                                            title: 'Status Updated',
+                                            text: response.message,
+                                            timer: 1500,
+                                            showConfirmButton: false
+                                        });
+                                    } else {
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Error',
+                                            text: response.error || 'Failed to update status'
+                                        });
+                                    }
+                                },
+                                error: function (xhr, status, error) {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Error',
+                                        text: 'Failed to update status. Please try again.'
+                                    });
+                                },
+                                complete: function () {
+                                    button.prop('disabled', false).removeClass('disabled');
+                                }
+                            });
+                        }
+                    });
+                });
+            }
+        });
+
+        // Add loading overlay
+        $('#vacancies-table').on('processing.dt', function (e, settings, processing) {
+            if (processing) {
+                $(this).closest('.card').append('<div class="overlay"><i class="fas fa-3x fa-sync-alt fa-spin text-primary"></i></div>');
+            } else {
+                $(this).closest('.card').find('.overlay').remove();
+            }
+        });
+
+        // Style buttons container
+        $('.dt-buttons').addClass('btn-group flex-wrap gap-1 mb-2');
+        $('.dt-button').addClass('btn-sm');
+
+        // Handle responsive adjustments for buttons on small screens
+        $(window).on('resize', function() {
+            if ($(window).width() < 768) {
+                $('.dt-buttons').addClass('justify-content-center');
+                $('.dt-button').addClass('mb-1');
+            } else {
+                $('.dt-buttons').removeClass('justify-content-center');
+                $('.dt-button').removeClass('mb-1');
+            }
+        }).trigger('resize');
+
+        // Row click functionality
+        $('#vacancies-table tbody').on('click', 'tr', function () {
+            $(this).toggleClass('table-active');
+        });
+    });
+</script>
+{% endblock %}

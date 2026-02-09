@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    command: >
+      sh -c "
+      python manage.py migrate &&
+      python manage.py collectstatic --noinput &&
+      gunicorn bginfotechs.wsgi:application --bind 0.0.0.0:8000
+      "
+    volumes:
+      - ./static_files:/app/static_files
+      - ./media:/app/media
+      - ./uploads:/app/uploads
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    restart: unless-stopped

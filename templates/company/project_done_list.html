@@ -1,0 +1,501 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">{{ page_title }}</h1>
+        <a href="{% url 'company_app:category_list' %}" class="btn btn-sm btn-secondary shadow-sm">
+            <i class="fas fa-arrow-left fa-sm text-white-50 me-1"></i> Back to Categories
+        </a>
+    </div>
+
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="#"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+            <li class="breadcrumb-item active" aria-current="page"><i class="fas fa-project-diagram"></i> {{ breadcrumb_active }}</li>
+        </ol>
+    </nav>
+
+    <!-- Projects Done Table -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow mb-4">
+                <div class="card-header bg-light py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="m-0 font-weight-bold text-primary mb-0">
+                                <i class="fas fa-project-diagram me-2"></i>Projects Done List 
+                            </h6>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <!-- Category Filter -->
+                            <select id="categoryFilter" class="form-select form-select-sm" style="width: auto;">
+                                <option value="">All Categories</option>
+                                {% for category in categories %}
+                                <option value="{{ category.id }}">{{ category.title }}</option>
+                                {% endfor %}
+                            </select>
+                            
+                            <div class="btn-group">
+                                {% if perms.company_app.add_project_done %}
+                                <a href="{% url 'company_app:project_done_create' %}" class="btn btn-sm btn-primary">
+                                    <i class="fas fa-plus me-1"></i> Add Project
+                                </a>
+                                {% endif %}
+                                <button type="button" class="btn btn-sm btn-outline-primary" id="refreshTable">
+                                    <i class="fas fa-sync-alt me-1"></i> Refresh
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <!-- Loading Overlay -->
+                    <div id="loading-overlay" style="display: none;">
+                        <div class="d-flex justify-content-center align-items-center" style="height: 200px;">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <span class="ms-2">Loading projects...</span>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover" id="projectsDoneTable" width="100%" cellspacing="0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th width="80" class="text-center">Project Image</th>
+                                    <th width="200">Project Title</th>
+                                    <th width="150">Client Company</th>
+                                    <th width="120" class="text-center">Service</th>
+                                    <th width="120" class="text-center">Category</th>
+                                    <th width="80" class="text-center">Company Logo</th>
+                                    <th width="100" class="text-center">Live Demo</th>
+                                    <th width="120" class="text-center">Date Created</th>
+                                    <th width="100" class="text-center">Status</th>
+                                    <th width="120" class="text-center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Data will be loaded via DataTables AJAX -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs5/jszip-3.10.1/dt-1.13.6/b-2.4.2/b-html5-2.4.2/b-print-2.4.2/datatables.min.css"/>
+<style>
+    .card {
+        border: none;
+        border-radius: 10px;
+    }
+    .card-header {
+        border-bottom: 1px solid #e3e6f0;
+        border-radius: 10px 10px 0 0 !important;
+    }
+    .table th {
+        border-top: none;
+        font-weight: 600;
+        color: #6e707e;
+        background-color: #f8f9fa;
+    }
+    .project-thumbnail, .logo-thumbnail {
+        border-radius: 6px;
+        transition: transform 0.2s;
+    }
+    .project-thumbnail:hover, .logo-thumbnail:hover {
+        transform: scale(1.05);
+    }
+    .description-text {
+        cursor: help;
+    }
+    #projectsDoneTable {
+        font-size: 0.875rem;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+    .badge {
+        font-size: 0.75rem;
+    }
+    
+    /* Loading overlay */
+    #loading-overlay {
+        background-color: rgba(255, 255, 255, 0.9);
+        border-radius: 10px;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 1000;
+        display: none;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    /* Category filter */
+    #categoryFilter {
+        min-width: 180px;
+    }
+    
+    /* Export buttons styling */
+    .dt-buttons .btn {
+        margin-right: 8px;
+        margin-bottom: 10px;
+        border-radius: 6px;
+        font-weight: 500;
+        padding: 8px 16px;
+        border: 1px solid;
+        transition: all 0.3s ease;
+    }
+    
+    /* Copy button */
+    .dt-buttons .btn.btn-secondary {
+        background-color: #6c757d;
+        border-color: #6c757d;
+        color: white;
+    }
+    .dt-buttons .btn.btn-secondary:hover {
+        background-color: #5a6268;
+        border-color: #545b62;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(108, 117, 125, 0.3);
+    }
+    
+    /* Excel button */
+    .dt-buttons .btn.btn-success {
+        background-color: #198754;
+        border-color: #198754;
+        color: white;
+    }
+    .dt-buttons .btn.btn-success:hover {
+        background-color: #157347;
+        border-color: #146c43;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(25, 135, 84, 0.3);
+    }
+    
+    /* PDF button */
+    .dt-buttons .btn.btn-danger {
+        background-color: #dc3545;
+        border-color: #dc3545;
+        color: white;
+    }
+    .dt-buttons .btn.btn-danger:hover {
+        background-color: #bb2d3b;
+        border-color: #b02a37;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
+    }
+    
+    /* Print button */
+    .dt-buttons .btn.btn-info {
+        background-color: #0dcaf0;
+        border-color: #0dcaf0;
+        color: #000;
+    }
+    .dt-buttons .btn.btn-info:hover {
+        background-color: #31d2f2;
+        border-color: #25cff2;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(13, 202, 240, 0.3);
+    }
+    
+    /* Button container styling */
+    .dt-buttons {
+        margin-bottom: 15px;
+        padding: 10px 0;
+    }
+    
+    .dataTables_wrapper .dataTables_filter {
+        float: right;
+        margin-bottom: 15px;
+    }
+    .dataTables_wrapper .dataTables_length {
+        float: left;
+        margin-bottom: 15px;
+    }
+    .dataTables_wrapper .dataTables_filter input {
+        border-radius: 6px;
+        border: 1px solid #ddd;
+        padding: 6px 12px;
+        margin-left: 10px;
+    }
+    .dataTables_wrapper .dataTables_length select {
+        border-radius: 6px;
+        border: 1px solid #ddd;
+        padding: 4px 8px;
+        margin: 0 10px;
+    }
+    .table-hover tbody tr:hover {
+        background-color: rgba(0, 123, 255, 0.05);
+    }
+    
+    /* DataTables button group alignment */
+    .dt-buttons.btn-group {
+        display: flex !important;
+        flex-wrap: wrap;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/v/bs5/jszip-3.10.1/dt-1.13.6/b-2.4.2/b-html5-2.4.2/b-print-2.4.2/datatables.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        // Show loading overlay initially
+        $('#loading-overlay').show();
+
+        // Initialize DataTable
+        var table = $('#projectsDoneTable').DataTable({
+            "processing": true,
+            "serverSide": true,
+            "ajax": {
+                "url": "{% url 'company_app:project_done_datatables_api' %}",
+                "type": "GET",
+                "data": function(d) {
+                    // Add category filter to AJAX data
+                    d.category_id = $('#categoryFilter').val();
+                },
+                "dataSrc": function(json) {
+                    // Hide loading overlay when data is loaded
+                    $('#loading-overlay').hide();
+                    return json.data;
+                },
+                "error": function(xhr, error, code) {
+                    $('#loading-overlay').hide();
+                    console.log('DataTables AJAX Error:', error);
+                    
+                    // Show user-friendly error message
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Loading Error',
+                        text: 'Failed to load projects data. Please try again.',
+                        confirmButtonColor: '#3085d6',
+                    });
+                }
+            },
+            "columns": [
+                {
+                    "data": "project_image", 
+                    "orderable": false, 
+                    "searchable": false, 
+                    "className": "text-center",
+                    "render": function(data, type, row) {
+                        return data || '<div class="text-center text-muted"><i class="fas fa-image fa-lg"></i><br><small class="text-muted">No Image</small></div>';
+                    }
+                },
+                {
+                    "data": "title", 
+                    "className": "fw-bold text-primary",
+                    "render": function(data, type, row) {
+                        return data || '<span class="text-muted">No Title</span>';
+                    }
+                },
+                {
+                    "data": "company",
+                    "render": function(data, type, row) {
+                        return data || '<span class="text-muted">No Company</span>';
+                    }
+                },
+                {
+                    "data": "service", 
+                    "className": "text-center",
+                    "render": function(data, type, row) {
+                        return data || '<span class="text-muted">No Service</span>';
+                    }
+                },
+                {
+                    "data": "category", 
+                    "className": "text-center",
+                    "render": function(data, type, row) {
+                        return data || '<span class="text-muted">No Category</span>';
+                    }
+                },
+                {
+                    "data": "company_logo", 
+                    "orderable": false, 
+                    "searchable": false, 
+                    "className": "text-center",
+                    "render": function(data, type, row) {
+                        return data || '<div class="text-center text-muted"><i class="fas fa-building fa-lg"></i><br><small class="text-muted">No Logo</small></div>';
+                    }
+                },
+                {
+                    "data": "live_link", 
+                    "orderable": false, 
+                    "searchable": false, 
+                    "className": "text-center",
+                    "render": function(data, type, row) {
+                        return data || '<span class="text-muted">No Link</span>';
+                    }
+                },
+                {
+                    "data": "created_at", 
+                    "className": "text-center",
+                    "render": function(data, type, row) {
+                        return data || '<span class="text-muted">N/A</span>';
+                    }
+                },
+                {
+                    "data": "status", 
+                    "orderable": false, 
+                    "className": "text-center",
+                    "render": function(data, type, row) {
+                        return data || '<span class="badge bg-secondary">Unknown</span>';
+                    }
+                },
+                {
+                    "data": "actions", 
+                    "orderable": false, 
+                    "searchable": false, 
+                    "className": "text-center",
+                    "render": function(data, type, row) {
+                        return data || '<div class="text-muted">No Actions</div>';
+                    }
+                }
+            ],
+            "order": [[7, 'desc']], // Updated order index to 7 (created_at)
+            "lengthMenu": [[5, 10, 25, 50, 100], [5, 10, 25, 50, 100]],
+            "pageLength": 10,
+            "dom": '<"row"<"col-md-6"B><"col-md-6"f>><"row"<"col-md-12"tr>><"row"<"col-md-5"i><"col-md-7"p>>',
+            "buttons": [
+                {
+                    extend: 'copy',
+                    text: '<i class="fas fa-copy me-2"></i>Copy',
+                    className: 'btn btn-secondary',
+                    exportOptions: {
+                        columns: [1, 2, 3, 4, 7, 8], // Updated column indices
+                        orthogonal: 'export'
+                    },
+                    title: 'Projects Done List'
+                },
+                {
+                    extend: 'excel',
+                    text: '<i class="fas fa-file-excel me-2"></i>Excel',
+                    className: 'btn btn-success',
+                    exportOptions: {
+                        columns: [1, 2, 3, 4, 7, 8], // Updated column indices
+                        orthogonal: 'export'
+                    },
+                    filename: 'projects_done_list',
+                    title: 'Projects Done List'
+                },
+                {
+                    extend: 'pdf',
+                    text: '<i class="fas fa-file-pdf me-2"></i>PDF',
+                    className: 'btn btn-danger',
+                    exportOptions: {
+                        columns: [1, 2, 3, 4, 7, 8], // Updated column indices
+                        orthogonal: 'export'
+                    },
+                    filename: 'projects_done_list',
+                    orientation: 'landscape',
+                    pageSize: 'A4',
+                    title: 'Projects Done List',
+                    customize: function (doc) {
+                        doc.defaultStyle.fontSize = 10;
+                        doc.styles.tableHeader.fontSize = 10;
+                        doc.content[1].table.widths = ['*', '*', '*', '*', '*', '*']; // Updated column count
+                    }
+                },
+                {
+                    extend: 'print',
+                    text: '<i class="fas fa-print me-2"></i>Print',
+                    className: 'btn btn-info',
+                    exportOptions: {
+                        columns: [1, 2, 3, 4, 7, 8], // Updated column indices
+                        orthogonal: 'export'
+                    },
+                    title: '<h3 class="text-center">Projects Done List</h3>',
+                    message: '<p class="text-center">Generated on: ' + new Date().toLocaleDateString() + '</p>',
+                    customize: function (win) {
+                        $(win.document.body).find('table').addClass('display').css('font-size', '12px');
+                        $(win.document.body).find('tr:nth-child(odd) td').css('background-color','#f9f9f9');
+                        $(win.document.body).find('tr:nth-child(even) td').css('background-color','#ffffff');
+                        
+                        // Center the title
+                        $(win.document.body).find('h1').css('text-align','center');
+                        $(win.document.body).find('h1').css('font-size','18px');
+                        $(win.document.body).find('h1').css('margin-bottom','20px');
+                        
+                        // Add some padding
+                        $(win.document.body).css('padding', '20px');
+                    },
+                    autoPrint: true
+                }
+            ],
+            "language": {
+                "search": '<i class="fas fa-search"></i> Search:',
+                "lengthMenu": "Show _MENU_ entries",
+                "info": "Showing _START_ to _END_ of _TOTAL_ projects",
+                "infoEmpty": "No projects available",
+                "infoFiltered": "(filtered from _MAX_ total projects)",
+                "zeroRecords": "No matching projects found",
+                "emptyTable": "No projects available",
+                "processing": '<div class="spinner-border spinner-border-sm text-primary me-2" role="status"></div>Loading...',
+                "paginate": {
+                    "first": '<i class="fas fa-angle-double-left"></i>',
+                    "last": '<i class="fas fa-angle-double-right"></i>',
+                    "next": '<i class="fas fa-angle-right"></i>',
+                    "previous": '<i class="fas fa-angle-left"></i>'
+                }
+            },
+            "responsive": true,
+            "stateSave": false,
+            "drawCallback": function(settings) {
+                // Re-initialize tooltips after each table draw
+                $('[data-bs-toggle="tooltip"]').tooltip();
+            },
+            "initComplete": function(settings, json) {
+                console.log('DataTable initialization complete');
+            }
+        });
+
+        // Category filter change event
+        $('#categoryFilter').on('change', function() {
+            $('#loading-overlay').show();
+            table.ajax.reload();
+        });
+
+        // Refresh table button
+        $('#refreshTable').on('click', function() {
+            $('#loading-overlay').show();
+            table.ajax.reload();
+            $(this).prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-1"></i> Refreshing...');
+            setTimeout(() => {
+                $(this).prop('disabled', false).html('<i class="fas fa-sync-alt me-1"></i> Refresh');
+            }, 1000);
+        });
+
+        // Handle AJAX errors more gracefully
+        $.fn.dataTable.ext.errMode = 'none';
+        
+        // Listen for DataTables errors
+        table.on('error.dt', function(e, settings, techNote, message) {
+            $('#loading-overlay').hide();
+            console.error('DataTables error:', message);
+            Swal.fire({
+                icon: 'error',
+                title: 'Data Error',
+                text: 'Error loading table data. Please try refreshing the page.',
+                confirmButtonColor: '#3085d6',
+            });
+        });
+    });
+</script>
+{% endblock %}

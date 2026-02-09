@@ -1,0 +1,1991 @@
+{% extends 'Frontend/base.html' %}
+{% load static %}
+{% block title %}{{ service.title|default:"Graphic Designing" }}{% endblock %}
+{% block extra_css %}
+<style>
+    /* Global Styles */
+    :root {
+        --primary-color: #3498db;
+        --primary-dark: #2980b9;
+        --secondary-color: #2c3e50;
+        --secondary-light: #34495e;
+        --accent-color: #f1c40f;
+        --accent-dark: #f39c12;
+        --light-bg: #f8f9fa;
+        --light-bg-2: #ecf0f1;
+        --dark-text: #2c3e50;
+        --light-text: #7f8c8d;
+        --white: #ffffff;
+        --gradient-primary: linear-gradient(135deg, #3498db, #2c3e50);
+        --gradient-accent: linear-gradient(135deg, #d1b751, #d96457);
+        --shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        --shadow-hover: 0 15px 40px rgba(0, 0, 0, 0.15);
+        --transition: all 0.3s ease;
+        --border-radius: 15px;
+    }
+
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: var(--dark-text);
+        line-height: 1.6;
+        overflow-x: hidden;
+    }
+
+
+
+    .section {
+        padding: 80px 0;
+    }
+
+    .section-title {
+        text-align: center;
+        margin-bottom: 60px;
+    }
+
+    .section-title h2 {
+        color: var(--secondary-color);
+        font-weight: 700;
+        margin-bottom: 15px;
+    }
+
+    .section-title p {
+        color: var(--light-text);
+        font-size: 1.1rem;
+    }
+
+    /* Service Banner Section */
+    .service__banner- {
+        background: linear-gradient(135deg, #f8f9fa 0%, #ecf0f1 100%);
+        padding: 100px 0 60px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .service__banner-::before {
+        content: '';
+        position: absolute;
+        width: 300px;
+        height: 300px;
+        border-radius: 50%;
+        background: var(--primary-color);
+        opacity: 0.05;
+        top: -150px;
+        right: -150px;
+    }
+
+    .service__banner-::after {
+        content: '';
+        position: absolute;
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        background: var(--accent-color);
+        opacity: 0.05;
+        bottom: -100px;
+        left: -100px;
+    }
+
+    .service__banner--content .title {
+        font-size: 3rem;
+        font-weight: 800;
+        color: var(--secondary-color);
+        margin-bottom: 20px;
+        line-height: 1.2;
+        position: relative;
+        display: inline-block;
+    }
+
+    .service__banner--content .title::after {
+        content: '';
+        position: absolute;
+        width: 80px;
+        height: 5px;
+        background: var(--accent-color);
+        bottom: -10px;
+        left: 0;
+        border-radius: 5px;
+    }
+
+    .sub-title-desc {
+        font-size: 1.3rem;
+        color: var(--primary-color);
+        margin-bottom: 20px;
+        font-weight: 600;
+    }
+
+    .service__banner--content p {
+        font-size: 1rem;
+        color: var(--light-text);
+        margin-bottom: 30px;
+    }
+
+    .l__button {
+        display: inline-flex;
+        align-items: center;
+        background: var(--gradient-primary);
+        color: white;
+        padding: 12px 30px;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: var(--transition);
+        border: none;
+        cursor: pointer;
+        box-shadow: var(--shadow);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        position: relative;
+        overflow: hidden;
+        z-index: 1;
+    }
+
+    .l__button::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 0%;
+        height: 100%;
+        background: var(--gradient-accent);
+        transition: var(--transition);
+        z-index: -1;
+    }
+
+    .l__button:hover::before {
+        width: 100%;
+    }
+
+    .l__button:hover {
+        color: white;
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-hover);
+    }
+
+    .l__button i {
+        margin-left: 10px;
+        transition: var(--transition);
+    }
+
+    .l__button:hover i {
+        transform: translateX(5px);
+    }
+
+    .service__banner--content .right {
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+    }
+
+    /* CLEAN RESPONSIVE IMAGE + ORBIT FIXED */
+    .image-container {
+        position: relative;
+        width: 100%;
+        max-width: 360px;
+        margin: 0 auto;
+    }
+
+    .main-image {
+        width: 100%;
+        height: auto;
+        display: block;
+        margin: 0 auto;
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow);
+        z-index: 2;
+        position: relative;
+    }
+
+    /* DESKTOP ORBIT */
+    .stats-orbit {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 420px;
+        height: 420px;
+        transform: translate(-50%, -50%);
+        pointer-events: none;
+        z-index: 3;
+    }
+
+    .orbit-path {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        animation: rotate 25s linear infinite;
+    }
+
+    .orbit-path.paused {
+        animation-play-state: paused;
+    }
+
+    .info__card {
+        width: 90px;
+        height: 90px;
+        background: white;
+        border-radius: 12px;
+        position: absolute;
+        box-shadow: var(--shadow);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        padding: 10px 6px;
+        transition: var(--transition);
+        border-top: 4px solid var(--primary-color);
+        pointer-events: auto;
+    }
+
+    /* Four card positions - Perfect Square */
+    .info__card:nth-child(1) {
+        top: 0;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        border-top-color: var(--primary-color);
+    }
+
+    .info__card:nth-child(2) {
+        top: 50%;
+        right: 0;
+        transform: translate(50%, -50%);
+        border-top-color: var(--accent-color);
+    }
+
+    .info__card:nth-child(3) {
+        bottom: 0;
+        left: 50%;
+        transform: translate(-50%, 50%);
+        border-top-color: #2ecc71;
+    }
+
+    .info__card:nth-child(4) {
+        top: 50%;
+        left: 0;
+        transform: translate(-50%, -50%);
+        border-top-color: #9b59b6;
+    }
+
+    .info__card:hover {
+        transform: scale(1.1);
+        box-shadow: var(--shadow-hover);
+        z-index: 10;
+    }
+
+    .info__card img {
+        width: 25px;
+        height: 25px;
+        margin-bottom: 5px;
+        object-fit: contain;
+    }
+
+    .info__card h4 {
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        margin-bottom: 3px;
+        line-height: 1;
+    }
+
+    .info__card h6 {
+        font-size: 0.6rem;
+        color: var(--light-text);
+        margin: 0;
+        line-height: 1.2;
+    }
+
+    /* MOBILE ORBIT */
+    .mobile-orbit-container {
+        display: none;
+    }
+
+    @media(max-width: 576px) {
+        .stats-orbit {
+            display: none;
+        }
+
+        .mobile-orbit-container {
+            display: block;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 260px;
+            height: 260px;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 3;
+        }
+
+        .mobile-orbit-path {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            animation: rotate 20s linear infinite;
+        }
+
+        .mobile-orbit-path.paused {
+            animation-play-state: paused;
+        }
+
+        .mobile-info-card {
+            width: 65px;
+            height: 65px;
+            background: white;
+            border-radius: 10px;
+            position: absolute;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 8px 6px;
+            transition: var(--transition);
+            border-top: 3px solid var(--primary-color);
+            pointer-events: auto;
+        }
+
+        .mobile-info-card:nth-child(1) {
+            top: 0;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border-top-color: var(--primary-color);
+        }
+
+        .mobile-info-card:nth-child(2) {
+            top: 50%;
+            right: 0;
+            transform: translate(50%, -50%);
+            border-top-color: var(--accent-color);
+        }
+
+        .mobile-info-card:nth-child(3) {
+            bottom: 0;
+            left: 50%;
+            transform: translate(-50%, 50%);
+            border-top-color: #2ecc71;
+        }
+
+        .mobile-info-card:nth-child(4) {
+            top: 50%;
+            left: 0;
+            transform: translate(-50%, -50%);
+            border-top-color: #9b59b6;
+        }
+
+        .mobile-info-card:hover {
+            transform: scale(1.1);
+            box-shadow: var(--shadow-hover);
+            z-index: 10;
+        }
+
+        .mobile-info-card img {
+            width: 18px;
+            height: 18px;
+            margin-bottom: 3px;
+            object-fit: contain;
+        }
+
+        .mobile-info-card h4 {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 2px;
+            line-height: 1;
+        }
+
+        .mobile-info-card h6 {
+            font-size: 0.5rem;
+            color: var(--light-text);
+            margin: 0;
+            line-height: 1.1;
+        }
+    }
+
+    @keyframes rotate {
+        from {
+            transform: rotate(0deg);
+        }
+
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    /* Service Info Section */
+    .service__info {
+        margin-top: 80px;
+    }
+
+    .service__info--card {
+        background: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow);
+        padding: 25px;
+        height: 100%;
+        transition: var(--transition);
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+        border-top: 4px solid var(--primary-color);
+    }
+
+    .service__info--card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 0;
+        background: var(--gradient-primary);
+        opacity: 0.05;
+        transition: var(--transition);
+        z-index: 0;
+    }
+
+    .service__info--card:hover::before {
+        height: 100%;
+    }
+
+    .service__info--card:hover {
+        transform: translateY(-10px);
+        box-shadow: var(--shadow-hover);
+    }
+
+    .service__info--card:nth-child(2) {
+        border-top-color: var(--accent-color);
+    }
+
+    .service__info--card:nth-child(3) {
+        border-top-color: #2ecc71;
+    }
+
+    .service__info--card-head {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 15px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .service__info--card-head img {
+        width: 50px;
+        height: 50px;
+        margin-bottom: 12px;
+        object-fit: contain;
+    }
+
+    .service__info--card-head .title {
+        font-size: 1.3rem;
+        color: var(--secondary-color);
+    }
+
+    .service__info--content {
+        position: relative;
+        z-index: 1;
+    }
+
+    .service__info--content p {
+        color: var(--light-text);
+        margin: 0;
+        font-size: 0.9rem;
+    }
+
+    /* FIXED MOBILE LAYOUT */
+    @media (max-width: 768px) {
+        .service__banner- {
+            padding: 60px 0 30px;
+        }
+
+        .service__banner--content .right {
+            margin-top: 0;
+            padding-top: 0;
+            height: auto;
+            min-height: 300px;
+        }
+
+        .image-container {
+            max-width: 280px;
+            margin-bottom: 0;
+        }
+
+        .mobile-orbit-container {
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .service__info {
+            margin-top: 40px;
+        }
+
+        .service__banner--content .title {
+            font-size: 2.2rem;
+            margin-bottom: 15px;
+        }
+
+        .sub-title-desc {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+        }
+
+        .service__banner--content p {
+            font-size: 0.9rem;
+            margin-bottom: 25px;
+        }
+
+        .l__button {
+            padding: 10px 25px;
+            font-size: 0.9rem;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .section {
+            padding: 60px 0;
+        }
+
+        .service__banner- {
+            padding: 50px 0 20px;
+        }
+
+        .service__banner--content .title {
+            font-size: 2rem;
+        }
+
+        .service__banner--content .title::after {
+            width: 60px;
+            height: 4px;
+            bottom: -8px;
+        }
+
+        .sub-title-desc {
+            font-size: 1rem;
+        }
+
+        .service__banner--content p {
+            font-size: 0.85rem;
+        }
+
+        .l__button {
+            padding: 10px 25px;
+            font-size: 0.9rem;
+        }
+
+        .image-container {
+            max-width: 250px;
+        }
+
+        .service__info {
+            margin-top: 30px;
+        }
+
+        .service__info--card {
+            padding: 18px 12px;
+            margin-bottom: 15px;
+        }
+
+        .service__info--card-head img {
+            width: 40px;
+            height: 40px;
+            margin-bottom: 10px;
+        }
+
+        .service__info--card-head .title {
+            font-size: 1.1rem;
+        }
+    }
+
+    @media (max-width: 400px) {
+        .service__banner--content .title {
+            font-size: 1.8rem;
+        }
+
+        .sub-title-desc {
+            font-size: 0.95rem;
+        }
+
+        .service__banner--content p {
+            font-size: 0.8rem;
+        }
+
+        .l__button {
+            padding: 8px 20px;
+            font-size: 0.85rem;
+        }
+
+        .image-container {
+            max-width: 220px;
+        }
+
+        .mobile-orbit-container {
+            width: 240px;
+            height: 240px;
+        }
+
+        .mobile-info-card {
+            width: 60px;
+            height: 60px;
+        }
+    }
+</style>
+
+<style>
+    /* Portfolio Section Styles */
+    .portfolio-grid {
+        margin: 0 -15px;
+    }
+
+    .portfolio-item {
+        padding: 15px;
+        transition: all 0.3s ease;
+    }
+
+    .bg-portfolio-item {
+        position: relative;
+        overflow: hidden;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        height: 100%;
+    }
+
+    .bg-portfolio-item:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    .bg-portfolio-item img {
+        width: 100%;
+        height: 280px;
+        object-fit: cover;
+        transition: all 0.5s ease;
+    }
+
+    .bg-portfolio-item:hover img {
+        transform: scale(1.05);
+    }
+
+    .bg-portfolio-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.8) 100%);
+        display: flex;
+        align-items: flex-end;
+        padding: 25px;
+        opacity: 0;
+        transition: all 0.3s ease;
+    }
+
+    .bg-portfolio-item:hover .bg-portfolio-overlay {
+        opacity: 1;
+    }
+
+    .overlay-content {
+        color: white;
+        transform: translateY(20px);
+        transition: all 0.3s ease;
+    }
+
+    .bg-portfolio-item:hover .overlay-content {
+        transform: translateY(0);
+    }
+
+    .overlay-content h3 {
+        font-size: 1.5rem;
+        margin-bottom: 5px;
+    }
+
+    .overlay-content p {
+        margin-bottom: 10px;
+        font-size: 0.9rem;
+    }
+
+    .bg-filter-btn {
+        background: transparent;
+        border: 2px solid #ddd;
+        color: #555;
+        padding: 8px 20px;
+        margin: 0 5px 10px;
+        border-radius: 30px;
+        transition: all 0.3s ease;
+    }
+
+    .bg-filter-btn.active,
+    .bg-filter-btn:hover {
+        background: #007bff;
+        border-color: #007bff;
+        color: white;
+    }
+
+    /* Client logos slider */
+    .client-logos-slider {
+        overflow: hidden;
+        position: relative;
+        width: 100%;
+    }
+
+    .client-logos-track {
+        display: flex;
+        animation: scroll 30s linear infinite;
+    }
+
+    .client-logo-item {
+        flex-shrink: 0;
+        width: 150px;
+        margin: 0 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .client-logo-item img {
+        max-width: 100%;
+        height: auto;
+        filter: grayscale(100%);
+        opacity: 0.7;
+        transition: all 0.3s ease;
+    }
+
+    .client-logo-item:hover img {
+        filter: grayscale(0%);
+        opacity: 1;
+    }
+
+    @keyframes scroll {
+        0% {
+            transform: translateX(0);
+        }
+
+        100% {
+            transform: translateX(-50%);
+        }
+    }
+
+    /* Testimonial styles */
+    .bg-testimonial-card {
+        background: white;
+        border-radius: 10px;
+        padding: 25px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        height: 100%;
+        transition: all 0.3s ease;
+    }
+
+    .bg-testimonial-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .bg-testimonial-card__client {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    /* CTA Section */
+    .gfx-cta-section {
+        position: relative;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 80px 0;
+        overflow: hidden;
+    }
+
+    .gfx-cta__circle--top-right {
+        position: absolute;
+        top: -100px;
+        right: -100px;
+        width: 300px;
+        height: 300px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.1);
+    }
+
+    .gfx-cta__circle--bottom-left {
+        position: absolute;
+        bottom: -100px;
+        left: -100px;
+        width: 300px;
+        height: 300px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.1);
+    }
+
+    .gfx-cta__content {
+        position: relative;
+        z-index: 2;
+    }
+
+    .gfx-cta__heading {
+        font-size: 2.5rem;
+        font-weight: 700;
+    }
+
+    .gfx-cta__subheading {
+        font-size: 1.2rem;
+        opacity: 0.9;
+    }
+
+    .gfx-cta__btn--primary {
+        display: inline-block;
+        background: white;
+        color: #667eea;
+        padding: 12px 30px;
+        border-radius: 30px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .gfx-cta__btn--primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    }
+</style>
+<style>
+    /* Portfolio Grid Layout */
+    .portfolio-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 1.5rem;
+    }
+
+    @media (max-width: 768px) {
+        .portfolio-grid {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+    }
+
+    /* Portfolio Card Styling */
+    .portfolio-card {
+        transition: all 0.3s ease;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .portfolio-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15) !important;
+    }
+
+    /* Image Container and Sizing */
+    .portfolio-image-wrapper {
+        aspect-ratio: 4/3;
+        background-color: #f8f9fa;
+    }
+
+    .portfolio-image {
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.4s ease;
+    }
+
+    .portfolio-card:hover .portfolio-image {
+        transform: scale(1.08);
+    }
+
+    /* Overlay Styling */
+    .portfolio-overlay {
+        background: linear-gradient(135deg, rgba(0, 123, 255, 0.85) 0%, rgba(102, 16, 242, 0.85) 100%);
+        opacity: 0;
+        transform: translateY(10px);
+        transition: all 0.4s ease;
+        padding: 1.5rem;
+    }
+
+    .portfolio-card:hover .portfolio-overlay {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .overlay-content {
+        transform: translateY(20px);
+        transition: transform 0.4s ease 0.1s;
+    }
+
+    .portfolio-card:hover .overlay-content {
+        transform: translateY(0);
+    }
+
+    /* Filter Buttons */
+    .filter-button-group {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    .bg-filter-btn {
+        padding: 0.5rem 1.25rem;
+        border: 2px solid #007bff;
+        background: transparent;
+        color: #007bff;
+        border-radius: 25px;
+        transition: all 0.3s ease;
+        font-weight: 500;
+    }
+
+    .bg-filter-btn:hover,
+    .bg-filter-btn.active {
+        background-color: #007bff;
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    /* Section Title */
+    .bg-section-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #2c3e50;
+        position: relative;
+        padding-bottom: 1rem;
+    }
+
+    .bg-section-title::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80px;
+        height: 4px;
+        background: linear-gradient(90deg, #007bff, #6610f2);
+        border-radius: 2px;
+    }
+
+    /* Primary Button */
+    .bg-primary-btn {
+        background: linear-gradient(135deg, #007bff, #6610f2);
+        border: none;
+        color: white;
+        padding: 0.75rem 2rem;
+        border-radius: 30px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .bg-primary-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 123, 255, 0.3);
+        color: white;
+    }
+</style>
+<style>
+    /* Technology Stack Styles */
+    .tech-stack-item {
+        padding: 1.5rem 1rem;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+        height: 100%;
+    }
+
+    .tech-stack-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        background-color: #f8f9fa;
+    }
+
+    .tech-icon {
+        height: 80px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .tech-icon img {
+        max-height: 60px;
+        width: auto;
+        transition: all 0.3s ease;
+    }
+
+    .tech-stack-item:hover .tech-icon img {
+        transform: scale(1.1);
+    }
+
+    .tech-name {
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 0.5rem;
+    }
+
+    .tech-desc {
+        line-height: 1.4;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<style>
+    .page-title {
+        background-image: linear-gradient(rgba(28, 29, 31, 0.65), rgba(23, 4, 69, 0.65)),
+        url("{% static 'img/breadcrumb.jpg' %}");
+        background-size: cover;
+        background-position: center;
+        padding: 30px 0px ;
+    }
+</style>
+<main class="main">
+    <div class="page-title light-background">
+        <div class="container">
+            <h1>{{ service.title|default:"Creative Graphic & Visual Designing Services" }}</h1>
+            <nav class="breadcrumbs" data-aos="fade-right" data-aos-delay="100">
+                <ol>
+                    <li><a href="{% url 'frontend_app:home' %}"><i class="fas fa-home"></i> Home</a></li>
+                    <li class="current"><i class="fa-solid fa-palette"></i> Graphic Designing</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div style="min-height: 50vh">
+        <div class="site-main">
+            <section class="service__banner-">
+                <div class="container">
+                    <div class="service__banner--content overflow">
+                        <div class="row flex-column-reverse flex-md-row">
+                            <div class="col-lg-7 col-md-6">
+                                <div class="left">
+                                    <div class="section__title clearfix">
+                                        <h1 class="title" data-aos="fade-right" style="color:var(--secondary-color);"
+                                            data-aos-delay="100">Graphic Design & UI</h1>
+                                    </div>
+                                    <div class="title-desc" data-aos="fade-right" data-aos-delay="200">
+                                        <h4 class="sub-title-desc">Visually stunning designs and intuitive user
+                                            interfaces that captivate your audience.</h4>
+                                        <p>Transforming Ideas into Visual Masterpieces: Elevate Your Brand with Creative
+                                            Graphic Design and Intuitive UI Solutions. From Logos to Complete Brand
+                                            Identities, We Craft Designs That Communicate, Engage, and Convert!</p>
+                                        <a href="{% url 'frontend_app:contact' %}" class="l__button">
+                                            <span>lets start conversation</span>
+                                            <i class="bi bi-chevron-right"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-5 col-md-6 mb-4 mb-md-0">
+                                <div class="right mt-4" data-aos="fade-left" data-aos-delay="300">
+                                    <div class="image-container">
+                                        <!-- Using the same image path as in your original code -->
+                                        <img src="{% static 'images/Mask_group.svg' %}" class="main-image" alt="Graphic Design & UI">
+
+                                        <!-- Desktop Orbit -->
+                                        <div class="stats-orbit">
+                                            <div class="orbit-path" id="orbitPath">
+                                                <div class="info__card" data-aos="zoom-in" data-aos-delay="400">
+                                                    <img src="{% static 'images/calendar.gif' %}" alt="Years of Experience">
+                                                    <h4>6+</h4>
+                                                    <h6>Years Experience</h6>
+                                                </div>
+
+                                                <div class="info__card" data-aos="zoom-in" data-aos-delay="500">
+                                                    <img src="{% static 'images/like.gif' %}" alt="Happy Clients">
+                                                    <h4>250+</h4>
+                                                    <h6>Happy Clients</h6>
+                                                </div>
+
+                                                <div class="info__card" data-aos="zoom-in" data-aos-delay="600">
+                                                    <img src="{% static 'images/task.gif' %}" alt="Successful Projects">
+                                                    <h4>500+</h4>
+                                                    <h6>Designs Created</h6>
+                                                </div>
+
+                                                <div class="info__card" data-aos="zoom-in" data-aos-delay="700">
+                                                    <img src="{% static 'images/teamwork.gif' %}" alt="Team Members">
+                                                    <h4>30+</h4>
+                                                    <h6>Design Experts</h6>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Mobile Orbit -->
+                                        <div class="mobile-orbit-container">
+                                            <div class="mobile-orbit-path" id="mobileOrbitPath">
+                                                <div class="mobile-info-card">
+                                                    <img src="{% static 'images/calendar.gif' %}" alt="Years of Experience">
+                                                    <h4>6+</h4>
+                                                    <h6>Years Experience</h6>
+                                                </div>
+
+                                                <div class="mobile-info-card">
+                                                    <img src="{% static 'images/like.gif' %}" alt="Happy Clients">
+                                                    <h4>250+</h4>
+                                                    <h6>Happy Clients</h6>
+                                                </div>
+
+                                                <div class="mobile-info-card">
+                                                    <img src="{% static 'images/task.gif' %}" alt="Successful Projects">
+                                                    <h4>500+</h4>
+                                                    <h6>Designs Created</h6>
+                                                </div>
+
+                                                <div class="mobile-info-card">
+                                                    <img src="{% static 'images/teamwork.gif' %}" alt="Team Members">
+                                                    <h4>30+</h4>
+                                                    <h6>Design Experts</h6>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="service__info overflow">
+                        <div class="row row-cols-1 row-cols-md-3 g-4">
+
+                            <div class="col" data-aos="fade-up" data-aos-delay="100">
+                                <div class="service__info--card">
+                                    <div class="service__info--card-head">
+                                        <img src="{% static 'images/idea.gif' %}" alt="Satisfaction Guarantee">
+                                        <h2 class="title">Creative Excellence</h2>
+                                    </div>
+                                    <div class="service__info--content">
+                                        <p>We deliver designs that exceed expectations and drive results for your
+                                            business.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col" data-aos="fade-up" data-aos-delay="200">
+                                <div class="service__info--card">
+                                    <div class="service__info--card-head">
+                                        <img src="{% static 'images/digital-art.gif' %}" alt="Best Quality work">
+                                        <h2 class="title">Pixel Perfect Design</h2>
+                                    </div>
+                                    <div class="service__info--content">
+                                        <p>Every detail matters. We ensure flawless execution in all our design
+                                            projects.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col" data-aos="fade-up" data-aos-delay="300">
+                                <div class="service__info--card">
+                                    <div class="service__info--card-head">
+                                        <img src="{% static 'images/woman-with-headset.gif' %}" alt="Interactive Interface">
+                                        <h2 class="title">User-Centered Approach</h2>
+                                    </div>
+                                    <div class="service__info--content">
+                                        <p>We design with the end-user in mind, creating intuitive and engaging
+                                            experiences.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- Services Section -->
+    <section class="py-5 my-5">
+        <div class="container">
+            <h2 class="text-center bg-section-title">Our Design Services</h2>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="card bg-service-card bg-animate-pop">
+                        <div class="card-body text-center p-4">
+                            <div class="bg-service-icon">
+                                <img src="{% static 'img/icons/branding.gif' %}" width="80px" alt="">
+                            </div>
+                            <h3 class="h4">Brand Identity</h3>
+                            <p>Logo design, color schemes, typography, and brand guidelines that represent your
+                                business perfectly.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card bg-service-card bg-animate-pop" style="animation-delay: 0.2s;">
+                        <div class="card-body text-center p-4">
+                            <div class="bg-service-icon">
+                                <img src="{% static 'img/icons/ads.gif' %}" width="80px" alt="">
+                            </div>
+                            <h3 class="h4">Marketing Materials</h3>
+                            <p>Brochures, flyers, banners, and social media graphics that get your message across
+                                effectively.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card bg-service-card bg-animate-pop" style="animation-delay: 0.4s;">
+                        <div class="card-body text-center p-4">
+                            <div class="bg-service-icon">
+                                <img src="{% static 'img/icons/html.gif' %}" width="80px" alt="">
+                            </div>
+                            <h3 class="h4">UI/UX Design</h3>
+                            <p>Beautiful and intuitive user interfaces that enhance user experience and drive
+                                engagement.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-5 bg-light">
+        <div class="container">
+            <div class="row align-items-center">
+                <!-- Left Column - Content -->
+                <div class="col-lg-7 mb-4 mb-lg-0">
+                    <h3 class="bg-infotechs-section-title">Our Design Technology Stack</h3>
+                    <p class="text-muted fs-6">We use cutting-edge design tools and technologies to create stunning,
+                        professional graphics that captivate your audience and elevate your brand.</p>
+                    <p class="text-muted fs-6">Our team stays updated with the latest design software, trends, and best
+                        practices to deliver high-quality visual solutions that stand out in today's competitive market.
+                    </p>
+
+                    <!-- Technology Grid -->
+                    <div class="row mt-4">
+                        <!-- Adobe Creative Suite -->
+                        <div class="col-md-6 mb-3">
+                            <div class="d-flex align-items-center p-3 bg-white rounded shadow-sm">
+                                <div class="tech-icon me-3">
+                                    <img src="{% static 'img/adobe.png' %}" alt="Adobe Creative Cloud" class="img-fluid"
+                                        style="height: 50px; width: 50px; object-fit: contain;">
+                                </div>
+                                <div>
+                                    <h6 class="mb-1 fw-bold">Adobe Creative Suite</h6>
+                                    <p class="small text-muted mb-0">Photoshop, Illustrator, InDesign</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Figma -->
+                        <div class="col-md-6 mb-3">
+                            <div class="d-flex align-items-center p-3 bg-white rounded shadow-sm">
+                                <div class="tech-icon me-3">
+                                    <img src="{% static 'img/figma.png' %}" alt="Figma" class="img-fluid"
+                                        style="height: 50px; width: 50px; object-fit: contain;">
+                                </div>
+                                <div>
+                                    <h6 class="mb-1 fw-bold">Figma</h6>
+                                    <p class="small text-muted mb-0">UI/UX Design & Prototyping</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Sketch -->
+                        <div class="col-md-6 mb-3">
+                            <div class="d-flex align-items-center p-3 bg-white rounded shadow-sm">
+                                <div class="tech-icon me-3">
+                                    <img src="{% static 'img/sketch.png' %}" alt="Sketch" class="img-fluid"
+                                        style="height: 50px; width: 50px; object-fit: contain;">
+                                </div>
+                                <div>
+                                    <h6 class="mb-1 fw-bold">Sketch</h6>
+                                    <p class="small text-muted mb-0">Digital Design Platform</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Canva -->
+                        <div class="col-md-6 mb-3">
+                            <div class="d-flex align-items-center p-3 bg-white rounded shadow-sm">
+                                <div class="tech-icon me-3">
+                                    <img src="{% static 'img/canva.png' %}" alt="Canva" class="img-fluid"
+                                        style="height: 50px; width: 50px; object-fit: contain;">
+                                </div>
+                                <div>
+                                    <h6 class="mb-1 fw-bold">Canva</h6>
+                                    <p class="small text-muted mb-0">Quick Design Solutions</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column - Technology Stack Categories -->
+                <div class="col-lg-5">
+                    <div class="bg-infotechs-tech-stack p-4 h-100">
+                        <h4 class="mb-4 fw-bold text-center">Design Tools & Platforms</h4>
+
+                        <!-- Design Software -->
+                        <h6 class="mt-4 mb-3 fw-bold border-bottom pb-2">
+                            <i class="fas fa-palette me-2 text-primary"></i>Design Software
+                        </h6>
+                        <div class="d-flex flex-wrap gap-3 mb-4 justify-content-center">
+                            <!-- Adobe -->
+                            <div class="tech-tool-item">
+                                <div class="tech-tool-image">
+                                    <img src="{% static 'img/adobe.png' %}" alt="Adobe Suite" class="img-fluid">
+                                    <div class="tech-tool-name">Adobe Suite</div>
+                                </div>
+                            </div>
+
+                            <!-- Figma -->
+                            <div class="tech-tool-item">
+                                <div class="tech-tool-image">
+                                    <img src="{% static 'img/figma.png' %}" alt="Figma" class="img-fluid">
+                                    <div class="tech-tool-name">Figma</div>
+                                </div>
+                            </div>
+
+                            <!-- Sketch -->
+                            <div class="tech-tool-item">
+                                <div class="tech-tool-image">
+                                    <img src="{% static 'img/sketch.png' %}" alt="Sketch" class="img-fluid">
+                                    <div class="tech-tool-name">Sketch</div>
+                                </div>
+                            </div>
+
+                            <!-- Canva -->
+                            <div class="tech-tool-item">
+                                <div class="tech-tool-image">
+                                    <img src="{% static 'img/canva.png' %}" alt="Canva" class="img-fluid">
+                                    <div class="tech-tool-name">Canva</div>
+                                </div>
+                            </div>
+
+                            <!-- Blender -->
+                            <div class="tech-tool-item">
+                                <div class="tech-tool-image">
+                                    <img src="{% static 'img/blender.png' %}" alt="Blender" class="img-fluid">
+                                    <div class="tech-tool-name">Blender</div>
+                                </div>
+                            </div>
+
+                            <!-- CorelDRAW -->
+                            <div class="tech-tool-item">
+                                <div class="tech-tool-image">
+                                    <img src="{% static 'img/CorelDRAW.png' %}" alt="CorelDRAW" class="img-fluid">
+                                    <div class="tech-tool-name">CorelDRAW</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <style>
+        .tech-tool-item {
+            position: relative;
+            display: inline-block;
+            margin: 5px;
+        }
+
+        .tech-tool-image {
+            position: relative;
+            width: 80px;
+            height: 80px;
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .tech-tool-image:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .tech-tool-image img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            transition: all 0.3s ease;
+        }
+
+        .tech-tool-name {
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(10px);
+            background: var(--bg-infotechs-primary);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+            z-index: 10;
+        }
+
+        .tech-tool-name::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-top: 6px solid var(--bg-infotechs-primary);
+        }
+
+        .tech-tool-item:hover .tech-tool-name {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .tech-tool-item:hover .tech-tool-image img {
+            transform: scale(1.1);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .tech-tool-image {
+                width: 70px;
+                height: 70px;
+                padding: 12px;
+            }
+
+            .tech-tool-name {
+                font-size: 0.7rem;
+                padding: 3px 10px;
+                top: -25px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .tech-tool-image {
+                width: 60px;
+                height: 60px;
+                padding: 10px;
+            }
+
+            .d-flex.flex-wrap.gap-3 {
+                gap: 10px !important;
+            }
+        }
+    </style>
+
+
+    <!-- Portfolio Section -->
+    <section class="py-5 bg-light">
+        <div class="container">
+            <h2 class="text-center bg-section-title mb-5">Our Creative Portfolio</h2>
+
+            <!-- Filter Buttons -->
+            <div class="text-center mb-5">
+                <div class="filter-button-group">
+                    <button type="button" class="btn bg-filter-btn active" data-filter="*">All Work</button>
+                    {% for category in categories %}
+                    <button type="button" class="btn bg-filter-btn" data-filter=".category-{{ category.slug }}">
+                        {{ category.title }}
+                    </button>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Portfolio Grid -->
+            <div class="row portfolio-grid g-4">
+                {% if related_projects %}
+                {% for project in related_projects %}
+                <div class="col-xl-4 col-lg-6 portfolio-item 
+                {% if project.category %}
+                    category-{{ project.category.slug }}
+                {% else %}
+                    {% if 'logo' in project.title|lower or 'brand' in project.title|lower %}branding
+                    {% elif 'web' in project.title|lower or 'ui' in project.title|lower or 'ux' in project.title|lower %}web
+                    {% elif 'social' in project.title|lower or 'media' in project.title|lower %}social
+                    {% elif 'print' in project.title|lower or 'brochure' in project.title|lower or 'flyer' in project.title|lower %}print
+                    {% elif 'packaging' in project.title|lower or 'package' in project.title|lower %}packaging
+                    {% else %}branding{% endif %}
+                {% endif %}">
+                    <div class="portfolio-card card h-100 border-0 shadow-sm overflow-hidden">
+                        <div class="portfolio-image-wrapper position-relative overflow-hidden">
+                            {% if project.image %}
+                            <img src="{{ project.image.url }}" alt="{{ project.title }}" class="portfolio-image w-100">
+                            {% else %}
+                            <img src="{% static 'img/graphic-design.jpg' %}" alt="{{ project.title }}"
+                                class="portfolio-image w-100">
+                            {% endif %}
+                            <div
+                                class="portfolio-overlay position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center">
+                                <div class="overlay-content text-center text-white p-4">
+                                    <h4 class="mb-2">{{ project.title }}</h4>
+                                    <p class="mb-2 opacity-90">{{ project.company }}</p>
+                                    {% if project.category %}
+                                    <span class="badge bg-white text-dark mb-3">{{ project.category.title }}</span>
+                                    {% endif %}
+                                    <p class="small mb-3 opacity-90">{{ project.description|truncatewords:20 }}</p>
+                                    {% if project.live_link %}
+                                    <a href="{{ project.live_link }}" target="_blank"
+                                        class="btn btn-sm btn-light mt-2">View Live Project</a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                {% else %}
+                <!-- Fallback static portfolio items -->
+                <div class="col-xl-4 col-lg-6 portfolio-item branding">
+                    <div class="portfolio-card card h-100 border-0 shadow-sm overflow-hidden">
+                        <div class="portfolio-image-wrapper position-relative overflow-hidden">
+                            <img src="{% static 'img/graphic-design.jpg' %}" alt="Branding Project"
+                                class="portfolio-image w-100">
+                            <div
+                                class="portfolio-overlay position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center">
+                                <div class="overlay-content text-center text-white p-4">
+                                    <h4 class="mb-2">Brand Identity</h4>
+                                    <p class="mb-2 opacity-90">For Coffee House Chain</p>
+                                    <p class="small mb-3 opacity-90">Complete brand identity package including logo,
+                                        color palette, and brand guidelines.</p>
+                                    <a href="#" class="btn btn-sm btn-light mt-2">View Project</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-4 col-lg-6 portfolio-item packaging">
+                    <div class="portfolio-card card h-100 border-0 shadow-sm overflow-hidden">
+                        <div class="portfolio-image-wrapper position-relative overflow-hidden">
+                            <img src="{% static 'img/graphic-design.jpg' %}" alt="Packaging Design"
+                                class="portfolio-image w-100">
+                            <div
+                                class="portfolio-overlay position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center">
+                                <div class="overlay-content text-center text-white p-4">
+                                    <h4 class="mb-2">Product Packaging</h4>
+                                    <p class="mb-2 opacity-90">For Organic Skincare Line</p>
+                                    <p class="small mb-3 opacity-90">Eco-friendly packaging design that communicates
+                                        natural ingredients and premium quality.</p>
+                                    <a href="#" class="btn btn-sm btn-light mt-2">View Project</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-4 col-lg-6 portfolio-item web">
+                    <div class="portfolio-card card h-100 border-0 shadow-sm overflow-hidden">
+                        <div class="portfolio-image-wrapper position-relative overflow-hidden">
+                            <img src="{% static 'img/graphic-design.jpg' %}" alt="Web Design"
+                                class="portfolio-image w-100">
+                            <div
+                                class="portfolio-overlay position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center">
+                                <div class="overlay-content text-center text-white p-4">
+                                    <h4 class="mb-2">Website UI</h4>
+                                    <p class="mb-2 opacity-90">For Tech Startup</p>
+                                    <p class="small mb-3 opacity-90">Modern, responsive website design with intuitive
+                                        user interface and engaging user experience.</p>
+                                    <a href="#" class="btn btn-sm btn-light mt-2">View Project</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            {% if related_projects %}
+            <div class="text-center mt-5">
+                <a href="{% url 'frontend_app:all_graphic_design' %}" class="btn bg-primary-btn btn-lg">View All <i
+                        class="fas fa-arrow-right ms-2"></i></a>
+            </div>
+            {% endif %}
+        </div>
+    </section>
+
+
+
+    <!-- Clients Section -->
+    <section class="py-5 bg-light">
+        <div class="container py-3">
+            <div class="text-center mb-5">
+                <h6 class="text-uppercase text-muted">Trusted By</h6>
+                <h3 class="fw-bold">Our Valued Clients</h3>
+            </div>
+
+            <div class="row">
+                <div class="col-12">
+                    <div class="client-logos-slider">
+                        <div class="client-logos-track">
+                            {% if related_projects_logo %}
+                            {% for project in related_projects_logo %}
+                            <div class="client-logo-item">
+                                {% if project.logo %}
+                                <img src="{{ project.logo.url }}" alt="{{ project.company }} Logo" class="img-fluid">
+                                {% else %}
+                                <img src="{% static 'img/Logo.png' %}" alt="{{ project.company }} Logo"
+                                    class="img-fluid">
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+                            {% else %}
+                            <!-- Fallback static client logos -->
+                            {% for i in "1234567890" %}
+                            <div class="client-logo-item">
+                                <img src="{% static 'img/Logo.png' %}" alt="Client Logo" class="img-fluid">
+                            </div>
+                            {% endfor %}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="bg-testimonials">
+        <!-- Decorative elements -->
+        <div class="bg-testimonials__decor bg-testimonials__decor--top"></div>
+        <div class="bg-testimonials__decor bg-testimonials__decor--bottom"></div>
+
+        <div class="container">
+            <h2 class="text-center bg-testimonials__title">What Our Clients Say</h2>
+            <div class="row">
+                {% if service_testimonials %}
+                {% for testimonial in service_testimonials %}
+                <div class="col-md-4 mb-4">
+                    <div class="bg-testimonial-card">
+                        <div class="d-flex align-items-center mb-3">
+                            {% if testimonial.image %}
+                            <img src="{{ testimonial.image.url }}" alt="{{ testimonial.name }}"
+                                class="bg-testimonial-card__client me-3">
+                            {% else %}
+                            <img src="https://randomuser.me/api/portraits/women/{{ forloop.counter|add:30 }}.jpg"
+                                alt="{{ testimonial.name }}" class="bg-testimonial-card__client me-3">
+                            {% endif %}
+                            <div>
+                                <h4 class="bg-testimonial-card__name mb-0">{{ testimonial.name }}</h4>
+                                {% if testimonial.designation %}
+                                <small class="bg-testimonial-card__position">{{ testimonial.designation }}</small>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <p class="bg-testimonial-card__quote">{{ testimonial.message }}</p>
+                        <div class="bg-testimonial-card__stars text-warning">
+                            {% for i in "12345" %}
+                            {% if forloop.counter <= testimonial.rating %} <i class="fas fa-star"></i>
+                                {% else %}
+                                <i class="far fa-star"></i>
+                                {% endif %}
+                                {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                {% else %}
+                <!-- Fallback static testimonials -->
+                <div class="col-md-4">
+                    <div class="bg-testimonial-card">
+                        <div class="d-flex align-items-center mb-3">
+                            <img src="https://randomuser.me/api/portraits/women/32.jpg" alt="Sarah Johnson"
+                                class="bg-testimonial-card__client me-3">
+                            <div>
+                                <h4 class="bg-testimonial-card__name mb-0">Sarah Johnson</h4>
+                                <small class="bg-testimonial-card__position">CEO, Bloom Cosmetics</small>
+                            </div>
+                        </div>
+                        <p class="bg-testimonial-card__quote">The branding package BG Designs created for us
+                            perfectly captured our company's essence. Our sales increased by 40% after the rebrand!
+                        </p>
+                        <div class="bg-testimonial-card__stars text-warning">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="bg-testimonial-card">
+                        <div class="d-flex align-items-center mb-3">
+                            <img src="https://randomuser.me/api/portraits/men/45.jpg" alt="Michael Chen"
+                                class="bg-testimonial-card__client me-3">
+                            <div>
+                                <h4 class="bg-testimonial-card__name mb-0">Michael Chen</h4>
+                                <small class="bg-testimonial-card__position">Founder, TechNova</small>
+                            </div>
+                        </div>
+                        <p class="bg-testimonial-card__quote">Their UI/UX design transformed our app's user
+                            engagement. The attention to detail and user-centric approach was exceptional.</p>
+                        <div class="bg-testimonial-card__stars text-warning">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="bg-testimonial-card">
+                        <div class="d-flex align-items-center mb-3">
+                            <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Emily Rodriguez"
+                                class="bg-testimonial-card__client me-3">
+                            <div>
+                                <h4 class="bg-testimonial-card__name mb-0">Emily Rodriguez</h4>
+                                <small class="bg-testimonial-card__position">Marketing Director, UrbanEats</small>
+                            </div>
+                        </div>
+                        <p class="bg-testimonial-card__quote">From packaging to social media assets, BG Designs
+                            delivers consistently stunning work that aligns perfectly with our brand vision.</p>
+                        <div class="bg-testimonial-card__stars text-warning">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star-half-alt"></i>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+
+{% if service_faqs %}
+<!-- FAQ Section -->
+<section class="sm-faq-section">
+    <div class="container-fluid">
+        <div class="text-center mb-5">
+            <h2 class="sm-faq-title">Frequently Asked <span>Questions</span></h2>
+            <p class="sm-faq-subtitle">Find answers to common questions about our services.</p>
+        </div>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="accordion" id="sm-faqAccordion">
+                        {% for faq in service_faqs %}
+                        <div class="accordion-item mb-3 border-0 shadow-sm">
+                            <h2 class="accordion-header" id="sm-heading{{ forloop.counter }}">
+                                <button class="accordion-button sm-accordion-button {% if not forloop.first %}collapsed{% endif %}"
+                                    type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#sm-collapse{{ forloop.counter }}"
+                                    aria-expanded="{% if forloop.first %}true{% else %}false{% endif %}"
+                                    aria-controls="sm-collapse{{ forloop.counter }}">
+                                    {{ faq.question }}
+                                </button>
+                            </h2>
+                            <div id="sm-collapse{{ forloop.counter }}"
+                                class="accordion-collapse collapse {% if forloop.first %}show{% endif %}"
+                                aria-labelledby="sm-heading{{ forloop.counter }}" data-bs-parent="#sm-faqAccordion">
+                                <div class="accordion-body sm-accordion-body">
+                                    {{ faq.answer }}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <img src="{% static 'img/38071986-removebg-preview.png' %}" class="img-fluid"
+                        style="height: 450px !important; margin-top: -20px !important;" alt="FAQ Illustration">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+    <!-- CTA Section -->
+    <section class="gfx-cta-section">
+        <!-- Decorative elements -->
+        <div class="gfx-cta__circle--top-right"></div>
+        <div class="gfx-cta__circle--bottom-left"></div>
+
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8 text-center gfx-cta__content">
+                    <h3 class="gfx-cta__heading mb-4">Ready to Elevate Your Brand?</h3>
+
+                    <p class="gfx-cta__subheading mb-5">Let's create something amazing together. Our team is ready
+                        to bring your vision to life with stunning, effective designs.</p>
+
+                    <div class="gfx-cta__btn-container">
+                        <a href="{% url 'frontend_app:contact' %}" class="gfx-cta__btn--primary">Start Your Project</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+{% endblock %}
+
+{% block extra_js %}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Initialize AOS
+        AOS.init({
+            duration: 800,
+            easing: 'ease-in-out',
+            once: true
+        });
+
+        // Desktop orbit animation control
+        const orbitPath = document.getElementById('orbitPath');
+        const infoCards = document.querySelectorAll('.info__card');
+
+        if (orbitPath) {
+            // Pause animation on hover
+            orbitPath.addEventListener('mouseenter', function () {
+                this.classList.add('paused');
+            });
+
+            orbitPath.addEventListener('mouseleave', function () {
+                this.classList.remove('paused');
+            });
+
+            // Add individual card hover effects
+            infoCards.forEach(card => {
+                card.addEventListener('mouseenter', function () {
+                    orbitPath.classList.add('paused');
+                    this.style.transform = 'scale(1.1)';
+                    this.style.boxShadow = 'var(--shadow-hover)';
+                    this.style.zIndex = '10';
+                });
+
+                card.addEventListener('mouseleave', function () {
+                    orbitPath.classList.remove('paused');
+                    this.style.transform = '';
+                    this.style.boxShadow = '';
+                    this.style.zIndex = '';
+                });
+            });
+        }
+
+        // Mobile orbit animation control
+        const mobileOrbitPath = document.getElementById('mobileOrbitPath');
+        const mobileInfoCards = document.querySelectorAll('.mobile-info-card');
+
+        if (mobileOrbitPath) {
+            // For mobile, we'll keep the animation running continuously
+            // but we can add touch events to pause on tap if needed
+
+            mobileInfoCards.forEach(card => {
+                card.addEventListener('touchstart', function () {
+                    mobileOrbitPath.classList.add('paused');
+                    this.style.transform = 'scale(1.1)';
+                    this.style.boxShadow = 'var(--shadow-hover)';
+                    this.style.zIndex = '10';
+                });
+
+                card.addEventListener('touchend', function () {
+                    setTimeout(() => {
+                        mobileOrbitPath.classList.remove('paused');
+                        this.style.transform = '';
+                        this.style.boxShadow = '';
+                        this.style.zIndex = '';
+                    }, 1000);
+                });
+            });
+        }
+    });
+</script>
+
+<!--Start of Tawk.to Script-->
+<script type="text/javascript">
+    var Tawk_API = Tawk_API || {}, Tawk_LoadStart = new Date();
+
+    // Hide widget when it's ready
+    Tawk_API.onLoad = function () {
+        Tawk_API.hideWidget();
+    };
+
+    // Hide widget as soon as chat opens
+    Tawk_API.onChatMaximized = function () {
+        setTimeout(function () {
+            Tawk_API.hideWidget(); // hide the floating icon again
+        }, 100); // slight delay to ensure chat popup shows
+    };
+
+    // Hide widget after minimizing or ending
+    Tawk_API.onChatMinimized = function () {
+        Tawk_API.hideWidget();
+    };
+    Tawk_API.onChatEnded = function () {
+        Tawk_API.hideWidget();
+    };
+
+    (function () {
+        var s1 = document.createElement("script"), s0 = document.getElementsByTagName("script")[0];
+        s1.async = true;
+        s1.src = 'https://embed.tawk.to/6874e5bce5777f190f9b0393/1j04a2r5d';
+        s1.charset = 'UTF-8';
+        s1.setAttribute('crossorigin', '*');
+        s0.parentNode.insertBefore(s1, s0);
+    })();
+</script>
+<!--End of Tawk.to Script-->
+
+<!-- Button Click Logic -->
+<script type="text/javascript">
+    document.addEventListener('DOMContentLoaded', function () {
+        const customTawkButton = document.getElementById('customTawkButton');
+        if (customTawkButton) {
+            customTawkButton.addEventListener('click', function () {
+                Tawk_API.showWidget();     // Temporarily show widget to allow chat open
+                Tawk_API.maximize();       // Open the chat popup
+                setTimeout(() => {
+                    Tawk_API.hideWidget();   // Then hide widget again so only chat window is shown
+                }, 200);
+            });
+        }
+    });
+</script>
+
+<!-- Portfolio Filtering Script -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Initialize Isotope
+        const grid = document.querySelector('.portfolio-grid');
+
+        if (grid) {
+            const iso = new Isotope(grid, {
+                itemSelector: '.portfolio-item',
+                layoutMode: 'fitRows',
+                percentPosition: true,
+                fitRows: {
+                    gutter: 20
+                }
+            });
+
+            // Filter buttons functionality
+            const filterButtons = document.querySelectorAll('.filter-button-group .btn');
+
+            filterButtons.forEach(function (button) {
+                button.addEventListener('click', function () {
+                    // Remove active class from all buttons
+                    filterButtons.forEach(function (btn) {
+                        btn.classList.remove('active');
+                    });
+
+                    // Add active class to clicked button
+                    this.classList.add('active');
+
+                    // Get filter value
+                    const filterValue = this.getAttribute('data-filter');
+
+                    // Filter items
+                    iso.arrange({
+                        filter: filterValue
+                    });
+                });
+            });
+        }
+    });
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.isotope/3.0.6/isotope.pkgd.min.js"></script>
+{% endblock %}

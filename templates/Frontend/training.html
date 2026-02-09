@@ -1,0 +1,1918 @@
+{% extends 'Frontend/base.html' %}
+{% load static %}
+{% block title %}Trainings - BG Infotechs{% endblock %}
+{% block extra_css %}
+<style>
+  :root {
+    --primary-color: #355487;
+    --secondary-color: #8338ec;
+    --accent-color: #ff006e;
+    --success-color: #22c55e;
+    --light-color: #f8f9fa;
+    --dark-color: #212529;
+    --ink-color: #23273a;
+    --gradient-primary: linear-gradient(135deg, #3a86ff 0%, #8338ec 100%);
+    --gradient-accent: linear-gradient(135deg, #ff006e 0%, #ff6b6b 100%);
+    --gradient-success: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+    --shadow-light: 0 8px 25px rgba(0, 0, 0, 0.08);
+    --shadow-medium: 0 15px 35px rgba(0, 0, 0, 0.15);
+    --shadow-heavy: 0 20px 40px rgba(0, 0, 0, 0.2);
+    --border-radius-lg: 20px;
+    --border-radius-md: 12px;
+    --border-radius-sm: 8px;
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #f8faff 0%, #f0f4ff 100%);
+    color: var(--dark-color);
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* === ENHANCED HEADER SECTION === */
+  .page-header {
+    background: var(--gradient-primary);
+    color: white;
+    padding: 6rem 0 4rem;
+    position: relative;
+    overflow: hidden;
+    min-height: 400px;
+    display: flex;
+    align-items: center;
+  }
+
+  .page-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background:
+      radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.05) 0%, transparent 50%),
+      radial-gradient(circle at 40% 40%, rgba(255, 255, 255, 0.08) 0%, transparent 50%);
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .page-header::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100px;
+    background: linear-gradient(transparent, #abc3f2);
+    z-index: 1;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-20px) rotate(1deg); }
+  }
+
+  .header-content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+  }
+
+  .page-titles {
+    font-size: 3.5rem;
+    font-weight: 800;
+    margin-bottom: 1.5rem;
+    text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    background: linear-gradient(135deg, #fff 0%, #e0f2ff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: titleGlow 3s ease-in-out infinite alternate;
+  }
+
+  @keyframes titleGlow {
+    from { filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.3)); }
+    to { filter: drop-shadow(0 0 30px rgba(255, 255, 255, 0.6)); }
+  }
+
+  .page-subtitle {
+    font-size: 1.4rem;
+    margin-bottom: 2.5rem;
+    opacity: 0.9;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    font-weight: 300;
+    line-height: 1.8;
+  }
+
+  .course-count-badge {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50px;
+    padding: 12px 25px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+  }
+
+  .course-count-badge:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+    background: rgba(255, 255, 255, 0.25);
+  }
+
+  /* === ANIMATED CIRCLE SECTION === */
+  .skills-section {
+    padding: 5rem 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .skills-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 4rem;
+    flex-wrap: wrap;
+  }
+
+  .skills-content {
+    flex: 1;
+    min-width: 300px;
+  }
+
+  .skills-title {
+    font-size: 2.8rem;
+    font-weight: 800;
+    margin-bottom: 1.5rem;
+    color: var(--ink-color);
+    line-height: 1.2;
+  }
+
+  .skills-highlight {
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .skills-subtitle {
+    font-size: 1.3rem;
+    color: #6b7280;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+  }
+
+  .skills-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+  }
+
+  .skill-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: white;
+    border-radius: var(--border-radius-md);
+    box-shadow: var(--shadow-light);
+    transition: all 0.3s ease;
+  }
+
+  .skill-item:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-medium);
+  }
+
+  .skill-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: var(--border-radius-md);
+    background: var(--gradient-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.5rem;
+  }
+
+  .skill-name {
+    font-weight: 600;
+    color: var(--ink-color);
+  }
+
+  .enroll-btn {
+    background: var(--gradient-primary);
+    color: white;
+    border: none;
+    padding: 16px 40px;
+    border-radius: var(--border-radius-md);
+    font-weight: 600;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 25px rgba(58, 134, 255, 0.4);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .enroll-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 35px rgba(58, 134, 255, 0.6);
+    color: white;
+    text-decoration: none;
+  }
+
+  .circle-container {
+    flex: 1;
+    min-width: 300px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .kumari-circle-container {
+    position: relative;
+    width: 350px;
+    height: 350px;
+  }
+
+  .kumari-blue-circle {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: var(--gradient-primary);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 20px 40px rgba(58, 134, 255, 0.3);
+  }
+
+  .kumari-person-image {
+    width: 95%;
+    height: 95%;
+    background: var(--gradient-primary);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+  }
+
+  .kumari-icons-wrapper {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 100%;
+    transform: translate(-50%, -50%);
+    animation: rotateWrapper 20s linear infinite;
+    animation-play-state: running;
+  }
+
+  .kumari-icons-wrapper:hover {
+    animation-play-state: paused;
+  }
+
+  @keyframes rotateWrapper {
+    from { transform: translate(-50%, -50%) rotate(0deg); }
+    to { transform: translate(-50%, -50%) rotate(360deg); }
+  }
+
+  .kumari-icon {
+    overflow: hidden;
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    background: var(--gradient-accent);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 8px 20px rgba(255, 0, 110, 0.3);
+    font-size: 1.5rem;
+    color: #fff;
+    font-weight: bold;
+    transition: all 0.3s ease;
+  }
+
+  .kumari-icon:hover {
+    transform: scale(1.2);
+    box-shadow: 0 12px 25px rgba(255, 0, 110, 0.5);
+  }
+
+  .kumari-icon-1 { top: 1%; left: 20%; }
+  .kumari-icon-2 { top: 1%; right: 15%; }
+  .kumari-icon-3 { bottom: 1%; right: 20%; }
+  .kumari-icon-4 { bottom: -2%; left: 25%; }
+  .kumari-icon-5 { bottom: 20%; left: 83%; }
+  .kumari-icon-6 { bottom: 20%; left: 40%; }
+  .kumari-icon-7 { bottom: 40%; left: 90%; }
+  .kumari-icon-8 { right: 85%; top: 50%; }
+
+  /* === ENHANCED COMPACT FILTER SECTION === */
+  .filter-section {
+    background: white;
+    padding: 1rem 0;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  }
+
+  .filter-container {
+    position: relative;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 15px;
+  }
+
+  .category-filters-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .category-filters {
+    display: flex;
+    gap: 0.5rem;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    scroll-behavior: smooth;
+    flex: 1;
+  }
+
+  .category-filters::-webkit-scrollbar {
+    display: none;
+  }
+
+  .filter-btn {
+    margin: 0;
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
+    border: 2px solid rgba(0, 0, 0, .08);
+    background: white;
+    color: var(--ink-color);
+    font-weight: 600;
+    font-size: 0.85rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .filter-btn:hover,
+  .filter-btn.active {
+    background: var(--gradient-primary);
+    color: white;
+    box-shadow: 0 4px 15px rgba(58, 134, 255, 0.4);
+    transform: translateY(-2px);
+    border-color: transparent;
+  }
+
+  .filter-btn i {
+    margin-right: 0.3rem;
+    font-size: 0.8rem;
+  }
+
+  /* Scroll indicators */
+  .scroll-indicator {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 40px;
+    background: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 3px 15px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+    z-index: 10;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+  }
+
+  .scroll-indicator:hover {
+    background: var(--primary-color);
+    color: white;
+    transform: translateY(-50%) scale(1.1);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+  }
+
+  .scroll-indicator:active {
+    transform: translateY(-50%) scale(0.95);
+  }
+
+  .scroll-left { left: 0; }
+  .scroll-right { right: 0; }
+  .scroll-indicator.hidden {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* === PREMIUM COURSE CARDS === */
+  .training-listings {
+    padding: 4rem 0;
+    position: relative;
+  }
+
+  .course-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+    gap: 2.5rem;
+    margin-bottom: 4rem;
+  }
+
+  .course-item {
+    opacity: 1;
+    transform: scale(1);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .course-item.hidden {
+    opacity: 0;
+    transform: scale(0.8);
+    pointer-events: none;
+  }
+
+  .training-card {
+    background: white;
+    border-radius: var(--border-radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-light);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    height: 100%;
+    position: relative;
+    border: 1px solid rgba(0, 0, 0, 0.03);
+    background: linear-gradient(135deg, white 0%, #fafbff 100%);
+  }
+
+  .training-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--gradient-primary);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    z-index: 1;
+  }
+
+  .training-card:hover {
+    transform: translateY(-12px) scale(1.02);
+    box-shadow: var(--shadow-heavy);
+  }
+
+  .training-card:hover::before {
+    opacity: 0.02;
+  }
+
+  .training-badge {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: var(--gradient-accent);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 25px;
+    font-size: 0.85rem;
+    font-weight: 800;
+    z-index: 10;
+    box-shadow: 0 8px 20px rgba(255, 0, 110, 0.4);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+  }
+
+  .training-image {
+    height: 220px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .training-image::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, rgba(58, 134, 255, 0.1), rgba(131, 56, 236, 0.1));
+    z-index: 1;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+
+  .training-card:hover .training-image::before {
+    opacity: 1;
+  }
+
+  .training-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: all 0.6s ease;
+  }
+
+  .training-card:hover .training-image img {
+    transform: scale(1.15) rotate(2deg);
+  }
+
+  .training-content {
+    padding: 2rem;
+    position: relative;
+    z-index: 2;
+  }
+
+  .training-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: var(--ink-color);
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .training-provider {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1.2rem;
+    padding: 0.8rem;
+    background: rgba(58, 134, 255, 0.05);
+    border-radius: var(--border-radius-md);
+  }
+
+  .provider-logo {
+    width: 45px;
+    height: 45px;
+    background: var(--gradient-primary);
+    color: white;
+    border-radius: var(--border-radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    margin-right: 12px;
+    box-shadow: 0 6px 15px rgba(58, 134, 255, 0.4);
+    font-size: 1.1rem;
+  }
+
+  .provider-name {
+    font-weight: 600;
+    color: var(--ink-color);
+    font-size: 1rem;
+  }
+
+  .training-details {
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 1.2rem;
+    gap: 12px;
+  }
+
+  .detail-item {
+    display: flex;
+    align-items: center;
+    font-size: 0.9rem;
+    color: #6b7280;
+    background: rgba(0, 0, 0, 0.02);
+    padding: 6px 12px;
+    border-radius: var(--border-radius-sm);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+  }
+
+  .detail-item i {
+    margin-right: 6px;
+    color: var(--primary-color);
+    font-size: 0.8rem;
+  }
+
+  .training-feature {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.8rem;
+    color: var(--ink-color);
+    font-weight: 500;
+  }
+
+  .training-feature i {
+    margin-right: 10px;
+    color: var(--success-color);
+    font-size: 1.1rem;
+  }
+
+  /* === ENHANCED PRICE DISPLAY === */
+  .training-price {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--primary-color);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .current-price {
+    color: var(--primary-color);
+    font-weight: 800;
+  }
+
+  .original-price {
+    font-size: 1.1rem;
+    color: #9ca3af;
+    text-decoration: line-through;
+    font-weight: 500;
+  }
+
+  .price-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .btn-enroll {
+    background: var(--gradient-primary);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: var(--border-radius-md);
+    font-weight: 600;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    flex: 1;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(58, 134, 255, 0.4);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-enroll::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.5s ease;
+  }
+
+  .btn-enroll:hover::before {
+    left: 100%;
+  }
+
+  .btn-enroll:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(58, 134, 255, 0.6);
+  }
+
+  .btn-details {
+    background: transparent;
+    color: var(--primary-color);
+    border: 2px solid var(--primary-color);
+    padding: 12px 24px;
+    border-radius: var(--border-radius-md);
+    font-weight: 600;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    flex: 1;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-details::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0%;
+    height: 100%;
+    background: var(--primary-color);
+    transition: width 0.3s ease;
+    z-index: -1;
+  }
+
+  .btn-details:hover::before {
+    width: 100%;
+  }
+
+  .btn-details:hover {
+    color: white;
+    transform: translateY(-2px);
+  }
+
+  .card-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 1.5rem;
+  }
+
+  /* === ENHANCED OUTCOMES SECTION === */
+  .outcomes-section {
+    padding: 5rem 0;
+    background: linear-gradient(135deg, #f5f7ff 0%, #f0f4ff 100%);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .outcomes-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,0 L100,0 L100,100 Z" fill="rgba(67, 97, 238, 0.03)"/></svg>');
+    background-size: cover;
+  }
+
+  .section-titles {
+    text-align: center;
+    margin-bottom: 4rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .section-titles h2 {
+    font-size: 2.8rem;
+    font-weight: 700;
+    color: var(--ink-color);
+    margin-bottom: 1rem;
+    position: relative;
+    display: inline-block;
+  }
+
+  .section-titles h2::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 4px;
+    background: var(--accent-color);
+    border-radius: 2px;
+  }
+
+  .section-titles .subtitle {
+    font-size: 1.2rem;
+    color: #6c757d;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .stats-row {
+    margin-bottom: 4rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .stat-card {
+    text-align: center;
+    padding: 2rem 1rem;
+    background: white;
+    border-radius: var(--border-radius-md);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    height: 100%;
+    border-top: 4px solid var(--primary-color);
+  }
+
+  .stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+  }
+
+  .stat-value {
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .stat-value .suffix {
+    font-size: 1.5rem;
+    margin-left: 2px;
+  }
+
+  .stat-label {
+    font-size: 1.1rem;
+    color: #6c757d;
+    font-weight: 500;
+  }
+
+  .value-card {
+    background: white;
+    border-radius: var(--border-radius-md);
+    padding: 2.5rem 1.5rem;
+    text-align: center;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.06);
+    transition: all 0.3s ease;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+  }
+
+  .value-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.5s ease;
+  }
+
+  .value-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+  }
+
+  .value-card:hover::before {
+    transform: scaleX(1);
+  }
+
+  .value-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 1.5rem;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 2rem;
+    box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+  }
+
+  .value-card h4 {
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: var(--ink-color);
+  }
+
+  .value-card p {
+    color: #6c757d;
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+
+  /* === ENHANCED NEWSLETTER === */
+  .newsletter-section {
+    background: var(--gradient-primary);
+    padding: 4rem 0;
+    color: white;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .newsletter-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,70 Q50,100 100,70 L100,100 L0,100 Z" fill="rgba(255,255,255,0.05)"/></svg>');
+    background-size: cover;
+  }
+
+  .newsletter-section h3 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .newsletter-section p {
+    font-size: 1.1rem;
+    max-width: 600px;
+    margin: 0 auto 2rem;
+    opacity: 0.9;
+    position: relative;
+    z-index: 1;
+  }
+
+  .newsletter-form {
+    max-width: 500px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+    display: flex;
+    gap: 0;
+    border-radius: 50px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  }
+
+  .newsletter-form input {
+    flex: 1;
+    padding: 0.8rem 1.5rem;
+    border: none;
+    font-size: 1rem;
+    outline: none;
+  }
+
+  .newsletter-form button {
+    background: var(--accent-color);
+    color: white;
+    border: none;
+    padding: 0.8rem 2rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .newsletter-form button:hover {
+    background: #ff3b7d;
+    transform: translateY(-2px);
+  }
+
+  /* === NO RESULTS === */
+  .no-results {
+    text-align: center;
+    padding: 5rem 2rem;
+    display: none;
+    background: white;
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-light);
+    margin: 2rem 0;
+  }
+
+  .no-results i {
+    font-size: 6rem;
+    color: #e5e7eb;
+    margin-bottom: 2rem;
+    animation: bounce 2s infinite;
+  }
+
+  @keyframes bounce {
+    0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+    40% { transform: translateY(-10px); }
+    60% { transform: translateY(-5px); }
+  }
+
+  .no-results h3 {
+    color: var(--ink-color);
+    margin-bottom: 1.5rem;
+    font-size: 2rem;
+    font-weight: 700;
+  }
+
+  .no-results p {
+    color: #6b7280;
+    font-size: 1.2rem;
+    max-width: 500px;
+    margin: 0 auto 3rem;
+    line-height: 1.8;
+  }
+
+  /* === ANIMATIONS === */
+  .animate-on-scroll {
+    opacity: 0;
+    transform: translateY(50px);
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .animate-on-scroll.animated {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* === RESPONSIVE DESIGN === */
+  @media (max-width: 1200px) {
+    .course-grid {
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 2rem;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .page-header {
+      padding: 4rem 0 3rem;
+      min-height: 300px;
+    }
+
+    .page-titles {
+      font-size: 2.5rem;
+    }
+
+    .page-subtitle {
+      font-size: 1.2rem;
+    }
+
+    .skills-container {
+      flex-direction: column;
+      text-align: center;
+    }
+
+    .skills-title {
+      font-size: 2.2rem;
+    }
+
+    .category-filters {
+      justify-content: flex-start;
+      overflow-x: auto;
+      padding-bottom: 1rem;
+    }
+
+    .course-grid {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+
+    .training-image {
+      height: 200px;
+    }
+
+    .card-actions {
+      flex-direction: column;
+    }
+
+    .btn-enroll,
+    .btn-details {
+      width: 100%;
+    }
+
+    .section-titles h2 {
+      font-size: 2.2rem;
+    }
+
+    .stat-value {
+      font-size: 2.5rem;
+    }
+
+    .value-card {
+      padding: 2rem 1rem;
+    }
+
+    .newsletter-section h3 {
+      font-size: 1.8rem;
+    }
+
+    .newsletter-form {
+      flex-direction: column;
+      border-radius: 12px;
+    }
+
+    .newsletter-form input,
+    .newsletter-form button {
+      width: 100%;
+      border-radius: 12px;
+      margin-bottom: 1rem;
+    }
+
+    .filter-section {
+      padding: 0.8rem 0;
+    }
+
+    .filter-btn {
+      padding: 0.4rem 0.8rem;
+      font-size: 0.8rem;
+    }
+
+    .scroll-indicator {
+      width: 35px;
+      height: 35px;
+      font-size: 0.8rem;
+    }
+
+    .scroll-left { left: 5px; }
+    .scroll-right { right: 5px; }
+  }
+
+  @media (max-width: 576px) {
+    .page-titles {
+      font-size: 2rem;
+    }
+
+    .page-subtitle {
+      font-size: 1.1rem;
+    }
+
+    .kumari-circle-container {
+      width: 280px;
+      height: 280px;
+    }
+
+    .kumari-icon {
+      width: 50px;
+      height: 50px;
+    }
+
+    .training-content {
+      padding: 1.5rem;
+    }
+
+    .training-details {
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .filter-btn {
+      padding: 0.35rem 0.7rem;
+      font-size: 0.75rem;
+    }
+
+    .filter-btn i {
+      margin-right: 0.2rem;
+    }
+
+    .scroll-indicator {
+      width: 30px;
+      height: 30px;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<style>
+  .page-title {
+    background-image: linear-gradient(rgba(28, 29, 31, 0.65), rgba(23, 4, 69, 0.65)),
+    url("{% static 'img/breadcrumb.jpg' %}");
+    background-size: cover;
+    background-position: center;
+    padding: 30px 0px;
+  }
+</style>
+
+
+<div class="page-title light-background">
+  <div class="container">
+    <h1>{{ service.title|default:"Training/Courses" }}</h1>
+    <nav class="breadcrumbs" data-aos="fade-right" data-aos-delay="100">
+      <ol>
+        <li><a href="{% url 'frontend_app:home' %}"><i class="fas fa-home"></i> Home</a></li>
+        <li class="current"><i class="fa-solid fa-graduation-cap"></i> {{ service.title|default:"Training/Courses" }}</li>
+      </ol>
+    </nav>
+  </div>
+</div>
+
+
+<main class="main">
+  <!-- Enhanced Header Section -->
+  <header class="page-header">
+    <div class="container">
+      <div class="header-content">
+        <h1 class="page-titles">IT Training & Certification Programs</h1>
+        <p class="page-subtitle">Advance your career with industry-leading IT training from BG Infotechs. Learn from experts and get certified.</p>
+        <div class="course-count-badge">
+          <i class="fas fa-graduation-cap"></i>
+          <span>{{ paginator.count }} Premium Courses Available</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Skills & Animated Circle Section -->
+  <section class="skills-section">
+    <div class="container">
+      <div class="skills-container">
+        <div class="skills-content">
+          <h2 class="skills-title">
+            Advance Your Career with BG Infotechs in Dhangadhi - <br>
+            <span class="skills-highlight">Learn, Grow & Succeed</span>
+          </h2>
+          <p class="skills-subtitle">
+            Practical & Internationally Certified Training Programs Designed for Success
+          </p>
+
+          <div class="skills-list">
+            <div class="skill-item">
+              <div class="skill-icon">
+                <i class="fas fa-laptop-code"></i>
+              </div>
+              <span class="skill-name">Web Development</span>
+            </div>
+            <div class="skill-item">
+              <div class="skill-icon">
+                <i class="fas fa-palette"></i>
+              </div>
+              <span class="skill-name">Graphic Design</span>
+            </div>
+            <div class="skill-item">
+              <div class="skill-icon">
+                <i class="fas fa-chart-line"></i>
+              </div>
+              <span class="skill-name">Digital Marketing</span>
+            </div>
+            <div class="skill-item">
+              <div class="skill-icon">
+                <i class="fas fa-search"></i>
+              </div>
+              <span class="skill-name">SEO Optimization</span>
+            </div>
+          </div>
+
+          <a href="#training-listings" class="enroll-btn">
+            <i class="fas fa-rocket"></i>
+            Explore All Courses
+          </a>
+        </div>
+
+        <div class="circle-container">
+          <div class="kumari-circle-container">
+            <div class="kumari-blue-circle">
+              <div class="kumari-person-image">
+                <img src="{% static 'img/girl-removebg-preview.png' %}" alt="" class="img-fluid">
+              </div>
+            </div>
+            <div class="kumari-icons-wrapper">
+              <div class="kumari-icon kumari-icon-1" title="Web Design">
+                <img src="{% static 'img/web-design.gif' %}" class="img-fluid" alt="">
+              </div>
+              <div class="kumari-icon kumari-icon-2" title="Graphic Design">
+                <img src="{% static 'img/graphic-designer.gif' %}" class="img-fluid" alt="">
+              </div>
+              <div class="kumari-icon kumari-icon-3" title="Digital Marketing">
+                <img src="{% static 'img/marketing-network (1).gif' %}" class="img-fluid" alt="">
+              </div>
+              <div class="kumari-icon kumari-icon-4" title="SEO">
+                <img src="{% static 'img/seo.gif' %}" class="img-fluid" alt="">
+              </div>
+              <div class="kumari-icon kumari-icon-7" title="Ethical Hacking">
+                <img src="{% static 'img/hacker.gif' %}" class="img-fluid" alt="">
+              </div>
+              <div class="kumari-icon kumari-icon-8" title="Mobile App Development">
+                <img src="{% static 'img/smartphone-coding.gif' %}" class="img-fluid" alt="">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+<!-- Enhanced Compact Filter Section with Hidden Scrollbar -->
+<section class="filter-section">
+  <div class="filter-container">
+    <div class="category-filters-wrapper">
+      <div class="scroll-indicator scroll-left hidden">
+        <i class="fas fa-chevron-left text-black"></i>
+      </div>
+
+      <div class="category-filters" id="categoryFilters">
+        <a href="?category=all{% if search_query %}&search={{ search_query }}{% endif %}" 
+           class="filter-btn {% if current_category == 'all' or not current_category %}active{% endif %}"
+           data-filter="all">
+          <i class="fas fa-th-large"></i>All Courses ({{ category_counts.all }})
+        </a>
+        <a href="?category=web+development{% if search_query %}&search={{ search_query }}{% endif %}" 
+           class="filter-btn {% if current_category == 'web development' %}active{% endif %}"
+           data-filter="web development">
+          <i class="fas fa-code"></i>Web Dev ({{ category_counts.web_development }})
+        </a>
+        <a href="?category=mobile+development{% if search_query %}&search={{ search_query }}{% endif %}" 
+           class="filter-btn {% if current_category == 'mobile development' %}active{% endif %}"
+           data-filter="mobile development">
+          <i class="fas fa-mobile-alt"></i>Mobile Dev ({{ category_counts.mobile_development }})
+        </a>
+        <a href="?category=data+science{% if search_query %}&search={{ search_query }}{% endif %}" 
+           class="filter-btn {% if current_category == 'data science' %}active{% endif %}"
+           data-filter="data science">
+          <i class="fas fa-chart-bar"></i>Data Science ({{ category_counts.data_science }})
+        </a>
+        <a href="?category=cyber+security{% if search_query %}&search={{ search_query }}{% endif %}" 
+           class="filter-btn {% if current_category == 'cyber security' %}active{% endif %}"
+           data-filter="cyber security">
+          <i class="fas fa-shield-alt"></i>Cyber Security ({{ category_counts.cyber_security }})
+        </a>
+        <a href="?category=ui/ux+design{% if search_query %}&search={{ search_query }}{% endif %}" 
+           class="filter-btn {% if current_category == 'ui/ux design' %}active{% endif %}"
+           data-filter="ui/ux design">
+          <i class="fas fa-palette"></i>UI/UX Design ({{ category_counts.ui_ux_design }})
+        </a>
+        <a href="?category=graphic+design{% if search_query %}&search={{ search_query }}{% endif %}" 
+           class="filter-btn {% if current_category == 'graphic design' %}active{% endif %}"
+           data-filter="graphic design">
+          <i class="fas fa-image"></i>Graphic Design ({{ category_counts.graphic_design }})
+        </a>
+        <a href="?category=digital+marketing{% if search_query %}&search={{ search_query }}{% endif %}" 
+           class="filter-btn {% if current_category == 'digital marketing' %}active{% endif %}"
+           data-filter="digital marketing">
+          <i class="fas fa-bullhorn"></i>Digital Marketing ({{ category_counts.digital_marketing }})
+        </a>
+        <a href="?category=cloud+computing{% if search_query %}&search={{ search_query }}{% endif %}" 
+           class="filter-btn {% if current_category == 'cloud computing' %}active{% endif %}"
+           data-filter="cloud computing">
+          <i class="fas fa-cloud"></i>Cloud Computing ({{ category_counts.cloud_computing }})
+        </a>
+        <a href="?category=networking{% if search_query %}&search={{ search_query }}{% endif %}" 
+           class="filter-btn {% if current_category == 'networking' %}active{% endif %}"
+           data-filter="networking">
+          <i class="fas fa-network-wired"></i>Networking ({{ category_counts.networking }})
+        </a>
+      </div>
+
+      <div class="scroll-indicator scroll-right">
+        <i class="fas fa-chevron-right text-black"></i>
+      </div>
+    </div>
+  </div>
+</section>
+
+  <!-- Training Listings -->
+  <section class="training-listings" id="training-listings">
+    <div class="container">
+      <!-- Course Grid -->
+      <div class="course-grid" id="courseGrid">
+        <!-- Courses from Database -->
+        {% for course in courses %}
+        <div class="course-item animate-on-scroll" data-title="{{ course.title|lower }}"
+          data-description="{{ course.short_description|lower }}"
+          data-category="{{ course.get_category_display|default:'Web Development'|lower }}"
+          data-instructor="BG Infotechs" data-duration="{{ course.duration_display|lower }}"
+          data-price="{{ course.get_actual_price }}" data-original-price="{{ course.price }}"
+          data-technology="{{ course.title|lower }} {{ course.short_description|lower }}">
+          <div class="training-card">
+            {% if course.has_discount %}
+            <div class="training-badge">
+              <i class="fas fa-bolt me-1"></i>
+              {{ course.discount_percentage }}% OFF
+            </div>
+            {% endif %}
+
+            <div class="training-image">
+              {% if course.image %}
+              <img src="{{ course.image.url }}" class="img-fluid" alt="{{ course.title }}">
+              {% else %}
+              <img src="{% static 'img/default-course.jpg' %}" class="img-fluid" alt="{{ course.title }}">
+              {% endif %}
+            </div>
+
+            <div class="training-content">
+              <h3 class="training-title">{{ course.title }}</h3>
+
+              <div class="training-provider">
+                <div class="provider-logo">
+                  <i class="fas fa-graduation-cap"></i>
+                </div>
+                <div class="provider-name">BG Infotechs</div>
+              </div>
+
+              <div class="training-details">
+                <div class="detail-item">
+                  <i class="far fa-clock"></i>
+                  <span>{{ course.duration_display }}</span>
+                </div>
+                <div class="detail-item">
+                  <i class="fas fa-users"></i>
+                  <span>{{ course.enrollment_count|default:"0" }} Students</span>
+                </div>
+                <div class="detail-item">
+                  <i class="fas fa-star"></i>
+                  <span>4.8 Rating</span>
+                </div>
+              </div>
+
+              <p class="text-dark mb-3">{{ course.short_description }}</p>
+
+              <div class="training-feature">
+                <i class="fas fa-laptop-code"></i>
+                <span>Hands-On Projects & Real-world Scenarios</span>
+              </div>
+
+              <!-- Enhanced Price Display -->
+              <div class="training-price">
+                <div class="price-container">
+                  {% if course.has_discount %}
+                  <span class="current-price">Rs. {{ course.get_actual_price }}</span>
+                  <span class="original-price">Rs. {{ course.price }}</span>
+                  {% else %}
+                  <span class="current-price">Rs. {{ course.price }}</span>
+                  {% endif %}
+                </div>
+              </div>
+
+              <div class="card-actions">
+                <a href="{% url 'frontend_app:enroll_course' course.pk %}" class="btn-enroll">
+                  <i class="fas fa-rocket me-2"></i>
+                  Enroll Now
+                </a>
+                <a href="{% url 'frontend_app:course_detail' course.pk %}" class="btn-details">
+                  <i class="fas fa-eye me-2"></i>
+                  View Details
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+
+        <!-- Trainings from Database -->
+        {% for training in trainings %}
+        <div class="course-item animate-on-scroll training-item" data-title="{{ training.title|lower }}"
+          data-description="{{ training.description|lower }}" data-category="Training" data-instructor="BG Infotechs"
+          data-duration="{% with total_seconds=training.duration.total_seconds %}{% widthratio total_seconds 86400 1 as days %}{% if days >= 1 %}{{ days|floatformat:0 }} day{{ days|floatformat:0|pluralize }}{% else %}{% widthratio total_seconds 3600 1 as hours %}{{ hours|floatformat:0 }} hour{{ hours|floatformat:0|pluralize }}{% endif %}{% endwith %}"
+          data-price="{{ training.offer_price }}" data-original-price="{{ training.price }}"
+          data-technology="{{ training.title|lower }} {{ training.description|lower }}">
+          <div class="training-card">
+            {% if training.has_offer %}
+            <div class="training-badge">
+              <i class="fas fa-bolt me-1"></i>
+              {{ training.discount_percentage }}% OFF
+            </div>
+            {% endif %}
+
+            <div class="training-image">
+              {% if training.image %}
+              <img src="{{ training.image.url }}" class="img-fluid" alt="{{ training.title }}">
+              {% else %}
+              <img src="{% static 'img/default-training.jpg' %}" class="img-fluid" alt="{{ training.title }}">
+              {% endif %}
+            </div>
+
+            <div class="training-content">
+              <h3 class="training-title">{{ training.title }}</h3>
+
+              <div class="training-provider">
+                <div class="provider-logo">
+                  <i class="fas fa-graduation-cap"></i>
+                </div>
+                <div class="provider-name">BG Infotechs</div>
+              </div>
+
+              <div class="training-details">
+                <div class="detail-item">
+                  <i class="far fa-clock"></i>
+                  <span>
+                    {% with total_seconds=training.duration.total_seconds %}
+                    {% widthratio total_seconds 86400 1 as days %}
+                    {% if days >= 1 %}
+                    {{ days|floatformat:0 }} day{{ days|floatformat:0|pluralize }}
+                    {% else %}
+                    {% widthratio total_seconds 3600 1 as hours %}
+                    {{ hours|floatformat:0 }} hour{{ hours|floatformat:0|pluralize }}
+                    {% endif %}
+                    {% endwith %}
+                  </span>
+                </div>
+                <div class="detail-item">
+                  <i class="fas fa-star"></i>
+                  <span>4.7 Rating</span>
+                </div>
+              </div>
+
+              <p class="text-dark mb-3">{{ training.description|truncatewords:20 }}</p>
+
+              <div class="training-feature">
+                <i class="fas fa-laptop-code"></i>
+                <span>Expert-led Training & Practical Exercises</span>
+              </div>
+
+              <div class="training-price">
+                <div class="price-container">
+                  {% if training.has_offer %}
+                  <span class="current-price">Rs. {{ training.offer_price }}</span>
+                  <span class="original-price">Rs. {{ training.price }}</span>
+                  {% else %}
+                  <span class="current-price">Rs. {{ training.price }}</span>
+                  {% endif %}
+                </div>
+              </div>
+
+              <div class="card-actions">
+                <a href="{% url 'frontend_app:enroll_training' training.pk %}" class="btn-enroll">
+                  <i class="fas fa-rocket me-2"></i>
+                  Enroll Now
+                </a>
+                <button class="btn-details" onclick="showTrainingDetails({{ training.id }})">
+                  <i class="fas fa-eye me-2"></i>
+                  View Details
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+
+       
+      </div>
+
+      <!-- No Results Message -->
+      <div class="no-results" id="noResults">
+        <i class="fas fa-search"></i>
+        <h3>No Courses Found</h3>
+        <p>We couldn't find any courses matching your search criteria. Try adjusting your keywords or browse all available courses.</p>
+      </div>
+
+      <div class="text-center mt-5 mb-5">
+        <a href="{% url 'frontend_app:all_courses' %}" class="enroll-btn">
+          <i class="fas fa-list me-2"></i>
+          View All Courses
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Outcomes + Value Stack -->
+  <section class="outcomes-section">
+    <div class="container">
+      <div class="section-titles">
+        <h2>Outcomes That Matter</h2>
+        <p class="subtitle">Built with industry mentors. Focused on jobs, not just certificates.</p>
+      </div>
+
+      <!-- Animated Counters -->
+      <div class="row stats-row">
+        <div class="col-md-3 col-6 mb-4">
+          <div class="stat-card animate-on-scroll">
+            <div class="stat-value" data-target="4.8" data-suffix="/5">0</div>
+            <div class="stat-label">Avg Learner Rating</div>
+          </div>
+        </div>
+        <div class="col-md-3 col-6 mb-4">
+          <div class="stat-card animate-on-scroll">
+            <div class="stat-value" data-target="2000" data-suffix="+">0</div>
+            <div class="stat-label">Learners Placed</div>
+          </div>
+        </div>
+        <div class="col-md-3 col-6 mb-4">
+          <div class="stat-card animate-on-scroll">
+            <div class="stat-value" data-target="95" data-suffix="%">0</div>
+            <div class="stat-label">Completion Rate</div>
+          </div>
+        </div>
+        <div class="col-md-3 col-6 mb-4">
+          <div class="stat-card animate-on-scroll">
+            <div class="stat-value" data-target="50" data-suffix="+">0</div>
+            <div class="stat-label">Hiring Partners</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Value Stack -->
+      <div class="row">
+        <div class="col-lg-3 col-md-6 mb-4">
+          <div class="value-card animate-on-scroll">
+            <div class="value-icon"><i class="fas fa-rocket"></i></div>
+            <h4>Capstone Portfolio</h4>
+            <p>Launch 3–5 resume‑ready projects aligned with real job roles.</p>
+          </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-4">
+          <div class="value-card animate-on-scroll">
+            <div class="value-icon"><i class="fas fa-user-tie"></i></div>
+            <h4>Industry Mentors</h4>
+            <p>Weekly mentorship, code reviews, and design critiques.</p>
+          </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-4">
+          <div class="value-card animate-on-scroll">
+            <div class="value-icon"><i class="fas fa-chess-knight"></i></div>
+            <h4>Interview Prep</h4>
+            <p>ATS‑friendly resume, LinkedIn polish, and mock interviews.</p>
+          </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-4">
+          <div class="value-card animate-on-scroll">
+            <div class="value-icon"><i class="fas fa-sync-alt"></i></div>
+            <h4>Lifetime Updates</h4>
+            <p>Access to updated content and alumni Q&A forever.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    // Elements
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    const courseItems = document.querySelectorAll('.course-item');
+    const noResults = document.getElementById('noResults');
+    const noResultsDefault = document.getElementById('noResultsDefault');
+    const clearSearchButton = document.getElementById('clearSearch');
+    const categoryFilters = document.getElementById('categoryFilters');
+    const scrollLeft = document.querySelector('.scroll-left');
+    const scrollRight = document.querySelector('.scroll-right');
+
+    // Enhanced animation on scroll
+    const animateElements = document.querySelectorAll('.animate-on-scroll');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('animated');
+          // Stagger animation for grid items
+          if (entry.target.classList.contains('course-item')) {
+            const index = Array.from(courseItems).indexOf(entry.target);
+            entry.target.style.transitionDelay = `${index * 0.1}s`;
+          }
+        }
+      });
+    }, {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    });
+
+    animateElements.forEach(el => observer.observe(el));
+
+    // Enhanced scroll functionality for filter buttons
+    function updateScrollIndicators() {
+      const scrollLeftPos = categoryFilters.scrollLeft;
+      const scrollWidth = categoryFilters.scrollWidth;
+      const clientWidth = categoryFilters.clientWidth;
+
+      // Show/hide left arrow
+      if (scrollLeftPos <= 10) {
+        scrollLeft.classList.add('hidden');
+      } else {
+        scrollLeft.classList.remove('hidden');
+      }
+
+      // Show/hide right arrow
+      if (scrollLeftPos >= scrollWidth - clientWidth - 10) {
+        scrollRight.classList.add('hidden');
+      } else {
+        scrollRight.classList.remove('hidden');
+      }
+    }
+
+    // Scroll left functionality
+    scrollLeft.addEventListener('click', function () {
+      categoryFilters.scrollBy({
+        left: -200,
+        behavior: 'smooth'
+      });
+    });
+
+    // Scroll right functionality
+    scrollRight.addEventListener('click', function () {
+      categoryFilters.scrollBy({
+        left: 200,
+        behavior: 'smooth'
+      });
+    });
+
+    // Update indicators on scroll and resize
+    categoryFilters.addEventListener('scroll', updateScrollIndicators);
+    window.addEventListener('resize', updateScrollIndicators);
+
+    // Initialize scroll indicators
+    updateScrollIndicators();
+
+    // Filter functionality - Update for backend filtering
+    filterButtons.forEach(button => {
+      button.addEventListener('click', function(e) {
+        // If it's an anchor tag, let it navigate naturally (backend filtering)
+        if (this.tagName === 'A') {
+          // For anchor tags, we only need to handle the active state
+          e.preventDefault();
+          const url = this.getAttribute('href');
+          
+          // Update active button
+          filterButtons.forEach(btn => btn.classList.remove('active'));
+          this.classList.add('active');
+          
+          // Scroll the active button into view
+          this.scrollIntoView({
+            behavior: 'smooth',
+            block: 'nearest',
+            inline: 'center'
+          });
+          
+          // Navigate to the filtered URL
+          window.location.href = url;
+          return;
+        }
+        
+        // If it's a button (for client-side filtering as fallback)
+        const filterValue = this.getAttribute('data-filter');
+        
+        // Update active button
+        filterButtons.forEach(btn => btn.classList.remove('active'));
+        this.classList.add('active');
+        
+        // Scroll the active button into view
+        this.scrollIntoView({
+          behavior: 'smooth',
+          block: 'nearest',
+          inline: 'center'
+        });
+        
+        // Filter items with animation
+        let visibleCount = 0;
+        courseItems.forEach(item => {
+          const itemCategory = item.getAttribute('data-category');
+          if (filterValue === 'all' || itemCategory.toLowerCase().includes(filterValue.toLowerCase())) {
+            item.style.display = 'block';
+            setTimeout(() => {
+              item.style.opacity = '1';
+              item.style.transform = 'scale(1)';
+            }, 10);
+            visibleCount++;
+          } else {
+            item.style.opacity = '0';
+            item.style.transform = 'scale(0.8)';
+            setTimeout(() => {
+              item.style.display = 'none';
+            }, 400);
+          }
+        });
+        
+        // Update results display
+        updateResultsDisplay(visibleCount, filterValue);
+      });
+    });
+
+    function updateResultsDisplay(visibleCount, filterValue) {
+      const totalItems = courseItems.length;
+
+      // Hide default no results if we have courses
+      if (noResultsDefault && totalItems > 0) {
+        noResultsDefault.style.display = 'none';
+      }
+
+      // Show/hide search no results message
+      if (visibleCount === 0 && totalItems > 0) {
+        noResults.style.display = 'block';
+      } else {
+        noResults.style.display = 'none';
+      }
+    }
+
+    // Enhanced counter animation for stats
+    const statValues = document.querySelectorAll('.stat-value');
+    const counterObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const element = entry.target;
+          const target = element.getAttribute('data-target');
+          const suffix = element.getAttribute('data-suffix') || '';
+
+          if (!element.classList.contains('counted')) {
+            element.classList.add('counted');
+
+            if (target.includes('%') || target.includes('+') || target.includes('/')) {
+              element.textContent = target + suffix;
+            } else {
+              animateCounter(element, parseFloat(target), suffix);
+            }
+          }
+        }
+      });
+    }, { threshold: 0.5 });
+
+    statValues.forEach(value => counterObserver.observe(value));
+
+    function animateCounter(element, target, suffix) {
+      const duration = 2000;
+      const startTime = performance.now();
+
+      function updateCounter(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+
+        // Easing function for smooth animation
+        const easeOutQuart = 1 - Math.pow(1 - progress, 4);
+        const currentValue = target * easeOutQuart;
+
+        if (target % 1 !== 0) {
+          element.textContent = currentValue.toFixed(1) + suffix;
+        } else {
+          element.textContent = Math.floor(currentValue) + suffix;
+        }
+
+        if (progress < 1) {
+          requestAnimationFrame(updateCounter);
+        } else {
+          element.textContent = target + suffix;
+        }
+      }
+
+      requestAnimationFrame(updateCounter);
+    }
+
+    // Initialize with enhanced features
+    if (courseItems.length > 0) {
+      updateResultsDisplay(courseItems.length, 'all');
+
+      // Add hover effects to course cards
+      courseItems.forEach(item => {
+        item.addEventListener('mouseenter', function () {
+          this.style.transform = 'scale(1.02)';
+        });
+
+        item.addEventListener('mouseleave', function () {
+          this.style.transform = 'scale(1)';
+        });
+      });
+    }
+
+    // Clear search functionality
+    if (clearSearchButton) {
+      clearSearchButton.addEventListener('click', function () {
+        // Reset all filters
+        filterButtons.forEach(btn => {
+          if (btn.getAttribute('data-filter') === 'all') {
+            btn.classList.add('active');
+          } else {
+            btn.classList.remove('active');
+          }
+        });
+
+        // Show all items
+        courseItems.forEach(item => {
+          item.style.display = 'block';
+        });
+
+        // Hide no results message
+        noResults.style.display = 'none';
+
+        // Add visual feedback
+        this.innerHTML = '<i class="fas fa-check me-2"></i>Cleared!';
+        setTimeout(() => {
+          this.innerHTML = '<i class="fas fa-times me-2"></i>Clear Search';
+        }, 2000);
+      });
+    }
+
+    // Tooltip initialization for icons
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('.kumari-icon'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+      return new bootstrap.Tooltip(tooltipTriggerEl)
+    });
+
+    // Add loading animation
+    setTimeout(() => {
+      document.body.classList.add('loaded');
+    }, 500);
+  });
+
+  // Additional utility functions
+  function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+      const later = () => {
+        clearTimeout(timeout);
+        func(...args);
+      };
+      clearTimeout(timeout);
+      timeout = setTimeout(later, wait);
+    };
+  }
+
+  // Enhanced scroll to top functionality
+  window.addEventListener('scroll', function () {
+    const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+    if (scrollTop > 300) {
+      document.body.classList.add('scrolled');
+    } else {
+      document.body.classList.remove('scrolled');
+    }
+  });
+</script>
+{% endblock %}

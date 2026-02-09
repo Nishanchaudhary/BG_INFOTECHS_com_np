@@ -1,0 +1,920 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">
+            <i class="fas fa-project-diagram me-2"></i>{{ page_title }}
+        </h1>
+        <a href="{% url 'company_app:project_done_list' %}" class="d-none d-sm-inline-block btn btn-sm btn-secondary shadow-sm">
+            <i class="fas fa-arrow-left fa-sm text-white-50 me-1"></i> Back to Projects
+        </a>
+    </div>
+
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="#">
+                    <i class="fas fa-tachometer-alt me-1"></i>Dashboard
+                </a>
+            </li>
+            <li class="breadcrumb-item">
+                <a href="{% url 'company_app:project_done_list' %}">
+                    <i class="fas fa-list me-1"></i>Projects Done
+                </a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">
+                <i class="fas fa-{{ breadcrumb_icon|default:'file-alt' }} me-1"></i>{{ breadcrumb_active }}
+            </li>
+        </ol>
+    </nav>
+
+    <!-- Form Card -->
+    <div class="card shadow-lg border-0">
+        <div class="card-header bg-gradient-primary text-white py-4">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h4 class="mb-1 text-white">
+                        <i class="fas fa-{% if project %}edit{% else %}plus-circle{% endif %} text-white me-2"></i>
+                        {% if project %}Update Project{% else %}Create New Project{% endif %}
+                    </h4>
+                    <p class="mb-0 opacity-75 text-white">
+                        <i class="fas fa-info-circle me-1 text-white"></i>
+                        {% if project %}Modify project details for "{{ project.title }}"{% else %}Add a new project to your portfolio{% endif %}
+                    </p>
+                </div>
+                <span class="badge bg-white text-primary fs-6 px-3 py-2">
+                    <i class="fas fa-{% if project %}clock{% else %}rocket{% endif %} me-1"></i>
+                    {% if project %}Editing{% else %}New{% endif %}
+                </span>
+            </div>
+        </div>
+        
+        <div class="card-body p-5">
+            <!-- Messages -->
+            {% if messages %}
+            <div class="mb-4">
+                {% for message in messages %}
+                <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show border-0 shadow-sm" role="alert">
+                    <div class="d-flex align-items-center">
+                        <i class="fas {% if message.tags == 'success' %}fa-check-circle{% elif message.tags == 'error' %}fa-exclamation-triangle{% else %}fa-info-circle{% endif %} me-2 fa-lg"></i>
+                        <div class="flex-grow-1">
+                            <strong class="me-2">{% if message.tags == 'success' %}Success!{% elif message.tags == 'error' %}Error!{% else %}Info{% endif %}</strong>
+                            {{ message }}
+                        </div>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            {% if form.non_field_errors %}
+            <div class="alert alert-danger border-0 shadow-sm mb-4">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-exclamation-triangle me-3 fa-2x text-danger"></i>
+                    <div>
+                        <h6 class="alert-heading mb-2">Please correct the following errors:</h6>
+                        <ul class="mb-0 ps-3">
+                            {% for error in form.non_field_errors %}
+                            <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <form method="post" enctype="multipart/form-data" novalidate id="projectForm" class="needs-validation">
+                {% csrf_token %}
+                
+                <div class="row g-4">
+                    <!-- Left Column - Basic Information -->
+                    <div class="col-lg-6">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-header bg-light py-3">
+                                <h6 class="mb-0 text-primary">
+                                    <i class="fas fa-info-circle me-2"></i>Basic Information
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <!-- Title -->
+                                <div class="mb-4">
+                                    <label for="{{ form.title.id_for_label }}" class="form-label fw-semibold text-dark">
+                                        Project Title <span class="text-danger">*</span>
+                                    </label>
+                                    <div class="input-group input-group-lg">
+                                        <span class="input-group-text bg-light border-end-0">
+                                            <i class="fas fa-heading text-primary"></i>
+                                        </span>
+                                        <input type="text" 
+                                               name="{{ form.title.name }}" 
+                                               id="{{ form.title.id_for_label }}" 
+                                               class="form-control {% if form.title.errors %}is-invalid{% endif %}" 
+                                               value="{{ form.title.value|default:'' }}" 
+                                               placeholder="Enter project title"
+                                               required>
+                                    </div>
+                                    {% if form.title.errors %}
+                                    <div class="text-danger small mt-2 ps-4">
+                                        <i class="fas fa-exclamation-circle me-1"></i>
+                                        {{ form.title.errors.0 }}
+                                    </div>
+                                    {% endif %}
+                                    <div class="form-text text-muted ps-4">
+                                        <i class="fas fa-lightbulb me-1 text-warning"></i>Enter a descriptive title (min. 2 characters)
+                                    </div>
+                                </div>
+
+                                <!-- Service -->
+                                <div class="mb-4">
+                                    <label for="{{ form.service.id_for_label }}" class="form-label fw-semibold text-dark">
+                                        Service <span class="text-danger">*</span>
+                                    </label>
+                                    <div class="input-group input-group-lg">
+                                        <span class="input-group-text bg-light border-end-0">
+                                            <i class="fas fa-cogs text-primary"></i>
+                                        </span>
+                                        <select name="{{ form.service.name }}" 
+                                                id="{{ form.service.id_for_label }}" 
+                                                class="form-select {% if form.service.errors %}is-invalid{% endif %}" 
+                                                required>
+                                            <option value="">Select a Service</option>
+                                            {% for service in form.service.field.queryset %}
+                                                <option value="{{ service.id }}" 
+                                                    {% if form.service.value|stringformat:"s" == service.id|stringformat:"s" %}selected{% endif %}>
+                                                    {{ service.title }}
+                                                </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    {% if form.service.errors %}
+                                    <div class="text-danger small mt-2 ps-4">
+                                        <i class="fas fa-exclamation-circle me-1"></i>
+                                        {{ form.service.errors.0 }}
+                                    </div>
+                                    {% endif %}
+                                    <div class="form-text text-muted ps-4">
+                                        <i class="fas fa-info-circle me-1 text-info"></i>Select the service this project belongs to
+                                    </div>
+                                </div>
+
+                                <!-- Category -->
+                                <div class="mb-4">
+                                    <label for="{{ form.category.id_for_label }}" class="form-label fw-semibold text-dark">
+                                        Category
+                                    </label>
+                                    <div class="input-group input-group-lg">
+                                        <span class="input-group-text bg-light border-end-0">
+                                            <i class="fas fa-folder text-primary"></i>
+                                        </span>
+                                        <select name="{{ form.category.name }}" 
+                                                id="{{ form.category.id_for_label }}" 
+                                                class="form-select {% if form.category.errors %}is-invalid{% endif %}">
+                                            <option value="">Select a Category (Optional)</option>
+                                            {% for category in form.category.field.queryset %}
+                                                <option value="{{ category.id }}" 
+                                                    {% if form.category.value|stringformat:"s" == category.id|stringformat:"s" %}selected{% endif %}>
+                                                    {{ category.title }}
+                                                </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    {% if form.category.errors %}
+                                    <div class="text-danger small mt-2 ps-4">
+                                        <i class="fas fa-exclamation-circle me-1"></i>
+                                        {{ form.category.errors.0 }}
+                                    </div>
+                                    {% endif %}
+                                    <div class="form-text text-muted ps-4">
+                                        <i class="fas fa-info-circle me-1 text-info"></i>Optional: Categorize your project
+                                    </div>
+                                </div>
+
+                                <!-- Company -->
+                                <div class="mb-4">
+                                    <label for="{{ form.company.id_for_label }}" class="form-label fw-semibold text-dark">
+                                        Company Name <span class="text-danger">*</span>
+                                    </label>
+                                    <div class="input-group input-group-lg">
+                                        <span class="input-group-text bg-light border-end-0">
+                                            <i class="fas fa-building text-primary"></i>
+                                        </span>
+                                        <input type="text" 
+                                               name="{{ form.company.name }}" 
+                                               id="{{ form.company.id_for_label }}" 
+                                               class="form-control {% if form.company.errors %}is-invalid{% endif %}" 
+                                               value="{{ form.company.value|default:'' }}" 
+                                               placeholder="Enter company name"
+                                               required>
+                                    </div>
+                                    {% if form.company.errors %}
+                                    <div class="text-danger small mt-2 ps-4">
+                                        <i class="fas fa-exclamation-circle me-1"></i>
+                                        {{ form.company.errors.0 }}
+                                    </div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Live Link -->
+                                <div class="mb-3">
+                                    <label for="{{ form.live_link.id_for_label }}" class="form-label fw-semibold text-dark">
+                                        Live Demo Link
+                                    </label>
+                                    <div class="input-group input-group-lg">
+                                        <span class="input-group-text bg-light border-end-0">
+                                            <i class="fas fa-link text-primary"></i>
+                                        </span>
+                                        <input type="url" 
+                                               name="{{ form.live_link.name }}" 
+                                               id="{{ form.live_link.id_for_label }}" 
+                                               class="form-control {% if form.live_link.errors %}is-invalid{% endif %}" 
+                                               value="{{ form.live_link.value|default:'' }}" 
+                                               placeholder="https://example.com">
+                                    </div>
+                                    {% if form.live_link.errors %}
+                                    <div class="text-danger small mt-2 ps-4">
+                                        <i class="fas fa-exclamation-circle me-1"></i>
+                                        {{ form.live_link.errors.0 }}
+                                    </div>
+                                    {% endif %}
+                                    <div class="form-text text-muted ps-4">
+                                        <i class="fas fa-external-link-alt me-1 text-info"></i>Optional live project URL
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column - Media & Settings -->
+                    <div class="col-lg-6">
+                        <div class="row g-4">
+                            <!-- Project Image Card -->
+                            <div class="col-12">
+                                <div class="card border-0 shadow-sm">
+                                    <div class="card-header bg-light py-3">
+                                        <h6 class="mb-0 text-primary">
+                                            <i class="fas fa-image me-2"></i>Project Image
+                                        </h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <!-- Current Image -->
+                                        {% if project and project.image %}
+                                        <div class="text-center mb-4">
+                                            <div class="position-relative d-inline-block">
+                                                <img src="{{ project.image.url }}" alt="{{ project.title }}" 
+                                                     class="img-fluid rounded shadow" 
+                                                     style="max-height: 150px; object-fit: cover;">
+                                                <div class="mt-2">
+                                                    <small class="text-muted fw-semibold">
+                                                        <i class="fas fa-check-circle text-success me-1"></i>Current Image
+                                                    </small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% endif %}
+
+                                        <!-- Image Upload -->
+                                        <div class="mb-3">
+                                            <label for="imageUpload" class="form-label fw-semibold text-dark">
+                                                {% if project %}Change Project Image{% else %}Upload Project Image{% endif %} 
+                                                {% if not project %}<span class="text-danger">*</span>{% endif %}
+                                            </label>
+                                            <div class="file-upload-area border rounded-3 p-4 text-center bg-light" 
+                                                 id="imageUploadArea"
+                                                 data-target="imageUpload">
+                                                <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+                                                <h6 class="text-muted mb-2">Click to upload project image</h6>
+                                                <p class="small text-muted mb-3">PNG, JPG, JPEG up to 5MB</p>
+                                                <div id="imageFileName" class="small text-muted mt-2"></div>
+                                            </div>
+                                            <input type="file" 
+                                                   name="{{ form.image.name }}" 
+                                                   id="imageUpload" 
+                                                   class="d-none"
+                                                   {% if not project %}required{% endif %}
+                                                   accept="image/*">
+                                            {% if form.image.errors %}
+                                            <div class="text-danger small mt-2">
+                                                <i class="fas fa-exclamation-circle me-1"></i>
+                                                {{ form.image.errors.0 }}
+                                            </div>
+                                            {% endif %}
+                                        </div>
+
+                                        <!-- New Image Preview -->
+                                        <div id="imagePreviewContainer" class="text-center mb-3" style="display: none;">
+                                            <div class="border rounded-3 p-3 bg-white shadow-sm">
+                                                <img id="imagePreview" src="" class="img-fluid rounded" style="max-height: 120px; object-fit: cover;">
+                                                <div class="mt-2">
+                                                    <small class="text-muted fw-semibold">
+                                                        <i class="fas fa-eye me-1"></i>New Image Preview
+                                                    </small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Company Logo Card -->
+                            <div class="col-12">
+                                <div class="card border-0 shadow-sm">
+                                    <div class="card-header bg-light py-3">
+                                        <h6 class="mb-0 text-primary">
+                                            <i class="fas fa-flag me-2"></i>Company Logo
+                                        </h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <!-- Current Logo -->
+                                        {% if project and project.logo %}
+                                        <div class="text-center mb-4">
+                                            <div class="position-relative d-inline-block">
+                                                <img src="{{ project.logo.url }}" alt="{{ project.company }}" 
+                                                     class="img-fluid rounded shadow" 
+                                                     style="max-height: 80px; object-fit: contain;">
+                                                <div class="mt-2">
+                                                    <small class="text-muted fw-semibold">
+                                                        <i class="fas fa-check-circle text-success me-1"></i>Current Logo
+                                                    </small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% endif %}
+
+                                        <!-- Logo Upload -->
+                                        <div class="mb-3">
+                                            <label for="logoUpload" class="form-label fw-semibold text-dark">
+                                                {% if project %}Change Company Logo{% else %}Upload Company Logo{% endif %} 
+                                                {% if not project %}<span class="text-danger">*</span>{% endif %}
+                                            </label>
+                                            <div class="file-upload-area border rounded-3 p-4 text-center bg-light" 
+                                                 id="logoUploadArea"
+                                                 data-target="logoUpload">
+                                                <i class="fas fa-flag fa-3x text-muted mb-3"></i>
+                                                <h6 class="text-muted mb-2">Click to upload company logo</h6>
+                                                <p class="small text-muted mb-3">PNG, JPG, JPEG up to 2MB</p>
+                                                <div id="logoFileName" class="small text-muted mt-2"></div>
+                                            </div>
+                                            <input type="file" 
+                                                   name="{{ form.logo.name }}" 
+                                                   id="logoUpload" 
+                                                   class="d-none"
+                                                   {% if not project %}required{% endif %}
+                                                   accept="image/*">
+                                            {% if form.logo.errors %}
+                                            <div class="text-danger small mt-2">
+                                                <i class="fas fa-exclamation-circle me-1"></i>
+                                                {{ form.logo.errors.0 }}
+                                            </div>
+                                            {% endif %}
+                                        </div>
+
+                                        <!-- New Logo Preview -->
+                                        <div id="logoPreviewContainer" class="text-center mb-3" style="display: none;">
+                                            <div class="border rounded-3 p-3 bg-white shadow-sm">
+                                                <img id="logoPreview" src="" class="img-fluid rounded" style="max-height: 80px; object-fit: contain;">
+                                                <div class="mt-2">
+                                                    <small class="text-muted fw-semibold">
+                                                        <i class="fas fa-eye me-1"></i>New Logo Preview
+                                                    </small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Status Card -->
+                            <div class="col-12">
+                                <div class="card border-0 shadow-sm">
+                                    <div class="card-header bg-light py-3">
+                                        <h6 class="mb-0 text-primary">
+                                            <i class="fas fa-toggle-on me-2"></i>Project Status
+                                        </h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="form-check form-switch form-switch-lg">
+                                            <input type="checkbox" 
+                                                   name="{{ form.status.name }}" 
+                                                   id="{{ form.status.id_for_label }}" 
+                                                   class="form-check-input" 
+                                                   {% if form.status.value or not form.status.value %}checked{% endif %}>
+                                            <label class="form-check-label fw-semibold text-dark fs-6" for="{{ form.status.id_for_label }}">
+                                                Active Project
+                                            </label>
+                                        </div>
+                                        {% if form.status.errors %}
+                                        <div class="text-danger small mt-2">
+                                            <i class="fas fa-exclamation-circle me-1"></i>
+                                            {{ form.status.errors.0 }}
+                                        </div>
+                                        {% endif %}
+                                        <div class="form-text text-muted">
+                                            <i class="fas fa-info-circle me-1 text-info"></i>Toggle to show/hide project in your portfolio
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Description Section with Summernote -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-header bg-light py-3">
+                                <h6 class="mb-0 text-primary">
+                                    <i class="fas fa-align-left me-2"></i>Project Description <span class="text-danger">*</span>
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    {{ form.description }}
+                                    {% if form.description.errors %}
+                                    <div class="text-danger small mt-2">
+                                        <i class="fas fa-exclamation-circle me-1"></i>
+                                        {{ form.description.errors.0 }}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center text-muted">
+                                    <div>
+                                        <i class="fas fa-lightbulb me-1 text-warning"></i>Describe your project in detail (minimum 10 characters)
+                                    </div>
+                                    <div class="text-end">
+                                        <span id="charCount" class="fw-semibold">0</span>/5000 characters
+                                    </div>
+                                </div>
+                                <div class="form-text char-counter-description mt-1"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="row mt-5">
+                    <div class="col-12">
+                        <div class="d-flex justify-content-between align-items-center border-top pt-4">
+                            <div>
+                                <button type="submit" class="btn btn-primary btn-lg px-5 py-3 fw-semibold">
+                                    <i class="fas fa-save me-2"></i>
+                                    {% if project %}Update Project{% else %}Create Project{% endif %}
+                                </button>
+                                <a href="{% url 'company_app:project_done_list' %}" class="btn btn-outline-secondary btn-lg px-5 py-3 fw-semibold ms-2">
+                                    <i class="fas fa-times me-2"></i>Cancel
+                                </a>
+                            </div>
+                            {% if project %}
+                            <a href="{% url 'company_app:project_done_delete' project.pk %}" class="btn btn-outline-danger btn-lg px-4 py-3 fw-semibold">
+                                <i class="fas fa-trash me-2"></i>Delete Project
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<!-- Summernote CSS -->
+<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.css" rel="stylesheet">
+<style>
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, #4e73df 0%, #224abe 100%) !important;
+    }
+    
+    .card {
+        border-radius: 1rem;
+        transition: transform 0.2s ease-in-out;
+    }
+    
+    .card:hover {
+        transform: translateY(-2px);
+    }
+    
+    .card-header {
+        border-radius: 1rem 1rem 0 0 !important;
+    }
+    
+    .form-control, .form-select {
+        border-radius: 0.75rem;
+        border: 2px solid #e3e6f0;
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        border-color: #4e73df;
+        box-shadow: 0 0 0 0.3rem rgba(78, 115, 223, 0.15);
+        transform: translateY(-1px);
+    }
+    
+    .input-group-lg .form-control,
+    .input-group-lg .form-select {
+        padding: 1rem 1.25rem;
+        font-size: 1.1rem;
+    }
+    
+    .input-group-text {
+        background: linear-gradient(135deg, #f8f9fc 0%, #e3e6f0 100%);
+        border: 2px solid #e3e6f0;
+        border-right: none;
+        border-radius: 0.75rem 0 0 0.75rem;
+    }
+    
+    .input-group .form-control {
+        border-radius: 0 0.75rem 0.75rem 0;
+        border-left: none;
+    }
+    
+    .file-upload-area {
+        border: 2px dashed #d1d3e2 !important;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        min-height: 180px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .file-upload-area:hover {
+        border-color: #4e73df !important;
+        background-color: #f8f9fe !important;
+        transform: translateY(-1px);
+    }
+    
+    .file-upload-area.has-file {
+        border-color: #28a745 !important;
+        background-color: #f8fff9 !important;
+    }
+    
+    .file-upload-area.dragover {
+        border-color: #4e73df !important;
+        background-color: #e8f4fd !important;
+    }
+    
+    .cursor-pointer {
+        cursor: pointer;
+    }
+    
+    .form-check-input {
+        width: 3.5rem;
+        height: 1.75rem;
+        border: 2px solid #e3e6f0;
+    }
+    
+    .form-check-input:checked {
+        background-color: #4e73df;
+        border-color: #4e73df;
+    }
+    
+    .form-switch-lg .form-check-input {
+        width: 4rem;
+    }
+    
+    .btn {
+        border-radius: 0.75rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-lg {
+        padding: 1rem 2rem;
+        font-size: 1.1rem;
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+        border: none;
+        box-shadow: 0 4px 15px rgba(78, 115, 223, 0.3);
+    }
+    
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(78, 115, 223, 0.4);
+    }
+    
+    /* Summernote Styles */
+    .note-editor.note-frame {
+        border: 1px solid #ced4da !important;
+        border-radius: 0.375rem !important;
+        width: 100% !important;
+    }
+
+    .note-editor .note-toolbar {
+        background-color: #f8f9fa !important;
+        border-bottom: 1px solid #dee2e6 !important;
+    }
+
+    .note-editor .note-btn {
+        background: white !important;
+        border: 1px solid #dee2e6 !important;
+    }
+
+    .char-counter {
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+    }
+
+    .char-counter.text-danger {
+        color: #dc3545 !important;
+        font-weight: bold;
+    }
+
+    .char-counter.text-success {
+        color: #198754 !important;
+    }
+
+    /* Character Counter */
+    #charCount.text-danger {
+        color: #e74a3b !important;
+        font-weight: 700;
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .card-body {
+            padding: 1.5rem !important;
+        }
+        
+        .d-flex.justify-content-between {
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .btn-lg {
+            width: 100%;
+            margin-bottom: 0.5rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Summernote JS -->
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize Summernote editor
+    $('#id_description').summernote({
+        height: 300,
+        toolbar: [
+            ['style', ['style']],
+            ['font', ['bold', 'italic', 'underline', 'clear']],
+            ['fontname', ['fontname']],
+            ['fontsize', ['fontsize']],
+            ['color', ['color']],
+            ['para', ['ul', 'ol', 'paragraph']],
+            ['table', ['table']],
+            ['insert', ['link', 'picture', 'video']],
+            ['view', ['fullscreen', 'codeview', 'help']]
+        ],
+        callbacks: {
+            onChange: function(contents) {
+                updateDescriptionCounter();
+                updateCharCount();
+            },
+            onInit: function() {
+                updateDescriptionCounter();
+                updateCharCount();
+            }
+        }
+    });
+
+    // Character counter for Summernote description
+    function updateDescriptionCounter() {
+        var descriptionText = $('#id_description').summernote('code');
+        var plainText = $(descriptionText).text();
+        var length = plainText.length;
+        var minLength = 10;
+        var counter = $('.char-counter-description');
+        
+        counter.text(length + ' characters (minimum ' + minLength + ')');
+        
+        if (length < minLength) {
+            counter.addClass('text-danger');
+        } else {
+            counter.removeClass('text-danger').addClass('text-success');
+        }
+    }
+
+    // File upload functionality
+    function setupFileUpload(uploadAreaId, inputId, previewContainerId, previewImageId, fileNameId) {
+        const uploadArea = document.getElementById(uploadAreaId);
+        const fileInput = document.getElementById(inputId);
+        const previewContainer = document.getElementById(previewContainerId);
+        const previewImage = document.getElementById(previewImageId);
+        const fileName = document.getElementById(fileNameId);
+
+        // Click on upload area to trigger file input
+        uploadArea.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            fileInput.click();
+        });
+
+        // Handle file selection
+        fileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            handleFileSelection(file, uploadArea, previewContainer, previewImage, fileName);
+        });
+
+        // Drag and drop functionality
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, highlight, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, unhighlight, false);
+        });
+
+        function highlight() {
+            uploadArea.classList.add('dragover');
+        }
+
+        function unhighlight() {
+            uploadArea.classList.remove('dragover');
+        }
+
+        uploadArea.addEventListener('drop', function(e) {
+            const dt = e.dataTransfer;
+            const file = dt.files[0];
+            fileInput.files = dt.files;
+            handleFileSelection(file, uploadArea, previewContainer, previewImage, fileName);
+        });
+    }
+
+    function handleFileSelection(file, uploadArea, previewContainer, previewImage, fileName) {
+        if (file) {
+            // Validate file type
+            const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+            if (!validTypes.includes(file.type)) {
+                alert('Please select a valid image file (JPEG, PNG, GIF, WebP)');
+                uploadArea.classList.remove('has-file');
+                return;
+            }
+
+            // Validate file size
+            const maxSize = uploadArea.id === 'imageUploadArea' ? 5 * 1024 * 1024 : 2 * 1024 * 1024;
+            if (file.size > maxSize) {
+                alert('File size must be less than ' + (maxSize / (1024 * 1024)) + 'MB');
+                uploadArea.classList.remove('has-file');
+                return;
+            }
+
+            // Show file name and update upload area style
+            if (fileName) {
+                fileName.textContent = `Selected: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`;
+                fileName.style.color = '#28a745';
+                fileName.style.fontWeight = '600';
+            }
+
+            // Update upload area appearance
+            uploadArea.classList.add('has-file');
+            uploadArea.style.borderColor = '#28a745';
+
+            // Create preview
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                previewImage.src = e.target.result;
+                previewContainer.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        } else {
+            // Reset if no file
+            uploadArea.classList.remove('has-file');
+            uploadArea.style.borderColor = '';
+            previewContainer.style.display = 'none';
+            if (fileName) {
+                fileName.textContent = '';
+            }
+        }
+    }
+
+    // Initialize file uploads
+    setupFileUpload('imageUploadArea', 'imageUpload', 'imagePreviewContainer', 'imagePreview', 'imageFileName');
+    setupFileUpload('logoUploadArea', 'logoUpload', 'logoPreviewContainer', 'logoPreview', 'logoFileName');
+
+    // Character counter for description
+    function updateCharCount() {
+        const descriptionText = $('#id_description').summernote('code');
+        const plainText = $(descriptionText).text();
+        const length = plainText.length;
+        const charCount = document.getElementById('charCount');
+        const maxLength = 5000;
+
+        charCount.textContent = length;
+        
+        if (length > maxLength) {
+            charCount.classList.add('text-danger');
+        } else {
+            charCount.classList.remove('text-danger');
+        }
+    }
+
+    // Form validation
+    const form = document.getElementById('projectForm');
+    form.addEventListener('submit', function(e) {
+        let isValid = true;
+
+        // Validate required fields
+        const requiredFields = ['id_title', 'id_service', 'id_company'];
+        requiredFields.forEach(fieldId => {
+            const field = document.getElementById(fieldId);
+            if (!field.value.trim()) {
+                field.classList.add('is-invalid');
+                isValid = false;
+            } else {
+                field.classList.remove('is-invalid');
+            }
+        });
+
+        // Validate title length
+        const title = document.getElementById('id_title');
+        if (title.value.trim().length < 2) {
+            title.classList.add('is-invalid');
+            isValid = false;
+        }
+
+        // Validate description length (Summernote content)
+        const descriptionContent = $('#id_description').summernote('code');
+        const plainText = $(descriptionContent).text().trim();
+        if (!plainText) {
+            $('#id_description').addClass('is-invalid');
+            isValid = false;
+        } else if (plainText.length < 10) {
+            $('#id_description').addClass('is-invalid');
+            isValid = false;
+        } else {
+            $('#id_description').removeClass('is-invalid');
+        }
+
+        // Validate image for new projects
+        {% if not project %}
+        const imageInput = document.getElementById('imageUpload');
+        if (!imageInput.files || !imageInput.files[0]) {
+            document.getElementById('imageUploadArea').style.borderColor = '#e74a3b';
+            isValid = false;
+        }
+
+        const logoInput = document.getElementById('logoUpload');
+        if (!logoInput.files || !logoInput.files[0]) {
+            document.getElementById('logoUploadArea').style.borderColor = '#e74a3b';
+            isValid = false;
+        }
+        {% endif %}
+
+        if (!isValid) {
+            e.preventDefault();
+            // Scroll to first error
+            const firstError = document.querySelector('.is-invalid');
+            if (firstError) {
+                firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+            
+            // Show error message
+            alert('Please fill in all required fields correctly.');
+        } else {
+            // Show loading state
+            const submitBtn = form.querySelector('button[type="submit"]');
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Processing...';
+            submitBtn.disabled = true;
+        }
+    });
+
+    // Remove validation on input
+    const fields = document.querySelectorAll('#id_title, #id_service, #id_company');
+    fields.forEach(field => {
+        field.addEventListener('input', function() {
+            this.classList.remove('is-invalid');
+        });
+    });
+
+    // Initialize character counters
+    updateDescriptionCounter();
+    updateCharCount();
+});
+</script>
+{% endblock %}

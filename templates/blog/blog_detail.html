@@ -1,0 +1,620 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <!-- Blog Post -->
+            <article class="card shadow-sm border-0">
+                {% if blog.image %}
+                <img src="{{ blog.image.url }}" class="card-img-top" alt="{{ blog.title }}"
+                    style="max-height: 400px; object-fit: cover; border-radius: 0.5rem 0.5rem 0 0;">
+                {% endif %}
+
+                <div class="card-body p-4 p-md-5">
+                    <!-- Blog Title -->
+                    <h1 class="card-title h2 fw-bold text-dark mb-3">{{ blog.title }}</h1>
+
+                    <!-- Blog Metadata - Improved Layout -->
+                    <div class="blog-meta mb-4">
+                        <div class="row align-items-center g-3">
+                            <!-- Author -->
+                            <div class="col-auto">
+                                <div class="d-flex align-items-center">
+                                    <div class="author-avatar me-3">
+                                        <div class="avatar-circle bg-primary text-white">
+                                            {{ blog.author.username|first|upper }}
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="fw-semibold text-dark">{{ blog.author.get_full_name|default:blog.author.username }}</div>
+                                        <small class="text-muted">Author</small>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Separator -->
+                            <div class="col-auto">
+                                <div class="vr" style="height: 30px;"></div>
+                            </div>
+                            
+                            <!-- Publish Date -->
+                            <div class="col-auto">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-calendar text-primary me-2 fs-5"></i>
+                                    <div>
+                                        <div class="fw-semibold text-dark">
+                                            {{ blog.published_at|date:"M d, Y" }}
+                                        </div>
+                                        <small class="text-muted">Published</small>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Separator -->
+                            <div class="col-auto">
+                                <div class="vr" style="height: 30px;"></div>
+                            </div>
+                            
+                            <!-- Reading Time -->
+                            <div class="col-auto">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-clock text-primary me-2 fs-5"></i>
+                                    <div>
+                                        <div class="fw-semibold text-dark">
+                                            {{ blog.reading_time }} min read
+                                        </div>
+                                        <small class="text-muted">Reading time</small>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Category (if available) -->
+                            {% if blog.category %}
+                            <div class="col-auto">
+                                <div class="vr" style="height: 30px;"></div>
+                            </div>
+                            <div class="col-auto">
+                                <span class="badge bg-secondary">
+                                    <i class="fas fa-tag me-1"></i>
+                                    {{ blog.category.name }}
+                                </span>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Short Description -->
+                    {% if blog.short_description %}
+                    <div class="alert alert-info border-0 bg-light border-start border-4 border-info">
+                        <div class="d-flex">
+                            <i class="fas fa-info-circle text-info mt-1 me-3 fs-5"></i>
+                            <div>
+                                <strong class="text-dark">Summary:</strong> 
+                                <span class="text-dark">{{ blog.short_description }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Blog Content -->
+                    <div class="blog-content mt-4">
+                        {{ blog.description|safe }}
+                    </div>
+                </div>
+            </article>
+
+            <!-- Comments Section -->
+            <div class="card mt-4 shadow-sm border-0">
+                <div class="card-header bg-light d-flex justify-content-between align-items-center py-3">
+                    <h5 class="mb-0 fw-bold">
+                        <i class="fas fa-comments me-2 text-primary"></i>
+                        Comments ({{ comments.count }})
+                    </h5>
+                    <span class="badge bg-success">
+                        <i class="fas fa-check-circle me-1"></i>
+                        All comments are moderated
+                    </span>
+                </div>
+
+                <div class="card-body p-4">
+                    <!-- Comment Form Section -->
+                    <div class="comment-form-section mb-4">
+                        <h6 class="mb-3 fw-semibold text-dark">Leave a Comment</h6>
+                        
+                        {% if user.is_authenticated %}
+                        <form method="post" class="needs-validation" novalidate>
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="full_name" class="form-label fw-semibold">Full Name *</label>
+                                    <input type="text" class="form-control" id="full_name" name="full_name" 
+                                           value="{{ user.get_full_name|default:user.username }}" required>
+                                    <div class="invalid-feedback">Please provide your full name.</div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="email" class="form-label fw-semibold">Email Address *</label>
+                                    <input type="email" class="form-control" id="email" name="email" 
+                                           value="{{ user.email }}" required>
+                                    <div class="invalid-feedback">Please provide a valid email address.</div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="comment" class="form-label fw-semibold">Your Comment *</label>
+                                <textarea name="comment" class="form-control" id="comment" rows="4" 
+                                          placeholder="Share your thoughts... (Minimum 10 characters)"
+                                          required minlength="10" maxlength="1000"></textarea>
+                                <div class="form-text">
+                                    <span id="charCount">0</span>/1000 characters (Minimum 10 required)
+                                </div>
+                                <div class="invalid-feedback">Please write a comment (minimum 10 characters).</div>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    Your comment will be visible after approval
+                                </small>
+                                <button type="submit" class="btn btn-primary px-4">
+                                    <i class="fas fa-paper-plane me-2"></i>Submit Comment
+                                </button>
+                            </div>
+                        </form>
+                        {% else %}
+                        <div class="alert alert-warning border-0">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-exclamation-triangle fa-2x me-3 text-warning"></i>
+                                <div>
+                                    <h6 class="alert-heading mb-1 fw-semibold">Authentication Required</h6>
+                                    <p class="mb-0">Please <a href="{% url 'login' %}?next={{ request.path }}" class="alert-link fw-semibold">login</a> 
+                                    or <a href="{% url 'register' %}" class="alert-link fw-semibold">register</a> to post a comment.</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Guest Comment Form -->
+                        <form method="post" class="needs-validation guest-form mt-3" novalidate>
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="guest_full_name" class="form-label fw-semibold">Full Name *</label>
+                                    <input type="text" class="form-control" id="guest_full_name" name="full_name" 
+                                           placeholder="Enter your full name" required>
+                                    <div class="invalid-feedback">Please provide your full name.</div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="guest_email" class="form-label fw-semibold">Email Address *</label>
+                                    <input type="email" class="form-control" id="guest_email" name="email" 
+                                           placeholder="Enter your email" required>
+                                    <div class="invalid-feedback">Please provide a valid email address.</div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="guest_comment" class="form-label fw-semibold">Your Comment *</label>
+                                <textarea name="comment" class="form-control" id="guest_comment" rows="4" 
+                                          placeholder="Share your thoughts... (Minimum 10 characters)"
+                                          required minlength="10" maxlength="1000"></textarea>
+                                <div class="form-text">
+                                    <span id="guestCharCount">0</span>/1000 characters (Minimum 10 required)
+                                </div>
+                                <div class="invalid-feedback">Please write a comment (minimum 10 characters).</div>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted">
+                                    <i class="fas fa-shield-alt me-1"></i>
+                                    Your comment will be reviewed before publishing
+                                </small>
+                                <button type="submit" class="btn btn-outline-primary px-4">
+                                    <i class="fas fa-paper-plane me-2"></i>Submit as Guest
+                                </button>
+                            </div>
+                        </form>
+                        {% endif %}
+                    </div>
+
+                    <!-- Comments List -->
+                    <div class="comments-section">
+                        <h6 class="mb-3 fw-semibold text-dark">Published Comments</h6>
+                        
+                        {% if comments %}
+                        <div class="comments-list">
+                            {% for comment in comments %}
+                            <div class="comment-item card mb-3 border-0 shadow-sm">
+                                <div class="card-body p-3">
+                                    <div class="d-flex align-items-start">
+                                        <div class="comment-avatar me-3">
+                                            <div class="avatar-circle bg-primary text-white">
+                                                {{ comment.full_name|first|upper }}
+                                            </div>
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                                <div>
+                                                    <h6 class="mb-0 fw-bold text-dark">{{ comment.full_name }}</h6>
+                                                    <small class="text-muted">
+                                                        {% if comment.user %}
+                                                            <i class="fas fa-user-check me-1 text-success"></i>Verified User
+                                                        {% else %}
+                                                            <i class="fas fa-user me-1 text-info"></i>Guest
+                                                        {% endif %}
+                                                    </small>
+                                                </div>
+                                                <small class="text-muted comment-date">
+                                                    <i class="fas fa-clock me-1"></i>
+                                                    {{ comment.created_at|timesince }} ago
+                                                </small>
+                                            </div>
+                                            
+                                            <div class="comment-content">
+                                                <p class="mb-2 text-dark">{{ comment.comment|linebreaksbr }}</p>
+                                                
+                                                {% if user.is_superuser or user.is_staff %}
+                                                <div class="comment-actions mt-2 pt-2 border-top">
+                                                    <small class="text-muted">
+                                                        <strong>Admin:</strong>
+                                                        <a href="{% url 'blog_app:blog_comments' pk=blog.pk %}" class="text-danger ms-2">
+                                                            <i class="fas fa-cog me-1"></i>Manage
+                                                        </a>
+                                                    </small>
+                                                </div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        <div class="text-center py-4">
+                            <div class="empty-state">
+                                <i class="fas fa-comment-slash fa-3x text-muted mb-3"></i>
+                                <h6 class="text-muted fw-semibold">No comments yet</h6>
+                                <p class="text-muted small">Be the first to share your thoughts on this post!</p>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Comments Footer -->
+                <div class="card-footer bg-light py-3">
+                    <div class="row text-center">
+                        <div class="col-md-4">
+                            <small class="text-muted">
+                                <i class="fas fa-check-circle text-success me-1"></i>
+                                Moderated Comments
+                            </small>
+                        </div>
+                        <div class="col-md-4">
+                            <small class="text-muted">
+                                <i class="fas fa-clock text-warning me-1"></i>
+                                Approval Required
+                            </small>
+                        </div>
+                        <div class="col-md-4">
+                            <small class="text-muted">
+                                <i class="fas fa-shield-alt text-primary me-1"></i>
+                                Safe Environment
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Blog Content Styling */
+    .blog-content {
+        line-height: 1.8;
+        font-size: 1.1rem;
+        color: #2d3748;
+    }
+
+    .blog-content img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 8px;
+        margin: 1.5rem 0;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .blog-content h1, 
+    .blog-content h2, 
+    .blog-content h3, 
+    .blog-content h4, 
+    .blog-content h5, 
+    .blog-content h6 {
+        margin-top: 2rem;
+        margin-bottom: 1rem;
+        color: #1a202c;
+        font-weight: 600;
+    }
+
+    .blog-content p {
+        margin-bottom: 1.5rem;
+    }
+
+    .blog-content blockquote {
+        border-left: 4px solid #4a5568;
+        padding-left: 1.5rem;
+        margin: 1.5rem 0;
+        font-style: italic;
+        color: #4a5568;
+    }
+
+    /* Blog Metadata Styling */
+    .blog-meta {
+        background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+        padding: 1.5rem;
+        border-radius: 0.75rem;
+        border: 1px solid #e2e8f0;
+    }
+
+    .author-avatar .avatar-circle {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 1.2rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Comment Styling */
+    .comment-item {
+        border-left: 4px solid #007bff;
+        transition: all 0.3s ease;
+        background: #ffffff;
+    }
+
+    .comment-item:hover {
+        transform: translateX(5px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important;
+    }
+
+    .comment-avatar .avatar-circle {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 1.1rem;
+    }
+
+    .comment-date {
+        white-space: nowrap;
+    }
+
+    .comment-content {
+        position: relative;
+    }
+
+    .empty-state {
+        opacity: 0.7;
+    }
+
+    .guest-form {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        padding: 1.5rem;
+        border-radius: 0.5rem;
+        border: 1px solid #dee2e6;
+    }
+
+    .form-text {
+        font-size: 0.85rem;
+    }
+
+    .comment-actions {
+        border-top: 1px solid #e9ecef;
+    }
+
+    /* Card Styling */
+    .card {
+        border: none;
+        border-radius: 1rem;
+        overflow: hidden;
+    }
+
+    .card-header {
+        border: none;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .blog-meta .row {
+            flex-direction: column;
+            gap: 1rem !important;
+        }
+        
+        .blog-meta .vr {
+            display: none;
+        }
+        
+        .blog-meta .col-auto {
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .comment-item .d-flex {
+            flex-direction: column;
+            align-items: start !important;
+        }
+        
+        .comment-avatar {
+            margin-bottom: 1rem;
+        }
+        
+        .comment-content {
+            margin-left: 0 !important;
+        }
+        
+        .comment-date {
+            margin-top: 0.5rem;
+        }
+        
+        .card-footer .row > div {
+            margin-bottom: 0.5rem;
+        }
+        
+        .card-body {
+            padding: 1.5rem !important;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .comment-form-section .row {
+            flex-direction: column;
+        }
+        
+        .comment-form-section .col-md-6 {
+            width: 100%;
+        }
+        
+        .d-flex.justify-content-between {
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .blog-meta {
+            padding: 1rem;
+        }
+        
+        .author-avatar .avatar-circle {
+            width: 40px;
+            height: 40px;
+            font-size: 1rem;
+        }
+    }
+
+    /* Validation styles */
+    .was-validated .form-control:invalid {
+        border-color: #dc3545;
+        padding-right: calc(1.5em + 0.75rem);
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc3545'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath d='m5.8 3.6.4.4.4-.4'/%3e%3cpath d='M6 7v2'/%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right calc(0.375em + 0.1875rem) center;
+        background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+    }
+
+    .was-validated .form-control:valid {
+        border-color: #198754;
+        padding-right: calc(1.5em + 0.75rem);
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%23198754' d='M2.3 6.73.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right calc(0.375em + 0.1875rem) center;
+        background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+    }
+
+    /* Smooth animations */
+    .blog-meta, .comment-item, .card {
+        animation: fadeInUp 0.6s ease-out;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Character count for comment textareas
+        const commentTextarea = document.getElementById('comment');
+        const guestCommentTextarea = document.getElementById('guest_comment');
+        const charCount = document.getElementById('charCount');
+        const guestCharCount = document.getElementById('guestCharCount');
+        
+        function updateCharCount(textarea, counter) {
+            if (textarea && counter) {
+                const length = textarea.value.length;
+                counter.textContent = length;
+                
+                // Change color based on length
+                if (length < 10) {
+                    counter.style.color = '#dc3545';
+                } else if (length > 900) {
+                    counter.style.color = '#ffc107';
+                } else {
+                    counter.style.color = '#198754';
+                }
+            }
+        }
+        
+        if (commentTextarea && charCount) {
+            commentTextarea.addEventListener('input', function() {
+                updateCharCount(this, charCount);
+            });
+            // Initialize on load
+            updateCharCount(commentTextarea, charCount);
+        }
+        
+        if (guestCommentTextarea && guestCharCount) {
+            guestCommentTextarea.addEventListener('input', function() {
+                updateCharCount(this, guestCharCount);
+            });
+            // Initialize on load
+            updateCharCount(guestCommentTextarea, guestCharCount);
+        }
+        
+        // Form validation
+        const forms = document.querySelectorAll('.needs-validation');
+        forms.forEach(function(form) {
+            form.addEventListener('submit', function(event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
+        
+        // Auto-resize textarea
+        function autoResize(textarea) {
+            textarea.style.height = 'auto';
+            textarea.style.height = (textarea.scrollHeight) + 'px';
+        }
+        
+        if (commentTextarea) {
+            commentTextarea.addEventListener('input', function() {
+                autoResize(this);
+            });
+        }
+        
+        if (guestCommentTextarea) {
+            guestCommentTextarea.addEventListener('input', function() {
+                autoResize(this);
+            });
+        }
+        
+        // Smooth animations for comments
+        const commentItems = document.querySelectorAll('.comment-item');
+        commentItems.forEach((item, index) => {
+            item.style.opacity = '0';
+            item.style.transform = 'translateX(-20px)';
+            
+            setTimeout(() => {
+                item.style.transition = 'all 0.5s ease-out';
+                item.style.opacity = '1';
+                item.style.transform = 'translateX(0)';
+            }, index * 100);
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,726 @@
+{% extends 'Frontend/base.html' %}
+{% load static %}
+{% block title %}Home{% endblock %}
+{% block extra_css %}
+<style>
+  /* Custom CSS for Testimonials Section */
+  .testimonials {
+    background-color: #f8f9fa;
+    padding: 80px 0;
+  }
+
+  .section-title h2 {
+    color: #2c3e50;
+    font-weight: 700;
+    margin-bottom: 15px;
+  }
+
+  .testimonial-slider {
+    position: relative;
+    padding: 0 50px;
+  }
+
+  .testimonial-item {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    padding: 30px;
+    height: 100%;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+  }
+
+  .testimonial-item:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+  }
+
+  .testimonial-item::before {
+    content: "";
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    font-size: 80px;
+    color: rgba(52, 152, 219, 0.1);
+    font-family: Georgia, serif;
+    line-height: 1;
+  }
+
+  .testimonial-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+
+  .testimonial-header img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 15px;
+    border: 3px solid #3498db;
+  }
+
+  .placeholder-image {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background-color: #e9ecef;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 15px;
+    border: 3px solid #3498db;
+  }
+
+  .placeholder-image i {
+    font-size: 40px;
+    color: #7f8c8d;
+  }
+
+  .rating {
+    margin-top: 15px;
+  }
+
+  .rating i {
+    color: #f1c40f;
+    font-size: 16px;
+  }
+
+  .testimonial-body {
+    margin-bottom: 20px;
+  }
+
+  .testimonial-body p {
+    color: #2c3e50;
+    font-style: italic;
+    line-height: 1.6;
+    margin-bottom: 0;
+  }
+
+  .testimonial-footer h5 {
+    color: #2c3e50;
+    font-weight: 600;
+    margin-bottom: 5px;
+  }
+
+  .testimonial-footer span {
+    color: #7f8c8d;
+    font-size: 0.9rem;
+  }
+
+  .quote-icon {
+    margin-top: 10px;
+    color: #3498db;
+    font-size: 24px;
+  }
+
+  .swiper-navigation {
+    position: relative;
+    margin-top: 30px;
+  }
+
+  .swiper-button-next,
+  .swiper-button-prev {
+    background-color: white;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    color: #3498db;
+    transition: all 0.3s ease;
+  }
+
+  .swiper-button-next::after,
+  .swiper-button-prev::after {
+    font-size: 20px;
+    font-weight: bold;
+  }
+
+  .swiper-button-next:hover,
+  .swiper-button-prev:hover {
+    background-color: #3498db;
+    color: white;
+  }
+
+  .swiper-button-next {
+    right: 0;
+  }
+
+  .swiper-button-prev {
+    left: 0;
+  }
+
+  @media (max-width: 768px) {
+    .testimonial-slider {
+      padding: 0 20px;
+    }
+
+    .swiper-button-next,
+    .swiper-button-prev {
+      width: 40px;
+      height: 40px;
+    }
+
+    .swiper-button-next::after,
+    .swiper-button-prev::after {
+      font-size: 16px;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<main class="main pt-0 ">
+  <!-- Hero Section -->
+  <section id="hero-redesign" class="hero-custom section pt-3">
+    <div class="container-custom-hero">
+      <div class="row-custom-hero align-items-center-custom">
+        <!-- Left Column: Text -->
+        <div class="col-custom-hero-6">
+          <div class="hero-main-content-custom">
+            <h6 class="hero-subtitle-custom">
+              IT Solutions & Service
+            </h6>
+            <h2 class="hero-title-custom">
+              Empower Your Business With<br>
+              <span class="hero-title-highlight-custom" id="dynamic-slogan">Custom Software Solutions</span>
+            </h2>
+            <p class="hero-description-custom">
+              We are passionate about harnessing this beauty to create transformative solutions that elevate businesses
+              to new heights.
+            </p>
+            <div class="hero-actions-custom">
+              <a href="{% url 'frontend_app:about' %}" class="hero-btn-primary-custom">
+                <span>About Us</span>
+                <i class="hero-btn-icon-custom bi bi-arrow-right"></i>
+              </a>
+              <a href="{% url 'frontend_app:services' %}" class="hero-btn-secondary-custom">
+                <span>Our Services</span>
+                <i class="hero-btn-icon-custom bi bi-arrow-right"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+        <!-- Right Column: Image -->
+        <div class="col-custom-hero-6">
+          <div class="hero-image-showcase-custom">
+            <div class="image-wrapper-custom">
+              {% if company_profile.company_image %}
+              <img src="{{ company_profile.company_image.url }}" class="img-fluid-custom-hero" alt="IT Solutions">
+              {% endif %}
+              <div class="floating-card-custom card-1-custom">
+                <div class="card-content-custom">
+                  <div class="card-icon-custom">
+                    <i class="bi bi-telephone"></i>
+                  </div>
+                  <div class="card-info-custom">
+                    <h4>Call Any Time</h4>
+                    <p>{{ company_profile.company_phone }}</p>
+                  </div>
+                </div>
+              </div>
+              <div class="floating-card-custom card-2-custom">
+                <div class="card-content-custom">
+                  <div class="card-icon-custom">
+                    <i class="bi bi-award"></i>
+                  </div>
+                  <div class="card-info-custom">
+                    <h4>5+ Years</h4>
+                    <p>Experience</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- About Section -->
+  <section id="about" class="about section mt-5">
+    <div class="container" data-aos="fade-up" data-aos-delay="100">
+      <div class="row align-items-center justify-content-between g-lg-5">
+        <div class="col-lg-6" data-aos="fade-right" data-aos-delay="200">
+          <div class="image-wrapper">
+            <img src="{% static 'img/services/Cross-platform software-pana.png' %}" class="img-fluid rounded">
+          </div>
+        </div>
+
+        <div class="col-lg-6" data-aos="fade-left" data-aos-delay="300">
+          <div class="content">
+            <h6 class="fw-bold">Our Story</h6>
+            <h3 class="mb-2 text-black fw-bold">Delivering IT Solutions all over Nepal</h3>
+            <p>Since our establishment, we empower businesses with customized software, web solutions, and innovative IT
+              strategies, turning ideas into reality through cutting-edge technology and expert guidance.</p>
+
+            <div class="features-list mt-3 mb-2" data-aos="fade-up" data-aos-delay="400">
+              <div class="row g-4">
+                <div class="col-md-6">
+                  <div class="feature-item">
+                    <img src="{% static 'img/icons/excellencce.gif' %}" alt="" width="50px">
+                    <h5>Excellence</h5>
+                    <p>We deliver quality solutions for your goals.</p>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="feature-item">
+                    <img src="{% static 'img/icons/innovation.gif' %}" alt="" width="50px">
+                    <h5>Innovation</h5>
+                    <p>We stay ahead by adopting the latest technologies.</p>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="feature-item">
+                    <img src="{% static 'img/icons/community.gif' %}" alt="" width="50px">
+                    <h5>Community</h5>
+                    <p>Locally rooted, globally connected.</p>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="feature-item">
+                    <img src="{% static 'img/icons/growth.gif' %}" alt="" width="50px">
+                    <h5>Growth</h5>
+                    <p>Helping clients grow and learn with us.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section><!-- /About Section -->
+
+  <!-- Features Section -->
+  <section id="features" class="features section">
+    <!-- Section Title -->
+    <div class="container section-title" data-aos="fade-up">
+      <h2>Features</h2>
+      <p>Empowering your business with digital solutions</p>
+    </div><!-- End Section Title -->
+    <div class="container" data-aos="fade-up" data-aos-delay="100">
+      <div class="row align-items-center">
+        <div class="col-lg-6" data-aos="fade-right" data-aos-delay="150">
+          <div class="intro-content">
+            <h2>Powerful features to accelerate your growth</h2>
+            <p>At BG Infotech, we combine expertise and technology to deliver scalable, secure, and smart software
+              solutions designed to help businesses grow efficiently in the digital age.</p>
+            <div class="feature-stats">
+              <div class="stat-item">
+                <span class="stat-number">150+</span>
+                <span class="stat-label">Projects Delivered</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-number">99.9%</span>
+                <span class="stat-label">System Uptime</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-number">24/7</span>
+                <span class="stat-label">Customer Support</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-6" data-aos="fade-left" data-aos-delay="200">
+          <div class="intro-image">
+            <img src="{% static 'img/features/Online tech talks-bro.png' %}"
+              style="height: 400px; width: 90%; object-fit: cover;" alt="Features" class="img-fluid">
+          </div>
+        </div>
+      </div>
+
+      <div class="features-grid">
+        {% for feature in features %}
+        <div class="feature-item" data-aos="flip-up" data-aos-delay="250">
+          <div class="feature-number">{{ forloop.counter }}</div>
+          <div class="feature-content">
+            <div class="feature-icon">
+              <i class="{{ feature.icon }}"></i>
+            </div>
+            <h4>{{ feature.title }}</h4>
+            <p>{{ feature.description | safe }} </p>
+            <div class="feature-tags">
+              {% with feature.get_tags_list as tags_list %}
+              {% if tags_list %}
+              {% for tag in tags_list %}
+              <span class="tag">{{ tag }}</span>
+              {% endfor %}
+              {% endif %}
+              {% endwith %}
+            </div>
+          </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center">
+          <p class="text-muted">No features available at the moment.</p>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    </div>
+
+  </section><!-- /Features Section -->
+
+  <!-- Features Tabs Section -->
+  <section id="features-tabs" class="features-tabs section">
+    <div class="container" data-aos="fade-up" data-aos-delay="100">
+      <div class="tabs-wrapper">
+        <ul class="nav nav-tabs" data-aos="fade-up" data-aos-delay="100">
+          {% for service_data in services_with_success %}
+          <li class="nav-item">
+            <a class="nav-link {% if forloop.first %}active show{% endif %}" data-bs-toggle="tab"
+              data-bs-target="#features-tabs-tab-{{ forloop.counter }}">
+              <div class="tab-icon">
+                <i class="{{ service_data.service.icon }}"></i>
+              </div>
+              <div class="tab-content">
+                <h5>{{ service_data.service.title }}</h5>
+                <span>{{ service_data.service.sub_title|default:service_data.service.title }}</span>
+              </div>
+            </a>
+          </li>
+          {% endfor %}
+        </ul>
+
+        <div class="tab-content" data-aos="fade-up" data-aos-delay="200">
+          {% for service_data in services_with_success %}
+          <div class="tab-pane fade {% if forloop.first %}active show{% endif %}"
+            id="features-tabs-tab-{{ forloop.counter }}">
+            <div class="row align-items-center">
+              <div class="col-lg-5">
+                <div class="content-wrapper">
+                  <div class="icon-badge">
+                    <i class="{{ service_data.service.icon|default:'bi bi-people-fill' }}"></i>
+                  </div>
+                  <h3>{{ service_data.service.title }}</h3>
+                  <p>{{ service_data.service.description|safe }}</p>
+                  <a href="{% url 'frontend_app:services' %}" class="btn-primary">
+                    Learn More <i class="bi bi-arrow-right"></i>
+                  </a>
+                </div>
+              </div>
+              <div class="col-lg-7">
+                <div class="visual-content">
+                  <div class="main-image">
+                    {% if service_data.service.image %}
+                    <img src="{{ service_data.service.image.url }}" alt="{{ service_data.service.title }}"
+                      class="img-fluid">
+                    {% else %}
+                    <img src="{% static 'img/services/default-service.jpg' %}" alt="{{ service_data.service.title }}"
+                      class="img-fluid">
+                    {% endif %}
+
+                    {% for success_item in service_data.success_items %}
+                    <div class="floating-card floating-card-{{ forloop.counter }}">
+                      <i class="{{ success_item.icon }}"></i>
+                      <div class="card-content">
+                        <span>{{ success_item.title }}</span>
+                        <strong>{{ success_item.success }}</strong>
+                      </div>
+                    </div>
+                    {% endfor %}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div><!-- End tab content item -->
+          {% empty %}
+          <div class="tab-pane fade active show" id="features-tabs-tab-1">
+            <div class="row align-items-center">
+              <div class="col-12 text-center py-5">
+                <h4 class="text-muted">No services available at the moment.</h4>
+                <p>Please check back later for our service offerings.</p>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </section><!-- /Features Tabs Section -->
+
+  <!-- Services Section -->
+  <section id="services" class="services section">
+    <!-- Section Title -->
+    <div class="container section-title" data-aos="fade-up">
+      <h2 class="text-black">Our Services</h2>
+      <p class="text-black">Comprehensive IT solutions to grow your business in the digital age</p>
+    </div><!-- End Section Title -->
+
+    <div class="container" data-aos="fade-up" data-aos-delay="100">
+      <div class="row align-items-center">
+        <div class="col-lg-6">
+          <div class="intro-content" data-aos="fade-right" data-aos-delay="100">
+            <div class="section-badge mb-3" data-aos="zoom-in" data-aos-delay="50">
+              <i class="bi bi-star-fill"></i>
+              <span>WHAT WE OFFER</span>
+            </div>
+            <h2 class="section-heading mb-4">Digital Solutions for Your Business Growth</h2>
+            <p class="section-description mb-4">As Dhangadhi's leading IT company, we provide cutting-edge digital
+              services to help local businesses thrive online. Our team combines technical expertise with creative
+              solutions to deliver measurable results.</p>
+            <a href="{% url 'frontend_app:digital_marketing' %}" class="cta-button" data-aos="fade-right"
+              data-aos-delay="200">
+              View Our Portfolio
+            </a>
+          </div>
+        </div>
+        <div class="col-lg-6">
+          <div class="hero-visual" data-aos="fade-left" data-aos-delay="150">
+            <img src="{% static 'img/services/Software code testing-bro.png' %}" alt="IT Services" class="img-fluid">
+          </div>
+        </div>
+      </div>
+    </div>
+  </section><!-- /Services Section -->
+
+  <!-- Call To Action Section -->
+  <section id="call-to-action" class="call-to-action section light-background">
+    <div class="container" data-aos="fade-up" data-aos-delay="100">
+      <div class="advertise-1 d-flex flex-column flex-lg-row gap-4 align-items-center position-relative">
+        <div class="content-left flex-grow-1" data-aos="fade-right" data-aos-delay="200">
+          <span class="badge text-uppercase mb-2">Limited Offer!</span>
+          <h2>Our Digital Solutions</h2>
+          <p class="my-4">BG InfoTechs helps businesses in Dhangadhi and beyond thrive in the digital world. Join
+            dozens of local companies that have grown their revenue and online presence with our services.</p>
+
+          <div class="features d-flex flex-wrap gap-3 mb-4">
+            <div class="feature-item rounded-5">
+              <i class="bi bi-check-circle-fill"></i>
+              <span>Local Support Team</span>
+            </div>
+            <div class="feature-item rounded-5">
+              <i class="bi bi-check-circle-fill"></i>
+              <span>Affordable Packages</span>
+            </div>
+            <div class="feature-item rounded-5">
+              <i class="bi bi-check-circle-fill"></i>
+              <span>Proven Results</span>
+            </div>
+          </div>
+
+          <div class="cta-buttons d-flex flex-wrap gap-3">
+            <a href="{% url 'frontend_app:contact' %}" class="btn btn-primary">Get Free Consultation</a>
+            <a href="tel:{{ company_profile.company_phone }}" class="btn btn-outline">
+              <i class="bi bi-telephone-fill me-2"></i>Call Now
+            </a>
+          </div>
+        </div>
+
+        <div class="content-right position-relative" data-aos="fade-left" data-aos-delay="300">
+          <img src="{% static 'img/features/Online tech talks-bro.png' %}" alt="Digital Solutions"
+            class="img-fluid rounded-4">
+          <div class="floating-card">
+            <div class="card-icon">
+              <i class="bi bi-people-fill"></i>
+            </div>
+            <div class="card-content">
+              <span class="stats-number">50+</span>
+              <span class="stats-text">Happy Clients</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="decoration">
+          <div class="circle-1"></div>
+          <div class="circle-2"></div>
+        </div>
+      </div>
+    </div>
+  </section><!-- /Call To Action Section -->
+
+  <!-- Testimonials Section -->
+  <section id="testimonials" class="testimonials section mt-5">
+    <!-- Section Title -->
+    <div class="container section-title" data-aos="fade-up">
+      <h2>Client Success Stories</h2>
+      <p class="text-secondary">Hear what local businesses say</p>
+    </div><!-- End Section Title -->
+
+    <div class="container" data-aos="fade-up" data-aos-delay="100">
+      <div class="testimonial-slider swiper init-swiper">
+        <div class="swiper-wrapper">
+          {% for testimonial in testimonials %}
+          <div class="swiper-slide">
+            <div class="testimonial-item" data-aos="zoom-in" data-aos-delay="200">
+              <div class="testimonial-header">
+                {% if testimonial.image %}
+                <img src="{{ testimonial.image.url }}" alt="{{ testimonial.name }}" class="img-fluid" loading="lazy">
+                {% else %}
+                <div class="placeholder-image">
+                  <i class="bi bi-person-circle"></i>
+                </div>
+                {% endif %}
+                <div class="rating">
+                  {% with ''|center:testimonial.rating as range %}
+                  {% for i in range %}
+                  <i class="bi bi-star-fill"></i>
+                  {% endfor %}
+                  {% endwith %}
+                </div>
+              </div>
+              <div class="testimonial-body">
+                <p>{{ testimonial.message | safe }}</p>
+              </div>
+              <div class="testimonial-footer">
+                <h5>{{ testimonial.name }}</h5>
+                <span>{{ testimonial.designation }}</span>
+                <div class="quote-icon">
+                  <i class="bi bi-chat-quote-fill"></i>
+                </div>
+              </div>
+            </div>
+          </div><!-- End Testimonial Slide -->
+          {% empty %}
+          <!-- Fallback testimonials if none are available in the database -->
+          <div class="swiper-slide">
+            <div class="testimonial-item" data-aos="zoom-in" data-aos-delay="200">
+              <div class="testimonial-header">
+                <div class="placeholder-image">
+                  <i class="bi bi-person-circle"></i>
+                </div>
+                <div class="rating">
+                  <i class="bi bi-star-fill"></i>
+                  <i class="bi bi-star-fill"></i>
+                  <i class="bi bi-star-fill"></i>
+                  <i class="bi bi-star-fill"></i>
+                  <i class="bi bi-star-fill"></i>
+                </div>
+              </div>
+              <div class="testimonial-body">
+                <p>"BG InfoTechs built our e-commerce website that doubled our sales within 3 months. Their team
+                  understood exactly what we needed as a local business and delivered beyond our expectations."</p>
+              </div>
+              <div class="testimonial-footer">
+                <h5>Rajesh Chaudhary</h5>
+                <span>Owner, Dhangadhi Fashion Store</span>
+                <div class="quote-icon">
+                  <i class="bi bi-chat-quote-fill"></i>
+                </div>
+              </div>
+            </div>
+          </div><!-- End Testimonial Slide -->
+          {% endfor %}
+        </div>
+
+        <div class="swiper-navigation">
+          <div class="swiper-button-prev"></div>
+          <div class="swiper-button-next"></div>
+        </div>
+      </div>
+    </div>
+  </section><!-- /Testimonials Section -->
+</main>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    // Initialize AOS
+    AOS.init({
+      duration: 800,
+      easing: 'ease-in-out',
+      once: true
+    });
+
+    // Initialize Swiper for testimonials
+    const testimonialSwiper = new Swiper('.testimonial-slider', {
+      loop: true,
+      speed: 600,
+      autoplay: {
+        delay: 4000,
+        disableOnInteraction: false,
+      },
+      slidesPerView: 1,
+      spaceBetween: 30,
+      navigation: {
+        nextEl: '.swiper-button-next',
+        prevEl: '.swiper-button-prev',
+      },
+      breakpoints: {
+        768: {
+          slidesPerView: 2,
+          spaceBetween: 20
+        },
+        1200: {
+          slidesPerView: 3,
+          spaceBetween: 30
+        }
+      },
+      on: {
+        init: function () {
+          console.log('Testimonial Swiper initialized');
+        }
+      }
+    });
+
+    // Pause autoplay on hover
+    const swiperContainer = document.querySelector('.testimonial-slider');
+    if (swiperContainer) {
+      swiperContainer.addEventListener('mouseenter', function () {
+        testimonialSwiper.autoplay.stop();
+      });
+
+      swiperContainer.addEventListener('mouseleave', function () {
+        testimonialSwiper.autoplay.start();
+      });
+    }
+
+    // Typewriter effect for hero section
+    const slogans = [
+      "Custom Software Solutions",
+      "Web Development",
+      "Mobile App Development",
+      "Graphic Design",
+      "Digital Marketing",
+      "IT Consulting"
+    ];
+
+    const dynamicSlogan = document.getElementById('dynamic-slogan');
+    if (dynamicSlogan) {
+      let sloganIndex = 0;
+      let charIndex = 0;
+      let isDeleting = false;
+      let typingSpeed = 100;
+
+      function typeWriter() {
+        const currentSlogan = slogans[sloganIndex];
+
+        if (isDeleting) {
+          // Deleting text
+          dynamicSlogan.textContent = currentSlogan.substring(0, charIndex - 1);
+          charIndex--;
+          typingSpeed = 50;
+        } else {
+          // Typing text
+          dynamicSlogan.textContent = currentSlogan.substring(0, charIndex + 1);
+          charIndex++;
+          typingSpeed = 100;
+        }
+
+        // Check if current slogan is complete
+        if (!isDeleting && charIndex === currentSlogan.length) {
+          // Pause at end
+          typingSpeed = 2000;
+          isDeleting = true;
+        } else if (isDeleting && charIndex === 0) {
+          // Move to next slogan
+          isDeleting = false;
+          sloganIndex = (sloganIndex + 1) % slogans.length;
+          typingSpeed = 500;
+        }
+
+        setTimeout(typeWriter, typingSpeed);
+      }
+
+      // Start the typewriter effect
+      setTimeout(typeWriter, 1000);
+    }
+  });
+</script>
+{% endblock %}

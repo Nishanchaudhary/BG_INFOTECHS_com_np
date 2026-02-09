@@ -1,0 +1,1487 @@
+{% extends 'base.html' %}
+{% block title %}Vacancy Form{% endblock %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-xxl-10 col-xl-12 col-lg-12">
+            <!-- Header Card -->
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-gradient-primary text-white py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h4 class="mb-0 text-white fw-bold">
+                                <i class="fas fa-briefcase text-white me-2"></i>{{ page_title }}
+                            </h4>
+                            <p class="mb-0 text-white opacity-75 mt-1">
+                                <i class="fas fa-info-circle me-1 text-white"></i>
+                                {% if vacancy %}Update existing job vacancy{% else %}Create new job vacancy posting{% endif %}
+                            </p>
+                        </div>
+                        <div class="bg-white bg-opacity-20 rounded-circle p-3">
+                            <i class="fas fa-briefcase fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Form Card -->
+            <div class="card shadow-lg border-0">
+                <div class="card-body p-4">
+                    <form method="post" enctype="multipart/form-data" novalidate id="vacancyForm">
+                        {% csrf_token %}
+                        
+                        {% if form.non_field_errors %}
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <strong>Please fix the following errors:</strong>
+                            <ul class="mb-0 mt-1">
+                                {% for error in form.non_field_errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                        {% endif %}
+
+                        <!-- Section 1: Basic Information -->
+                        <div class="form-section">
+                            <div class="section-header mb-4">
+                                <h5 class="section-title">
+                                    <i class="fas fa-info-circle me-2 text-primary"></i>
+                                    Basic Information
+                                </h5>
+                                <p class="section-subtitle text-muted">Enter the fundamental details about the job position</p>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group mb-4">
+                                        <label for="{{ form.title.id_for_label }}" class="form-label">
+                                            <i class="fas fa-heading me-1 text-primary"></i>
+                                            Job Title *
+                                        </label>
+                                        <div class="input-group-custom">
+                                            <span class="input-group-icon">
+                                                <i class="fas fa-briefcase"></i>
+                                            </span>
+                                            <input type="text" name="{{ form.title.name }}" value="{{ form.title.value|default:'' }}" 
+                                                   class="form-control" id="{{ form.title.id_for_label }}" 
+                                                   placeholder="Enter job title" required>
+                                        </div>
+                                        {% if form.title.errors %}
+                                            <div class="error-feedback">
+                                                <i class="fas fa-exclamation-circle me-1"></i>
+                                                {% for error in form.title.errors %}
+                                                    {{ error }}
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <div class="form-group mb-4">
+                                        <label for="{{ form.job_type.id_for_label }}" class="form-label">
+                                            <i class="fas fa-clock me-1 text-primary"></i>
+                                            Job Type *
+                                        </label>
+                                        <div class="input-group-custom">
+                                            <span class="input-group-icon">
+                                                <i class="fas fa-calendar"></i>
+                                            </span>
+                                            <select name="{{ form.job_type.name }}" id="{{ form.job_type.id_for_label }}" 
+                                                    class="form-select" required>
+                                                <option value="">Select Job Type</option>
+                                                {% for value, label in form.job_type.field.choices %}
+                                                    <option value="{{ value }}" {% if form.job_type.value == value %}selected{% endif %}>
+                                                        {{ label }}
+                                                    </option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        {% if form.job_type.errors %}
+                                            <div class="error-feedback">
+                                                <i class="fas fa-exclamation-circle me-1"></i>
+                                                {% for error in form.job_type.errors %}
+                                                    {{ error }}
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group mb-4">
+                                        <label for="{{ form.salary.id_for_label }}" class="form-label">
+                                            <i class="fas fa-money-bill-wave me-1 text-primary"></i>
+                                            Salary (Rs) *
+                                        </label>
+                                        <div class="input-group-custom">
+                                            <span class="input-group-prepend">Rs</span>
+                                            <input type="number" name="{{ form.salary.name }}" value="{{ form.salary.value|default:'' }}" 
+                                                   class="form-control" id="{{ form.salary.id_for_label }}" 
+                                                   placeholder="Enter salary" required>
+                                            <span class="input-group-append">.00</span>
+                                        </div>
+                                        {% if form.salary.errors %}
+                                            <div class="error-feedback">
+                                                <i class="fas fa-exclamation-circle me-1"></i>
+                                                {% for error in form.salary.errors %}
+                                                    {{ error }}
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <div class="form-group mb-4">
+                                        <label for="{{ form.expired_date.id_for_label }}" class="form-label">
+                                            <i class="fas fa-calendar-times me-1 text-primary"></i>
+                                            Application Deadline *
+                                        </label>
+                                        <div class="input-group-custom">
+                                            <span class="input-group-icon">
+                                                <i class="fas fa-clock"></i>
+                                            </span>
+                                            <input type="date" name="{{ form.expired_date.name }}" value="{{ form.expired_date.value|default:'' }}" 
+                                                   class="form-control" id="{{ form.expired_date.id_for_label }}" required>
+                                        </div>
+                                        {% if form.expired_date.errors %}
+                                            <div class="error-feedback">
+                                                <i class="fas fa-exclamation-circle me-1"></i>
+                                                {% for error in form.expired_date.errors %}
+                                                    {{ error }}
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Section 2: Location & Overview -->
+                        <div class="form-section">
+                            <div class="form-group mb-4">
+                                <label for="{{ form.address.id_for_label }}" class="form-label">
+                                    <i class="fas fa-location-dot me-1 text-success"></i>
+                                    Work Location *
+                                </label>
+                                <div class="input-group-custom">
+                                    <span class="input-group-icon">
+                                        <i class="fas fa-map-pin"></i>
+                                    </span>
+                                    <input type="text" name="{{ form.address.name }}" value="{{ form.address.value|default:'' }}" 
+                                           class="form-control" id="{{ form.address.id_for_label }}" 
+                                           placeholder="Enter work location" required>
+                                </div>
+                                {% if form.address.errors %}
+                                    <div class="error-feedback">
+                                        <i class="fas fa-exclamation-circle me-1"></i>
+                                        {% for error in form.address.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="form-group mb-4">
+                                <label for="{{ form.short_description.id_for_label }}" class="form-label">
+                                    <i class="fas fa-file-alt me-1 text-success"></i>
+                                    Job Summary *
+                                </label>
+                                <div class="input-group-custom">
+                                    <span class="input-group-icon">
+                                        <i class="fas fa-align-left"></i>
+                                    </span>
+                                    <textarea name="{{ form.short_description.name }}" class="form-control" 
+                                              id="{{ form.short_description.id_for_label }}" placeholder="Brief job summary (max 200 characters)" 
+                                              maxlength="200" required>{{ form.short_description.value|default:'' }}</textarea>
+                                </div>
+                                <div class="form-text">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    Brief overview of the vacancy (max 200 characters)
+                                    <span id="charCount" class="float-end">0/200</span>
+                                </div>
+                                {% if form.short_description.errors %}
+                                    <div class="error-feedback">
+                                        <i class="fas fa-exclamation-circle me-1"></i>
+                                        {% for error in form.short_description.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Section 3: Media & Requirements -->
+                        <div class="form-section">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group mb-4">
+                                        <label for="{{ form.image.id_for_label }}" class="form-label">
+                                            <i class="fas fa-image me-1 text-warning"></i>
+                                            Job Banner Image
+                                        </label>
+                                        <div class="file-upload-area">
+                                            <input type="file" name="{{ form.image.name }}" class="form-control" id="{{ form.image.id_for_label }}" 
+                                                   accept="image/*">
+                                            <div class="file-upload-preview mt-3 text-center">
+                                                {% if vacancy and vacancy.image %}
+                                                    <img src="{{ vacancy.image.url }}" alt="{{ vacancy.title }}" class="img-thumbnail preview-image">
+                                                    <p class="text-muted mt-2">Current image</p>
+                                                {% else %}
+                                                    <div class="placeholder-image">
+                                                        <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-2"></i>
+                                                        <p class="text-muted">No image selected</p>
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        {% if form.image.errors %}
+                                            <div class="error-feedback">
+                                                <i class="fas fa-exclamation-circle me-1"></i>
+                                                {% for error in form.image.errors %}
+                                                    {{ error }}
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <div class="form-group mb-4">
+                                        <label for="{{ form.skills.id_for_label }}" class="form-label">
+                                            <i class="fas fa-tools me-1 text-warning"></i>
+                                            Required Skills *
+                                        </label>
+                                        <div class="input-group-custom">
+                                            <span class="input-group-icon">
+                                                <i class="fas fa-cogs"></i>
+                                            </span>
+                                            <input type="text" name="{{ form.skills.name }}" value="{{ form.skills.value|default:'' }}" 
+                                                   class="form-control" id="{{ form.skills.id_for_label }}" 
+                                                   placeholder="Python, Django, JavaScript, React" required>
+                                        </div>
+                                        <div class="form-text">
+                                            <i class="fas fa-lightbulb me-1"></i>
+                                            Enter skills separated by commas (e.g., Python, Django, JavaScript, React)
+                                        </div>
+                                        <div class="skills-preview mt-2">
+                                            <div class="badge-container"></div>
+                                        </div>
+                                        {% if form.skills.errors %}
+                                            <div class="error-feedback">
+                                                <i class="fas fa-exclamation-circle me-1"></i>
+                                                {% for error in form.skills.errors %}
+                                                    {{ error }}
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Section 4: Detailed Description -->
+                        <div class="form-section">
+                            <div class="form-group mb-4">
+                                <label for="{{ form.description.id_for_label }}" class="form-label">
+                                    <i class="fas fa-align-left me-1 text-info"></i>
+                                    Detailed Job Description *
+                                </label>
+                                <div class="rich-text-editor-container">
+                                    <textarea name="{{ form.description.name }}" class="form-control summernote-editor" 
+                                              id="id_description" placeholder="Write detailed job description here...">{{ form.description.value|default:'' }}</textarea>
+                                </div>
+                                <div class="form-text">
+                                    <i class="fas fa-edit me-1"></i>
+                                    Use the toolbar to format your job description
+                                </div>
+                                {% if form.description.errors %}
+                                    <div class="error-feedback">
+                                        <i class="fas fa-exclamation-circle me-1"></i>
+                                        {% for error in form.description.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group mb-4">
+                                        <label for="{{ form.status.id_for_label }}" class="form-label">
+                                            <i class="fas fa-toggle-on me-1 text-info"></i>
+                                            Publication Status *
+                                        </label>
+                                        <div class="input-group-custom">
+                                            <span class="input-group-icon">
+                                                <i class="fas fa-eye"></i>
+                                            </span>
+                                            <select name="{{ form.status.name }}" id="{{ form.status.id_for_label }}" 
+                                                    class="form-select" required>
+                                                <option value="">Select Status</option>
+                                                {% for value, label in form.status.field.choices %}
+                                                    <option value="{{ value }}" {% if form.status.value == value %}selected{% endif %}>
+                                                        {{ label }}
+                                                    </option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="form-text">
+                                            <i class="fas fa-info-circle me-1"></i>
+                                            Choose whether to publish now or save as draft
+                                        </div>
+                                        {% if form.status.errors %}
+                                            <div class="error-feedback">
+                                                <i class="fas fa-exclamation-circle me-1"></i>
+                                                {% for error in form.status.errors %}
+                                                    {{ error }}
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="form-actions mt-5 pt-4 border-top">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <a href="{% url 'vacancy_app:vacancy_list' %}" class="btn btn-outline-secondary">
+                                        <i class="fas fa-arrow-left me-2"></i>
+                                        Back to List
+                                    </a>
+                                </div>
+                                <div>
+                                    <button type="reset" class="btn btn-outline-warning me-3">
+                                        <i class="fas fa-redo me-2"></i>
+                                        Reset Form
+                                    </button>
+                                    <button type="submit" class="btn btn-success px-4">
+                                        <i class="fas fa-save me-2"></i>
+                                        {% if vacancy %}Update Vacancy{% else %}Create Vacancy{% endif %}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<!-- Summernote CSS -->
+<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.18/summernote-bs4.css" rel="stylesheet">
+<style>
+:root {
+    --primary-color: #4361ee;
+    --secondary-color: #3f37c9;
+    --success-color: #4cc9f0;
+    --warning-color: #f72585;
+    --info-color: #4895ef;
+}
+
+.bg-gradient-primary {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%) !important;
+}
+
+.card {
+    border: none;
+    border-radius: 20px;
+}
+
+/* Form Sections */
+.form-section {
+    margin-bottom: 2.5rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.section-header {
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #f8f9fa;
+}
+
+.section-title {
+    color: #2c3e50;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.section-subtitle {
+    font-size: 0.9rem;
+}
+
+/* Form Controls */
+.form-label {
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+    font-size: 0.95rem;
+}
+
+/* Simplified Input Group Styling */
+.input-group-custom {
+    display: flex;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 2px solid #e9ecef;
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.input-group-custom:focus-within {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(67, 97, 238, 0.25);
+}
+
+.input-group-icon {
+    background: #f8f9fa;
+    border: none;
+    border-right: 2px solid #e9ecef;
+    padding: 0.75rem 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 55px;
+    color: var(--primary-color);
+    font-size: 1rem;
+}
+
+.input-group-prepend,
+.input-group-append {
+    background: #f8f9fa;
+    border: none;
+    padding: 0.75rem 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 55px;
+    color: #6c757d;
+    font-weight: 500;
+}
+
+.input-group-prepend {
+    border-right: 2px solid #e9ecef;
+}
+
+.input-group-append {
+    border-left: 2px solid #e9ecef;
+}
+
+.input-group-custom .form-control,
+.input-group-custom .form-select {
+    border: none !important;
+    border-radius: 0 !important;
+    padding: 0.75rem 1rem;
+    font-size: 0.95rem;
+    flex: 1;
+}
+
+.input-group-custom .form-control:focus,
+.input-group-custom .form-select:focus {
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+/* File Upload */
+.file-upload-area {
+    border: 2px dashed #dee2e6;
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    background: #fafbfc;
+}
+
+.file-upload-area:hover {
+    border-color: var(--primary-color);
+    background: #f8f9ff;
+}
+
+.preview-image {
+    max-height: 150px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.placeholder-image {
+    color: #6c757d;
+}
+
+/* Skills Preview */
+.badge-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.skill-badge {
+    background: linear-gradient(135deg, #66ddea90 0%, #8b4ba299 100%);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+/* Error Styling */
+.error-feedback {
+    color: #e74c3c;
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+    display: flex;
+    align-items: center;
+}
+
+.input-group-custom.is-invalid {
+    border-color: #e74c3c;
+}
+
+/* Summernote Editor Fixes */
+.rich-text-editor-container {
+    border-radius: 12px;
+    position: relative;
+}
+
+.summernote-editor {
+    min-height: 300px;
+    display: none; /* Hide original textarea */
+}
+
+/* Summernote Editor Custom Styling - FIXED FOR CPANEL */
+.note-editor.note-frame {
+    border: 2px solid #e9ecef !important;
+    border-radius: 12px !important;
+    overflow: hidden;
+    background-color: white !important;
+    margin-bottom: 0 !important;
+}
+
+.note-editor.note-frame .note-toolbar {
+    background: #f8f9fa !important;
+    border-bottom: 2px solid #e9ecef !important;
+    padding: 0.5rem !important;
+    border-radius: 12px 12px 0 0 !important;
+}
+
+.note-editor.note-frame .note-statusbar {
+    background: #f8f9fa !important;
+    border-top: 1px solid #e9ecef !important;
+    border-radius: 0 0 12px 12px !important;
+}
+
+/* FIXED: Set default text color to black and background to white */
+.note-editor.note-frame .note-editable {
+    background-color: white !important;
+    color: #000000 !important;
+    padding: 1rem !important;
+    min-height: 250px;
+    font-family: inherit !important;
+}
+
+/* Ensure all text elements inside editor have proper color */
+.note-editor.note-frame .note-editable p,
+.note-editor.note-frame .note-editable div,
+.note-editor.note-frame .note-editable span,
+.note-editor.note-frame .note-editable li,
+.note-editor.note-frame .note-editable td,
+.note-editor.note-frame .note-editable th,
+.note-editor.note-frame .note-editable h1,
+.note-editor.note-frame .note-editable h2,
+.note-editor.note-frame .note-editable h3,
+.note-editor.note-frame .note-editable h4,
+.note-editor.note-frame .note-editable h5,
+.note-editor.note-frame .note-editable h6 {
+    color: #000000 !important;
+}
+
+/* ENHANCED COLOR PICKER STYLES */
+.note-color .dropdown-toggle {
+    width: 36px !important;
+    height: 32px !important;
+    position: relative !important;
+    background-color: white !important;
+    border: 1px solid #dee2e6 !important;
+    border-radius: 4px !important;
+    transition: all 0.2s ease !important;
+    cursor: pointer !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+}
+
+/* TEXT COLOR BUTTON - WITH "A" ICON AND COLOR BOX */
+.note-color[data-event="foreColor"] .dropdown-toggle {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding: 0 4px !important;
+}
+
+/* "A" Icon for text color button */
+.note-color[data-event="foreColor"] .dropdown-toggle::before {
+    content: "A" !important;
+    font-size: 14px !important;
+    font-weight: bold !important;
+    color: #333 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 16px !important;
+    height: 100% !important;
+}
+
+/* Color preview box for text color */
+.note-color[data-event="foreColor"] .color-preview {
+    position: relative !important;
+    width: 16px !important;
+    height: 16px !important;
+    border-radius: 2px !important;
+    border: 1px solid #666 !important;
+    background-color: #000000 !important;
+    transition: all 0.2s ease !important;
+}
+
+/* BACKGROUND COLOR BUTTON - ONLY COLOR BOX */
+.note-color[data-event="backColor"] .dropdown-toggle {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+/* Color preview box for background color */
+.note-color[data-event="backColor"] .color-preview {
+    width: 20px !important;
+    height: 20px !important;
+    border-radius: 2px !important;
+    border: 1px solid #ccc !important;
+    background-color: #ffffff !important;
+    transition: all 0.2s ease !important;
+}
+
+/* ENHANCED HOVER EFFECTS FOR COLOR PICKER BUTTONS */
+.note-color .dropdown-toggle:hover {
+    background-color: #f8f9fa !important;
+    border-color: #4361ee !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 2px 8px rgba(67, 97, 238, 0.2) !important;
+}
+
+.note-color .dropdown-toggle:active {
+    transform: translateY(0) !important;
+    box-shadow: 0 1px 3px rgba(67, 97, 238, 0.1) !important;
+}
+
+/* Hover effect for color preview boxes */
+.note-color[data-event="foreColor"] .dropdown-toggle:hover .color-preview {
+    transform: scale(1.1) !important;
+    box-shadow: 0 0 0 1px rgba(67, 97, 238, 0.3) !important;
+}
+
+.note-color[data-event="backColor"] .dropdown-toggle:hover .color-preview {
+    transform: scale(1.1) !important;
+    box-shadow: 0 0 0 1px rgba(67, 97, 238, 0.3) !important;
+}
+
+/* Hide the default Summernote color icon */
+.note-color .note-current-color-button,
+.note-color .note-icon-font {
+    display: none !important;
+}
+
+/* ENHANCED COLOR PALETTE STYLING */
+.note-color-palette {
+    background: white !important;
+    border: 1px solid #dee2e6 !important;
+    padding: 10px !important;
+    min-width: 220px !important;
+}
+
+.note-color-palette button {
+    width: 20px !important;
+    height: 20px !important;
+    margin: 2px !important;
+    padding: 0 !important;
+    border: 1px solid #ddd !important;
+    border-radius: 2px !important;
+    transition: all 0.2s ease !important;
+    position: relative !important;
+    cursor: pointer !important;
+}
+
+.note-color-palette button:hover {
+    border-color: #4361ee !important;
+    transform: scale(1.2) !important;
+    z-index: 1 !important;
+    box-shadow: 0 0 0 2px rgba(67, 97, 238, 0.3) !important;
+}
+
+.note-color-palette button:active {
+    transform: scale(1.1) !important;
+}
+
+/* Color palette hover tooltip */
+.note-color-palette button:hover::after {
+    content: attr(data-value) !important;
+    position: absolute !important;
+    bottom: 100% !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    background: #333 !important;
+    color: white !important;
+    padding: 4px 8px !important;
+    border-radius: 4px !important;
+    font-size: 11px !important;
+    white-space: nowrap !important;
+    margin-bottom: 5px !important;
+    z-index: 1000 !important;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2) !important;
+}
+
+.note-color-palette button:hover::before {
+    content: '' !important;
+    position: absolute !important;
+    bottom: 100% !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    border: 4px solid transparent !important;
+    border-top-color: #333 !important;
+    margin-bottom: 1px !important;
+}
+
+/* Ensure the color palette shows actual colors */
+.note-color-palette div {
+    margin-bottom: 3px !important;
+}
+
+.note-color-palette .note-color-reset {
+    width: 100% !important;
+    height: auto !important;
+    margin-top: 10px !important;
+    padding: 8px !important;
+    text-align: center !important;
+    background: #f8f9fa !important;
+    border: 1px solid #dee2e6 !important;
+    border-radius: 4px !important;
+    transition: all 0.2s ease !important;
+    cursor: pointer !important;
+    font-size: 12px !important;
+    color: #666 !important;
+}
+
+.note-color-palette .note-color-reset:hover {
+    background: #4361ee !important;
+    color: white !important;
+    border-color: #4361ee !important;
+}
+
+/* Color dropdown menu styling */
+.note-color .dropdown-menu {
+    min-width: 230px !important;
+    padding: 12px !important;
+    border-radius: 8px !important;
+    border: 1px solid #dee2e6 !important;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15) !important;
+}
+
+/* Recent colors section */
+.note-color .note-color-row:first-child {
+    margin-bottom: 12px !important;
+    padding-bottom: 12px !important;
+    border-bottom: 1px solid #eee !important;
+}
+
+/* Active state for selected color in palette */
+.note-color-palette button.selected {
+    border: 2px solid #4361ee !important;
+    box-shadow: 0 0 0 1px white, 0 0 0 3px #4361ee !important;
+    transform: scale(1.15) !important;
+}
+
+/* Style for placeholder text */
+.note-editor.note-frame .note-placeholder {
+    color: #6c757d !important;
+    opacity: 0.7;
+    font-style: italic !important;
+}
+
+/* Ensure code view also has proper colors */
+.note-editor.note-frame .note-codable {
+    background-color: #f8f9fa !important;
+    color: #000000 !important;
+    font-family: monospace !important;
+}
+
+/* Fix Summernote modal styling */
+.note-modal .modal-content {
+    border-radius: 12px !important;
+    border: none !important;
+}
+
+.note-modal .modal-header {
+    background: #f8f9fa !important;
+    border-bottom: 1px solid #dee2e6 !important;
+}
+
+/* Fix for Summernote dropdowns */
+.note-dropdown-menu {
+    border-radius: 8px !important;
+    border: 1px solid #dee2e6 !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important;
+}
+
+/* ENHANCED TOOLTIP STYLING */
+.color-hover-tooltip {
+    position: absolute;
+    background: #333;
+    color: white;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    white-space: nowrap;
+    z-index: 9999;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.color-hover-tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: #333;
+}
+
+/* Buttons */
+.btn {
+    border-radius: 10px;
+    font-weight: 600;
+    padding: 0.6rem 1.5rem;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    font-size: 0.95rem;
+}
+
+.btn-success {
+    background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+    border-color: #27ae60;
+}
+
+.btn-success:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(46, 204, 113, 0.3);
+}
+
+.btn-outline-secondary {
+    border-color: #6c757d;
+    color: #6c757d;
+}
+
+.btn-outline-secondary:hover {
+    background: #6c757d;
+    border-color: #6c757d;
+    transform: translateY(-1px);
+}
+
+.btn-outline-warning {
+    border-color: #f39c12;
+    color: #f39c12;
+}
+
+.btn-outline-warning:hover {
+    background: #f39c12;
+    border-color: #f39c12;
+    color: white;
+    transform: translateY(-1px);
+}
+
+/* Form Actions */
+.form-actions {
+    background: #f8f9fa;
+    margin: 0 -1.5rem -1.5rem -1.5rem;
+    padding: 1.5rem;
+    border-radius: 0 0 20px 20px;
+}
+
+/* Character Count */
+#charCount {
+    font-weight: 600;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .form-actions .d-flex {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .btn {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+    
+    .input-group-custom {
+        flex-wrap: wrap;
+    }
+    
+    .input-group-icon,
+    .input-group-prepend,
+    .input-group-append {
+        width: 100%;
+        border-right: none;
+        border-bottom: 2px solid #e9ecef;
+        border-radius: 12px 12px 0 0 !important;
+        justify-content: flex-start;
+    }
+    
+    .input-group-custom .form-control,
+    .input-group-custom .form-select {
+        width: 100%;
+        border-radius: 0 0 12px 12px !important;
+    }
+    
+    /* Summernote responsive fixes */
+    .note-editor.note-frame {
+        width: 100% !important;
+    }
+    
+    .note-toolbar {
+        flex-wrap: wrap !important;
+    }
+    
+    .note-btn-group {
+        margin-bottom: 5px !important;
+    }
+}
+
+/* Ensure form fields are properly styled */
+.input-group-custom .form-control {
+    height: auto;
+    min-height: 50px;
+}
+
+/* Fix for textarea in input group */
+.input-group-custom .form-control[type="textarea"] {
+    min-height: 100px;
+    resize: vertical;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Summernote JS -->
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.js"></script>
+
+<script>
+$(document).ready(function() {
+    // Track selected colors for both pickers
+    let selectedTextColor = '#000000';
+    let selectedBackgroundColor = '#ffffff';
+    
+    // Initialize Summernote with proper configuration for cPanel
+    $('#id_description').summernote({
+        height: 300,
+        toolbar: [
+            ['style', ['style']],
+            ['font', ['bold', 'italic', 'underline', 'clear']],
+            ['fontname', ['fontname']],
+            ['fontsize', ['fontsize']],
+            ['color', ['forecolor', 'backcolor']],
+            ['para', ['ul', 'ol', 'paragraph']],
+            ['table', ['table']],
+            ['insert', ['link', 'picture', 'video']],
+            ['view', ['fullscreen', 'codeview', 'help']]
+        ],
+        placeholder: 'Write detailed job description here... Include responsibilities, requirements, benefits, etc.',
+        disableResizeEditor: true,
+        fontNames: ['Arial', 'Arial Black', 'Comic Sans MS', 'Courier New', 'Helvetica', 'Impact', 'Tahoma', 'Times New Roman', 'Verdana', 'Roboto'],
+        fontSizes: ['8', '9', '10', '11', '12', '14', '18', '24', '36'],
+        // Force default styles
+        styleTags: ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'],
+        callbacks: {
+            onInit: function() {
+                // Set initial background and text color
+                var editor = $(this);
+                var editable = editor.next('.note-editor').find('.note-editable');
+                
+                // Force black text on white background
+                editable.css({
+                    'background-color': 'white',
+                    'color': '#000000'
+                });
+                
+                // Ensure all content has proper color
+                editable.find('*').css('color', '#000000');
+                
+                // Initialize color picker previews
+                createColorPickerPreviews();
+            },
+            onChange: function(contents) {
+                // Update color picker previews
+                updateColorPickerPreviews();
+            },
+            onBlur: function() {
+                // Update color picker previews
+                updateColorPickerPreviews();
+            }
+        }
+    });
+
+    // Function to create color picker preview boxes
+    function createColorPickerPreviews() {
+        // Create preview for text color picker (with "A" icon)
+        var textColorBtn = $('.note-color[data-event="foreColor"] .dropdown-toggle');
+        if (textColorBtn.length && !textColorBtn.find('.color-preview').length) {
+            textColorBtn.append('<div class="color-preview"></div>');
+        }
+        
+        // Create preview for background color picker
+        var bgColorBtn = $('.note-color[data-event="backColor"] .dropdown-toggle');
+        if (bgColorBtn.length && !bgColorBtn.find('.color-preview').length) {
+            bgColorBtn.append('<div class="color-preview"></div>');
+        }
+        
+        // Update the colors
+        updateColorPickerPreviews();
+    }
+
+    // Function to update color picker preview boxes
+    function updateColorPickerPreviews() {
+        // Update text color picker
+        var textColorBtn = $('.note-color[data-event="foreColor"] .dropdown-toggle');
+        if (textColorBtn.length) {
+            var preview = textColorBtn.find('.color-preview');
+            if (preview.length) {
+                preview.css('background-color', selectedTextColor);
+                
+                // Update border based on color brightness
+                if (isLightColor(selectedTextColor)) {
+                    preview.css('border-color', '#666');
+                } else {
+                    preview.css('border-color', '#999');
+                }
+            }
+        }
+        
+        // Update background color picker
+        var bgColorBtn = $('.note-color[data-event="backColor"] .dropdown-toggle');
+        if (bgColorBtn.length) {
+            var preview = bgColorBtn.find('.color-preview');
+            if (preview.length) {
+                preview.css('background-color', selectedBackgroundColor);
+                
+                // Update border based on color brightness
+                if (isLightColor(selectedBackgroundColor)) {
+                    preview.css('border-color', '#ccc');
+                } else {
+                    preview.css('border-color', '#999');
+                }
+            }
+        }
+    }
+
+    // Helper function to check if color is light
+    function isLightColor(color) {
+        // Convert color to RGB
+        var rgb;
+        if (color.startsWith('#')) {
+            rgb = hexToRgb(color);
+        } else if (color.startsWith('rgb')) {
+            rgb = color.match(/\d+/g).map(Number);
+        } else {
+            return false;
+        }
+        
+        // Calculate luminance
+        var luminance = (0.299 * rgb[0] + 0.587 * rgb[1] + 0.114 * rgb[2]) / 255;
+        return luminance > 0.5;
+    }
+    
+    // Helper function to convert hex to RGB
+    function hexToRgb(hex) {
+        hex = hex.replace(/^#/, '');
+        if (hex.length === 3) {
+            hex = hex.split('').map(function(c) {
+                return c + c;
+            }).join('');
+        }
+        var num = parseInt(hex, 16);
+        return [num >> 16, (num >> 8) & 255, num & 255];
+    }
+    
+    // Helper function to convert RGB to hex
+    function rgbToHex(rgb) {
+        if (rgb.startsWith('#')) return rgb;
+        
+        var parts = rgb.match(/\d+/g);
+        if (!parts || parts.length < 3) return '#000000';
+        
+        var r = parseInt(parts[0]);
+        var g = parseInt(parts[1]);
+        var b = parseInt(parts[2]);
+        
+        return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+    }
+
+    // Character counter for short description
+    $('#id_short_description').on('input', function() {
+        const maxLength = 200;
+        const currentLength = $(this).val().length;
+        const charCount = $('#charCount');
+        
+        charCount.text(`${currentLength}/${maxLength}`);
+        
+        if (currentLength > maxLength) {
+            charCount.addClass('text-danger');
+            $(this).closest('.input-group-custom').addClass('is-invalid');
+        } else {
+            charCount.removeClass('text-danger');
+            $(this).closest('.input-group-custom').removeClass('is-invalid');
+        }
+    });
+
+    // Skills preview
+    $('#id_skills').on('input', function() {
+        const skillsText = $(this).val();
+        const skillsArray = skillsText.split(',').map(skill => skill.trim()).filter(skill => skill);
+        const badgeContainer = $('.badge-container');
+        
+        badgeContainer.empty();
+        
+        skillsArray.forEach(skill => {
+            if (skill) {
+                badgeContainer.append(`<span class="skill-badge">${skill}</span>`);
+            }
+        });
+    });
+
+    // Image preview
+    $('#id_image').on('change', function(e) {
+        const file = e.target.files[0];
+        const previewArea = $('.file-upload-preview');
+        
+        if (file) {
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                previewArea.html(`
+                    <img src="${e.target.result}" alt="Preview" class="img-thumbnail preview-image">
+                    <p class="text-success mt-2">
+                        <i class="fas fa-check-circle me-1"></i>
+                        Image selected: ${file.name}
+                    </p>
+                `);
+            };
+            
+            reader.readAsDataURL(file);
+        }
+    });
+
+    // Form validation
+    $('#vacancyForm').on('submit', function(e) {
+        let isValid = true;
+        const requiredFields = $('.input-group-custom [required]');
+        
+        requiredFields.each(function() {
+            const field = $(this);
+            const value = field.val().trim();
+            const inputGroup = field.closest('.input-group-custom');
+            
+            if (!value) {
+                inputGroup.addClass('is-invalid');
+                isValid = false;
+                
+                if (!inputGroup.next('.error-feedback').length) {
+                    inputGroup.after(`
+                        <div class="error-feedback">
+                            <i class="fas fa-exclamation-circle me-1"></i>
+                            This field is required
+                        </div>
+                    `);
+                }
+            } else {
+                inputGroup.removeClass('is-invalid');
+                inputGroup.next('.error-feedback').remove();
+            }
+        });
+
+        // Validate Summernote content
+        const summernoteContent = $('#id_description').summernote('code');
+        const summernoteContainer = $('.note-editor.note-frame');
+        
+        if (summernoteContent.trim() === '' || summernoteContent === '<p><br></p>') {
+            summernoteContainer.css('border-color', '#e74c3c');
+            isValid = false;
+            
+            if (!summernoteContainer.next('.error-feedback').length) {
+                summernoteContainer.after(`
+                    <div class="error-feedback">
+                        <i class="fas fa-exclamation-circle me-1"></i>
+                        Detailed job description is required
+                    </div>
+                `);
+            }
+        } else {
+            summernoteContainer.css('border-color', '#e9ecef');
+            summernoteContainer.next('.error-feedback').remove();
+        }
+
+        if (!isValid) {
+            e.preventDefault();
+            $('html, body').animate({
+                scrollTop: $('.is-invalid').first().offset().top - 100
+            }, 500);
+            
+            // Show error message
+            const errorAlert = `
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>Validation Error!</strong> Please fill in all required fields marked with *
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+            
+            // Remove any existing alerts
+            $('.alert-danger').remove();
+            
+            // Insert at the top of form
+            $(this).prepend(errorAlert);
+        }
+    });
+
+    // Real-time validation
+    $('.input-group-custom .form-control, .input-group-custom .form-select').on('blur', function() {
+        const field = $(this);
+        const value = field.val().trim();
+        const inputGroup = field.closest('.input-group-custom');
+        
+        if (field.prop('required') && !value) {
+            inputGroup.addClass('is-invalid');
+        } else {
+            inputGroup.removeClass('is-invalid');
+        }
+    });
+
+    // Reset form handler
+    $('button[type="reset"]').on('click', function() {
+        $('.input-group-custom').removeClass('is-invalid');
+        $('.error-feedback').remove();
+        $('#charCount').text('0/200');
+        $('.badge-container').empty();
+        $('.file-upload-preview').html(`
+            <div class="placeholder-image">
+                <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-2"></i>
+                <p class="text-muted">No image selected</p>
+            </div>
+        `);
+        
+        // Reset Summernote properly
+        $('#id_description').summernote('reset');
+        
+        // Reset Summernote styling and colors
+        setTimeout(function() {
+            var editable = $('.note-editor.note-frame .note-editable');
+            editable.css({
+                'background-color': 'white',
+                'color': '#000000'
+            });
+            
+            // Reset selected colors
+            selectedTextColor = '#000000';
+            selectedBackgroundColor = '#ffffff';
+            
+            // Update color picker previews
+            updateColorPickerPreviews();
+            
+            // Remove selected class from all palette buttons
+            $('.note-color-palette button').removeClass('selected');
+        }, 100);
+    });
+
+    // Initialize character count on page load
+    const initialLength = $('#id_short_description').val().length;
+    $('#charCount').text(`${initialLength}/200`);
+    
+    // Initialize skills badges if editing
+    const initialSkills = $('#id_skills').val();
+    if (initialSkills) {
+        $('#id_skills').trigger('input');
+    }
+    
+    // Handle color selection from palette
+    $(document).on('click', '.note-color-palette button', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        var $button = $(this);
+        var color = $button.data('value');
+        var $colorPicker = $button.closest('.note-color');
+        var eventType = $colorPicker.data('event');
+        
+        if (color) {
+            // Remove selected class from all buttons in this palette
+            $colorPicker.find('.note-color-palette button').removeClass('selected');
+            // Add selected class to clicked button
+            $button.addClass('selected');
+            
+            // Update the selected color based on which picker was used
+            if (eventType === 'foreColor') {
+                selectedTextColor = color;
+            } else if (eventType === 'backColor') {
+                selectedBackgroundColor = color;
+            }
+            
+            // Update both color picker previews to show the selected color
+            updateColorPickerPreviews();
+            
+            // Show a brief highlight animation
+            $button.css({
+                'transform': 'scale(1.3)',
+                'z-index': '2'
+            });
+            
+            setTimeout(function() {
+                $button.css({
+                    'transform': '',
+                    'z-index': ''
+                });
+            }, 300);
+            
+            // Store color in localStorage for persistence
+            if (eventType === 'foreColor') {
+                localStorage.setItem('summernoteTextColor', color);
+            } else if (eventType === 'backColor') {
+                localStorage.setItem('summernoteBackgroundColor', color);
+            }
+        }
+    });
+    
+    // IMPROVED HOVER TOOLTIPS FOR COLOR PICKERS
+    $(document).on('mouseenter', '.note-color[data-event="foreColor"] .dropdown-toggle', function() {
+        var $button = $(this);
+        var color = selectedTextColor;
+        
+        // Create tooltip
+        var tooltip = $('<div class="color-hover-tooltip">Text Color: ' + color + '</div>');
+        $('body').append(tooltip);
+        
+        // Position tooltip
+        var offset = $button.offset();
+        tooltip.css({
+            left: offset.left + $button.outerWidth() / 2 - tooltip.outerWidth() / 2,
+            top: offset.top - tooltip.outerHeight() - 8,
+            opacity: 1
+        });
+        
+        // Store reference to remove later
+        $button.data('tooltip', tooltip);
+    });
+    
+    $(document).on('mouseenter', '.note-color[data-event="backColor"] .dropdown-toggle', function() {
+        var $button = $(this);
+        var color = selectedBackgroundColor;
+        
+        // Create tooltip
+        var tooltip = $('<div class="color-hover-tooltip">Background Color: ' + color + '</div>');
+        $('body').append(tooltip);
+        
+        // Position tooltip
+        var offset = $button.offset();
+        tooltip.css({
+            left: offset.left + $button.outerWidth() / 2 - tooltip.outerWidth() / 2,
+            top: offset.top - tooltip.outerHeight() - 8,
+            opacity: 1
+        });
+        
+        // Store reference to remove later
+        $button.data('tooltip', tooltip);
+    });
+    
+    $(document).on('mouseleave', '.note-color .dropdown-toggle', function() {
+        var $button = $(this);
+        var tooltip = $button.data('tooltip');
+        if (tooltip) {
+            tooltip.remove();
+            $button.removeData('tooltip');
+        }
+    });
+    
+    // Fix for color picker when dropdown opens
+    $(document).on('show.bs.dropdown', '.note-color', function() {
+        setTimeout(function() {
+            // Ensure color palette buttons show actual colors
+            $('.note-color-palette button').each(function() {
+                var $btn = $(this);
+                var color = $btn.data('value');
+                if (color) {
+                    $btn.css('background-color', color);
+                    
+                    // Add border for light colors
+                    if (isLightColor(color)) {
+                        $btn.css('border', '1px solid #ddd');
+                    } else {
+                        $btn.css('border', '1px solid #666');
+                    }
+                }
+            });
+        }, 10);
+    });
+    
+    // Initialize color picker previews on page load
+    setTimeout(function() {
+        // Set Summernote editable area to white background and black text
+        var editable = $('.note-editor.note-frame .note-editable');
+        if (editable.length) {
+            editable.css({
+                'background-color': 'white',
+                'color': '#000000'
+            });
+            
+            // Ensure existing content has black text
+            editable.find('*').css('color', '#000000');
+        }
+        
+        // Load saved colors from localStorage if available
+        var savedTextColor = localStorage.getItem('summernoteTextColor');
+        var savedBgColor = localStorage.getItem('summernoteBackgroundColor');
+        
+        if (savedTextColor) {
+            selectedTextColor = savedTextColor;
+        }
+        
+        if (savedBgColor) {
+            selectedBackgroundColor = savedBgColor;
+        }
+        
+        // Create and update color picker previews
+        createColorPickerPreviews();
+        updateColorPickerPreviews();
+        
+        // Initialize palette button tooltips
+        $('.note-color-palette button').each(function() {
+            var $btn = $(this);
+            var color = $btn.data('value');
+            if (color) {
+                $btn.attr('title', color);
+            }
+        });
+    }, 500);
+});
+</script>
+{% endblock %}

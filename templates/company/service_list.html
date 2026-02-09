@@ -1,0 +1,353 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="card border-dark">
+        <div class="card-header bg-primary text-white border-dark">
+            <h5 class="card-title mb-0">
+                <i class="fas fa-cogs me-2"></i>{{ page_title }}
+            </h5>
+        </div>
+        <div class="card-body p-0">
+            <!-- Responsive DataTable -->
+            <div class="table-responsive">
+                <table id="services-table" class="table table-hover table-striped table-bordered border-dark" style="width:100%; margin:0;">
+                    <thead class="table-primary border-dark">
+                        <tr>
+                            <th style="border: 1px solid #000; border-bottom: 2px solid #000; padding: 12px; text-align: center;">Title</th>
+                            <th style="border: 1px solid #000; border-bottom: 2px solid #000; padding: 12px; text-align: center;">Sub Title</th>
+                            <th style="border: 1px solid #000; border-bottom: 2px solid #000; padding: 12px; text-align: center;">Description</th>
+                            <th style="border: 1px solid #000; border-bottom: 2px solid #000; padding: 12px; text-align: center;">Image</th>
+                            <th style="border: 1px solid #000; border-bottom: 2px solid #000; padding: 12px; text-align: center;">Icon</th>
+                            <th style="border: 1px solid #000; border-bottom: 2px solid #000; padding: 12px; text-align: center;">Status</th>
+                            <th style="border: 1px solid #000; border-bottom: 2px solid #000; padding: 12px; text-align: center;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="table-light border-dark">
+                        <!-- Data will be loaded via AJAX -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<!-- DataTables CSS -->
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.bootstrap5.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.4.1/css/responsive.bootstrap5.min.css">
+
+<style>
+#services-table {
+    border: 2px solid #000 !important;
+    border-collapse: separate !important;
+    background-color: white;
+}
+
+#services-table th,
+#services-table td {
+    border: 1px solid #000 !important;
+    vertical-align: middle !important;
+    padding: 12px 8px !important;
+}
+
+#services-table thead th {
+    border-bottom: 2px solid #000 !important;
+    background-color: #b8d4ff !important;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.img-thumbnail-table {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+/* Print, Excel, PDF, Copy export styling */
+.dt-button-info {
+    border: 2px solid #000;
+    border-radius: 5px;
+}
+
+.dt-button-info h2 {
+    background-color: #b8d4ff !important;
+    color: #000 !important;
+    border-bottom: 2px solid #000 !important;
+    padding: 15px;
+    margin: 0;
+}
+
+/* Responsive styling */
+@media screen and (max-width: 768px) {
+    .table-responsive {
+        border: 1px solid #000;
+    }
+    
+    .dataTables_wrapper .dataTables_filter input {
+        width: 100% !important;
+        margin-bottom: 10px;
+    }
+    
+    .dt-buttons {
+        margin-bottom: 10px;
+    }
+    
+    .btn-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+    }
+    
+    .dt-button {
+        flex: 1;
+        min-width: 80px;
+        font-size: 0.8rem;
+        padding: 0.25rem 0.5rem;
+    }
+}
+
+@media screen and (max-width: 576px) {
+    .card-body {
+        padding: 0.5rem !important;
+    }
+    
+    #services-table_wrapper .col-md-6 {
+        padding-left: 5px;
+        padding-right: 5px;
+    }
+}
+
+/* Fix for responsive modal close button */
+.dtr-modal {
+    z-index: 1060 !important;
+}
+
+.dtr-modal .dtr-modal-close {
+    position: absolute !important;
+    top: 15px !important;
+    right: 15px !important;
+    font-size: 1.5rem !important;
+    font-weight: bold !important;
+    background: transparent !important;
+    border: none !important;
+    cursor: pointer !important;
+    z-index: 1061 !important;
+    padding: 0 !important;
+    width: 30px !important;
+    height: 30px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.dtr-modal .dtr-modal-background {
+    z-index: 1059 !important;
+}
+
+.dtr-modal-content {
+    position: relative !important;
+    z-index: 1060 !important;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<!-- DataTables JS -->
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.bootstrap5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.print.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.4.1/js/responsive.bootstrap5.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+
+<script>
+$(document).ready(function() {
+    var table = $('#services-table').DataTable({
+        "processing": true,
+        "serverSide": true,
+        "ajax": {
+            "url": "{% url 'company_app:services_datatables_api' %}",
+            "type": "GET",
+            "dataType": "json",
+            "error": function(xhr, error, code) {
+                console.log(xhr);
+                console.log(error);
+                console.log(code);
+            }
+        },
+        "columns": [
+            {"data": "title", "name": "title", "className": "text-center"},
+            {"data": "sub_title", "name": "sub_title", "className": "text-center"},
+            {"data": "description", "name": "description", "className": "text-center", "orderable": false},
+            {"data": "image", "name": "image", "className": "text-center", "orderable": false, "searchable": false},
+            {"data": "icon", "name": "icon", "className": "text-center", "orderable": false},
+            {"data": "status", "name": "status", "className": "text-center", "orderable": false},
+            {"data": "actions", "name": "actions", "className": "text-center", "orderable": false, "searchable": false}
+        ],
+        "order": [[0, 'asc']],
+        "pageLength": 10,
+        "responsive": true,
+        "dom": '<"row"<"col-sm-12 col-md-6"B><"col-sm-12 col-md-6"f>>rtip',
+        "buttons": [
+            {
+                extend: 'copy',
+                text: '<i class="fas fa-copy"></i> Copy',
+                className: 'btn btn-secondary btn-sm',
+                title: 'Services List',
+                exportOptions: {
+                    columns: ':visible'
+                }
+            },
+            {
+                extend: 'excel',
+                text: '<i class="fas fa-file-excel"></i> Excel',
+                className: 'btn btn-success btn-sm',
+                title: 'Services List',
+                exportOptions: {
+                    columns: ':visible'
+                }
+            },
+            {
+                extend: 'pdf',
+                text: '<i class="fas fa-file-pdf"></i> PDF',
+                className: 'btn btn-danger btn-sm',
+                title: 'Services List',
+                exportOptions: {
+                    columns: ':visible'
+                },
+                customize: function (doc) {
+                    doc.content[0].text = 'Services List';
+                    doc.content[0].alignment = 'center';
+                    doc.content[0].margin = [0, 0, 0, 10];
+                }
+            },
+            {
+                extend: 'print',
+                text: '<i class="fas fa-print"></i> Print',
+                className: 'btn btn-info btn-sm',
+                title: '<h2 class="text-center">Services List</h2>',
+                exportOptions: {
+                    columns: ':visible'
+                },
+                customize: function (win) {
+                    $(win.document.body).find('h1').css('text-align','center');
+                    $(win.document.body).find('table').addClass('display').css('font-size', '12px');
+                }
+            },
+            {
+                text: '<i class="fas fa-plus"></i> Add Service',
+                className: 'btn btn-primary btn-sm',
+                action: function (e, dt, node, config) {
+                    window.location.href = "{% url 'company_app:services_create' %}";
+                }
+            }
+        ],
+        "language": {
+            "search": "Search:",
+            "lengthMenu": "Show _MENU_ entries",
+            "info": "Showing _START_ to _END_ of _TOTAL_ entries",
+            "infoEmpty": "Showing 0 to 0 of 0 entries",
+            "infoFiltered": "(filtered from _MAX_ total entries)",
+            "zeroRecords": "No matching records found",
+            "paginate": {
+                "first": "First",
+                "last": "Last",
+                "next": "Next",
+                "previous": "Previous"
+            }
+        },
+        "initComplete": function() {
+            // Add custom CSS to search box
+            $('.dataTables_filter input').addClass('form-control form-control-sm')
+                .attr('placeholder', 'Search in all columns...')
+                .css('width', '300px');
+                
+            // Make buttons responsive
+            $('.dt-buttons').addClass('btn-group flex-wrap');
+            $('.dt-button').addClass('btn btn-sm');
+        },
+        "responsive": {
+            "details": {
+                "display": $.fn.dataTable.Responsive.display.modal({
+                    "header": function (row) {
+                        var data = row.data();
+                        return 'Details for ' + data.title;
+                    }
+                }),
+                "renderer": $.fn.dataTable.Responsive.renderer.tableAll({
+                    "tableClass": 'table'
+                })
+            }
+        }
+    });
+
+    table.on('draw', function() {
+        $('[data-bs-toggle="tooltip"]').tooltip();
+    });
+
+    // Handle window resize for better responsiveness
+    $(window).on('resize', function() {
+        table.responsive.recalc();
+    });
+
+    // Fix for responsive modal close button
+    $(document).on('click', '.dtr-modal-close', function() {
+        $('.dtr-modal').hide();
+        $('.dtr-modal-background').hide();
+    });
+
+    // Alternative close method - close modal when clicking on background
+    $(document).on('click', '.dtr-modal-background', function(e) {
+        if (e.target === this) {
+            $('.dtr-modal').hide();
+            $('.dtr-modal-background').hide();
+        }
+    });
+
+    // ESC key to close modal
+    $(document).on('keydown', function(e) {
+        if (e.keyCode === 27) { // ESC key
+            $('.dtr-modal').hide();
+            $('.dtr-modal-background').hide();
+        }
+    });
+
+    // Ensure modal elements are properly structured when created
+    $(document).on('responsive-display.dt', function(e, datatable, row, show, update) {
+        if (show) {
+            // Add proper close button if not present
+            setTimeout(function() {
+                var $modal = $('.dtr-modal');
+                var $closeBtn = $modal.find('.dtr-modal-close');
+                
+                if ($closeBtn.length === 0) {
+                    $modal.prepend('<button class="dtr-modal-close">&times;</button>');
+                }
+                
+                // Ensure proper z-index and positioning
+                $modal.css({
+                    'z-index': '1060',
+                    'position': 'fixed'
+                });
+                
+                $('.dtr-modal-background').css({
+                    'z-index': '1059',
+                    'position': 'fixed'
+                });
+            }, 100);
+        }
+    });
+});
+
+</script>
+{% endblock %}

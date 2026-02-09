@@ -1,0 +1,321 @@
+{% extends 'Frontend/base.html' %}
+{% load static %}
+{% block title %}Services{% endblock %}
+{% block extra_css %}{% endblock %}
+
+{% block content %}
+  <main class="main">
+    <div class="page-title light-background">
+      <div class="container">
+        <h1>BG-Infotechs</h1>
+        <nav class="breadcrumbs">
+          <ol>
+            <li><a href="{% url 'frontend_app:home' %}"><i class="fas fa-home"></i> Home</a></li>
+            <li class="current">Services</li>
+          </ol>
+        </nav>
+      </div>
+    </div>
+
+
+    <!-- Services Section -->
+    <section id="services" class="services section">
+
+      <!-- Section Title -->
+      <div class="container section-title" data-aos="fade-up">
+        <h2 class="text-black">Our Services</h2>
+        <p class="text-secondary">Comprehensive IT solutions to grow your business in the digital age</p>
+      </div><!-- End Section Title -->
+
+      <div class="container" data-aos="fade-up" data-aos-delay="100">
+
+        <div class="row align-items-center">
+          <div class="col-lg-6">
+            <div class="intro-content" data-aos="fade-right" data-aos-delay="100">
+              <div class="section-badge mb-3" data-aos="zoom-in" data-aos-delay="50">
+                <i class="bi bi-star-fill"></i>
+                <span>WHAT WE OFFER</span>
+              </div>
+              <h2 class="section-heading mb-4">Digital Solutions for Your Business Growth</h2>
+              <p class="section-description mb-4">As Dhangadhi's leading IT company, we provide cutting-edge digital
+                services to help local businesses thrive online. Our team combines technical expertise with creative
+                solutions to deliver measurable results.</p>
+              <a href="#" class="cta-button" data-aos="fade-right" data-aos-delay="200">
+                View Our Portfolio
+              </a>
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <div class="hero-visual" data-aos="fade-left" data-aos-delay="150">
+              <img src="{% static 'img/services/Software integration-bro.png' %}" alt="IT Services" class="img-fluid">
+            </div>
+          </div>
+        </div>
+
+        <div class="services-grid mt-5">
+          <div class="row g-4">
+            <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
+              <div class="service-card">
+                <div class="card-number text-center">
+                  <img src="{% static 'img/misc/Social networking-pana.png' %}" width="50%" height="150px" alt="">
+                </div>
+                <div class="card-content">
+                  <h5 class="service-title">
+                    <a href="#" class="fw-bold">Social Media Marketing</a>
+                  </h5>
+                  <p class="service-description ">Boost your online presence with targeted campaigns on Facebook,
+                    Instagram, and other platforms to engage your audience and grow your brand.</p>
+                </div>
+              </div>
+            </div><!-- End Service Card -->
+
+            <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
+              <div class="service-card">
+                <div class="card-number text-center">
+                  <img src="{% static 'img/misc/Marketing-bro.png' %}" width="50%" height="150px" alt="">
+                </div>
+                <div class="card-content">
+                  <h5 class="service-title">
+                    <a href="#" class="fw-bold">Digital Marketing</a>
+                  </h5>
+                  <p class="service-description">Comprehensive online marketing strategies including SEO, PPC, and
+                    content marketing to drive traffic and conversions.</p>
+                </div>
+              </div>
+            </div><!-- End Service Card -->
+
+            <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
+              <div class="service-card">
+                <div class="card-number text-center">
+                  <img src="{% static 'img/misc/Website Creator-amico.png' %}" width="50%" height="150px" alt="">
+                </div>
+                <div class="card-content">
+                  <h5 class="service-title">
+                    <a href="{% url 'frontend_app:web_development' %}" class="fw-bold">Web Development</a>
+                  </h5>
+                  <p class="service-description">Custom websites and web applications built with modern technologies to
+                    showcase your business and convert visitors.</p>
+                </div>
+              </div>
+            </div><!-- End Service Card -->
+
+            <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
+              <div class="service-card">
+                <div class="card-number text-center">
+                  <img src="{% static 'img/misc/App development-bro.png' %}" width="50%" height="150px" alt="">
+                </div>
+                <div class="card-content">
+                  <h5 class="service-title">
+                    <a href="#" class="fw-bold">Mobile App Development</a>
+                  </h5>
+                  <p class="service-description">Native and cross-platform mobile applications for iOS and Android to
+                    engage customers on-the-go.</p>
+                </div>
+              </div>
+            </div><!-- End Service Card -->
+
+            <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
+              <div class="service-card">
+                <div class="card-number text-center">
+                  <img src="{% static 'img/misc/Content structure-amico.png' %}" width="50%" height="150px" alt="">
+                </div>
+                <div class="card-content">
+                  <h5 class="service-title">
+                    <a href="#" class="fw-bold">IT Training</a>
+                  </h5>
+                  <p class="service-description">Professional courses in programming, digital marketing, and other IT
+                    skills to empower local talent.</p>
+                </div>
+              </div>
+            </div><!-- End Service Card -->
+
+            <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
+              <div class="service-card">
+                <div class="card-number text-center">
+                  <img src="{% static 'img/misc/Cloud hosting-bro.png' %}" width="50%" height="150px" alt="">
+                </div>
+                <div class="card-content">
+                  <h5 class="service-title">
+                    <a href="#" class="fw-bold">Web Hosting</a>
+                  </h5>
+                  <p class="service-description">Reliable and secure hosting solutions with 99.9% uptime to keep your
+                    website always accessible.</p>
+                </div>
+              </div>
+            </div><!-- End Service Card -->
+
+            <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
+              <div class="service-card">
+                <div class="card-number text-center">
+                  <img src="{% static 'img/misc/Website Creator-amico.png' %}" width="50%" height="150px" alt="">
+                </div>
+                <div class="card-content">
+                  <h5 class="service-title">
+                    <a href="#" class="fw-bold">Graphics Design</a>
+                  </h5>
+                  <p class="service-description">Creative visual solutions including logos, branding materials, and
+                    marketing collateral that make an impact.</p>
+                </div>
+              </div>
+            </div><!-- End Service Card -->
+
+            <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
+              <div class="service-card">
+                <div class="card-number text-center">
+                  <img src="{% static 'img/misc/Marketing consulting-bro.png' %}" width="50%" height="150px" alt="">
+                </div>
+                <div class="card-content">
+                  <h5 class="service-title">
+                    <a href="#" class="fw-bold">E-Commerce Solutions</a>
+                  </h5>
+                  <p class="service-description">Complete online store setup with payment integration and inventory
+                    management for your business.</p>
+                </div>
+              </div>
+            </div><!-- End Service Card -->
+
+            <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
+              <div class="service-card">
+                <div class="card-number text-center">
+                  <img src="{% static 'img/misc/SEO analytics team-bro.png' %}" width="50%" height="150px" alt="">
+                </div>
+                <div class="card-content">
+                  <h5 class="service-title">
+                    <a href="#" class="fw-bold">SEO Services</a>
+                  </h5>
+                  <p class="service-description">Improve your search rankings and organic traffic with our proven search
+                    engine optimization strategies.</p>
+                </div>
+              </div>
+            </div><!-- End Service Card -->
+
+          </div>
+        </div>
+
+      </div>
+
+    </section><!-- /Services Section -->
+
+    <!-- Service Details Section -->
+    <section id="service-details" class="service-details section">
+
+      <div class="container" data-aos="fade-up" data-aos-delay="100">
+
+        <div class="row gy-5">
+
+          <div class="col-lg-12" data-aos="fade-up" data-aos-delay="200">
+            <div class="service-content">
+
+              <div class="service-features">
+                <h4>What You'll Get</h4>
+                <div class="row gy-3">
+                  <div class="col-md-6">
+                    <div class="feature-item">
+                      <div class="feature-icon">
+                        <i class="bi bi-graph-up-arrow"></i>
+                      </div>
+                      <div class="feature-content">
+                        <h5>Analytics &amp; Reporting</h5>
+                        <p>Comprehensive tracking and performance analysis</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="feature-item">
+                      <div class="feature-icon">
+                        <i class="bi bi-people"></i>
+                      </div>
+                      <div class="feature-content">
+                        <h5>Audience Targeting</h5>
+                        <p>Precise demographic and behavioral targeting</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="feature-item">
+                      <div class="feature-icon">
+                        <i class="bi bi-megaphone"></i>
+                      </div>
+                      <div class="feature-content">
+                        <h5>Multi-Channel Campaigns</h5>
+                        <p>Integrated social media and search marketing</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="feature-item">
+                      <div class="feature-icon">
+                        <i class="bi bi-gear"></i>
+                      </div>
+                      <div class="feature-content">
+                        <h5>Strategy Optimization</h5>
+                        <p>Continuous refinement for maximum ROI</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="service-process">
+                <h4>Our Process</h4>
+                <div class="process-steps">
+                  <div class="process-step">
+                    <div class="step-number">01</div>
+                    <div class="step-content">
+                      <h5>Requirement Gathering</h5>
+                      <p>Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.
+                        Vestibulum tortor quam, feugiat vitae.</p>
+                    </div>
+                  </div>
+                  <div class="process-step">
+                    <div class="step-number">02</div>
+                    <div class="step-content">
+                      <h5>Plan & Resources</h5>
+                      <p>Donec rutrum congue leo eget malesuada. Cras ultricies ligula sed magna dictum porta.
+                        Vestibulum ante ipsum primis in faucibus.</p>
+                    </div>
+                  </div>
+                  <div class="process-step">
+                    <div class="step-number">03</div>
+                    <div class="step-content">
+                      <h5>Design & Develop</h5>
+                      <p>Curabitur arcu erat, accumsan id imperdiet et, porttitor at sem. Mauris blandit aliquet elit
+                        eget tincidunt nibh pulvinar.</p>
+                    </div>
+                  </div>
+                  <div class="process-step">
+                    <div class="step-number">04</div>
+                    <div class="step-content">
+                      <h5>Quality Assurance</h5>
+                      <p>Vivamus magna justo, lacinia eget consectetur sed, convallis at tellus. Proin eget tortor risus
+                        donec sollicitudin molestie.</p>
+                    </div>
+                  </div>
+                  <div class="process-step">
+                    <div class="step-number">05</div>
+                    <div class="step-content">
+                      <h5>Deployment</h5>
+                      <p>Vivamus magna justo, lacinia eget consectetur sed, convallis at tellus. Proin eget tortor risus
+                        donec sollicitudin molestie.</p>
+                    </div>
+                  </div>
+                  <div class="process-step">
+                    <div class="step-number">06</div>
+                    <div class="step-content">
+                      <h5>Support & Maintainance</h5>
+                      <p>Vivamus magna justo, lacinia eget consectetur sed, convallis at tellus. Proin eget tortor risus
+                        donec sollicitudin molestie.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </section><!-- /Service Details Section -->
+
+  </main>
+ {% endblock %}

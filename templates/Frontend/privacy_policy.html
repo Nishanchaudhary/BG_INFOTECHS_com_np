@@ -1,0 +1,453 @@
+{% extends 'Frontend/base.html' %}
+{% load static %}
+{% block title %}Privacy Policy{% endblock %}
+{% block extra_css %}
+<style>
+    :root {
+        --primary-color: #4361ee;
+        --secondary-color: #7209b7;
+        --accent-color: #f72585;
+        --success-color: #4cc9f0;
+        --dark-color: #212529;
+        --light-color: #f8f9fa;
+        --gradient-primary: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        background-color: #f8f9fa;
+    }
+
+    .container {
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+
+    .privacy-hero {
+        background: var(--gradient-primary);
+        color: white;
+        padding: 100px 0 60px;
+        position: relative;
+        overflow: hidden;
+        text-align: center;
+    }
+
+    .privacy-hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.1);
+    }
+
+    .privacy-hero h1 {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        position: relative;
+    }
+
+    .privacy-hero p {
+        font-size: 1.2rem;
+        max-width: 800px;
+        margin: 0 auto;
+        position: relative;
+    }
+
+    .privacy-container {
+        background: white;
+        border-radius: 20px;
+        padding: 3rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        margin: -50px auto 3rem;
+        position: relative;
+        max-width: 1200px;
+    }
+
+    .privacy-content {
+        line-height: 1.8;
+        color: #495057;
+    }
+
+    .privacy-content h2 {
+        color: var(--primary-color);
+        margin: 2.5rem 0 1rem;
+        font-weight: 700;
+        border-bottom: 2px solid #e9ecef;
+        padding-bottom: 0.5rem;
+    }
+
+    .privacy-content h3 {
+        color: var(--dark-color);
+        margin: 2rem 0 1rem;
+        font-weight: 600;
+    }
+
+    .privacy-content p {
+        margin-bottom: 1.2rem;
+        text-align: justify;
+    }
+
+    .privacy-content ul {
+        margin: 1rem 0;
+        padding-left: 2rem;
+    }
+
+    .privacy-content li {
+        margin-bottom: 0.8rem;
+        position: relative;
+    }
+
+    .data-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 1.5rem 0;
+        background: #f8f9fa;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .data-table th {
+        background: var(--primary-color);
+        color: white;
+        padding: 1rem;
+        text-align: left;
+        font-weight: 600;
+    }
+
+    .data-table td {
+        padding: 1rem;
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .data-table tr:last-child td {
+        border-bottom: none;
+    }
+
+    .highlight-box {
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        border-left: 4px solid var(--primary-color);
+        padding: 1.5rem;
+        border-radius: 10px;
+        margin: 1.5rem 0;
+    }
+
+    .security-features {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin: 2rem 0;
+    }
+
+    .security-item {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        text-align: center;
+        border: 1px solid #e9ecef;
+    }
+
+    .security-item i {
+        font-size: 2.5rem;
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+    }
+
+    .contact-info {
+        background: var(--gradient-primary);
+        color: white;
+        padding: 2rem;
+        border-radius: 15px;
+        text-align: center;
+        margin: 2rem 0;
+    }
+
+    .last-updated {
+        text-align: center;
+        color: #6c757d;
+        font-style: italic;
+        margin-top: 3rem;
+        padding-top: 2rem;
+        border-top: 1px solid #dee2e6;
+    }
+
+    .text-center {
+        text-align: center;
+    }
+
+    .text-muted {
+        color: #6c757d;
+    }
+
+    .mb-5 {
+        margin-bottom: 3rem;
+    }
+
+    @media (max-width: 768px) {
+        .privacy-container {
+            padding: 2rem;
+            margin: -30px 1rem 2rem;
+        }
+
+        .privacy-hero {
+            padding: 80px 0 40px;
+        }
+
+        .privacy-hero h1 {
+            font-size: 2rem;
+        }
+
+        .privacy-hero p {
+            font-size: 1rem;
+        }
+
+        .data-table {
+            display: block;
+            overflow-x: auto;
+        }
+
+        .security-features {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<main class="main">
+    <!-- Hero Section -->
+    <section class="privacy-hero">
+        <div class="container">
+            <h1>Privacy Policy</h1>
+            <p>Your privacy is important to us. Learn how we collect, use, and protect your personal information.</p>
+        </div>
+    </section>
+
+    <!-- Privacy Content -->
+    <div class="container">
+        <div class="privacy-container">
+            <div class="privacy-content">
+                <div class="text-center mb-5">
+                    <p class="text-muted">Last Updated: <span id="current-date"></span></p>
+                </div>
+
+                <h2>1. Introduction</h2>
+                <p>BG Infotechs ("we," "our," or "us") is committed to protecting your privacy and ensuring the security
+                    of your personal information. This Privacy Policy explains how we collect, use, disclose, and
+                    safeguard your information when you use our services, enroll in our courses, or visit our website.
+                </p>
+
+                <div class="highlight-box">
+                    <strong>Important:</strong> By using our services, you consent to the data practices described in
+                    this policy. If you do not agree with any part of this policy, please do not use our services.
+                </div>
+
+                <h2>2. Information We Collect</h2>
+                <h3>2.1 Personal Information</h3>
+                <p>We collect personal information that you voluntarily provide to us, including:</p>
+
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Information Type</th>
+                            <th>Examples</th>
+                            <th>Purpose</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Identification Information</td>
+                            <td>Full name, date of birth, government ID</td>
+                            <td>Course registration, certificate issuance</td>
+                        </tr>
+                        <tr>
+                            <td>Contact Information</td>
+                            <td>Email address, phone number, physical address</td>
+                            <td>Communication, course updates, support</td>
+                        </tr>
+                        <tr>
+                            <td>Academic Information</td>
+                            <td>Educational background, work experience, skills</td>
+                            <td>Course placement, personalized learning</td>
+                        </tr>
+                        <tr>
+                            <td>Payment Information</td>
+                            <td>Billing address, payment method details</td>
+                            <td>Processing payments, financial records</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>2.2 Automatically Collected Information</h3>
+                <p>When you visit our website, we automatically collect certain information, including:</p>
+                <ul>
+                    <li><strong>Device Information:</strong> IP address, browser type, operating system</li>
+                    <li><strong>Usage Data:</strong> Pages visited, time spent, click patterns</li>
+                    <li><strong>Technical Information:</strong> Cookies, log files, analytics data</li>
+                </ul>
+
+                <h2>3. How We Use Your Information</h2>
+                <p>We use the collected information for the following purposes:</p>
+
+                <div class="security-features">
+                    <div class="security-item">
+                        <i class="fas fa-user-graduate"></i>
+                        <h4>Course Enrollment</h4>
+                        <p>Process your enrollment and manage your student account</p>
+                    </div>
+                    <div class="security-item">
+                        <i class="fas fa-comments"></i>
+                        <h4>Communication</h4>
+                        <p>Send course updates, announcements, and important information</p>
+                    </div>
+                    <div class="security-item">
+                        <i class="fas fa-chart-line"></i>
+                        <h4>Service Improvement</h4>
+                        <p>Enhance our courses and develop new educational offerings</p>
+                    </div>
+                    <div class="security-item">
+                        <i class="fas fa-shield-alt"></i>
+                        <h4>Security</h4>
+                        <p>Protect against fraud and ensure platform security</p>
+                    </div>
+                </div>
+
+                <h2>4. Information Sharing and Disclosure</h2>
+                <h3>4.1 Third-Party Service Providers</h3>
+                <p>We may share your information with trusted third-party service providers who assist us in:</p>
+                <ul>
+                    <li>Payment processing</li>
+                    <li>Email communication services</li>
+                    <li>Cloud storage and hosting</li>
+                    <li>Analytics and performance monitoring</li>
+                </ul>
+
+                <h3>4.2 Legal Requirements</h3>
+                <p>We may disclose your information when required by law or in response to:</p>
+                <ul>
+                    <li>Court orders or legal processes</li>
+                    <li>Government requests</li>
+                    <li>Enforcement of our terms and conditions</li>
+                    <li>Protection of our rights and property</li>
+                </ul>
+
+                <h3>4.3 Business Transfers</h3>
+                <p>In the event of a merger, acquisition, or sale of all or a portion of our assets, your information
+                    may be transferred to the new entity.</p>
+
+                <h2>5. Data Security</h2>
+                <p>We implement appropriate technical and organizational security measures to protect your personal
+                    information, including:</p>
+                <ul>
+                    <li>SSL encryption for data transmission</li>
+                    <li>Secure servers with restricted access</li>
+                    <li>Regular security assessments and updates</li>
+                    <li>Employee training on data protection</li>
+                </ul>
+
+                <div class="highlight-box">
+                    <strong>Security Notice:</strong> While we implement robust security measures, no method of
+                    transmission over the Internet or electronic storage is 100% secure. We cannot guarantee absolute
+                    security but we continuously work to maintain the highest standards of data protection.
+                </div>
+
+                <h2>6. Data Retention</h2>
+                <p>We retain your personal information only for as long as necessary to fulfill the purposes outlined in
+                    this policy, unless a longer retention period is required or permitted by law.</p>
+
+                <ul>
+                    <li><strong>Active Students:</strong> Data retained for the duration of enrollment plus 5 years</li>
+                    <li><strong>Inactive Students:</strong> Data archived after 5 years of inactivity</li>
+                    <li><strong>Financial Records:</strong> Retained for 7 years as required by law</li>
+                </ul>
+
+                <h2>7. Your Rights and Choices</h2>
+                <h3>7.1 Access and Correction</h3>
+                <p>You have the right to:</p>
+                <ul>
+                    <li>Access the personal information we hold about you</li>
+                    <li>Request correction of inaccurate or incomplete information</li>
+                    <li>Request deletion of your personal information</li>
+                    <li>Object to certain processing activities</li>
+                </ul>
+
+                <h3>7.2 Marketing Communications</h3>
+                <p>You can opt-out of marketing communications at any time by:</p>
+                <ul>
+                    <li>Clicking the "unsubscribe" link in our emails</li>
+                    <li>Updating your communication preferences in your account settings</li>
+                    <li>Contacting us directly at privacy@bginfotechs.com</li>
+                </ul>
+
+                <h2>8. Cookies and Tracking Technologies</h2>
+                <p>We use cookies and similar tracking technologies to:</p>
+                <ul>
+                    <li>Remember your preferences and settings</li>
+                    <li>Analyze website traffic and usage patterns</li>
+                    <li>Personalize your learning experience</li>
+                    <li>Provide relevant advertisements (if applicable)</li>
+                </ul>
+
+                <p>You can control cookies through your browser settings. However, disabling cookies may affect your
+                    experience with our services.</p>
+
+                <h2>9. International Data Transfers</h2>
+                <p>Your information may be transferred to and processed in countries other than your own. We ensure
+                    appropriate safeguards are in place to protect your data during international transfers.</p>
+
+                <h2>10. Children's Privacy</h2>
+                <p>Our services are not intended for children under 16 years of age. We do not knowingly collect
+                    personal information from children under 16. If you believe we have collected information from a
+                    child under 16, please contact us immediately.</p>
+
+                <h2>11. Changes to This Policy</h2>
+                <p>We may update this Privacy Policy from time to time. We will notify you of any significant changes
+                    by:</p>
+                <ul>
+                    <li>Posting the updated policy on our website</li>
+                    <li>Sending email notifications to registered users</li>
+                    <li>Updating the "Last Updated" date at the top of this policy</li>
+                </ul>
+
+                <h2>12. Contact Us</h2>
+                <div class="contact-info">
+                    <h3>Data Protection Officer</h3>
+                    <p>If you have any questions, concerns, or requests regarding this Privacy Policy or our data
+                        practices, please contact our Data Protection Officer:</p>
+                    <p>
+                        <strong>Email:</strong> info@bginfotechs.com<br>
+                        <strong>Phone:</strong> 9842251119<br>
+                        <strong>Address:</strong> Taranagar-05, Dhangadhi, Kailali, Nepal<br>
+                        <strong>Response Time:</strong> We aim to respond to all inquiries within 48 hours
+                    </p>
+                </div>
+
+                <div class="last-updated">
+                    <p>This Privacy Policy was last updated on <span id="last-updated-date"></span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script>
+    // Set current date
+    const currentDate = new Date();
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    document.getElementById('current-date').textContent = currentDate.toLocaleDateString('en-US', options);
+    document.getElementById('last-updated-date').textContent = currentDate.toLocaleDateString('en-US', options);
+</script>
+
+{% endblock %}

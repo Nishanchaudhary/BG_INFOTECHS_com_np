@@ -1,0 +1,670 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-xxl-8 col-xl-10 col-lg-12">
+            <div class="card border-0 shadow-lg rounded-3">
+                <div class="card-header bg-gradient-success text-white py-4 border-0">
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
+                        <div class="mb-3 mb-md-0">
+                            <h2 class="h4 mb-1 text-white fw-bold">
+                                <i class="fas {{ breadcrumb_icon|default:'fa-question-circle' }} me-2"></i>{{ page_title }}
+                            </h2>
+                            <p class="mb-0 text-white opacity-75">
+                                {% if faq %}
+                                    Update existing FAQ information
+                                {% else %}
+                                    Create a new frequently asked question
+                                {% endif %}
+                            </p>
+                        </div>
+                        <a href="{% url 'company_app:services_faq_list' %}" class="btn btn-light btn-lg px-4 rounded-pill">
+                            <i class="fas fa-arrow-left me-2"></i> Back to List
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="card-body p-4 p-md-5">
+                    <!-- Success/Error Messages -->
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show rounded-3 border-0 shadow-sm" role="alert">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas {% if message.tags == 'success' %}fa-check-circle{% elif message.tags == 'error' %}fa-exclamation-circle{% else %}fa-info-circle{% endif %} me-3 fs-5"></i>
+                                    <div class="flex-grow-1">
+                                        <strong class="d-block mb-1">
+                                            {% if message.tags == 'success' %}Success!{% elif message.tags == 'error' %}Error!{% else %}Info{% endif %}
+                                        </strong>
+                                        {{ message }}
+                                    </div>
+                                </div>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <form method="post" novalidate class="needs-validation">
+                        {% csrf_token %}
+                        
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger rounded-3 border-0 shadow-sm">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-exclamation-triangle me-3 text-danger fs-5"></i>
+                                    <div>
+                                        <strong class="d-block mb-1">Form Errors</strong>
+                                        {% for error in form.non_field_errors %}
+                                            <div>{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        <div class="row g-4">
+                            <!-- Question Field -->
+                            <div class="col-12">
+                                <div class="form-floating">
+                                    {{ form.question }}
+                                    <label for="{{ form.question.id_for_label }}" class="fw-semibold">
+                                        Question <span class="text-danger">*</span>
+                                    </label>
+                                </div>
+                                {% if form.question.errors %}
+                                    <div class="text-danger small mt-2 ps-3">
+                                        {% for error in form.question.errors %}
+                                            <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                                <div class="form-text ps-3 mt-1">
+                                    <i class="fas fa-lightbulb text-warning me-1"></i>
+                                    Enter a clear and concise question that users might ask.
+                                </div>
+                            </div>
+
+                            <!-- Service Field -->
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    {{ form.service }}
+                                    <label for="{{ form.service.id_for_label }}" class="fw-semibold">
+                                        Service <span class="text-danger">*</span>
+                                    </label>
+                                </div>
+                                {% if form.service.errors %}
+                                    <div class="text-danger small mt-2 ps-3">
+                                        {% for error in form.service.errors %}
+                                            <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                                <div class="form-text ps-3 mt-1">
+                                    <i class="fas fa-cogs text-primary me-1"></i>
+                                    Select the service this FAQ belongs to.
+                                </div>
+                            </div>
+
+                            <!-- Status Field -->
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    {{ form.status }}
+                                    <label for="{{ form.status.id_for_label }}" class="fw-semibold">
+                                        Status <span class="text-danger">*</span>
+                                    </label>
+                                </div>
+                                {% if form.status.errors %}
+                                    <div class="text-danger small mt-2 ps-3">
+                                        {% for error in form.status.errors %}
+                                            <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                                <div class="form-text ps-3 mt-1">
+                                    <i class="fas fa-toggle-on text-info me-1"></i>
+                                    Control the visibility of this FAQ.
+                                </div>
+                            </div>
+
+                            <!-- Answer Field -->
+                            <div class="col-12">
+                                <div class="form-floating">
+                                    {{ form.answer }}
+                                    <label for="{{ form.answer.id_for_label }}" class="fw-semibold">
+                                        Answer <span class="text-danger">*</span>
+                                    </label>
+                                </div>
+                                {% if form.answer.errors %}
+                                    <div class="text-danger small mt-2 ps-3">
+                                        {% for error in form.answer.errors %}
+                                            <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                                <div class="form-text ps-3 mt-1">
+                                    <i class="fas fa-comment-dots text-success me-1"></i>
+                                    Provide a comprehensive and helpful answer.
+                                </div>
+                                <div id="answer-counter" class="char-counter mt-2"></div>
+                            </div>
+
+                            <!-- Slug Field -->
+                            <div class="col-12">
+                                <div class="form-floating">
+                                    {{ form.slug }}
+                                    <label for="{{ form.slug.id_for_label }}" class="fw-semibold">
+                                        URL Slug
+                                    </label>
+                                </div>
+                                {% if form.slug.errors %}
+                                    <div class="text-danger small mt-2 ps-3">
+                                        {% for error in form.slug.errors %}
+                                            <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                                <div class="form-text ps-3 mt-1">
+                                    <i class="fas fa-link text-secondary me-1"></i>
+                                    URL-friendly version. Auto-generates from question if left blank.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Form Actions -->
+                        <div class="row mt-5 pt-3 border-top">
+                            <div class="col-12">
+                                <div class="d-flex flex-column flex-md-row gap-3 justify-content-end align-items-stretch align-items-md-center">
+                                    <a href="{% url 'company_app:services_faq_list' %}" class="btn btn-outline-secondary btn-lg px-5 rounded-pill order-2 border-dark border-2 order-md-1">
+                                        <i class="fas fa-times me-2"></i>Cancel
+                                    </a>
+                                    <button type="submit" class="btn btn-success btn-lg px-5 rounded-pill shadow order-1 order-md-2">
+                                        <i class="fas fa-save me-2"></i>
+                                        {% if faq %}Update FAQ{% else %}Create FAQ{% endif %}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Status Guide Card -->
+            <div class="card border-0 shadow-sm mt-4 rounded-3">
+                <div class="card-header bg-gradient-info text-white py-3 border-0 rounded-top-3">
+                    <h5 class="mb-0 fw-bold">
+                        <i class="fas fa-info-circle me-2"></i>FAQ Status Guide
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <div class="d-flex align-items-center p-3 bg-light rounded-3">
+                                <span class="badge bg-secondary rounded-pill me-3 px-3 py-2">
+                                    <i class="fas fa-pencil-alt me-1"></i>Draft
+                                </span>
+                                <small class="text-muted">Not visible to public users</small>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex align-items-center p-3 bg-light rounded-3">
+                                <span class="badge bg-success rounded-pill me-3 px-3 py-2">
+                                    <i class="fas fa-eye me-1"></i>Published
+                                </span>
+                                <small class="text-muted">Visible to all public users</small>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex align-items-center p-3 bg-light rounded-3">
+                                <span class="badge bg-warning text-dark rounded-pill me-3 px-3 py-2">
+                                    <i class="fas fa-archive me-1"></i>Archived
+                                </span>
+                                <small class="text-muted">No longer active or maintained</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Custom Card Styling */
+.card {
+    border: none;
+    transition: transform 0.2s ease-in-out;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+}
+
+.card-header.bg-gradient-success {
+    background: linear-gradient(135deg, #198754 0%, #157347 50%, #0f5132 100%) !important;
+}
+
+.card-header.bg-gradient-info {
+    background: linear-gradient(135deg, #0dcaf0 0%, #0aa2c0 50%, #088197 100%) !important;
+}
+
+/* Form Styling */
+.form-floating {
+    position: relative;
+}
+
+.form-floating > .form-control,
+.form-floating > .form-select {
+    height: calc(3.5rem + 2px);
+    min-height: 60px;
+    padding: 1rem 1rem;
+    font-size: 1.1rem;
+    border: 2px solid #e9ecef;
+    border-radius: 0.75rem;
+    background-color: #fff;
+    transition: all 0.3s ease;
+}
+
+.form-floating > label {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    padding: 1rem 1rem;
+    pointer-events: none;
+    border: 1px solid transparent;
+    transform-origin: 0 0;
+    transition: opacity 0.1s ease-in-out, transform 0.1s ease-in-out;
+    color: #6c757d;
+    font-weight: 500;
+    z-index: 2;
+}
+
+.form-floating > .form-control:focus,
+.form-floating > .form-control:not(:placeholder-shown),
+.form-floating > .form-select:focus,
+.form-floating > .form-select:not(:placeholder-shown) {
+    padding-top: 1.625rem;
+    padding-bottom: 0.625rem;
+    border-color: #198754;
+    box-shadow: 0 0 0 0.25rem rgba(25, 135, 84, 0.15);
+}
+
+.form-floating > .form-control:focus ~ label,
+.form-floating > .form-control:not(:placeholder-shown) ~ label,
+.form-floating > .form-select:focus ~ label,
+.form-floating > .form-select:not([value=""]):not(:focus) ~ label {
+    opacity: 0.65;
+    transform: scale(0.85) translateY(-0.5rem) translateX(0.15rem);
+    color: #198754;
+    font-weight: 600;
+}
+
+/* Fix for select fields showing selected value */
+.form-floating > .form-select {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 16px 12px;
+    padding-right: 3rem;
+}
+
+/* Textarea specific styling */
+.form-floating > textarea.form-control {
+    height: auto;
+    min-height: 120px;
+    padding-top: 1.625rem;
+    line-height: 1.5;
+}
+
+.form-floating > textarea.form-control ~ label {
+    transform-origin: 0 0;
+    padding-top: 1.625rem;
+}
+
+/* Button Styling */
+.btn {
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.btn-success {
+    background: linear-gradient(135deg, #198754ad 0%, #157347a9 100%);
+    border: none;
+}
+
+.btn-success:hover {
+    background: linear-gradient(135deg, #157347 0%, #0f5132 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(25, 135, 84, 0.3);
+}
+
+.btn-outline-secondary:hover {
+    background-color: #6c757d;
+    border-color: #6c757d;
+    color: white;
+}
+
+/* Alert Styling */
+.alert {
+    border: none;
+    border-left: 4px solid;
+    border-radius: 0.75rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.alert-success {
+    border-left-color: #198754;
+    background: linear-gradient(135deg, #f8fff9 0%, #e8f5e8 100%);
+}
+
+.alert-danger {
+    border-left-color: #dc3545;
+    background: linear-gradient(135deg, #fff5f5 0%, #ffe8e8 100%);
+}
+
+.alert-warning {
+    border-left-color: #ffc107;
+    background: linear-gradient(135deg, #fffef0 0%, #fff9e6 100%);
+}
+
+/* Character Counter */
+.char-counter {
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-align: right;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.5rem;
+    background-color: #f8f9fa;
+}
+
+.char-counter.warning {
+    color: #ffc107;
+    background-color: #fff9e6;
+}
+
+.char-counter.danger {
+    color: #dc3545;
+    background-color: #ffe8e8;
+}
+
+/* Form Validation */
+.is-invalid {
+    border-color: #dc3545 !important;
+}
+
+.is-invalid:focus {
+    box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.25) !important;
+}
+
+.is-valid {
+    border-color: #198754c5 !important;
+}
+
+.is-valid:focus {
+    box-shadow: 0 0 0 0.25rem rgba(25, 135, 84, 0.25) !important;
+}
+
+/* Loading State */
+.form-loading {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+.form-loading::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.8);
+    z-index: 1000;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .card-body {
+        padding: 1.5rem !important;
+    }
+    
+    .form-floating > .form-control,
+    .form-floating > .form-select {
+        font-size: 1rem;
+        height: calc(3rem + 2px);
+    }
+    
+    .btn-lg {
+        padding: 0.875rem 1.5rem;
+        font-size: 1rem;
+    }
+    
+    .d-flex.flex-column .btn {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .container-fluid {
+        padding: 0.5rem;
+    }
+    
+    .card-body {
+        padding: 1rem !important;
+    }
+    
+    .row.g-4 {
+        gap: 1rem !important;
+    }
+}
+
+/* Animation for form elements */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.card, .alert {
+    animation: fadeInUp 0.5s ease-out;
+}
+
+/* Custom scrollbar for dropdowns */
+.form-select::-webkit-scrollbar {
+    width: 8px;
+}
+
+.form-select::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.form-select::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+}
+
+.form-select::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    // Initialize form fields with proper styling
+    function initializeFormFields() {
+        // Add Bootstrap classes and floating label support
+        $('input, textarea').addClass('form-control');
+        $('select').addClass('form-select');
+        
+        // Set proper heights and styles
+        $('#id_question').addClass('form-control-lg');
+        $('#id_answer').css('min-height', '120px');
+        
+        // Fix for select fields - ensure selected value is displayed
+        $('.form-floating select').each(function() {
+            const select = $(this);
+            if (select.val()) {
+                select.addClass('has-value');
+                select.next('label').addClass('active');
+            }
+        });
+        
+        // Fix for text fields - ensure label positioning
+        $('.form-floating input, .form-floating textarea').each(function() {
+            const field = $(this);
+            if (field.val()) {
+                field.addClass('has-value');
+                field.next('label').addClass('active');
+            }
+        });
+    }
+
+    // Auto-generate slug from question
+    $('#id_question').on('blur input', function() {
+        if ($('#id_slug').val() === '' || $('#id_slug').val().trim() === '') {
+            const question = $(this).val().trim();
+            if (question) {
+                // Enhanced slug generation
+                const slug = question
+                    .toLowerCase()
+                    .replace(/[^\w\s-]/g, '')
+                    .replace(/[\s_-]+/g, '-')
+                    .replace(/^-+|-+$/g, '')
+                    .substring(0, 50); // Limit length
+                $('#id_slug').val(slug);
+                
+                // Trigger label update for slug field
+                if (slug) {
+                    $('#id_slug').addClass('has-value').trigger('change');
+                }
+            }
+        }
+    });
+
+    // Character counter for answer field
+    function updateCharCounter() {
+        const textarea = $('#id_answer');
+        const length = textarea.val().length;
+        const counter = $('#answer-counter');
+        
+        let counterText = `${length} characters`;
+        let counterClass = '';
+        
+        if (length === 0) {
+            counterText = 'Start typing your answer...';
+            counterClass = 'text-muted';
+        } else if (length > 1500) {
+            counterClass = 'danger';
+            counterText += ' - Consider shortening your answer';
+        } else if (length > 1000) {
+            counterClass = 'warning';
+            counterText += ' - Good length';
+        } else if (length > 500) {
+            counterClass = 'text-success';
+            counterText += ' - Optimal length';
+        } else {
+            counterClass = 'text-info';
+            counterText += ' - Consider adding more details';
+        }
+        
+        counter.text(counterText).removeClass('warning danger text-success text-info text-muted').addClass(counterClass);
+    }
+
+    $('#id_answer').on('input', updateCharCounter);
+
+    // Form submission handling
+    $('form').on('submit', function(e) {
+        const form = $(this);
+        
+        // Basic validation
+        let isValid = true;
+        $('.form-floating > .form-control, .form-floating > .form-select').each(function() {
+            const field = $(this);
+            if (field.prop('required') && !field.val().trim()) {
+                field.addClass('is-invalid');
+                isValid = false;
+            } else {
+                field.removeClass('is-invalid').addClass('is-valid');
+            }
+        });
+
+        if (!isValid) {
+            e.preventDefault();
+            // Scroll to first error
+            $('.is-invalid').first().focus();
+            return false;
+        }
+
+        // Show loading state
+        form.addClass('form-loading');
+        $('button[type="submit"]')
+            .prop('disabled', true)
+            .html('<i class="fas fa-spinner fa-spin me-2"></i>Processing...');
+    });
+
+    // Real-time validation
+    $('.form-control, .form-select').on('blur change', function() {
+        const field = $(this);
+        const value = field.val().trim();
+        
+        if (field.prop('required')) {
+            if (!value) {
+                field.addClass('is-invalid').removeClass('is-valid');
+            } else {
+                field.removeClass('is-invalid').addClass('is-valid');
+            }
+        }
+        
+        // Update floating label state
+        if (value) {
+            field.addClass('has-value');
+            field.next('label').addClass('active');
+        } else {
+            field.removeClass('has-value');
+            field.next('label').removeClass('active');
+        }
+    });
+
+    // Auto-focus on first field
+    $('form .form-control:first').focus();
+
+    // Initialize form on load
+    initializeFormFields();
+    updateCharCounter();
+    
+    // Fix for pre-filled select fields
+    $('.form-floating select').trigger('change');
+    
+    // Enhanced select field handling
+    $('.form-floating select').on('change', function() {
+        const select = $(this);
+        if (select.val()) {
+            select.addClass('has-value');
+            select.next('label').addClass('active');
+        } else {
+            select.removeClass('has-value');
+            select.next('label').removeClass('active');
+        }
+    });
+
+    // Add smooth animations
+    $('.card').hover(
+        function() { $(this).css('transform', 'translateY(-5px)'); },
+        function() { $(this).css('transform', 'translateY(0)'); }
+    );
+
+    console.log('FAQ Form initialized successfully');
+});
+</script>
+{% endblock %}

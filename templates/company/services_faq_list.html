@@ -1,0 +1,582 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="card border-dark">
+        <div class="card-header bg-success text-white border-dark">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-question-circle me-2"></i>{{ page_title }}
+                </h5>
+                <a href="{% url 'company_app:services_faq_create' %}" class="btn btn-light btn-sm">
+                    <i class="fas fa-plus me-1"></i> Add FAQ
+                </a>
+            </div>
+        </div>
+        <div class="card-body p-3">
+            <!-- Loading Overlay -->
+            <div id="loading-overlay" class="d-none">
+                <div class="d-flex justify-content-center align-items-center" style="height: 200px;">
+                    <div class="text-center">
+                        <div class="spinner-border text-success" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <div class="mt-2">Loading FAQs...</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- DataTable -->
+            <div class="table-responsive">
+                <table id="services-faq-table" class="table table-hover table-striped table-bordered border-dark" style="width:100%;">
+                    <thead class="table-success border-dark">
+                        <tr>
+                            <th>Question</th>
+                            <th>Service</th>
+                            <th>Answer</th>
+                            <th>Status</th>
+                            <th>Created Date</th>
+                            <th>Updated Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="table-light border-dark">
+                        <!-- Data will be loaded via AJAX -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Container -->
+<div id="toastContainer" class="toast-container position-fixed top-0 end-0 p-3"></div>
+{% endblock %}
+
+{% block extra_css %}
+<!-- DataTables CSS -->
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.bootstrap5.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.4.1/css/responsive.bootstrap5.min.css">
+
+<style>
+#services-faq-table {
+    border: 2px solid #000 !important;
+    border-collapse: separate !important;
+    background-color: white;
+}
+
+#services-faq-table th,
+#services-faq-table td {
+    border: 1px solid #000 !important;
+    vertical-align: middle !important;
+    padding: 12px 8px !important;
+}
+
+#services-faq-table thead th {
+    border-bottom: 2px solid #000 !important;
+    background-color: #7bf0bb !important;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+#loading-overlay {
+    background-color: rgba(255, 255, 255, 0.95);
+    border-radius: 5px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* DataTables processing indicator styling */
+.dataTables_processing {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    border-radius: 5px;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    z-index: 1000;
+}
+
+/* Make sure the processing indicator is visible */
+div.dataTables_processing {
+    color: #000 !important;
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+#services-faq-table tbody tr {
+    border-bottom: 1px solid #000 !important;
+}
+
+.answer-text {
+    cursor: help;
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: inline-block;
+}
+
+.question-text {
+    font-weight: 500;
+}
+
+.badge {
+    font-size: 0.75em;
+}
+
+.btn-group-sm .btn {
+    margin: 1px;
+}
+
+.dt-buttons {
+    margin-bottom: 10px;
+}
+
+.dt-button {
+    margin-right: 5px;
+    margin-bottom: 5px;
+}
+
+/* Toast styling */
+.toast {
+    background-color: rgba(255, 255, 255, 0.95);
+    border-left: 4px solid;
+}
+
+.toast-success {
+    border-left-color: #28a745;
+}
+
+.toast-error {
+    border-left-color: #dc3545;
+}
+
+.toast-info {
+    border-left-color: #17a2b8;
+}
+
+/* Status badge specific styling */
+.badge.bg-secondary {
+    background-color: #6c757d !important;
+}
+
+.badge.bg-success {
+    background-color: #198754 !important;
+}
+
+.badge.bg-warning {
+    background-color: #ffc107 !important;
+    color: #000 !important;
+}
+
+.badge.bg-primary {
+    background-color: #0d6efd !important;
+}
+
+/* Button group styling */
+.btn-group {
+    display: flex !important;
+    gap: 2px;
+}
+
+/* Print optimization */
+@media print {
+    .dt-buttons, .dataTables_filter, .dataTables_length, .dataTables_info, .dataTables_paginate {
+        display: none !important;
+    }
+    
+    #services-faq-table {
+        border: 1px solid #000 !important;
+        font-size: 10px;
+    }
+    
+    #services-faq-table th,
+    #services-faq-table td {
+        padding: 6px 4px !important;
+    }
+    
+    .badge {
+        font-size: 8px !important;
+        padding: 2px 4px !important;
+    }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .dt-buttons .btn {
+        margin-bottom: 5px;
+        font-size: 0.8rem;
+    }
+    
+    #services-faq-table {
+        font-size: 0.85rem;
+    }
+    
+    .card-body {
+        padding: 1rem !important;
+    }
+    
+    .dataTables_wrapper .dt-buttons {
+        text-align: center;
+    }
+    
+    .dataTables_wrapper .dt-buttons .btn {
+        display: inline-block;
+        margin: 2px;
+    }
+}
+
+/* DataTables wrapper styling */
+.dataTables_wrapper .dataTables_length,
+.dataTables_wrapper .dataTables_filter,
+.dataTables_wrapper .dataTables_info,
+.dataTables_wrapper .dataTables_processing,
+.dataTables_wrapper .dataTables_paginate {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.dataTables_wrapper .dataTables_filter input {
+    border: 1px solid #ced4da;
+    border-radius: 0.375rem;
+    padding: 0.375rem 0.75rem;
+}
+
+/* Custom button styling */
+.dt-button-collection {
+    background-color: white;
+    border: 1px solid #dee2e6;
+    border-radius: 0.375rem;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.dt-button-collection .dt-button {
+    display: block;
+    width: 100%;
+    margin: 0;
+    border: none;
+    border-radius: 0;
+    text-align: left;
+}
+
+.dt-button-collection .dt-button:hover {
+    background-color: #f8f9fa;
+}
+
+/* Ensure buttons are properly aligned */
+.dt-buttons.btn-group {
+    flex-wrap: wrap;
+    gap: 0.25rem;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<!-- DataTables JS -->
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.bootstrap5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.print.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.colVis.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+
+<script>
+// CSRF token function for Django
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+$(document).ready(function() {
+    // Show loading overlay initially
+    $('#loading-overlay').removeClass('d-none');
+    
+    // Initialize DataTable
+    var table = $('#services-faq-table').DataTable({
+        "processing": true,
+        "serverSide": true,
+        "ajax": {
+            "url": "{% url 'company_app:services_faq_datatables_api' %}",
+            "type": "GET",
+            "dataType": "json",
+            "beforeSend": function() {
+                // Show loading when request starts
+                $('#loading-overlay').removeClass('d-none');
+            },
+            "complete": function() {
+                // Hide loading when request completes (success or error)
+                $('#loading-overlay').addClass('d-none');
+            },
+            "dataSrc": function(json) {
+                // Additional data processing if needed
+                return json.data;
+            },
+            "error": function(xhr, error, code) {
+                console.log('AJAX Error:', xhr, error, code);
+                showToast('Error loading FAQs. Please try again.', 'error');
+                console.log('Response:', xhr.responseText);
+            }
+        },
+        "columns": [
+            {
+                "data": "question", 
+                "name": "question", 
+                "className": "text-center",
+                "orderable": true,
+                "render": function(data, type, row) {
+                    if (type === 'export') {
+                        // Strip HTML for export
+                        var temp = document.createElement('div');
+                        temp.innerHTML = data;
+                        return temp.textContent || temp.innerText || '';
+                    }
+                    return data;
+                }
+            },
+            {
+                "data": "service", 
+                "name": "service", 
+                "className": "text-center",
+                "orderable": true,
+                "render": function(data, type, row) {
+                    if (type === 'export') {
+                        var temp = document.createElement('div');
+                        temp.innerHTML = data;
+                        return temp.textContent || temp.innerText || '';
+                    }
+                    return data;
+                }
+            },
+            {
+                "data": "answer", 
+                "name": "answer", 
+                "className": "text-center", 
+                "orderable": false,
+                "render": function(data, type, row) {
+                    if (type === 'export') {
+                        var temp = document.createElement('div');
+                        temp.innerHTML = data;
+                        var text = temp.textContent || temp.innerText || '';
+                        return text.length > 50 ? text.substring(0, 50) + '...' : text;
+                    }
+                    return data;
+                }
+            },
+            {
+                "data": "status", 
+                "name": "status", 
+                "className": "text-center",
+                "orderable": true,
+                "render": function(data, type, row) {
+                    if (type === 'export') {
+                        var temp = document.createElement('div');
+                        temp.innerHTML = data;
+                        return temp.textContent || temp.innerText || '';
+                    }
+                    return data;
+                }
+            },
+            {
+                "data": "created_at", 
+                "name": "created_at", 
+                "className": "text-center",
+                "orderable": true
+            },
+            {
+                "data": "updated_at", 
+                "name": "updated_at", 
+                "className": "text-center",
+                "orderable": true
+            },
+            {
+                "data": "actions", 
+                "name": "actions", 
+                "className": "text-center", 
+                "orderable": false, 
+                "searchable": false,
+                "render": function(data, type, row) {
+                    if (type === 'export') {
+                        return '';
+                    }
+                    return data;
+                }
+            }
+        ],
+        "order": [[4, 'desc']],
+        "pageLength": 10,
+        "responsive": true,
+        "dom": "<'row'<'col-sm-12 col-md-4'B><'col-sm-12 col-md-4'l><'col-sm-12 col-md-4'f>>" +
+               "<'row'<'col-sm-12'tr>>" +
+               "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+        "buttons": [
+            {
+                extend: 'copy',
+                text: '<i class="fas fa-copy me-1"></i> Copy',
+                className: 'btn btn-secondary btn-sm',
+                exportOptions: {
+                    columns: [0, 1, 2, 3, 4, 5]
+                }
+            },
+            {
+                extend: 'excel',
+                text: '<i class="fas fa-file-excel me-1"></i> Excel',
+                className: 'btn btn-success btn-sm',
+                exportOptions: {
+                    columns: [0, 1, 2, 3, 4, 5]
+                }
+            },
+            {
+                extend: 'pdf',
+                text: '<i class="fas fa-file-pdf me-1"></i> PDF',
+                className: 'btn btn-danger btn-sm',
+                exportOptions: {
+                    columns: [0, 1, 2, 3, 4, 5]
+                },
+                customize: function(doc) {
+                    doc.defaultStyle.fontSize = 10;
+                    doc.styles.tableHeader.fontSize = 11;
+                    doc.pageMargins = [10, 10, 10, 10];
+                    doc.content[1].table.widths = ['*', '*', '*', '*', '*', '*'];
+                    doc.content.splice(0, 0, {
+                        text: 'Services FAQs Report',
+                        style: 'header',
+                        alignment: 'center',
+                        margin: [0, 0, 0, 20]
+                    });
+                    doc.styles.header = {
+                        fontSize: 16,
+                        bold: true,
+                        color: '#198754'
+                    };
+                }
+            },
+            {
+                extend: 'print',
+                text: '<i class="fas fa-print me-1"></i> Print',
+                className: 'btn btn-info btn-sm',
+                exportOptions: {
+                    columns: [0, 1, 2, 3, 4, 5]
+                },
+                customize: function(win) {
+                    $(win.document.body).find('table').addClass('display').css('font-size', '10px');
+                    $(win.document.body).find('tr:nth-child(odd) td').each(function(index){
+                        $(this).css('background-color','#D0D0D0');
+                    });
+                    $(win.document.body).find('h1').css('text-align','center');
+                    $(win.document.body).prepend('<h2 class="text-center mb-4">Services FAQs Report</h2>');
+                }
+            },
+            {
+                text: '<i class="fas fa-plus me-1"></i> Add FAQ',
+                className: 'btn btn-primary btn-sm',
+                action: function (e, dt, node, config) {
+                    window.location.href = "{% url 'company_app:services_faq_create' %}";
+                }
+            },
+            {
+                extend: 'colvis',
+                text: '<i class="fas fa-columns me-1"></i> Columns',
+                className: 'btn btn-warning btn-sm'
+            }
+        ],
+        "language": {
+            "search": "Search:",
+            "lengthMenu": "Show _MENU_ entries",
+            "info": "Showing _START_ to _END_ of _TOTAL_ entries",
+            "infoEmpty": "Showing 0 to 0 of 0 entries",
+            "infoFiltered": "(filtered from _MAX_ total entries)",
+            "zeroRecords": "No matching FAQs found",
+            "paginate": {
+                "first": "First",
+                "last": "Last",
+                "next": "Next",
+                "previous": "Previous"
+            },
+            "processing": '<div class="spinner-border text-success" role="status"><span class="visually-hidden">Loading...</span></div> Processing...'
+        },
+        "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+        "initComplete": function(settings, json) {
+            // Add custom CSS to search box
+            $('.dataTables_filter input').addClass('form-control form-control-sm')
+                .attr('placeholder', 'Search by question, answer, service, or status...')
+                .css('width', '300px');
+            
+            // Initialize tooltips
+            $('[data-bs-toggle="tooltip"]').tooltip();
+        },
+        "drawCallback": function(settings) {
+            // Re-initialize tooltips when table is redrawn
+            $('[data-bs-toggle="tooltip"]').tooltip();
+        }
+    });
+
+    // Handle delete button clicks
+    $('#services-faq-table').on('click', '.btn-outline-danger', function(e) {
+        e.preventDefault();
+        var deleteUrl = $(this).attr('href');
+        var faqQuestion = $(this).closest('tr').find('td:first-child').text().trim();
+        
+        if (confirm('Are you sure you want to delete the FAQ: "' + faqQuestion + '"?')) {
+            // Show loading
+            $('#loading-overlay').removeClass('d-none');
+            
+            // Perform delete via AJAX
+            $.ajax({
+                url: deleteUrl,
+                type: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                success: function(response) {
+                    $('#loading-overlay').addClass('d-none');
+                    table.ajax.reload(null, false);
+                    showToast('FAQ deleted successfully!', 'success');
+                },
+                error: function(xhr, status, error) {
+                    $('#loading-overlay').addClass('d-none');
+                    showToast('Error deleting FAQ. Please try again.', 'error');
+                    console.error('Delete error:', error);
+                }
+            });
+        }
+        
+        return false;
+    });
+
+    
+});
+</script>
+{% endblock %}

@@ -1,0 +1,897 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="card border-dark">
+        <div class="card-header bg-success text-white border-dark">
+            <h5 class="card-title mb-0">
+                <i class="fas fa-list me-2"></i>{{ page_title }}
+            </h5>
+        </div>
+        <div class="card-body p-0">
+            <!-- Loading Overlay -->
+            <div id="loading-overlay" style="display: none;">
+                <div class="d-flex justify-content-center align-items-center" style="height: 200px;">
+                    <div class="spinner-border text-success" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <span class="ms-2">Loading testimonials...</span>
+                </div>
+            </div>
+            
+            <!-- DataTable -->
+            <div class="table-responsive">
+                <table id="testimonials-table" class="table table-hover table-striped table-bordered border-dark" style="width:100%; margin:0;">
+                    <thead class="table-success border-dark">
+                        <tr>
+                            <th style="border: 1px solid #000; border-bottom: 2px solid #000; padding: 12px; text-align: center;">Image</th>
+                            <th style="border: 1px solid #000; border-bottom: 2px solid #000; padding: 12px; text-align: center;">Name</th>
+                            <th style="border: 1px solid #000; border-bottom: 2px solid #000; padding: 12px; text-align: center;">Designation</th>
+                            <th style="border: 1px solid #000; border-bottom: 2px solid #000; padding: 12px; text-align: center;">Message</th>
+                            <th style="border: 1px solid #000; border-bottom: 2px solid #000; padding: 12px; text-align: center;">Rating</th>
+                            <th style="border: 1px solid #000; border-bottom: 2px solid #000; padding: 12px; text-align: center;">Status</th>
+                            <th style="border: 1px solid #000; border-bottom: 2px solid #000; padding: 12px; text-align: center;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="table-light border-dark">
+                        <!-- Data will be loaded via AJAX -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this testimonial?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmDelete">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Container -->
+<div id="toastContainer" class="toast-container position-fixed top-0 end-0 p-3"></div>
+{% endblock %}
+
+{% block extra_css %}
+<!-- DataTables CSS -->
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.bootstrap5.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.4.1/css/responsive.bootstrap5.min.css">
+
+<style>
+#testimonials-table {
+    border: 2px solid #000 !important;
+    border-collapse: separate !important;
+    background-color: white;
+}
+
+#testimonials-table th,
+#testimonials-table td {
+    border: 1px solid #000 !important;
+    vertical-align: middle !important;
+    padding: 12px 8px !important;
+}
+
+#testimonials-table thead th {
+    border-bottom: 2px solid #000 !important;
+    background-color: #7bf0bb !important;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+#loading-overlay {
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 5px;
+    display: none !important;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1000;
+}
+
+.dataTables_processing {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    border-radius: 5px;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    z-index: 1000;
+}
+
+div.dataTables_processing {
+    color: #000 !important;
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+#testimonials-table tbody tr {
+    border-bottom: 1px solid #000 !important;
+}
+
+.message-text {
+    cursor: help;
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: inline-block;
+}
+
+.testimonial-thumbnail {
+    border-radius: 50%;
+    border: 2px solid #dee2e6;
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+}
+
+.rating-stars {
+    font-size: 16px;
+    letter-spacing: 2px;
+}
+
+.badge {
+    font-size: 0.75em;
+    margin: 1px;
+}
+
+.btn-group-vertical .btn {
+    margin-bottom: 2px;
+}
+
+.dt-buttons {
+    margin-bottom: 10px;
+}
+
+.dt-button {
+    margin-right: 5px;
+    margin-bottom: 5px;
+}
+
+/* Toast styling */
+.toast {
+    background-color: rgba(255, 255, 255, 0.95);
+    border-left: 4px solid;
+}
+
+.toast-success {
+    border-left-color: #28a745;
+}
+
+.toast-error {
+    border-left-color: #dc3545;
+}
+
+.toast-info {
+    border-left-color: #17a2b8;
+}
+
+/* Print Styles */
+@media print {
+    body {
+        background: white !important;
+        color: black !important;
+        font-size: 12px;
+    }
+    
+    .container-fluid {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    
+    .card {
+        border: none !important;
+        box-shadow: none !important;
+        margin: 0 !important;
+    }
+    
+    .card-header {
+        background: #7bf0bb !important;
+        color: black !important;
+        border-bottom: 2px solid #000 !important;
+        text-align: center;
+        padding: 10px !important;
+    }
+    
+    .card-body {
+        padding: 0 !important;
+    }
+    
+    /* Hide elements not needed in print */
+    .dt-buttons, 
+    .dataTables_filter, 
+    .dataTables_length, 
+    .dataTables_info, 
+    .dataTables_paginate, 
+    .modal, 
+    .toast-container, 
+    .btn,
+    #deleteModal,
+    .card-title i {
+        display: none !important;
+    }
+    
+    /* Table styling for print */
+    #testimonials-table {
+        width: 100% !important;
+        border: 2px solid #000 !important;
+        font-size: 10px;
+    }
+    
+    #testimonials-table th,
+    #testimonials-table td {
+        border: 1px solid #000 !important;
+        padding: 6px 4px !important;
+        background: white !important;
+        color: black !important;
+    }
+    
+    #testimonials-table thead th {
+        background: #7bf0bb !important;
+        color: black !important;
+        font-weight: bold;
+    }
+    
+    .testimonial-thumbnail {
+        width: 30px !important;
+        height: 30px !important;
+    }
+    
+    .rating-stars {
+        font-size: 10px;
+    }
+    
+    /* Hide action column in print */
+    #testimonials-table th:last-child,
+    #testimonials-table td:last-child {
+        display: none !important;
+    }
+    
+    /* Print header */
+    .print-header {
+        text-align: center;
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #000;
+    }
+    
+    .print-title {
+        font-size: 18px;
+        font-weight: bold;
+        margin: 0 0 5px 0;
+        color: #000;
+    }
+    
+    .print-date {
+        font-size: 12px;
+        margin: 0;
+        color: #666;
+    }
+    
+    /* Ensure proper page breaks */
+    table { 
+        page-break-inside: auto; 
+    }
+    
+    tr { 
+        page-break-inside: avoid; 
+        page-break-after: auto; 
+    }
+    
+    thead { 
+        display: table-header-group; 
+    }
+    
+    tfoot { 
+        display: table-footer-group; 
+    }
+    
+    /* Print footer */
+    .print-footer {
+        text-align: center;
+        margin-top: 15px;
+        padding-top: 10px;
+        border-top: 1px solid #000;
+        font-size: 10px;
+        color: #666;
+    }
+}
+
+/* Hide print elements on screen */
+.print-header,
+.print-footer {
+    display: none;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<!-- DataTables JS -->
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.bootstrap5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.print.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+
+<script>
+// CSRF token function for Django
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+// Toast notification function
+function showToast(message, type = 'info') {
+    const toastId = 'toast-' + Date.now();
+    const toastHtml = `
+        <div id="${toastId}" class="toast" role="alert">
+            <div class="toast-header">
+                <strong class="me-auto">Notification</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+            </div>
+            <div class="toast-body">
+                ${message}
+            </div>
+        </div>
+    `;
+    
+    $('#toastContainer').append(toastHtml);
+    const toastElement = document.getElementById(toastId);
+    const toast = new bootstrap.Toast(toastElement);
+    
+    if (type === 'success') {
+        $(toastElement).addClass('toast-success');
+    } else if (type === 'error') {
+        $(toastElement).addClass('toast-error');
+    } else {
+        $(toastElement).addClass('toast-info');
+    }
+    
+    toast.show();
+    
+    toastElement.addEventListener('hidden.bs.toast', function() {
+        $(this).remove();
+    });
+}
+
+// Function to get rating value from stars HTML
+function getRatingValue(html) {
+    if (!html) return '0/5';
+    const fullStars = (html.match(/fa-star/g) || []).length;
+    const halfStars = (html.match(/fa-star-half-alt/g) || []).length;
+    const ratingValue = fullStars + (halfStars * 0.5);
+    return ratingValue + '/5';
+}
+
+// Function to get numeric rating for sorting
+function getNumericRating(html) {
+    if (!html) return 0;
+    const fullStars = (html.match(/fa-star/g) || []).length;
+    const halfStars = (html.match(/fa-star-half-alt/g) || []).length;
+    return fullStars + (halfStars * 0.5);
+}
+
+// Function to get status text
+function getStatusText(html) {
+    if (!html) return '';
+    if (html.includes('badge-success') || html.includes('Active')) return 'Active';
+    if (html.includes('badge-danger') || html.includes('Inactive')) return 'Inactive';
+    if (html.includes('badge-warning') || html.includes('Pending')) return 'Pending';
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = html;
+    return tempDiv.textContent || tempDiv.innerText || 'Unknown';
+}
+
+// Function to strip HTML tags
+function stripHTML(html) {
+    if (!html) return '';
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = html;
+    return tempDiv.textContent || tempDiv.innerText || '';
+}
+
+// Function to format date for print
+function getPrintDate() {
+    const now = new Date();
+    const options = { 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    };
+    return now.toLocaleDateString('en-US', options);
+}
+
+$(document).ready(function() {
+    $('#loading-overlay').show();
+    
+    var table = $('#testimonials-table').DataTable({
+        "processing": true,
+        "serverSide": true,
+        "ajax": {
+            "url": "{% url 'company_app:testimonial_datatables_api' %}",
+            "type": "GET",
+            "dataType": "json",
+            "data": function(d) {
+                // Add any additional parameters if needed
+            },
+            "dataSrc": function(json) {
+                $('#loading-overlay').hide();
+                return json.data;
+            },
+            "error": function(xhr, error, code) {
+                $('#loading-overlay').hide();
+                console.log('AJAX Error:', xhr, error, code);
+                showToast('Error loading testimonials. Please try again.', 'error');
+            }
+        },
+        "columns": [
+            {
+                "data": "image", 
+                "name": "image", 
+                "className": "text-center", 
+                "orderable": false,
+                "searchable": false,
+                "render": function(data, type, row) {
+                    if (type === 'export') {
+                        return data.includes('img') ? 'Has Image' : 'No Image';
+                    }
+                    return data;
+                }
+            },
+            {
+                "data": "name", 
+                "name": "name", 
+                "className": "text-center",
+                "render": function(data, type, row) {
+                    if (type === 'export') {
+                        return stripHTML(data);
+                    }
+                    return data;
+                }
+            },
+            {
+                "data": "designation", 
+                "name": "designation", 
+                "className": "text-center",
+                "render": function(data, type, row) {
+                    if (type === 'export') {
+                        return stripHTML(data);
+                    }
+                    return data;
+                }
+            },
+            {
+                "data": "message", 
+                "name": "message", 
+                "className": "text-center", 
+                "orderable": false,
+                "render": function(data, type, row) {
+                    if (type === 'export') {
+                        const text = stripHTML(data);
+                        return text.length > 100 ? text.substring(0, 100) + '...' : text;
+                    }
+                    return data;
+                }
+            },
+            {
+                "data": "rating", 
+                "name": "rating", 
+                "className": "text-center", 
+                "orderable": true,
+                "searchable": false,
+                "render": function(data, type, row) {
+                    if (type === 'export') {
+                        return getRatingValue(data);
+                    }
+                    if (type === 'sort' || type === 'type') {
+                        return getNumericRating(data);
+                    }
+                    return data;
+                }
+            },
+            {
+                "data": "status", 
+                "name": "status", 
+                "className": "text-center", 
+                "orderable": false,
+                "render": function(data, type, row) {
+                    if (type === 'export') {
+                        return getStatusText(data);
+                    }
+                    return data;
+                }
+            },
+            {
+                "data": "actions", 
+                "name": "actions", 
+                "className": "text-center", 
+                "orderable": false, 
+                "searchable": false,
+                "render": function(data, type, row) {
+                    if (type === 'export' || type === 'print') {
+                        return '';
+                    }
+                    return data;
+                }
+            }
+        ],
+        "order": [[1, 'asc']],
+        "pageLength": 10,
+        "responsive": true,
+        "dom": '<"row"<"col-sm-12 col-md-6"B><"col-sm-12 col-md-6"f>>rtip',
+        "buttons": [
+            {
+                extend: 'copy',
+                text: '<i class="fas fa-copy"></i> Copy',
+                className: 'btn btn-secondary btn-sm',
+                exportOptions: {
+                    columns: [0, 1, 2, 3, 4, 5],
+                    format: {
+                        body: function (data, row, column, node) {
+                            if (column === 4) {
+                                return getRatingValue(data);
+                            }
+                            if (column === 5) {
+                                return getStatusText(data);
+                            }
+                            return stripHTML(data);
+                        }
+                    }
+                },
+                title: 'Testimonials List',
+                messageTop: 'Generated on: ' + new Date().toLocaleDateString()
+            },
+            {
+                extend: 'excel',
+                text: '<i class="fas fa-file-excel"></i> Excel',
+                className: 'btn btn-success btn-sm',
+                exportOptions: {
+                    columns: [0, 1, 2, 3, 4, 5],
+                    format: {
+                        body: function (data, row, column, node) {
+                            if (column === 4) {
+                                return getRatingValue(data);
+                            }
+                            if (column === 5) {
+                                return getStatusText(data);
+                            }
+                            return stripHTML(data);
+                        }
+                    }
+                },
+                title: 'Testimonials List',
+                filename: 'testimonials_' + new Date().toISOString().slice(0, 10),
+                message: 'Generated on: ' + new Date().toLocaleDateString()
+            },
+            {
+                extend: 'pdf',
+                text: '<i class="fas fa-file-pdf"></i> PDF',
+                className: 'btn btn-danger btn-sm',
+                exportOptions: {
+                    columns: [0, 1, 2, 3, 4, 5],
+                    format: {
+                        body: function (data, row, column, node) {
+                            if (column === 4) {
+                                return getRatingValue(data);
+                            }
+                            if (column === 5) {
+                                return getStatusText(data);
+                            }
+                            const text = stripHTML(data);
+                            return text.length > 50 ? text.substring(0, 50) + '...' : text;
+                        }
+                    }
+                },
+                title: 'Testimonials List',
+                filename: 'testimonials_' + new Date().toISOString().slice(0, 10),
+                customize: function(doc) {
+                    doc.defaultStyle.fontSize = 9;
+                    doc.styles.tableHeader.fontSize = 10;
+                    doc.styles.tableHeader.fillColor = '#7bf0bb';
+                    doc.styles.title.fontSize = 14;
+                    doc.styles.title.alignment = 'center';
+                    doc.pageMargins = [10, 40, 10, 20];
+                    doc.content[1].table.widths = ['10%', '15%', '15%', '35%', '10%', '15%'];
+                    
+                    doc['header'] = function(currentPage, pageCount) {
+                        return {
+                            text: 'Testimonials List - Page ' + currentPage.toString() + ' of ' + pageCount,
+                            alignment: 'right',
+                            margin: [10, 10, 10, 0],
+                            fontSize: 8
+                        };
+                    };
+                    
+                    doc['footer'] = function(currentPage, pageCount) {
+                        return {
+                            text: 'Generated on: ' + new Date().toLocaleDateString(),
+                            alignment: 'center',
+                            margin: [10, 0, 10, 10],
+                            fontSize: 8
+                        };
+                    };
+                }
+            },
+            {
+                extend: 'print',
+                text: '<i class="fas fa-print"></i> Print',
+                className: 'btn btn-info btn-sm',
+                exportOptions: {
+                    columns: [0, 1, 2, 3, 4, 5],
+                    stripHtml: false,
+                    stripNewlines: false
+                },
+                title: '',
+                message: '',
+                customize: function(win) {
+                    // Remove default DataTables styling
+                    $(win.document.body).find('table').removeClass('dataTable');
+                    
+                    // Create print header
+                    var printHeader = `
+                        <div class="print-header">
+                            <h1 class="print-title">Testimonials List</h1>
+                            <p class="print-date">Printed on: ${getPrintDate()}</p>
+                        </div>
+                    `;
+                    
+                    // Create print footer
+                    var printFooter = `
+                        <div class="print-footer">
+                            <p>Generated by Company App - ${new Date().getFullYear()}</p>
+                        </div>
+                    `;
+                    
+                    // Add header and footer
+                    $(win.document.body).prepend(printHeader);
+                    $(win.document.body).append(printFooter);
+                    
+                    // Add custom print styles
+                    var printStyles = `
+                        <style>
+                            @page { 
+                                size: landscape; 
+                                margin: 0.5cm; 
+                            }
+                            body { 
+                                font-family: "Arial", sans-serif; 
+                                background: white !important;
+                                color: black !important;
+                                margin: 0;
+                                padding: 10px;
+                                font-size: 12px;
+                            }
+                            .container-fluid {
+                                width: 100% !important;
+                                padding: 0 !important;
+                                margin: 0 !important;
+                            }
+                            .card {
+                                border: none !important;
+                                box-shadow: none !important;
+                                margin: 0 !important;
+                            }
+                            .card-header {
+                                background: #7bf0bb !important;
+                                color: black !important;
+                                border-bottom: 2px solid #000 !important;
+                                padding: 8px !important;
+                                text-align: center;
+                            }
+                            .card-body {
+                                padding: 0 !important;
+                            }
+                            table {
+                                width: 100% !important;
+                                border: 2px solid #000 !important;
+                                border-collapse: collapse !important;
+                                margin: 10px 0 !important;
+                                font-size: 10px;
+                            }
+                            th, td {
+                                border: 1px solid #000 !important;
+                                padding: 6px 4px !important;
+                                text-align: center;
+                                background: white !important;
+                                color: black !important;
+                            }
+                            thead th {
+                                background: #7bf0bb !important;
+                                color: black !important;
+                                font-weight: bold;
+                                border-bottom: 2px solid #000 !important;
+                            }
+                            .testimonial-thumbnail {
+                                width: 30px !important;
+                                height: 30px !important;
+                                border-radius: 50%;
+                                display: block;
+                                margin: 0 auto;
+                            }
+                            .rating-stars {
+                                font-size: 10px;
+                                letter-spacing: 1px;
+                            }
+                            .print-header {
+                                text-align: center;
+                                margin-bottom: 15px;
+                                padding-bottom: 10px;
+                                border-bottom: 2px solid #000;
+                            }
+                            .print-title {
+                                font-size: 18px;
+                                font-weight: bold;
+                                margin: 0 0 5px 0;
+                                color: #000;
+                            }
+                            .print-date {
+                                font-size: 12px;
+                                margin: 0;
+                                color: #666;
+                            }
+                            .print-footer {
+                                text-align: center;
+                                margin-top: 15px;
+                                padding-top: 10px;
+                                border-top: 1px solid #000;
+                                font-size: 10px;
+                                color: #666;
+                            }
+                            /* Hide action column */
+                            th:last-child, td:last-child {
+                                display: none !important;
+                            }
+                            /* Hide DataTables elements */
+                            .dataTables_info, 
+                            .dataTables_paginate,
+                            .dataTables_length,
+                            .dataTables_filter,
+                            .dt-buttons {
+                                display: none !important;
+                            }
+                        </style>
+                    `;
+                    
+                    $(win.document.head).find('title').text('Testimonials List');
+                    $(win.document.head).append(printStyles);
+                    
+                    // Ensure images are properly sized
+                    $(win.document.body).find('img').each(function() {
+                        $(this).css({
+                            'max-width': '30px',
+                            'height': '30px',
+                            'display': 'block',
+                            'margin': '0 auto'
+                        });
+                    });
+                },
+                autoPrint: true
+            },
+            {
+                text: '<i class="fas fa-plus"></i> Add Testimonial',
+                className: 'btn btn-primary btn-sm',
+                action: function (e, dt, node, config) {
+                    window.location.href = "{% url 'company_app:testimonial_create' %}";
+                }
+            }
+        ],
+        "language": {
+            "search": "Search:",
+            "lengthMenu": "Show _MENU_ entries",
+            "info": "Showing _START_ to _END_ of _TOTAL_ entries",
+            "infoEmpty": "Showing 0 to 0 of 0 entries",
+            "infoFiltered": "(filtered from _MAX_ total entries)",
+            "zeroRecords": "No matching testimonials found",
+            "paginate": {
+                "first": "First",
+                "last": "Last",
+                "next": "Next",
+                "previous": "Previous"
+            },
+            "processing": '<div class="spinner-border text-success" role="status"><span class="visually-hidden">Loading...</span></div> Processing...'
+        },
+        "initComplete": function() {
+            $('.dataTables_filter input').addClass('form-control form-control-sm')
+                .attr('placeholder', 'Search by name, designation, or message...')
+                .css('width', '300px');
+                
+            $('#loading-overlay').hide();
+        }
+    });
+
+    // Initialize tooltips when table is drawn
+    table.on('draw', function() {
+        $('[data-bs-toggle="tooltip"]').tooltip();
+        
+        // Attach click handlers for delete buttons
+        $('.delete-btn').on('click', function(e) {
+            e.preventDefault();
+            var deleteUrl = $(this).attr('href');
+            var testimonialName = $(this).closest('tr').find('td:nth-child(2)').text();
+            
+            if (confirm('Are you sure you want to delete the testimonial from "' + testimonialName + '"?')) {
+                $('#loading-overlay').show();
+                
+                $.ajax({
+                    url: deleteUrl,
+                    type: 'POST',
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    success: function(response) {
+                        $('#loading-overlay').hide();
+                        if (response.success) {
+                            table.ajax.reload(null, false);
+                            showToast('Testimonial deleted successfully!', 'success');
+                        } else {
+                            showToast('Error deleting testimonial: ' + response.message, 'error');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        $('#loading-overlay').hide();
+                        showToast('Error deleting testimonial. Please try again.', 'error');
+                        console.error('Delete error:', error);
+                    }
+                });
+            }
+            
+            return false;
+        });
+    });
+
+    // Custom styling for buttons
+    $('.dt-buttons').addClass('btn-group');
+    $('.dt-button').addClass('btn btn-sm');
+    
+    // Handle window resize for responsive layout
+    $(window).on('resize', function() {
+        table.columns.adjust().responsive.recalc();
+    });
+});
+</script>
+{% endblock %}

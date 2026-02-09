@@ -1,0 +1,155 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}User Permissions - BG Infotech{% endblock %}
+{% block page_title %}User Permissions{% endblock %}
+{% block breadcrumb_active %}User Permissions{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    Custom Permissions for: {{ user_obj.get_full_name|default:user_obj.username }}
+                </h3>
+            </div>
+            <div class="card-body">
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="user-info-card card">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    {% if user_obj.profile_picture %}
+                                    <img src="{{ user_obj.profile_picture.url }}" class="img-circle elevation-2" alt="User Image" style="width: 60px; height: 60px; object-fit: cover;">
+                                    {% else %}
+                                    <img src="https://adminlte.io/themes/v3/dist/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image" style="width: 60px; height: 60px;">
+                                    {% endif %}
+                                    <div class="ml-3">
+                                        <h5 class="mb-1">{{ user_obj.get_full_name|default:user_obj.username }}</h5>
+                                        <p class="mb-1 text-muted">{{ user_obj.email }}</p>
+                                        <span class="badge bg-{% if user_obj.role.name == 'admin' %}danger{% elif user_obj.role.name == 'staff' %}warning{% elif user_obj.role.name == 'student' %}info{% else %}secondary{% endif %}">
+                                            {{ user_obj.role.get_name_display }}
+                                        </span>
+                                        <span class="badge bg-{% if user_obj.status %}success{% else %}danger{% endif %} ml-1">
+                                            {% if user_obj.status %}Active{% else %}Inactive{% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="current-permissions card">
+                            <div class="card-body">
+                                <h6>Current Custom Permissions</h6>
+                                {% if user_obj.custom_permissions.all %}
+                                <div class="permission-list">
+                                    {% for perm in user_obj.custom_permissions.all %}
+                                    <span class="badge bg-success mb-1">{{ perm.get_codename_display }}</span>
+                                    {% endfor %}
+                                </div>
+                                {% else %}
+                                <p class="text-muted mb-0">No custom permissions assigned</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <form method="post" id="userPermissionsForm">
+                    {% csrf_token %}
+                    
+                    <div class="form-group">
+                        <label class="h5">Available Custom Permissions</label>
+                        <p class="text-muted">Select additional permissions for this user (in addition to their role permissions):</p>
+                        
+                        <div class="permissions-grid" style="max-height: 500px; overflow-y: auto; border: 1px solid #e3e6f0; padding: 20px; border-radius: 8px; background-color: #f8f9fc;">
+                            <div class="row">
+                                {% for permission in all_permissions %}
+                                <div class="col-md-6 mb-3">
+                                    <div class="permission-card card h-100">
+                                        <div class="card-body">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" 
+                                                       name="permissions" value="{{ permission.id }}" 
+                                                       id="perm_{{ permission.id }}"
+                                                       {% if permission in user_obj.custom_permissions.all %}checked{% endif %}>
+                                                <label class="form-check-label w-100" for="perm_{{ permission.id }}">
+                                                    <strong>{{ permission.name }}</strong>
+                                                    <br>
+                                                    <small class="text-muted">{{ permission.description }}</small>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group mt-4">
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-save"></i> Update User Permissions
+                        </button>
+                        <a href="{% url 'bg_app:user_detail' user_obj.id %}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Back to User Details
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(document).ready(function() {
+        // Add styling to permission cards
+        $('.permission-card').hover(
+            function() {
+                $(this).addClass('border-primary shadow-sm');
+            },
+            function() {
+                $(this).removeClass('border-primary shadow-sm');
+            }
+        );
+
+        // Handle form submission
+        $('#userPermissionsForm').on('submit', function() {
+            $('button[type="submit"]').prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Updating...');
+        });
+    });
+</script>
+
+<style>
+    .permission-card {
+        transition: all 0.3s ease;
+        border: 1px solid #e3e6f0;
+    }
+    
+    .permission-card:hover {
+        transform: translateY(-2px);
+    }
+    
+    .form-check-input {
+        margin-top: 0.3rem;
+    }
+    
+    .permission-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.25rem;
+    }
+    
+    .user-info-card, .current-permissions {
+        border: 1px solid #e3e6f0;
+    }
+    
+    .img-circle {
+        border-radius: 50%;
+    }
+</style>
+{% endblock %}

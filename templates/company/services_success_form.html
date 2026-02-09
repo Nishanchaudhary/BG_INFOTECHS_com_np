@@ -1,0 +1,186 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="page-title-box d-flex align-items-center justify-content-between">
+                <h4 class="mb-0">{{ page_title }}</h4>
+                <div class="page-title-right">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-0">
+                            <li class="breadcrumb-item"><a href="{% url 'bg_app:dashboard_redirect' %}">Dashboard</a></li>
+                            <li class="breadcrumb-item"><a href="{% url 'company_app:services_success_list' %}">Services Success</a></li>
+                            <li class="breadcrumb-item active">{{ breadcrumb_active }}</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Form Card -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-transparent border-bottom">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-{{ breadcrumb_icon }} me-2 text-primary"></i>
+                        {{ page_title }}
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data" novalidate>
+                        {% csrf_token %}
+                        
+                        {% if form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {% for error in form.non_field_errors %}
+                            <p class="mb-0">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <!-- Title Field -->
+                                <div class="mb-3">
+                                    <label for="{{ form.title.id_for_label }}" class="form-label">
+                                        {{ form.title.label }} <span class="text-danger">*</span>
+                                    </label>
+                                    {{ form.title }}
+                                    {% if form.title.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.title.errors %}
+                                        {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                    {% if form.title.help_text %}
+                                    <div class="form-text">{{ form.title.help_text }}</div>
+                                    {% endif %}
+                                </div>
+                                
+                                <!-- Icon Field -->
+                                <div class="mb-3">
+                                    <label for="{{ form.icon.id_for_label }}" class="form-label">
+                                        {{ form.icon.label }}
+                                    </label>
+                                    {{ form.icon }}
+                                    {% if form.icon.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.icon.errors %}
+                                        {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                    {% if form.icon.help_text %}
+                                    <div class="form-text">{{ form.icon.help_text }}</div>
+                                    {% endif %}
+                                </div>
+                                
+                                <!-- Service Field -->
+                                <div class="mb-3">
+                                    <label for="{{ form.service.id_for_label }}" class="form-label">
+                                        {{ form.service.label }} <span class="text-danger">*</span>
+                                    </label>
+                                    {{ form.service }}
+                                    {% if form.service.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.service.errors %}
+                                        {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <!-- Success Field -->
+                                <div class="mb-3">
+                                    <label for="{{ form.success.id_for_label }}" class="form-label">
+                                        {{ form.success.label }} <span class="text-danger">*</span>
+                                    </label>
+                                    {{ form.success }}
+                                    {% if form.success.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.success.errors %}
+                                        {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                    {% if form.success.help_text %}
+                                    <div class="form-text">{{ form.success.help_text }}</div>
+                                    {% endif %}
+                                </div>
+                                
+                                <!-- Status Field -->
+                                <div class="mb-3">
+                                    <div class="form-check form-switch">
+                                        {{ form.status }}
+                                        <label class="form-check-label" for="{{ form.status.id_for_label }}">
+                                            {{ form.status.label }}
+                                        </label>
+                                    </div>
+                                    {% if form.status.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.status.errors %}
+                                        {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <div class="d-flex gap-2">
+                                    <button type="submit" class="btn btn-success">
+                                        <i class="fas fa-save me-1"></i> Save
+                                    </button>
+                                    <a href="{% url 'company_app:services_success_list' %}" class="btn btn-secondary">
+                                        <i class="fas fa-times me-1"></i> Cancel
+                                    </a>
+                                    {% if service_success and perms.company_app.delete_services_success %}
+                                    <a href="{% url 'company_app:services_success_delete' service_success.pk %}" class="btn btn-danger ms-auto">
+                                        <i class="fas fa-trash me-1"></i> Delete
+                                    </a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    // Add Bootstrap classes to form elements
+    $('input, select, textarea').addClass('form-control');
+    $('input[type="checkbox"]').addClass('form-check-input');
+    
+    // Real-time validation
+    $('form').on('submit', function() {
+        $(this).find('.is-invalid').removeClass('is-invalid');
+    });
+    
+    $('input, select').on('blur', function() {
+        if ($(this).val().trim() === '' && $(this).prop('required')) {
+            $(this).addClass('is-invalid');
+        } else {
+            $(this).removeClass('is-invalid');
+        }
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,1159 @@
+{% extends 'Frontend/base.html' %}
+{% load static %}
+{% block title %}About Us{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* Unique namespace to avoid CSS conflicts */
+  .bg-infotechs-about {
+    font-family: 'Inter', sans-serif;
+    overflow-x: hidden;
+  }
+
+  .bg-infotechs-about {
+    /* Backgrounds */
+    --bg-primary: #ffffff;
+    /* Main background (white) */
+    --bg-secondary: #f8f9fb;
+    /* Slightly off-white sections */
+    --bg-accent: #f0f2f8;
+    /* Soft gray for cards or containers */
+
+    /* Text Colors */
+    --text-primary: #1a1a1a;
+    /* Main heading text */
+    --text-secondary: #4b5563;
+    /* Paragraph / subtle text */
+
+    /* Accent Colors */
+    --accent-blue: #2563eb;
+    /* Modern blue (for buttons, links) */
+    --accent-purple: #6d28d9;
+    /* Secondary accent color */
+    --accent-gradient: linear-gradient(135deg, #60a5fa 0%, #8b5cf6 100%);
+
+    /* Optional Shadows */
+    --card-shadow: rgba(0, 0, 0, 0.08);
+    --hover-shadow: rgba(0, 0, 0, 0.12);
+  }
+
+  /* Hero Section */
+  .bg-infotechs-hero {
+    background: var(--bg-primary);
+    position: relative;
+    overflow: hidden;
+    padding: 120px 0 80px;
+  }
+
+  .bg-infotechs-hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at 20% 50%, rgba(100, 255, 218, 0.1) 0%, transparent 50%);
+    animation: bg-infotechs-pulse 8s ease-in-out infinite;
+  }
+
+  @keyframes bg-infotechs-pulse {
+
+    0%,
+    100% {
+      transform: scale(1);
+      opacity: 0.5;
+    }
+
+    50% {
+      transform: scale(1.1);
+      opacity: 0.8;
+    }
+  }
+
+  .bg-infotechs-hero-content {
+    position: relative;
+    z-index: 2;
+  }
+
+  .bg-infotechs-title {
+    font-size: 3.5rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-bottom: 1.5rem;
+    animation: bg-infotechs-fadeInUp 1s ease-out;
+  }
+
+  .bg-infotechs-subtitle {
+    font-size: 1.25rem;
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+    animation: bg-infotechs-fadeInUp 1s ease-out 0.2s both;
+  }
+
+  @keyframes bg-infotechs-fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Filter Navigation */
+  .bg-infotechs-filter-nav {
+    background: var(--bg-secondary);
+    padding: 60px 0;
+    position: relative;
+  }
+
+  .bg-infotechs-filter-btn {
+    background: transparent;
+    border: 2px solid transparent;
+    color: var(--text-secondary);
+    padding: 12px 30px;
+    margin: 0 10px;
+    border-radius: 30px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .bg-infotechs-filter-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: var(--accent-gradient);
+    transition: left 0.3s ease;
+    z-index: -1;
+  }
+
+  .bg-infotechs-filter-btn:hover::before,
+  .bg-infotechs-filter-btn.active::before {
+    left: 0;
+  }
+
+  .bg-infotechs-filter-btn:hover,
+  .bg-infotechs-filter-btn.active {
+    color: var(--text-primary);
+    border-color: var(--accent-blue);
+    transform: translateY(-2px);
+  }
+
+  /* Content Cards */
+  .bg-infotechs-content-section {
+    background: var(--bg-primary);
+    padding: 80px 0;
+    position: relative;
+  }
+
+  .bg-infotechs-card {
+    background: var(--bg-accent);
+    border-radius: 20px;
+    padding: 40px;
+    margin-bottom: 30px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s ease;
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  .bg-infotechs-card.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .bg-infotechs-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--accent-gradient);
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+  }
+
+  .bg-infotechs-card:hover::before {
+    transform: scaleX(1);
+  }
+
+  .bg-infotechs-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  }
+
+  .bg-infotechs-card-image {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    border-radius: 15px;
+    margin-bottom: 25px;
+    transition: transform 0.3s ease;
+  }
+
+  .bg-infotechs-card:hover .bg-infotechs-card-image {
+    transform: scale(1.05);
+  }
+
+  .bg-infotechs-card-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 15px;
+  }
+
+  .bg-infotechs-card-text {
+    color: var(--text-secondary);
+    line-height: 1.8;
+    margin-bottom: 20px;
+  }
+
+  .bg-infotechs-card-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .bg-infotechs-tag {
+    background: rgba(100, 255, 218, 0.1);
+    color: var(--accent-blue);
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+
+  /* History Section */
+  .bg-infotechs-history {
+    background: var(--bg-secondary);
+    padding: 80px 0;
+    position: relative;
+  }
+
+  .bg-infotechs-history-heading-small {
+    font-size: 1rem;
+    color: var(--accent-blue);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+    font-weight: 600;
+  }
+
+  .bg-infotechs-history-heading-medium {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 30px;
+  }
+
+  .bg-infotechs-history-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-bottom: 40px;
+    position: relative;
+    display: inline-block;
+    display: flex;
+    justify-content: center;
+  }
+
+  .bg-infotechs-history-title::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 45%;
+    width: 80px;
+    height: 4px;
+    background: var(--accent-gradient);
+    border-radius: 2px;
+
+  }
+
+  .bg-infotechs-history-para {
+    color: var(--text-secondary);
+    line-height: 1.8;
+    margin-bottom: 30px;
+  }
+
+  /* Stats Section */
+  .bg-infotechs-stats {
+    background: var(--bg-secondary);
+    padding: 80px 0;
+    position: relative;
+  }
+
+  .bg-infotechs-stat-item {
+    text-align: center;
+    padding: 30px;
+  }
+
+  .bg-infotechs-stat-number {
+    font-size: 3rem;
+    font-weight: 800;
+    color: var(--accent-blue);
+    display: block;
+    margin-bottom: 10px;
+  }
+
+  .bg-infotechs-stat-label {
+    color: var(--text-secondary);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  /* Team Section */
+  .bg-infotechs-team-member {
+    background: var(--bg-accent);
+    border-radius: 20px;
+    padding: 30px;
+    text-align: center;
+    transition: all 0.3s ease;
+    opacity: 0;
+    transform: scale(0.9);
+  }
+
+  .bg-infotechs-team-member.show {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .bg-infotechs-team-member:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+  }
+
+  .bg-infotechs-team-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    margin: 0 auto 20px;
+    overflow: hidden;
+    border: 4px solid var(--accent-blue);
+    position: relative;
+  }
+
+  .bg-infotechs-team-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .bg-infotechs-team-name {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 5px;
+  }
+
+  .bg-infotechs-team-role {
+    color: var(--accent-blue);
+    font-weight: 500;
+    margin-bottom: 15px;
+  }
+
+  .bg-infotechs-team-social {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+  }
+
+  .bg-infotechs-social-link {
+    width: 40px;
+    height: 40px;
+    background: rgba(100, 255, 218, 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--accent-blue);
+    transition: all 0.3s ease;
+  }
+
+  .bg-infotechs-social-link:hover {
+    background: var(--accent-blue);
+    color: var(--bg-primary);
+    transform: translateY(-3px);
+  }
+
+  /* CTA Section */
+  .bg-infotechs-cta {
+    background: var(--accent-gradient);
+    padding: 80px 0;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .bg-infotechs-cta::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+    animation: bg-infotechs-rotate 20s linear infinite;
+  }
+
+  @keyframes bg-infotechs-rotate {
+    from {
+      transform: rotate(0deg);
+    }
+
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .bg-infotechs-cta-content {
+    position: relative;
+    z-index: 2;
+  }
+
+  .bg-infotechs-cta-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-bottom: 20px;
+  }
+
+  .bg-infotechs-cta-btn {
+    background: var(--text-primary);
+    color: var(--bg-primary);
+    border: none;
+    padding: 15px 40px;
+    border-radius: 30px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    display: inline-block;
+  }
+
+  .bg-infotechs-cta-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .bg-infotechs-title {
+      font-size: 2.5rem;
+    }
+
+    .bg-infotechs-filter-btn {
+      margin: 5px;
+      padding: 10px 20px;
+      font-size: 0.9rem;
+    }
+
+    .bg-infotechs-stat-number {
+      font-size: 2rem;
+    }
+
+    .bg-infotechs-history-title {
+      font-size: 1.8rem;
+    }
+  }
+
+  /* Timeline Section */
+  .bg-infotechs-timeline {
+    background: var(--bg-primary);
+    padding: 80px 0;
+    position: relative;
+  }
+
+  .bg-infotechs-timeline-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-bottom: 50px;
+    text-align: center;
+    position: relative;
+  }
+
+  .bg-infotechs-timeline-title::after {
+    content: '';
+    position: absolute;
+    bottom: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 4px;
+    background: var(--accent-gradient);
+    border-radius: 2px;
+  }
+
+  .bg-infotechs-timeline-container {
+    position: relative;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .bg-infotechs-timeline-line {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4px;
+    height: 100%;
+    background: var(--bg-accent);
+    top: 0;
+  }
+
+  .bg-infotechs-timeline-item {
+    position: relative;
+    margin-bottom: 50px;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.5s ease;
+  }
+
+  .bg-infotechs-timeline-item.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .bg-infotechs-timeline-content {
+    background: var(--bg-accent);
+    border-radius: 15px;
+    padding: 30px;
+    width: 45%;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    position: relative;
+  }
+
+  .bg-infotechs-timeline-item:nth-child(odd) .bg-infotechs-timeline-content {
+    margin-left: auto;
+  }
+
+  .bg-infotechs-timeline-item:nth-child(even) .bg-infotechs-timeline-content {
+    margin-right: auto;
+  }
+
+  .bg-infotechs-timeline-dot {
+    position: absolute;
+    top: 30px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--accent-blue);
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2;
+    box-shadow: 0 0 0 5px var(--bg-primary);
+  }
+
+  .bg-infotechs-timeline-date {
+    position: absolute;
+    top: 25px;
+    font-weight: 700;
+    color: var(--accent-blue);
+    font-size: 1.1rem;
+  }
+
+  .bg-infotechs-timeline-item:nth-child(odd) .bg-infotechs-timeline-date {
+    right: calc(55% + 30px);
+  }
+
+  .bg-infotechs-timeline-item:nth-child(even) .bg-infotechs-timeline-date {
+    left: calc(55% + 30px);
+  }
+
+  .bg-infotechs-timeline-heading {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 15px;
+  }
+
+  .bg-infotechs-timeline-text {
+    color: var(--text-secondary);
+    line-height: 1.8;
+  }
+
+  .bg-infotechs-timeline-icon {
+    position: absolute;
+    top: 15px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: var(--bg-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--accent-blue);
+    font-size: 1.2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 3;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<style>
+        .page-title {
+            background-image: linear-gradient(rgba(28, 29, 31, 0.65), rgba(23, 4, 69, 0.65)),
+            url("{% static 'img/breadcrumb.jpg' %}");
+            background-size: cover;
+            background-position: center;
+            padding: 30px 0px ;
+        }
+    </style>
+<main class="main">
+  <div class="page-title light-background">
+    <div class="container">
+      <h1>BG-Infotechs</h1>
+      <nav class="breadcrumbs">
+        <ol>
+          <li><a href="{% url 'frontend_app:home' %}"><i class="fas fa-home"></i> Home</a></li>
+          <li class="current">About</li>
+        </ol>
+      </nav>
+    </div>
+  </div>
+  <div class="bg-infotechs-about">
+    <!-- Hero Section -->
+    <section class="bg-infotechs-hero py-5">
+      <div class="container">
+        <div class="row align-items-center">
+          <!-- Text Content -->
+          <div class="col-lg-6">
+            <div class="bg-infotechs-hero-content">
+              <h1 class="bg-infotechs-title  text-white mb-3">About BG Infotechs</h1>
+              <p class="bg-infotechs-subtitle  text-white mb-4">
+                Pioneering digital transformation through innovative technology solutions.
+                We empower businesses to thrive in the digital age with cutting-edge
+                software development, cloud solutions, and IT consulting services.
+              </p>
+
+              <!-- Replaced Buttons with Highlights -->
+              <ul class="list-unstyled">
+                <li class="mb-2">
+                  <i class="fas fa-check-circle  text-white me-2"></i> <span class="text-white">10+ Years of Industry
+                    Experience</span>
+                </li>
+                <li class="mb-2">
+                  <i class="fas fa-check-circle  text-white me-2"></i> <span class="text-white">100+ Successful
+                    Projects</span>
+                </li>
+                <li class="mb-2">
+                  <i class="fas fa-check-circle text-white me-2"></i> <span class="text-white">Trusted by Global
+                    Clients</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Filter Navigation -->
+    <section class="bg-infotechs-filter-nav">
+      <div class="container">
+        <div class="text-center">
+          <div class="d-flex flex-wrap justify-content-center">
+            <button class="bg-infotechs-filter-btn active" data-filter="all">
+              <i class="fas fa-th me-2"></i>All
+            </button>
+            <button class="bg-infotechs-filter-btn" data-filter="started">
+              <i class="fas fa-history me-2"></i>When We Started
+            </button>
+            <button class="bg-infotechs-filter-btn" data-filter="team">
+              <i class="fas fa-users me-2"></i>Have A Team
+            </button>
+            <button class="bg-infotechs-filter-btn" data-filter="awards">
+              <i class="fas fa-trophy me-2"></i>Win Awards
+            </button>
+            <button class="bg-infotechs-filter-btn" data-filter="worldwide">
+              <i class="fas fa-globe me-2"></i>World Wide
+            </button>
+            <button class="bg-infotechs-filter-btn" data-filter="projects">
+              <i class="fas fa-project-diagram me-2"></i>Project
+            </button>
+            <button class="bg-infotechs-filter-btn" data-filter="join">
+              <i class="fas fa-handshake me-2"></i>Join With Us
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Content Cards Section -->
+    <section class="bg-infotechs-content-section">
+      <div class="container">
+        <div class="row" id="bg-infotechs-content-grid">
+          <!-- When We Started Card -->
+          <div class="col-lg-6 bg-infotechs-content-item" data-category="started">
+            <div class="bg-infotechs-card">
+              <img
+                src="https://media.istockphoto.com/id/1371879631/vector/business-journey-businessman-walking-on-long-winding-path-going-to-success-in-the-future.jpg?s=612x612&w=0&k=20&c=VtgGNFpLo8v5lWXW0rWqa21Fh_i5bvLvJ2gA4pCqpR0="
+                alt="Company Start" class="bg-infotechs-card-image">
+              <h3 class="bg-infotechs-card-title">Our Journey Begins</h3>
+              <p class="bg-infotechs-card-text">
+                Founded in 2015 with a vision to revolutionize the IT industry, BG Infotechs started as a small team
+                of passionate technologists in a shared office space. Our first project was a custom CRM solution for
+                a local business that became the foundation of our growth.
+              </p>
+              <div class="bg-infotechs-card-tags">
+                <span class="bg-infotechs-tag">2015</span>
+                <span class="bg-infotechs-tag">Foundation</span>
+                <span class="bg-infotechs-tag">Vision</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Have A Team Card -->
+          <div class="col-lg-6 bg-infotechs-content-item " data-category="team">
+            <div class="bg-infotechs-card">
+              <img
+                src="https://media.istockphoto.com/id/1830163120/photo/group-of-computer-programmers-talking-while-working-at-it-office.jpg?s=612x612&w=0&k=20&c=nnhMhZcifOMTSPiZJ72QUDVWxcSgCyth-2GQaDTgzx0="
+                alt="Team Growth" class="bg-infotechs-card-image">
+              <h3 class="bg-infotechs-card-title">Building Our Team</h3>
+              <p class="bg-infotechs-card-text">
+                From 3 founders to a team of 25+ professionals, our growth has been fueled by talented individuals who
+                share our passion for innovation. We've built a diverse team of developers, designers, consultants,
+                and strategists from around the world.
+              </p>
+              <div class="bg-infotechs-card-tags">
+                <span class="bg-infotechs-tag">25+ Members</span>
+                <span class="bg-infotechs-tag">Diverse Talent</span>
+                <span class="bg-infotechs-tag">Culture</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Win Awards Card -->
+          <div class="col-lg-6 bg-infotechs-content-item mt-4" data-category="awards">
+            <div class="bg-infotechs-card">
+              <img
+                src="https://media.istockphoto.com/id/2062707205/photo/gold-star-on-a-blue-background-as-a-reward-top-performance-award-winners-cup-achievements.jpg?s=612x612&w=0&k=20&c=6HeaeFYryuuOyPTW8ucQKsUMUi3F8oHvE9CSPVgoV60="
+                alt="Awards" class="bg-infotechs-card-image">
+              <h3 class="bg-infotechs-card-title">Recognition & Awards</h3>
+              <p class="bg-infotechs-card-text">
+                Our commitment to excellence has earned us numerous accolades, including "Best IT Solutions Provider"
+                in 2019, "Innovation in Technology" award in 2021, and recognition as a "Top 10 Digital Transformation
+                Company" in 2022.
+              </p>
+              <div class="bg-infotechs-card-tags">
+                <span class="bg-infotechs-tag">Excellence</span>
+                <span class="bg-infotechs-tag">Innovation</span>
+                <span class="bg-infotechs-tag">Recognition</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- World Wide Card -->
+          <div class="col-lg-6 bg-infotechs-content-item mt-4" data-category="worldwide">
+            <div class="bg-infotechs-card">
+              <img
+                src="https://images.unsplash.com/photo-1521295121783-8a321d551ad2?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Z2xvYmFsJTIwZXhwYW5zaW9ufGVufDB8fDB8fHww"
+                alt="Global Expansion" class="bg-infotechs-card-image">
+              <h3 class="bg-infotechs-card-title">Global Expansion</h3>
+              <p class="bg-infotechs-card-text">
+                What began as a local operation has expanded to serve clients across 15+ countries. With offices in
+                New York, London, and Bangalore, we've established a global presence while maintaining our commitment
+                to personalized service.
+              </p>
+              <div class="bg-infotechs-card-tags">
+                <span class="bg-infotechs-tag">15+ Countries</span>
+                <span class="bg-infotechs-tag">Global Presence</span>
+                <span class="bg-infotechs-tag">International</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Project Card -->
+          <div class="col-lg-6 bg-infotechs-content-item mt-4" data-category="projects">
+            <div class="bg-infotechs-card">
+              <img src="https://wiserbrand.com/wp-content/uploads/2024/05/best-software-development-companies.png"
+                alt="Projects" class="bg-infotechs-card-image">
+              <h3 class="bg-infotechs-card-title">Notable Projects</h3>
+              <p class="bg-infotechs-card-text">
+                From enterprise-level software solutions to innovative mobile applications, our portfolio spans 150+
+                successful projects. Our work with Fortune 500 companies and startups alike has established us as a
+                trusted partner in digital transformation.
+              </p>
+              <div class="bg-infotechs-card-tags">
+                <span class="bg-infotechs-tag">150+ Projects</span>
+                <span class="bg-infotechs-tag">Enterprise</span>
+                <span class="bg-infotechs-tag">Innovation</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Join With Us Card -->
+          <div class="col-lg-6 bg-infotechs-content-item mt-4" data-category="join">
+            <div class="bg-infotechs-card">
+              <img
+                src="https://static.vecteezy.com/system/resources/thumbnails/003/396/738/small_2x/businessman-clicks-on-virtual-screen-mission-photo.jpg"
+                alt="Join Us" class="bg-infotechs-card-image">
+              <h3 class="bg-infotechs-card-title">Join Our Mission</h3>
+              <p class="bg-infotechs-card-text">
+                As we continue to grow, we're always looking for talented individuals who share our passion for
+                technology and innovation. Join us in shaping the future of digital transformation and making a
+                meaningful impact on businesses worldwide.
+              </p>
+              <div class="bg-infotechs-card-tags">
+                <span class="bg-infotechs-tag">Careers</span>
+                <span class="bg-infotechs-tag">Opportunities</span>
+                <span class="bg-infotechs-tag">Growth</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- History Section -->
+    <!-- History Section -->
+    <section class="bg-infotechs-history py-5">
+      <div class="container">
+
+        <!-- Section Titles -->
+        <div class="text-center mb-5">
+          <h5 class="text-uppercase text-primary fw-semibold bg-infotechs-history-heading-small">
+            Our Journey
+          </h5>
+          <h2 class="fw-bold bg-infotechs-history-heading-medium mb-3">
+            The Story Behind Our Growth
+          </h2>
+          <p class=" mx-auto text-dark" style="max-width: 600px;">
+            From humble beginnings to global innovation — discover how BG Infotechs became a trusted name in
+            technology.
+          </p>
+        </div>
+
+        <!-- History Content -->
+        <div class="row align-items-center">
+
+          <!-- Left Side: Paragraphs -->
+          <div class="col-lg-6">
+            <p class="bg-infotechs-history-para">
+              Our success story began with a simple idea: to make technology accessible and transformative for
+              businesses of all sizes. In 2015, our founders came together with diverse backgrounds in software
+              development, business strategy, and design. They recognized a gap in the market for IT solutions that
+              were not only technologically advanced but also aligned with business objectives.
+            </p>
+            <p class="bg-infotechs-history-para">
+              The early days were challenging. Working from a small co-working space, the team took on every project
+              with determination and a commitment to excellence. Our first major breakthrough came when a local
+              manufacturing company hired us to develop a custom inventory management system. The project's success
+              led to referrals and established our reputation for delivering quality solutions.
+            </p>
+          </div>
+
+          <!-- Right Side: Image -->
+          <div class="col-lg-6 text-center">
+            <img
+              src="https://img.freepik.com/free-vector/hand-drawn-roadmap-infographic-with-character_52683-67396.jpg?semt=ais_hybrid&w=740&q=80"
+              alt="BG Infotechs History" class="img-fluid rounded-4 shadow-lg">
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- Timeline Section -->
+    <section class="bg-infotechs-timeline">
+      <div class="container">
+        <h2 class="bg-infotechs-timeline-title">Our Milestones</h2>
+        <div class="bg-infotechs-timeline-container">
+          <div class="bg-infotechs-timeline-line"></div>
+
+          <!-- Timeline Item 1 -->
+          <div class="bg-infotechs-timeline-item">
+            <div class="bg-infotechs-timeline-icon">
+              <i class="fas fa-rocket"></i>
+            </div>
+            <div class="bg-infotechs-timeline-dot"></div>
+            <div class="bg-infotechs-timeline-date">2015</div>
+            <div class="bg-infotechs-timeline-content">
+              <h3 class="bg-infotechs-timeline-heading">Company Founded</h3>
+              <p class="bg-infotechs-timeline-text">
+                BG Infotechs was founded by three passionate technologists with a vision to revolutionize the IT
+                industry. Started in a small co-working space with just 3 employees.
+              </p>
+            </div>
+          </div>
+
+          <!-- Timeline Item 2 -->
+          <div class="bg-infotechs-timeline-item">
+            <div class="bg-infotechs-timeline-icon">
+              <i class="fas fa-users"></i>
+            </div>
+            <div class="bg-infotechs-timeline-dot"></div>
+            <div class="bg-infotechs-timeline-date">2017</div>
+            <div class="bg-infotechs-timeline-content">
+              <h3 class="bg-infotechs-timeline-heading">Team Expansion</h3>
+              <p class="bg-infotechs-timeline-text">
+                Grew our team to 15 professionals and moved to our first dedicated office. Expanded our service
+                offerings to include cloud solutions and cybersecurity.
+              </p>
+            </div>
+          </div>
+
+          <!-- Timeline Item 3 -->
+          <div class="bg-infotechs-timeline-item">
+            <div class="bg-infotechs-timeline-icon">
+              <i class="fas fa-trophy"></i>
+            </div>
+            <div class="bg-infotechs-timeline-dot"></div>
+            <div class="bg-infotechs-timeline-date">2019</div>
+            <div class="bg-infotechs-timeline-content">
+              <h3 class="bg-infotechs-timeline-heading">First Major Award</h3>
+              <p class="bg-infotechs-timeline-text">
+                Received "Best IT Solutions Provider" award, marking our recognition in the industry. Completed 50
+                successful projects for clients across various sectors.
+              </p>
+            </div>
+          </div>
+
+          <!-- Timeline Item 4 -->
+          <div class="bg-infotechs-timeline-item">
+            <div class="bg-infotechs-timeline-icon">
+              <i class="fas fa-globe"></i>
+            </div>
+            <div class="bg-infotechs-timeline-dot"></div>
+            <div class="bg-infotechs-timeline-date">2021</div>
+            <div class="bg-infotechs-timeline-content">
+              <h3 class="bg-infotechs-timeline-heading">International Expansion</h3>
+              <p class="bg-infotechs-timeline-text">
+                Opened our first international office in London, expanding our global reach. Began serving clients in
+                10+ countries across Europe and North America.
+              </p>
+            </div>
+          </div>
+
+          <!-- Timeline Item 5 -->
+          <div class="bg-infotechs-timeline-item">
+            <div class="bg-infotechs-timeline-icon">
+              <i class="fas fa-building"></i>
+            </div>
+            <div class="bg-infotechs-timeline-dot"></div>
+            <div class="bg-infotechs-timeline-date">2022</div>
+            <div class="bg-infotechs-timeline-content">
+              <h3 class="bg-infotechs-timeline-heading">New York Office</h3>
+              <p class="bg-infotechs-timeline-text">
+                Launched our North American headquarters in New York. Reached 100+ employees and completed 150+
+                projects, establishing ourselves as a global IT solutions provider.
+              </p>
+            </div>
+          </div>
+
+          <!-- Timeline Item 6 -->
+          <div class="bg-infotechs-timeline-item">
+            <div class="bg-infotechs-timeline-icon">
+              <i class="fas fa-star"></i>
+            </div>
+            <div class="bg-infotechs-timeline-dot"></div>
+            <div class="bg-infotechs-timeline-date">2023</div>
+            <div class="bg-infotechs-timeline-content">
+              <h3 class="bg-infotechs-timeline-heading">Industry Leadership</h3>
+              <p class="bg-infotechs-timeline-text">
+                Recognized as a "Top 10 Digital Transformation Company." Expanded our AI and machine learning
+                capabilities, positioning ourselves at the forefront of technological innovation.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- team section of bg  -->
+    <section id="team" class="team-section mt-4">
+      <div class="container">
+        <div class="section-header">
+          <div>
+            <span class="section-subtitle">Our Experts</span><br>
+            <h3 class="section-title2 fw-bold">Meet the BG Infotech Family</h3>
+          </div>
+          <p class="section-description">The experienced professionals driving our success</p>
+        </div>
+
+
+
+
+        <div class="team-grid">
+          <!-- Team Member 1 -->
+          {% for member in team_members %}
+          <div class="team-member">
+
+            <div class="member-image">
+              <img src="{{ member.image.url }}" alt="{{ member.name }}" loading="lazy">
+              <div class="member-overlay">
+                <div class="social-links">
+                  <a href="{{ member.linkedin }}"><i class="fab fa-linkedin-in"></i></a>
+                  <a href="{{ member.twitter }}"><i class="fab fa-twitter"></i></a>
+                  <a href="{{ member.facebook }}"><i class="fab fa-facebook"></i></a>
+                </div>
+              </div>
+            </div>
+            <div class="member-info">
+              <h3>{{ member.name }}</h3>
+              <span>{{ member.designation }}</span>
+              <div class="member-skills">
+                {% for skill in member.get_skills_list %}
+                <span>{{ skill }}</span>
+                {% endfor %}
+              </div>
+            </div>
+
+          </div>
+
+          {% endfor %}
+        </div>
+
+
+        <div class="team-cta">
+          <p>Want to join our growing team?</p>
+          <a href="{% url 'frontend_app:career' %}" class="btn-primary">
+            <span>View Open Positions</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+            </svg>
+          </a>
+        </div>
+    </section>
+</main>
+
+{% block extra_js %}
+<script>
+  // Filter functionality
+  document.addEventListener('DOMContentLoaded', function () {
+    const filterButtons = document.querySelectorAll('.bg-infotechs-filter-btn');
+    const contentItems = document.querySelectorAll('.bg-infotechs-content-item');
+
+    filterButtons.forEach(button => {
+      button.addEventListener('click', function () {
+        // Remove active class from all buttons
+        filterButtons.forEach(btn => btn.classList.remove('active'));
+        // Add active class to clicked button
+        this.classList.add('active');
+
+        const filter = this.getAttribute('data-filter');
+
+        contentItems.forEach(item => {
+          const card = item.querySelector('.bg-infotechs-card');
+          if (filter === 'all' || item.getAttribute('data-category') === filter) {
+            item.style.display = 'block';
+            setTimeout(() => {
+              card.classList.add('show');
+            }, 100);
+          } else {
+            card.classList.remove('show');
+            setTimeout(() => {
+              item.style.display = 'none';
+            }, 300);
+          }
+        });
+      });
+    });
+
+    // Initialize all cards as visible
+    contentItems.forEach(item => {
+      const card = item.querySelector('.bg-infotechs-card');
+      setTimeout(() => {
+        card.classList.add('show');
+      }, 100);
+    });
+
+    // Animate team members on scroll
+    const teamMembers = document.querySelectorAll('.bg-infotechs-team-member');
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver(function (entries) {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('show');
+        }
+      });
+    }, observerOptions);
+
+    teamMembers.forEach(member => {
+      observer.observe(member);
+    });
+
+    // Animate timeline items on scroll
+    const timelineItems = document.querySelectorAll('.bg-infotechs-timeline-item');
+
+    const timelineObserver = new IntersectionObserver(function (entries) {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('show');
+        }
+      });
+    }, observerOptions);
+
+    timelineItems.forEach(item => {
+      timelineObserver.observe(item);
+    });
+
+    // Animate stats
+    const statNumbers = document.querySelectorAll('.bg-infotechs-stat-number');
+    const statsObserver = new IntersectionObserver(function (entries) {
+      entries.forEach(entry => {
+        if (entry.isIntersecting && !entry.target.classList.contains('animated')) {
+          animateNumber(entry.target);
+          entry.target.classList.add('animated');
+        }
+      });
+    }, observerOptions);
+
+    statNumbers.forEach(stat => {
+      statsObserver.observe(stat);
+    });
+
+    function animateNumber(element) {
+      const target = parseInt(element.getAttribute('data-target'));
+      const duration = 2000;
+      const increment = target / (duration / 16);
+      let current = 0;
+
+      const timer = setInterval(() => {
+        current += increment;
+        if (current >= target) {
+          current = target;
+          clearInterval(timer);
+        }
+        element.textContent = Math.floor(current);
+      }, 16);
+    }
+  });
+</script>
+
+<script>
+  // Get current page URL path
+  const currentPage = window.location.pathname.split("/").pop();
+
+  // Select all nav links
+  const navLinks = document.querySelectorAll(".nav-link-item, .nav-links a, .mobile-menu a");
+
+  navLinks.forEach(link => {
+    // Get the href (filename only)
+    const linkPage = link.getAttribute("href").split("/").pop();
+
+    // Compare it with the current page
+    if (linkPage === currentPage) {
+      link.classList.add("active");
+    } else {
+      link.classList.remove("active");
+    }
+  });
+</script>
+{% endblock %}
+
+{% endblock %}

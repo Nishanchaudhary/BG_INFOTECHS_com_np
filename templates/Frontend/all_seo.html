@@ -1,0 +1,835 @@
+{% extends 'Frontend/base.html' %}
+{% load static %}
+{% load custom_filters %}
+{% block title %}{% if seo_category %}{{ seo_category.title }} - SEO Case Studies{% else %}SEO Case Studies & Success Stories{% endif %}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .bg-infotechs-search-container {
+        position: relative;
+    }
+
+    .search-wrapper {
+        position: relative;
+        background: white;
+        border-radius: 50px;
+        padding: 8px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        border: 2px solid transparent;
+        transition: all 0.3s ease;
+    }
+
+    .search-wrapper:focus-within {
+        border-color: var(--bg-infotechs-primary);
+        box-shadow: 0 5px 25px rgba(var(--bg-infotechs-primary-rgb), 0.2);
+    }
+
+    .search-icon {
+        position: absolute;
+        left: 20px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #6c757d;
+        z-index: 1;
+    }
+
+    .search-input {
+        border: none;
+        outline: none;
+        padding: 12px 50px 12px 50px;
+        font-size: 1.1rem;
+        width: 100%;
+        background: transparent;
+        border-radius: 50px;
+    }
+
+    .search-actions {
+        position: absolute;
+        right: 8px;
+        top: 50%;
+        transform: translateY(-50%);
+        display: flex;
+        gap: 5px;
+    }
+
+    .btn-clear, .btn-search {
+        border: none;
+        background: transparent;
+        padding: 8px;
+        border-radius: 50%;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .btn-clear {
+        color: #6c757d;
+        text-decoration: none;
+    }
+
+    .btn-clear:hover {
+        background: #f8f9fa;
+        color: #dc3545;
+    }
+
+    .btn-search {
+        background: var(--bg-infotechs-primary);
+        color: white;
+        width: 40px;
+        height: 40px;
+    }
+
+    .category-filters {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: center;
+    }
+
+    .category-filter-btn {
+        padding: 8px 16px;
+        background: white;
+        border: 2px solid var(--bg-infotechs-primary);
+        color: var(--bg-infotechs-primary);
+        border-radius: 25px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        white-space: nowrap;
+    }
+
+    .category-filter-btn:hover,
+    .category-filter-btn.active {
+        background: var(--bg-infotechs-primary);
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    .bg-infotechs-portfolio-card {
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        transition: all 0.4s ease;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        background: white;
+    }
+
+    .bg-infotechs-portfolio-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+    }
+
+    .portfolio-image-container {
+        position: relative;
+        overflow: hidden;
+        height: 260px;
+    }
+
+    .portfolio-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.6s ease;
+    }
+
+    .bg-infotechs-portfolio-card:hover .portfolio-image {
+        transform: scale(1.08);
+    }
+
+    .portfolio-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.1) 30%, rgba(0,0,0,0.8) 100%);
+        opacity: 0;
+        transition: opacity 0.4s ease;
+        padding: 25px;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+    }
+
+    .bg-infotechs-portfolio-card:hover .portfolio-overlay {
+        opacity: 1;
+    }
+
+    .portfolio-badges {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .industry-badge, .duration-badge {
+        font-size: 0.75rem;
+        padding: 6px 12px;
+        backdrop-filter: blur(10px);
+    }
+
+    .portfolio-content h5 {
+        font-size: 1.3rem;
+        margin-bottom: 10px;
+        font-weight: 700;
+    }
+
+    .portfolio-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 20px;
+        flex-wrap: wrap;
+    }
+
+    .portfolio-actions .btn {
+        font-size: 0.85rem;
+        padding: 8px 16px;
+        border-radius: 8px;
+        flex: 1;
+        min-width: 120px;
+    }
+
+    .portfolio-card-footer {
+        padding: 20px;
+        background: white;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .loading-spinner {
+        display: none;
+        text-align: center;
+        padding: 2rem;
+    }
+
+    .spinner-border {
+        width: 3rem;
+        height: 3rem;
+    }
+
+    .no-results-state {
+        text-align: center;
+        padding: 4rem 2rem;
+    }
+
+    .no-results-icon {
+        font-size: 4rem;
+        color: #6c757d;
+        margin-bottom: 1rem;
+    }
+
+    .seo-badge {
+        background: linear-gradient(45deg, #4CAF50, #45a049);
+        color: white;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    .social-media-links {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        margin-top: 20px;
+    }
+
+    .social-media-link {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: var(--bg-infotechs-primary);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .social-media-link:hover {
+        background: var(--bg-infotechs-secondary);
+        transform: translateY(-3px);
+    }
+
+    @media (max-width: 768px) {
+        .search-wrapper {
+            border-radius: 20px;
+        }
+        
+        .search-input {
+            padding: 10px 45px 10px 45px;
+            font-size: 1rem;
+        }
+        
+        .portfolio-image-container {
+            height: 220px;
+        }
+        
+        .category-filters {
+            gap: 8px;
+            justify-content: flex-start;
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+        
+        .category-filter-btn {
+            font-size: 0.9rem;
+            padding: 6px 12px;
+        }
+
+        .portfolio-actions .btn {
+            min-width: 100px;
+            font-size: 0.8rem;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .portfolio-actions {
+            flex-direction: column;
+        }
+        
+        .portfolio-actions .btn {
+            min-width: auto;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<main class="main">
+    <!-- Page Header -->
+    <div class="page-title light-background">
+        <div class="container">
+            <h1>{% if seo_category %}{{ seo_category.title }} Case Studies{% else %}SEO Success Stories & Case Studies{% endif %}</h1>
+            <nav class="breadcrumbs" data-aos="fade-right" data-aos-delay="100">
+                <ol>
+                    <li><a href="{% url 'frontend_app:home' %}"><i class="fas fa-home"></i> Home</a></li>
+                    <li><a href="{% url 'frontend_app:search_engine_optimization' %}"><i class="fa-brands fa-searchengin"></i> SEO Services</a></li>
+                    <li class="current">SEO Case Studies</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Portfolio Search Section -->
+    <section class="py-5 bg-light">
+        <div class="container">
+            <div class="row justify-content-center mb-5">
+                <div class="col-lg-8 text-center">
+                    <h2 class="bg-infotechs-section-title mb-3">Our SEO Success Stories</h2>
+                    <p class="text-muted">Explore real results from our SEO campaigns. See how we've helped businesses improve their search rankings and online visibility.</p>
+                    {% if seo_category %}
+                    <span class="seo-badge">
+                        <i class="fas fa-search me-1"></i> {{ seo_category.title }}
+                    </span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Search and Filter Controls -->
+            <div class="row justify-content-center mb-4">
+                <div class="col-lg-8 col-md-10">
+                    <form method="GET" action="{% url 'frontend_app:all_seo' %}" class="bg-infotechs-search-container" id="searchForm">
+                        <div class="search-wrapper">
+                            <div class="search-icon">
+                                <i class="fas fa-search"></i>
+                            </div>
+                            <input type="text" name="search" value="{{ search_query }}" class="search-input" 
+                                   placeholder="Search SEO projects by title, company, or description...">
+                            <div class="search-actions">
+                                {% if search_query or category_filter %}
+                                <a href="{% url 'frontend_app:all_seo' %}" class="btn-clear">
+                                    <i class="fas fa-times"></i>
+                                </a>
+                                {% endif %}
+                                <button type="submit" class="btn-search" id="searchSubmit">
+                                    <i class="fas fa-arrow-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+           
+
+            <!-- Results Counter -->
+            <div class="row align-items-center mb-4">
+                <div class="col-md-12 text-center">
+                    <p class="text-muted mb-0">
+                        Showing <span class="fw-bold text-infotechs-primary">{{ projects.start_index }}-{{ projects.end_index }}</span> 
+                        of <span class="fw-bold">{{ projects.paginator.count }}</span> SEO projects
+                        {% if search_query %}for "<strong>{{ search_query }}</strong>"{% endif %}
+                        {% if active_category %}in <strong>{{ active_category.title }}</strong>{% endif %}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Grid -->
+    <section class="py-5">
+        <div class="container">
+            <!-- Loading Spinner -->
+            <div class="loading-spinner" id="loadingSpinner">
+                <div class="spinner-border text-infotechs-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-3 text-muted">Loading SEO projects...</p>
+            </div>
+
+            <div class="row" id="projectsGrid">
+                {% if projects %}
+                    {% for project in projects %}
+                    <div class="col-lg-4 col-md-6 mb-4 project-item" 
+                         data-title="{{ project.title|lower }}" 
+                         data-company="{{ project.company|lower }}"
+                         data-category="{% if project.category %}{{ project.category.title|lower }}{% else %}uncategorized{% endif %}"
+                         data-service="{{ project.service.title|lower }}"
+                         data-date="{{ project.created_at|date:'Y-m-d' }}">
+                        <div class="bg-infotechs-portfolio-card">
+                            <div class="portfolio-image-container">
+                                {% if project.image %}
+                                    <img src="{{ project.image.url }}" alt="{{ project.title }}" class="img-fluid portfolio-image" loading="lazy">
+                                {% else %}
+                                    <img src="{% static 'img/default-project.jpg' %}" 
+                                         alt="{{ project.title }}" class="img-fluid portfolio-image" loading="lazy">
+                                {% endif %}
+                                <div class="portfolio-overlay">
+                                    <div class="portfolio-badges">
+                                        {% if project.category %}
+                                        <span class="badge industry-badge bg-infotechs-primary">
+                                            {{ project.category.title }}
+                                        </span>
+                                        {% endif %}
+                                        <span class="badge duration-badge bg-infotechs-secondary">
+                                            {{ project.created_at|timesince }} ago
+                                        </span>
+                                    </div>
+                                    <div class="portfolio-content">
+                                        <h5 class="text-light fw-bold">{{ project.title }}</h5>
+                                        <p class="text-light mb-2">{{ project.company }}</p>
+                                        <p class="text-light small">{{ project.description|truncatewords:20 }}</p>
+                                        <div class="portfolio-actions mt-3">
+                                            {% if project.live_link %}
+                                            <a href="{{ project.live_link }}" target="_blank" class="btn text-white btn-sm bg-infotechs-primary me-2" rel="noopener">
+                                                <i class="fas fa-external-link-alt me-1"></i> Live Site
+                                            </a>
+                                            {% endif %}
+                                            <button class="btn btn-sm bg-infotechs-btn-outline view-project-details" 
+                                                    data-project-id="{{ project.id }}"
+                                                    data-project-title="{{ project.title }}"
+                                                    data-project-company="{{ project.company }}"
+                                                    data-project-description="{{ project.description }}"
+                                                    data-project-image="{% if project.image %}{{ project.image.url }}{% else %}{% static 'img/default-project.jpg' %}{% endif %}"
+                                                    data-project-category="{% if project.category %}{{ project.category.title }}{% endif %}"
+                                                    data-project-service="{{ project.service.title }}"
+                                                    data-project-date="{{ project.created_at|date:'M Y' }}"
+                                                    data-project-link="{% if project.live_link %}{{ project.live_link }}{% endif %}">
+                                                <i class="fas fa-eye me-1"></i> Quick View
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="portfolio-card-footer">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h6 class="mb-0 text-truncate">{{ project.title }}</h6>
+                                    <div class="portfolio-stats">
+                                        <small class="text-muted">
+                                            <i class="fas fa-calendar me-1"></i>{{ project.created_at|date:"M Y" }}
+                                        </small>
+                                    </div>
+                                </div>
+                                <small class="text-muted">{{ project.company }}</small>
+                                <div class="performance-indicators mt-2">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <small class="text-infotechs-primary">
+                                            <i class="fas fa-tag me-1"></i>
+                                            {{ project.service.title }}
+                                        </small>
+                                        {% if project.category %}
+                                        <small class="text-success">
+                                            <i class="fas fa-folder me-1"></i>
+                                            {{ project.category.title }}
+                                        </small>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <!-- No Projects Message -->
+                    <div class="col-12">
+                        <div class="no-results-state">
+                            <div class="no-results-icon mb-4">
+                                <i class="fas fa-search fa-4x text-muted"></i>
+                            </div>
+                            <h4 class="text-muted mb-3">No SEO projects found</h4>
+                            <p class="text-muted mb-4">
+                                {% if search_query %}
+                                    No SEO projects found for "{{ search_query }}". Try adjusting your search terms.
+                                {% elif active_category %}
+                                    No SEO projects found in {{ active_category.title }} category.
+                                {% else %}
+                                    No SEO case studies available at the moment. Please check back later for our latest success stories.
+                                {% endif %}
+                            </p>
+                            <a href="{% url 'frontend_app:all_seo' %}" class="btn bg-infotechs-primary">
+                                <i class="fas fa-redo me-2"></i> View All SEO Projects
+                            </a>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Pagination -->
+            {% if projects.has_other_pages %}
+            <div class="row mt-5">
+                <div class="col-12">
+                    <nav aria-label="SEO projects pagination">
+                        <ul class="pagination justify-content-center">
+                            {% if projects.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page=1{% if search_query %}&search={{ search_query }}{% endif %}{% if active_category %}&category={{ active_category.id }}{% endif %}">
+                                    <i class="fas fa-angle-double-left"></i>
+                                    <span class="visually-hidden">First Page</span>
+                                </a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ projects.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if active_category %}&category={{ active_category.id }}{% endif %}">
+                                    <i class="fas fa-angle-left"></i>
+                                    <span class="visually-hidden">Previous Page</span>
+                                </a>
+                            </li>
+                            {% endif %}
+
+                            {% for num in projects.paginator.page_range %}
+                                {% if projects.number == num %}
+                                <li class="page-item active">
+                                    <span class="page-link">{{ num }}</span>
+                                </li>
+                                {% elif num > projects.number|add:'-3' and num < projects.number|add:'3' %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}{% if active_category %}&category={{ active_category.id }}{% endif %}">{{ num }}</a>
+                                </li>
+                                {% endif %}
+                            {% endfor %}
+
+                            {% if projects.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ projects.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if active_category %}&category={{ active_category.id }}{% endif %}">
+                                    <i class="fas fa-angle-right"></i>
+                                    <span class="visually-hidden">Next Page</span>
+                                </a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ projects.paginator.num_pages }}{% if search_query %}&search={{ search_query }}{% endif %}{% if active_category %}&category={{ active_category.id }}{% endif %}">
+                                    <i class="fas fa-angle-double-right"></i>
+                                    <span class="visually-hidden">Last Page</span>
+                                </a>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </section>
+
+    <!-- SEO Testimonials Section -->
+    {% if service_testimonials %}
+    <section class="py-5 bg-light">
+        <div class="container py-5">
+            <div class="row justify-content-center mb-5">
+                <div class="col-lg-8 text-center">
+                    <h3 class="bg-infotechs-section-title mb-3">What Our SEO Clients Say</h3>
+                    <p class="text-muted">Hear from businesses that achieved remarkable SEO results and improved their online visibility.</p>
+                </div>
+            </div>
+            <div class="row">
+                {% for testimonial in service_testimonials %}
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="card h-100 border-0 shadow-sm testimonial-card">
+                        <div class="card-body text-center p-4">
+                            <div class="testimonial-header mb-3">
+                                {% if testimonial.image %}
+                                <img src="{{ testimonial.image.url }}" alt="{{ testimonial.name }}" class="rounded-circle mb-3" width="80" height="80" style="object-fit: cover;">
+                                {% else %}
+                                <div class="rounded-circle bg-infotechs-primary text-white d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                                    <i class="fas fa-user fa-2x"></i>
+                                </div>
+                                {% endif %}
+                                <div class="text-warning mb-2">
+                                    {% for i in "12345" %}
+                                        {% if forloop.counter <= testimonial.rating %}
+                                            <i class="fas fa-star"></i>
+                                        {% else %}
+                                            <i class="far fa-star"></i>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <p class="card-text fst-italic mb-4">"{{ testimonial.message|truncatewords:30 }}"</p>
+                            <div class="testimonial-footer">
+                                <h6 class="card-title mb-1 fw-bold">{{ testimonial.name }}</h6>
+                                {% if testimonial.designation %}
+                                <p class="text-muted small mb-2">{{ testimonial.designation }}</p>
+                                {% endif %}
+                                {% if testimonial.company %}
+                                <p class="text-infotechs-primary small fw-medium">{{ testimonial.company }}</p>
+                                {% endif %}
+                                <small class="text-muted">{{ testimonial.service.title }}</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Social Media Section -->
+    {% if company_profile %}
+    <section class="py-5 bg-light">
+        <div class="container text-center">
+            <h3 class="bg-infotechs-section-title mb-4">Follow Our SEO Journey</h3>
+            <p class="text-muted mb-4">Stay updated with our latest SEO case studies and digital marketing insights</p>
+            <div class="social-media-links">
+                {% if company_profile.facebook_link %}
+                <a href="{{ company_profile.facebook_link }}" target="_blank" class="social-media-link" rel="noopener">
+                    <i class="fab fa-facebook-f"></i>
+                </a>
+                {% endif %}
+                {% if company_profile.instagram_link %}
+                <a href="{{ company_profile.instagram_link }}" target="_blank" class="social-media-link" rel="noopener">
+                    <i class="fab fa-instagram"></i>
+                </a>
+                {% endif %}
+                {% if company_profile.twitter_link %}
+                <a href="{{ company_profile.twitter_link }}" target="_blank" class="social-media-link" rel="noopener">
+                    <i class="fab fa-twitter"></i>
+                </a>
+                {% endif %}
+                {% if company_profile.youtube_link %}
+                <a href="{{ company_profile.youtube_link }}" target="_blank" class="social-media-link" rel="noopener">
+                    <i class="fab fa-youtube"></i>
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- CTA Section -->
+    <section id="contact" class="bg-infotechs-cta-section mb-5">
+        <div class="container bg-infotechs-cta-content">
+            <div class="row justify-content-center">
+                <div class="col-lg-8 text-center">
+                    <h3 class="fw-bold mb-4 text-light">Ready for SEO Success?</h3>
+                    <p class="lead mb-5 text-light">Let's discuss how we can improve your search rankings and drive more organic traffic to your business.</p>
+                    <div class="d-flex gap-3 justify-content-center flex-wrap">
+                        <a href="tel:{{company_profile.company_phone}}" class="btn bg-infotechs-btn-outline btn-lg px-4">
+                            <i class="fas fa-phone me-2"></i> Call Us
+                        </a>
+                        <a href="{% url 'frontend_app:contact' %}" class="btn bg-infotechs-btn-primary btn-lg px-4">
+                            <i class="fas fa-chart-line me-2"></i> SEO Audit
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<!-- Project Detail Modal -->
+<div class="modal fade" id="projectDetailModal" tabindex="-1" aria-labelledby="projectDetailModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header bg-infotechs-primary text-white">
+                <h5 class="modal-title" id="projectDetailModalLabel">SEO Project Details</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0">
+                <div class="row g-0">
+                    <div class="col-md-6">
+                        <img id="modalProjectImage" src="" alt="" class="img-fluid h-100" style="object-fit: cover;">
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-4 h-100 d-flex flex-column">
+                            <div class="flex-grow-1">
+                                <h4 id="modalProjectTitle" class="text-infotechs-primary mb-2"></h4>
+                                <p class="text-muted mb-3" id="modalProjectCompany"></p>
+                                <p id="modalProjectDescription" class="mb-4"></p>
+                                <div class="project-meta">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <i class="fas fa-tag text-infotechs-primary me-3"></i>
+                                        <div>
+                                            <small class="text-muted d-block">Service</small>
+                                            <strong id="modalProjectService"></strong>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-items-center mb-2">
+                                        <i class="fas fa-folder text-infotechs-primary me-3"></i>
+                                        <div>
+                                            <small class="text-muted d-block">Category</small>
+                                            <strong id="modalProjectCategory"></strong>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-calendar text-infotechs-primary me-3"></i>
+                                        <div>
+                                            <small class="text-muted d-block">Completed</small>
+                                            <strong id="modalProjectDate"></strong>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-auto pt-3">
+                                <a href="#" id="modalProjectLink" target="_blank" class="btn bg-infotechs-primary w-100" rel="noopener">
+                                    <i class="fas fa-external-link-alt me-2"></i> Visit Live Site
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Project detail modal functionality
+        const viewButtons = document.querySelectorAll('.view-project-details');
+        const projectModal = new bootstrap.Modal(document.getElementById('projectDetailModal'));
+        
+        viewButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const projectId = this.dataset.projectId;
+                const projectTitle = this.dataset.projectTitle;
+                const projectCompany = this.dataset.projectCompany;
+                const projectDescription = this.dataset.projectDescription;
+                const projectImage = this.dataset.projectImage;
+                const projectCategory = this.dataset.projectCategory;
+                const projectService = this.dataset.projectService;
+                const projectDate = this.dataset.projectDate;
+                const projectLink = this.dataset.projectLink;
+                
+                // Populate modal
+                document.getElementById('modalProjectTitle').textContent = projectTitle;
+                document.getElementById('modalProjectCompany').textContent = projectCompany;
+                document.getElementById('modalProjectDescription').textContent = projectDescription;
+                document.getElementById('modalProjectImage').src = projectImage;
+                document.getElementById('modalProjectImage').alt = projectTitle;
+                document.getElementById('modalProjectCategory').textContent = projectCategory || 'Not specified';
+                document.getElementById('modalProjectService').textContent = projectService;
+                document.getElementById('modalProjectDate').textContent = projectDate;
+                
+                // Handle live link
+                const liveLink = document.getElementById('modalProjectLink');
+                if (projectLink) {
+                    liveLink.href = projectLink;
+                    liveLink.style.display = 'block';
+                } else {
+                    liveLink.style.display = 'none';
+                }
+                
+                // Show modal
+                projectModal.show();
+            });
+        });
+
+        // Form loading states
+        const searchForm = document.getElementById('searchForm');
+        const searchSubmit = document.getElementById('searchSubmit');
+        
+        if (searchForm && searchSubmit) {
+            searchForm.addEventListener('submit', function() {
+                searchSubmit.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Searching...';
+                searchSubmit.disabled = true;
+                
+                // Show loading spinner
+                document.getElementById('loadingSpinner').style.display = 'block';
+                document.getElementById('projectsGrid').style.opacity = '0.5';
+            });
+        }
+
+        // Client-side search enhancement
+        const searchInput = document.querySelector('input[name="search"]');
+        const projectItems = document.querySelectorAll('.project-item');
+        
+        if (searchInput && projectItems.length > 0) {
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                
+                projectItems.forEach(item => {
+                    const title = item.dataset.title;
+                    const company = item.dataset.company;
+                    const category = item.dataset.category;
+                    const service = item.dataset.service;
+                    
+                    const matches = title.includes(searchTerm) || 
+                                   company.includes(searchTerm) || 
+                                   category.includes(searchTerm) ||
+                                   service.includes(searchTerm);
+                    
+                    item.style.display = matches ? 'block' : 'none';
+                });
+            });
+        }
+
+        // Add smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Add intersection observer for animations
+        if ('IntersectionObserver' in window) {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            });
+
+            document.querySelectorAll('.project-item').forEach(item => {
+                item.style.opacity = '0';
+                item.style.transform = 'translateY(20px)';
+                item.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                observer.observe(item);
+            });
+        }
+    });
+
+    // Template filter for category counts
+    function get_item(dictionary, key) {
+        return dictionary[key] || 0;
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,242 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <!-- Delete Confirmation Card -->
+            <div class="card border-0 shadow-lg">
+                <!-- Header -->
+                <div class="card-header bg-danger text-white text-center py-4">
+                    <i class="fas fa-trash-alt fa-2x mb-3"></i>
+                    <h4 class="mb-0">Delete Blog Post</h4>
+                </div>
+
+                <div class="card-body p-4">
+                    <!-- Warning Alert -->
+                    <div class="alert alert-warning border-0 text-center mb-4">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        This action cannot be undone
+                    </div>
+
+                    <!-- Blog Info -->
+                    <div class="blog-info text-center mb-4">
+                        <h5 class="text-dark mb-3">{{ blog.title }}</h5>
+                        
+                        <div class="blog-meta d-flex justify-content-center gap-4 text-muted small mb-3">
+                            <span>
+                                <i class="fas fa-user me-1"></i>
+                                {{ blog.author.username }}
+                            </span>
+                            <span>
+                                <i class="fas fa-calendar me-1"></i>
+                                {{ blog.created_at|date:"M d, Y" }}
+                            </span>
+                        </div>
+
+                        {% if blog.short_description %}
+                        <p class="text-muted mb-0">{{ blog.short_description|truncatewords:20 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Confirmation Form -->
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <!-- Confirmation Check -->
+                        <div class="confirmation-check mb-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="confirmDelete" required>
+                                <label class="form-check-label text-danger fw-bold" for="confirmDelete">
+                                    I understand this will permanently delete the blog post
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-danger btn-lg" id="deleteBtn" disabled>
+                                <i class="fas fa-trash me-2"></i>
+                                Delete Post
+                            </button>
+                            <a href="{% url 'blog_app:blog_list' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>
+                                Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.card {
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.card-header {
+    border-radius: 0;
+}
+
+.alert-warning {
+    background: #fff3cd;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+}
+
+.blog-info {
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 10px;
+}
+
+.blog-meta {
+    font-size: 0.9rem;
+}
+
+.btn {
+    border-radius: 10px;
+    font-weight: 600;
+    padding: 12px 20px;
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, #dc3545, #c82333);
+    border-color: #dc3545;
+}
+
+.btn-danger:hover {
+    background: linear-gradient(135deg, #c82333, #a71e2a);
+    border-color: #c82333;
+}
+
+.btn-danger:disabled {
+    background: #6c757d;
+    border-color: #6c757d;
+    transform: none;
+    cursor: not-allowed;
+}
+
+.btn-outline-secondary {
+    border-color: #6c757d;
+    color: #6c757d;
+}
+
+.btn-outline-secondary:hover {
+    background: #6c757d;
+    border-color: #6c757d;
+    color: white;
+}
+
+.form-check-input {
+    width: 18px;
+    height: 18px;
+    margin-top: 0.25rem;
+}
+
+.form-check-input:checked {
+    background-color: #dc3545;
+    border-color: #dc3545;
+}
+
+.form-check-label {
+    cursor: pointer;
+    user-select: none;
+}
+
+/* Pulse animation for enabled delete button */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+    100% { transform: scale(1); }
+}
+
+#deleteBtn:not(:disabled) {
+    animation: pulse 2s infinite;
+}
+
+/* Smooth entrance animation */
+.card {
+    opacity: 0;
+    transform: translateY(30px);
+    animation: fadeInUp 0.6s ease forwards;
+}
+
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .container {
+        padding: 20px 15px;
+    }
+    
+    .card-body {
+        padding: 1.5rem !important;
+    }
+    
+    .blog-meta {
+        flex-direction: column;
+        gap: 10px !important;
+    }
+}
+
+@media (max-width: 576px) {
+    .btn {
+        padding: 10px 16px;
+        font-size: 0.9rem;
+    }
+    
+    .form-check-label {
+        font-size: 0.9rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const confirmCheckbox = document.getElementById('confirmDelete');
+    const deleteBtn = document.getElementById('deleteBtn');
+    const form = document.querySelector('form');
+    
+    // Toggle delete button based on checkbox
+    confirmCheckbox.addEventListener('change', function() {
+        deleteBtn.disabled = !this.checked;
+    });
+    
+    // Form submission handler
+    form.addEventListener('submit', function(e) {
+        if (!confirm('Are you sure you want to permanently delete this blog post?')) {
+            e.preventDefault();
+            return false;
+        }
+        
+        // Show loading state
+        const originalText = deleteBtn.innerHTML;
+        deleteBtn.disabled = true;
+        deleteBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Deleting...';
+        
+        return true;
+    });
+});
+</script>
+{% endblock %}

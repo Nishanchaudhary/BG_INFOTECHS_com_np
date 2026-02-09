@@ -1,0 +1,661 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ page_title }} - BG Infotech{% endblock %}
+
+{% block page_title %}{{ page_title }}{% endblock %}
+
+{% block breadcrumb_active %}{{ breadcrumb_active }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Page Header with Back Button -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">
+            <i class="fas fa-cogs me-2 text-primary"></i>{{ page_title }}
+        </h1>
+        <a href="{% url 'company_app:service_list' %}" class="d-none d-sm-inline-block btn btn-outline-secondary shadow-sm">
+            <i class="fas fa-arrow-left me-2"></i>Back to Services
+        </a>
+    </div>
+
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb bg-light p-3 rounded">
+            <li class="breadcrumb-item">
+                <a href="{% url 'company_app:service_list' %}" class="text-decoration-none">
+                    <i class="fas fa-list me-1 text-primary"></i>Services
+                </a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">
+                <i class="fas fa-pen me-1 text-success"></i>{{ breadcrumb_active }}
+            </li>
+        </ol>
+    </nav>
+
+    <!-- Form Card -->
+    <div class="card shadow-lg border-0">
+        <div class="card-header bg-gradient-primary text-white py-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <h6 class="m-0 font-weight-bold">
+                    <i class="fas fa-feather-alt me-2"></i>Service Details
+                </h6>
+                <a href="{% url 'company_app:service_list' %}" class="btn btn-light btn-sm">
+                    <i class="fas fa-arrow-left me-1"></i> Back to List
+                </a>
+            </div>
+        </div>
+        
+        <div class="card-body p-4">
+            <form method="post" class="needs-validation" novalidate enctype="multipart/form-data" id="serviceForm">
+                {% csrf_token %}
+                
+                <!-- Display form errors -->
+                {% if form.errors %}
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-exclamation-triangle me-2 fs-5"></i>
+                        <strong>Please correct the errors below:</strong>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    <ul class="mt-2 mb-0">
+                        {% for field, errors in form.errors.items %}
+                            {% for error in errors %}
+                                <li>{{ field|title }}: {{ error }}</li>
+                            {% endfor %}
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <!-- Title Field -->
+                        <div class="form-group mb-4">
+                            <label for="id_title" class="form-label fw-bold text-dark">
+                                <i class="fas fa-heading me-2 text-primary"></i>Service Title *
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">
+                                    <i class="fas fa-tag text-muted"></i>
+                                </span>
+                                <input type="text" class="form-control" id="id_title" name="title" 
+                                       value="{{ form.title.value|default:'' }}" 
+                                       placeholder="Enter service title" required>
+                            </div>
+                            <small class="form-text text-muted mt-1">
+                                <i class="fas fa-info-circle me-1"></i>The main title of your service (2-100 characters)
+                            </small>
+                            {% if form.title.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.title.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Sub Title Field -->
+                        <div class="form-group mb-4">
+                            <label for="id_sub_title" class="form-label fw-bold text-dark">
+                                <i class="fas fa-heading me-2 text-secondary"></i>Sub Title
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">
+                                    <i class="fas fa-tag text-muted"></i>
+                                </span>
+                                <input type="text" class="form-control" id="id_sub_title" name="sub_title" 
+                                       value="{{ form.sub_title.value|default:'' }}" 
+                                       placeholder="Enter service sub title">
+                            </div>
+                            <small class="form-text text-muted mt-1">
+                                <i class="fas fa-info-circle me-1"></i>Optional subtitle or tagline
+                            </small>
+                        </div>
+
+                        <!-- Description Field - Simple Textarea (Summernote will be initialized by Django) -->
+                        <div class="form-group mb-4">
+                            <label for="id_description" class="form-label fw-bold text-dark">
+                                <i class="fas fa-align-left me-2 text-info"></i>Description *
+                            </label>
+                            <textarea class="form-control" id="id_description" name="description" rows="5" 
+                                      placeholder="Enter detailed service description..." required>{{ form.description.value|default:'' }}</textarea>
+                            <small class="form-text text-muted mt-1">
+                                <i class="fas fa-info-circle me-1"></i>Detailed description of what this service offers
+                            </small>
+                            {% if form.description.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.description.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Icon Field -->
+                        <div class="form-group mb-4">
+                            <label for="id_icon" class="form-label fw-bold text-dark">
+                                <i class="fas fa-icons me-2 text-success"></i>Service Icon *
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">
+                                    <i class="fas fa-palette text-muted"></i>
+                                </span>
+                                <input type="text" class="form-control" id="id_icon" name="icon" 
+                                       value="{{ form.icon.value|default:'' }}" 
+                                       placeholder="fas fa-icon-name" required>
+                                <span class="input-group-text bg-light">
+                                    <i id="icon-preview" class="{{ form.icon.value|default:'fas fa-question' }}"></i>
+                                </span>
+                            </div>
+                            <small class="form-text text-muted mt-1">
+                                <i class="fas fa-info-circle me-1"></i>Use FontAwesome icon classes (e.g., fas fa-cogs, fab fa-react)
+                            </small>
+                            {% if form.icon.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.icon.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Image Field -->
+                        <div class="form-group mb-4">
+                            <label for="id_image" class="form-label fw-bold text-dark">
+                                <i class="fas fa-image me-2 text-warning"></i>Service Image
+                            </label>
+                            
+                            <div class="file-input-container">
+                                <div class="input-group">
+                                    <input type="file" class="form-control" id="id_image" name="image" 
+                                           accept="image/*" style="display: none;">
+                                    <input type="text" class="form-control file-name-display" 
+                                           placeholder="No image selected" readonly>
+                                    <button type="button" class="btn btn-outline-secondary file-browse-btn">
+                                        <i class="fas fa-folder-open me-1"></i> Browse
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Image Preview and Remove Option -->
+                            {% if form.instance.pk and form.instance.image %}
+                            <div class="mt-3" id="current-image-section">
+                                <p class="fw-bold mb-2">Current Image:</p>
+                                <div class="d-flex align-items-center gap-3">
+                                    <img src="{{ form.instance.image.url }}" alt="Current service image" 
+                                         class="img-thumbnail" style="max-width: 200px; max-height: 150px;">
+                                    <div class="form-check gap-2 remove-image-container">
+                                        <input type="checkbox" name="remove_image" id="id_remove_image" class="form-check-input">
+                                        <label class="form-check-label text-danger fw-bold ms-2"  for="id_remove_image">
+                                            <i class="fas fa-trash me-1"></i> Remove current image
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            {% else %}
+                            <small class="form-text text-muted mt-1">
+                                <i class="fas fa-info-circle me-1"></i>No image currently set
+                            </small>
+                            {% endif %}
+                            
+                            <!-- New Image Preview -->
+                            <div id="new-image-preview" class="mt-2" style="display: none;">
+                                <div class="d-flex align-items-center gap-3">
+                                    <img id="image-preview" src="" alt="New image preview" class="img-thumbnail" style="max-width: 200px; max-height: 150px;">
+                                    <div>
+                                        <small class="text-success d-block">
+                                            <i class="fas fa-check-circle me-1"></i>New image selected
+                                        </small>
+                                        <small class="text-muted">This will replace the current image</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Status Field -->
+                        <div class="form-group mb-4">
+                            <div class="card border-0 bg-light">
+                                <div class="card-body">
+                                    <div class="form-check form-switch d-flex align-items-center">
+                                        <input class="form-check-input" type="checkbox" id="id_status" 
+                                               name="status" {% if form.status.value %}checked{% endif %}>
+                                        <label class="form-check-label ms-3 fw-bold text-dark" for="id_status">
+                                            <i class="fas fa-toggle-on me-2 text-primary"></i>Active Service
+                                        </label>
+                                    </div>
+                                    <small class="form-text text-muted mt-2 d-block">
+                                        <i class="fas fa-info-circle me-1"></i>Inactive services won't be displayed publicly
+                                    </small>
+                                    <div class="status-indicator mt-2">
+                                        <span class="badge {% if form.status.value %}bg-success{% else %}bg-secondary{% endif %} p-2">
+                                            {% if form.status.value %}
+                                                <i class="fas fa-check-circle me-2"></i>Service is currently ACTIVE
+                                            {% else %}
+                                                <i class="fas fa-times-circle me-2"></i>Service is currently INACTIVE
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Buttons -->
+                <div class="form-group mt-4 pt-4 border-top">
+                    <div class="d-flex gap-3 justify-content-between flex-wrap">
+                        <div class="d-flex gap-2 flex-wrap">
+                            <button type="submit" class="btn btn-primary btn-lg px-4 shadow-sm">
+                                <i class="fas fa-save me-2"></i>
+                                {% if form.instance.pk %}Update Service{% else %}Create Service{% endif %}
+                            </button>
+                            <a href="{% url 'company_app:service_list' %}" class="btn btn-outline-secondary btn-lg px-4">
+                                <i class="fas fa-times me-2"></i>Cancel
+                            </a>
+                        </div>
+                        {% if form.instance.pk %}
+                        <button type="button" class="btn btn-danger btn-lg px-4" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                            <i class="fas fa-trash me-2"></i>Delete Service
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Service Confirmation Modal -->
+{% if form.instance.pk %}
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-danger" id="deleteModalLabel">
+                    <i class="fas fa-exclamation-triangle me-2"></i>Confirm Delete
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete the service "<strong>{{ form.instance.title }}</strong>"?</p>
+                {% if form.instance.image %}
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    This service has an associated image that will also be deleted.
+                </div>
+                {% endif %}
+                <p class="text-danger">
+                    <small>
+                        <i class="fas fa-info-circle me-1"></i>
+                        This action cannot be undone. All data associated with this service will be permanently deleted.
+                    </small>
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form method="post" action="{% url 'company_app:service_delete' form.instance.pk %}" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash me-1"></i> Delete Service
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-control, .form-select {
+        border-radius: 0.5rem;
+        padding: 0.75rem;
+        transition: all 0.3s ease;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+        border-color: #4e73df;
+    }
+    
+    .input-group-text {
+        border-radius: 0.5rem 0 0 0.5rem !important;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-right: 0;
+    }
+    
+    .card {
+        border-radius: 1rem;
+        border: none;
+        box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+    }
+    
+    .card-header {
+        border-radius: 1rem 1rem 0 0 !important;
+        background: linear-gradient(135deg, #4e73df 0%, #224abe 100%) !important;
+    }
+    
+    .form-check-input:checked {
+        background-color: #4e73df;
+        border-color: #4e73df;
+    }
+    
+    .form-check-input {
+        transition: all 0.3s ease;
+        width: 3rem;
+        height: 1.5rem;
+    }
+    
+    .btn {
+        border-radius: 0.75rem;
+        transition: all 0.3s ease;
+        font-weight: 600;
+    }
+    
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+        border: none;
+    }
+    
+    .btn-primary:hover {
+        background: linear-gradient(135deg, #224abe 0%, #4e73df 100%);
+    }
+    
+    .breadcrumb {
+        border-radius: 0.75rem;
+        background: linear-gradient(135deg, #f8f9fc 0%, #eaecf4 100%);
+    }
+    
+    /* File Input Styling */
+    .file-input-container {
+        margin-bottom: 1rem;
+    }
+    
+    .file-name-display {
+        border-radius: 0.5rem 0 0 0.5rem !important;
+        background-color: #f8f9fa;
+    }
+    
+    .file-browse-btn {
+        border-radius: 0 0.5rem 0.5rem 0 !important;
+        border: 1px solid #ced4da;
+        border-left: 0;
+    }
+    
+    /* Remove Image Checkbox Styling */
+    .remove-image-container {
+        padding: 8px 12px;
+        background: linear-gradient(135deg, #fff5f5 0%, #fed7d7 100%);
+        border-radius: 8px;
+        border: 1px solid #fed7d7;
+        transition: all 0.3s ease;
+    }
+    
+    .remove-image-container:hover {
+        background: linear-gradient(135deg, #fed7d7 0%, #feb2b2 100%);
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(254, 178, 178, 0.3);
+    }
+    
+    .remove-image-container .form-check-input {
+        width: 18px !important;
+        height: 18px !important;
+        margin-top: 0;
+        cursor: pointer;
+    }
+    
+    .remove-image-container .form-check-label {
+        cursor: pointer;
+        font-size: 0.9rem;
+        margin-left: 8px !important;
+    }
+    
+    /* Status Indicator */
+    .status-indicator .badge {
+        font-size: 0.9rem;
+        padding: 0.6rem 1rem;
+        border-radius: 0.5rem;
+        transition: all 0.3s ease;
+    }
+    
+    .bg-success {
+        background: linear-gradient(135deg, #1cc88a 0%, #17a673 100%) !important;
+    }
+    
+    .bg-secondary {
+        background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%) !important;
+    }
+    
+    /* Image Preview */
+    .img-thumbnail {
+        border: 2px solid #e3e6f0;
+        border-radius: 0.5rem;
+        padding: 0.25rem;
+        background-color: #fff;
+        transition: all 0.3s ease;
+    }
+    
+    .img-thumbnail:hover {
+        border-color: #4e73df;
+        transform: scale(1.02);
+    }
+    
+    /* Validation Styles */
+    .is-invalid {
+        border-color: #e74a3b !important;
+    }
+    
+    .is-valid {
+        border-color: #1cc88a !important;
+    }
+    
+    .invalid-feedback {
+        display: block;
+        color: #e74a3b;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+    }
+    
+    /* Summernote-specific styling to prevent duplicates */
+    .note-editor {
+        border-radius: 0.5rem !important;
+        border: 1px solid #ced4da !important;
+    }
+    
+    .note-editor .note-toolbar {
+        background-color: #f8f9fc !important;
+        border-bottom: 1px solid #e3e6f0 !important;
+        padding: 0.5rem !important;
+        border-radius: 0.5rem 0.5rem 0 0 !important;
+    }
+    
+    .note-editable {
+        min-height: 250px !important;
+        padding: 1rem !important;
+        background-color: #fff !important;
+        border-radius: 0 0 0.5rem 0.5rem !important;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // File input functionality with visible file name
+        const fileInput = document.getElementById('id_image');
+        const fileNameDisplay = document.querySelector('.file-name-display');
+        const browseButton = document.querySelector('.file-browse-btn');
+
+        // Browse button click handler
+        browseButton.addEventListener('click', function() {
+            fileInput.click();
+        });
+
+        // File input change handler
+        fileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            
+            if (file) {
+                // Display file name
+                fileNameDisplay.value = file.name;
+                
+                // Show new image preview
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const imagePreview = document.getElementById('image-preview');
+                    if (imagePreview) {
+                        imagePreview.src = e.target.result;
+                        document.getElementById('new-image-preview').style.display = 'block';
+                    }
+                    
+                    // Uncheck remove image checkbox when new image is selected
+                    const removeImageCheckbox = document.getElementById('id_remove_image');
+                    if (removeImageCheckbox) {
+                        removeImageCheckbox.checked = false;
+                    }
+                };
+                reader.readAsDataURL(file);
+                
+                // Validate file size
+                const fileSize = file.size / 1024 / 1024; // MB
+                if (fileSize > 5) {
+                    alert('Image size must be less than 5MB');
+                    this.value = '';
+                    fileNameDisplay.value = 'No image selected';
+                    document.getElementById('new-image-preview').style.display = 'none';
+                }
+            } else {
+                fileNameDisplay.value = 'No image selected';
+                document.getElementById('new-image-preview').style.display = 'none';
+            }
+        });
+
+        // Remove image checkbox functionality
+        const removeImageCheckbox = document.getElementById('id_remove_image');
+        if (removeImageCheckbox) {
+            removeImageCheckbox.addEventListener('change', function() {
+                if (this.checked) {
+                    if (!confirm('Are you sure you want to remove the current image?')) {
+                        this.checked = false;
+                        return;
+                    }
+                    
+                    // Clear file input and reset display
+                    fileInput.value = '';
+                    fileNameDisplay.value = 'No image selected';
+                    document.getElementById('new-image-preview').style.display = 'none';
+                    
+                    // Hide current image section
+                    document.getElementById('current-image-section').style.display = 'none';
+                    
+                    alert('Current image will be removed when you save');
+                } else {
+                    // Show current image section again if unchecked
+                    document.getElementById('current-image-section').style.display = 'block';
+                }
+            });
+        }
+
+        // Real-time icon preview
+        const iconInput = document.getElementById('id_icon');
+        const iconPreview = document.getElementById('icon-preview');
+        
+        if (iconInput && iconPreview) {
+            iconInput.addEventListener('input', function() {
+                const iconClass = this.value.trim();
+                iconPreview.className = iconClass || 'fas fa-question';
+                
+                // Validate icon format
+                if (iconClass && !iconClass.match(/^(fas|fab|far|fa)\s+fa-[a-z-]+$/i)) {
+                    this.classList.add('is-invalid');
+                    this.classList.remove('is-valid');
+                } else if (iconClass) {
+                    this.classList.remove('is-invalid');
+                    this.classList.add('is-valid');
+                }
+            });
+        }
+
+        // Status toggle functionality
+        const statusCheckbox = document.getElementById('id_status');
+        if (statusCheckbox) {
+            statusCheckbox.addEventListener('change', function() {
+                updateStatusIndicator();
+            });
+        }
+
+        function updateStatusIndicator() {
+            const statusCheckbox = document.getElementById('id_status');
+            const badge = document.querySelector('.status-indicator .badge');
+            
+            if (statusCheckbox && badge) {
+                if (statusCheckbox.checked) {
+                    badge.classList.remove('bg-secondary');
+                    badge.classList.add('bg-success');
+                    badge.innerHTML = '<i class="fas fa-check-circle me-2"></i>Service is currently ACTIVE';
+                } else {
+                    badge.classList.remove('bg-success');
+                    badge.classList.add('bg-secondary');
+                    badge.innerHTML = '<i class="fas fa-times-circle me-2"></i>Service is currently INACTIVE';
+                }
+            }
+        }
+
+        // Initialize status indicator
+        updateStatusIndicator();
+
+        // Form validation
+        const serviceForm = document.getElementById('serviceForm');
+        if (serviceForm) {
+            serviceForm.addEventListener('submit', function(e) {
+                let isValid = true;
+                
+                // Validate required fields
+                const requiredFields = this.querySelectorAll('[required]');
+                requiredFields.forEach(function(field) {
+                    const value = field.value.trim();
+                    if (!value) {
+                        field.classList.add('is-invalid');
+                        isValid = false;
+                    } else {
+                        field.classList.remove('is-invalid');
+                        field.classList.add('is-valid');
+                    }
+                });
+                
+                if (!isValid) {
+                    e.preventDefault();
+                    alert('Please fix the errors before submitting');
+                    
+                    // Scroll to first error
+                    const firstError = this.querySelector('.is-invalid');
+                    if (firstError) {
+                        firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                }
+            });
+        }
+
+        // Real-time validation
+        const requiredInputs = document.querySelectorAll('input[required]');
+        requiredInputs.forEach(function(input) {
+            input.addEventListener('blur', function() {
+                const value = this.value.trim();
+                if (!value) {
+                    this.classList.add('is-invalid');
+                } else {
+                    this.classList.remove('is-invalid');
+                    this.classList.add('is-valid');
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

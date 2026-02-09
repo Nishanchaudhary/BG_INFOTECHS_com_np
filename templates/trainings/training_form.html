@@ -1,0 +1,239 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card border-0 shadow">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-{{ training|yesno:'edit,plus' }} me-2"></i>
+                        {{ page_title }}
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data" novalidate>
+                        {% csrf_token %}
+                        
+                        {% if form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {% for error in form.non_field_errors %}
+                                <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        
+                        <div class="row">
+                            <!-- Left Column -->
+                            <div class="col-md-6">
+                                <!-- Title -->
+                                <div class="mb-3">
+                                    <label for="title" class="form-label">
+                                        <i class="fas fa-heading me-1 text-primary"></i>
+                                        {{ form.title.label }}
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-book"></i></span>
+                                        {{ form.title }}
+                                    </div>
+                                    {% if form.title.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.title.errors %}
+                                            <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <!-- Duration -->
+                                <div class="mb-3">
+                                    <label for="duration" class="form-label">
+                                        <i class="fas fa-clock me-1 text-primary"></i>
+                                        {{ form.duration.label }}
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-hourglass-half"></i></span>
+                                        {{ form.duration }}
+                                    </div>
+                                    {% if form.duration.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.duration.errors %}
+                                            <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <!-- Price -->
+                                <div class="mb-3">
+                                    <label for="price" class="form-label">
+                                        <i class="fas fa-tag me-1 text-primary"></i>
+                                        {{ form.price.label }}
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">₹</span>
+                                        {{ form.price }}
+                                    </div>
+                                    {% if form.price.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.price.errors %}
+                                            <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <!-- Offer Price -->
+                                <div class="mb-3">
+                                    <label for="offer_price" class="form-label">
+                                        <i class="fas fa-percentage me-1 text-primary"></i>
+                                        {{ form.offer_price.label }}
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">₹</span>
+                                        {{ form.offer_price }}
+                                    </div>
+                                    {% if form.offer_price.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.offer_price.errors %}
+                                            <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <!-- Right Column -->
+                            <div class="col-md-6">
+                                <!-- Image -->
+                                <div class="mb-3">
+                                    <label for="image" class="form-label">
+                                        <i class="fas fa-image me-1 text-primary"></i>
+                                        {{ form.image.label }}
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-camera"></i></span>
+                                        {{ form.image }}
+                                    </div>
+                                    {% if form.image.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.image.errors %}
+                                            <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                    {% if training and training.image %}
+                                    <div class="mt-2">
+                                        <small class="text-muted">Current image:</small><br>
+                                        <img src="{{ training.image.url }}" alt="{{ training.title }}" class="img-thumbnail mt-1" style="max-height: 100px;">
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <!-- Status -->
+                                <div class="mb-3">
+                                    <div class="form-check form-switch">
+                                        {{ form.status }}
+                                        <label class="form-check-label" for="status">
+                                            <i class="fas fa-toggle-on me-1 text-primary"></i>
+                                            {{ form.status.label }}
+                                        </label>
+                                    </div>
+                                    {% if form.status.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.status.errors %}
+                                            <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Description (Full Width) -->
+                        <div class="mb-4">
+                            <label for="description" class="form-label">
+                                <i class="fas fa-align-left me-1 text-primary"></i>
+                                {{ form.description.label }}
+                            </label>
+                            {{ form.description }}
+                            {% if form.description.errors %}
+                            <div class="text-danger small mt-1">
+                                {% for error in form.description.errors %}
+                                    <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Buttons -->
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <button type="submit" class="btn btn-success">
+                                    <i class="fas fa-save me-1"></i>Save Training
+                                </button>
+                                <button type="reset" class="btn btn-outline-secondary">
+                                    <i class="fas fa-undo me-1"></i>Reset
+                                </button>
+                            </div>
+                            <a href="{% url 'trainings_app:training_list' %}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-1"></i>Back to List
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<!-- Summernote CSS -->
+<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
+<style>
+.summernote {
+    min-height: 200px;
+}
+.form-label {
+    font-weight: 600;
+    color: #495057;
+}
+.input-group-text {
+    background-color: #f8f9fa;
+    border-color: #ced4da;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Summernote JS -->
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
+<script>
+$(document).ready(function() {
+    // Initialize Summernote
+    $('.summernote').summernote({
+        height: 200,
+        toolbar: [
+            ['style', ['style']],
+            ['font', ['bold', 'underline', 'clear']],
+            ['color', ['color']],
+            ['para', ['ul', 'ol', 'paragraph']],
+            ['table', ['table']],
+            ['insert', ['link', 'picture', 'video']],
+            ['view', ['fullscreen', 'codeview', 'help']]
+        ],
+        placeholder: 'Enter detailed training description...'
+    });
+    
+    // Add icons to form fields
+    $('input, textarea, select').each(function() {
+        if (!$(this).closest('.input-group').length && $(this).attr('type') !== 'checkbox') {
+            $(this).wrap('<div class="input-group"></div>');
+            $(this).before('<span class="input-group-text"><i class="fas fa-pencil-alt"></i></span>');
+        }
+    });
+});
+</script>
+{% endblock %}

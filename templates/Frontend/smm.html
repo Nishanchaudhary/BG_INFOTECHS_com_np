@@ -1,0 +1,1313 @@
+{% extends 'Frontend/base.html' %}
+{% load static %}
+{% block title %}Social Media Marketing{% endblock %}
+{% block content %}
+
+<style>
+    /* Global Styles */
+    :root {
+        --primary-color: #3498db;
+        --primary-dark: #2980b9;
+        --secondary-color: #2c3e50;
+        --secondary-light: #34495e;
+        --accent-color: #f1c40f;
+        --accent-dark: #f39c12;
+        --light-bg: #f8f9fa;
+        --light-bg-2: #ecf0f1;
+        --dark-text: #2c3e50;
+        --light-text: #7f8c8d;
+        --white: #ffffff;
+        --gradient-primary: linear-gradient(135deg, #3498db, #2c3e50);
+        --gradient-accent: linear-gradient(135deg, #d1b751, #d96457);
+        --shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        --shadow-hover: 0 15px 40px rgba(0, 0, 0, 0.15);
+        --transition: all 0.3s ease;
+        --border-radius: 15px;
+    }
+
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: var(--dark-text);
+        line-height: 1.6;
+        overflow-x: hidden;
+    }
+
+    .section {
+        padding: 80px 0;
+    }
+
+    .section-title {
+        text-align: center;
+        margin-bottom: 60px;
+    }
+
+    .section-title h2 {
+        color: var(--secondary-color);
+        font-weight: 700;
+        margin-bottom: 15px;
+    }
+
+    .section-title p {
+        color: var(--light-text);
+        font-size: 1.1rem;
+    }
+
+    /* Service Banner Section */
+    .service__banner- {
+        background: linear-gradient(135deg, #f8f9fa 0%, #ecf0f1 100%);
+        padding: 100px 0 60px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .service__banner-::before {
+        content: '';
+        position: absolute;
+        width: 300px;
+        height: 300px;
+        border-radius: 50%;
+        background: var(--primary-color);
+        opacity: 0.05;
+        top: -150px;
+        right: -150px;
+    }
+
+    .service__banner-::after {
+        content: '';
+        position: absolute;
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        background: var(--accent-color);
+        opacity: 0.05;
+        bottom: -100px;
+        left: -100px;
+    }
+
+    .service__banner--content .title {
+        font-size: 3rem;
+        font-weight: 800;
+        color: var(--secondary-color);
+        margin-bottom: 20px;
+        line-height: 1.2;
+        position: relative;
+        display: inline-block;
+    }
+
+    .service__banner--content .title::after {
+        content: '';
+        position: absolute;
+        width: 80px;
+        height: 5px;
+        background: var(--accent-color);
+        bottom: -10px;
+        left: 0;
+        border-radius: 5px;
+    }
+
+    .sub-title-desc {
+        font-size: 1.3rem;
+        color: var(--primary-color);
+        margin-bottom: 20px;
+        font-weight: 600;
+    }
+
+    .service__banner--content p {
+        font-size: 1rem;
+        color: var(--light-text);
+        margin-bottom: 30px;
+    }
+
+    .l__button {
+        display: inline-flex;
+        align-items: center;
+        background: var(--gradient-primary);
+        color: white;
+        padding: 12px 30px;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: var(--transition);
+        border: none;
+        cursor: pointer;
+        box-shadow: var(--shadow);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        position: relative;
+        overflow: hidden;
+        z-index: 1;
+    }
+
+    .l__button::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 0%;
+        height: 100%;
+        background: var(--gradient-accent);
+        transition: var(--transition);
+        z-index: -1;
+    }
+
+    .l__button:hover::before {
+        width: 100%;
+    }
+
+    .l__button:hover {
+        color: white;
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-hover);
+    }
+
+    .l__button i {
+        margin-left: 10px;
+        transition: var(--transition);
+    }
+
+    .l__button:hover i {
+        transform: translateX(5px);
+    }
+
+    .service__banner--content .right {
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+    }
+
+    /* CLEAN RESPONSIVE IMAGE + ORBIT FIXED */
+    .image-container {
+        position: relative;
+        width: 100%;
+        max-width: 360px;
+        margin: 0 auto;
+    }
+
+    .main-image {
+        width: 100%;
+        height: auto;
+        display: block;
+        margin: 0 auto;
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow);
+        z-index: 2;
+        position: relative;
+    }
+
+    /* DESKTOP ORBIT */
+    .stats-orbit {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 420px;
+        height: 420px;
+        transform: translate(-50%, -50%);
+        pointer-events: none;
+        z-index: 3;
+    }
+
+    .orbit-path {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        animation: rotate 25s linear infinite;
+    }
+
+    .orbit-path.paused {
+        animation-play-state: paused;
+    }
+
+    .info__card {
+        width: 90px;
+        height: 90px;
+        background: white;
+        border-radius: 12px;
+        position: absolute;
+        box-shadow: var(--shadow);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        padding: 10px 6px;
+        transition: var(--transition);
+        border-top: 4px solid var(--primary-color);
+        pointer-events: auto;
+    }
+
+    /* Four card positions - Perfect Square */
+    .info__card:nth-child(1) {
+        top: 0;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        border-top-color: var(--primary-color);
+    }
+
+    .info__card:nth-child(2) {
+        top: 50%;
+        right: 0;
+        transform: translate(50%, -50%);
+        border-top-color: var(--accent-color);
+    }
+
+    .info__card:nth-child(3) {
+        bottom: 0;
+        left: 50%;
+        transform: translate(-50%, 50%);
+        border-top-color: #2ecc71;
+    }
+
+    .info__card:nth-child(4) {
+        top: 50%;
+        left: 0;
+        transform: translate(-50%, -50%);
+        border-top-color: #9b59b6;
+    }
+
+    .info__card:hover {
+        transform: scale(1.1);
+        box-shadow: var(--shadow-hover);
+        z-index: 10;
+    }
+
+    .info__card img {
+        width: 25px;
+        height: 25px;
+        margin-bottom: 5px;
+        object-fit: contain;
+    }
+
+    .info__card h4 {
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        margin-bottom: 3px;
+        line-height: 1;
+    }
+
+    .info__card h6 {
+        font-size: 0.6rem;
+        color: var(--light-text);
+        margin: 0;
+        line-height: 1.2;
+    }
+
+    /* MOBILE ORBIT */
+    .mobile-orbit-container {
+        display: none;
+    }
+
+    @media(max-width: 576px) {
+        .stats-orbit {
+            display: none;
+        }
+
+        .mobile-orbit-container {
+            display: block;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 260px;
+            height: 260px;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 3;
+        }
+
+        .mobile-orbit-path {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            animation: rotate 20s linear infinite;
+        }
+
+        .mobile-orbit-path.paused {
+            animation-play-state: paused;
+        }
+
+        .mobile-info-card {
+            width: 65px;
+            height: 65px;
+            background: white;
+            border-radius: 10px;
+            position: absolute;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 8px 6px;
+            transition: var(--transition);
+            border-top: 3px solid var(--primary-color);
+            pointer-events: auto;
+        }
+
+        .mobile-info-card:nth-child(1) {
+            top: 0;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border-top-color: var(--primary-color);
+        }
+
+        .mobile-info-card:nth-child(2) {
+            top: 50%;
+            right: 0;
+            transform: translate(50%, -50%);
+            border-top-color: var(--accent-color);
+        }
+
+        .mobile-info-card:nth-child(3) {
+            bottom: 0;
+            left: 50%;
+            transform: translate(-50%, 50%);
+            border-top-color: #2ecc71;
+        }
+
+        .mobile-info-card:nth-child(4) {
+            top: 50%;
+            left: 0;
+            transform: translate(-50%, -50%);
+            border-top-color: #9b59b6;
+        }
+
+        .mobile-info-card:hover {
+            transform: scale(1.1);
+            box-shadow: var(--shadow-hover);
+            z-index: 10;
+        }
+
+        .mobile-info-card img {
+            width: 18px;
+            height: 18px;
+            margin-bottom: 3px;
+            object-fit: contain;
+        }
+
+        .mobile-info-card h4 {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 2px;
+            line-height: 1;
+        }
+
+        .mobile-info-card h6 {
+            font-size: 0.5rem;
+            color: var(--light-text);
+            margin: 0;
+            line-height: 1.1;
+        }
+    }
+
+    @keyframes rotate {
+        from {
+            transform: rotate(0deg);
+        }
+
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    /* Service Info Section */
+    .service__info {
+        margin-top: 80px;
+    }
+
+    .service__info--card {
+        background: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow);
+        padding: 25px;
+        height: 100%;
+        transition: var(--transition);
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+        border-top: 4px solid var(--primary-color);
+    }
+
+    .service__info--card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 0;
+        background: var(--gradient-primary);
+        opacity: 0.05;
+        transition: var(--transition);
+        z-index: 0;
+    }
+
+    .service__info--card:hover::before {
+        height: 100%;
+    }
+
+    .service__info--card:hover {
+        transform: translateY(-10px);
+        box-shadow: var(--shadow-hover);
+    }
+
+    .service__info--card:nth-child(2) {
+        border-top-color: var(--accent-color);
+    }
+
+    .service__info--card:nth-child(3) {
+        border-top-color: #2ecc71;
+    }
+
+    .service__info--card-head {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 15px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .service__info--card-head img {
+        width: 50px;
+        height: 50px;
+        margin-bottom: 12px;
+        object-fit: contain;
+    }
+
+    .service__info--card-head .title {
+        font-size: 1.3rem;
+        color: var(--secondary-color);
+    }
+
+    .service__info--content {
+        position: relative;
+        z-index: 1;
+    }
+
+    .service__info--content p {
+        color: var(--light-text);
+        margin: 0;
+        font-size: 0.9rem;
+    }
+
+    /* FIXED MOBILE LAYOUT */
+    @media (max-width: 768px) {
+        .service__banner- {
+            padding: 60px 0 30px;
+        }
+
+        .service__banner--content .right {
+            margin-top: 0;
+            padding-top: 0;
+            height: auto;
+            min-height: 300px;
+        }
+
+        .image-container {
+            max-width: 280px;
+            margin-bottom: 0;
+        }
+
+        .mobile-orbit-container {
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .service__info {
+            margin-top: 40px;
+        }
+
+        .service__banner--content .title {
+            font-size: 2.2rem;
+            margin-bottom: 15px;
+        }
+
+        .sub-title-desc {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+        }
+
+        .service__banner--content p {
+            font-size: 0.9rem;
+            margin-bottom: 25px;
+        }
+
+        .l__button {
+            padding: 10px 25px;
+            font-size: 0.9rem;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .section {
+            padding: 60px 0;
+        }
+
+        .service__banner- {
+            padding: 50px 0 20px;
+        }
+
+        .service__banner--content .title {
+            font-size: 2rem;
+        }
+
+        .service__banner--content .title::after {
+            width: 60px;
+            height: 4px;
+            bottom: -8px;
+        }
+
+        .sub-title-desc {
+            font-size: 1rem;
+        }
+
+        .service__banner--content p {
+            font-size: 0.85rem;
+        }
+
+        .l__button {
+            padding: 10px 25px;
+            font-size: 0.9rem;
+        }
+
+        .image-container {
+            max-width: 250px;
+        }
+
+        .service__info {
+            margin-top: 30px;
+        }
+
+        .service__info--card {
+            padding: 18px 12px;
+            margin-bottom: 15px;
+        }
+
+        .service__info--card-head img {
+            width: 40px;
+            height: 40px;
+            margin-bottom: 10px;
+        }
+
+        .service__info--card-head .title {
+            font-size: 1.1rem;
+        }
+    }
+
+    @media (max-width: 400px) {
+        .service__banner--content .title {
+            font-size: 1.8rem;
+        }
+
+        .sub-title-desc {
+            font-size: 0.95rem;
+        }
+
+        .service__banner--content p {
+            font-size: 0.8rem;
+        }
+
+        .l__button {
+            padding: 8px 20px;
+            font-size: 0.85rem;
+        }
+
+        .image-container {
+            max-width: 220px;
+        }
+
+        .mobile-orbit-container {
+            width: 240px;
+            height: 240px;
+        }
+
+        .mobile-info-card {
+            width: 60px;
+            height: 60px;
+        }
+    }
+</style>
+
+<style>
+    .page-title {
+        background-image: linear-gradient(rgba(28, 29, 31, 0.65), rgba(23, 4, 69, 0.65)),
+        url("{% static 'img/breadcrumb.jpg' %}");
+        background-size: cover;
+        background-position: center;
+        padding: 30px 0px ;
+    }
+</style>
+<main class="main">
+    <div class="page-title light-background">
+        <div class="container">
+            <h1>BG-Infotechs</h1>
+            <nav class="breadcrumbs">
+                <ol>
+                    <li><a href="{% url 'frontend_app:home' %}"><i class="fas fa-home"></i> Home</a></li>
+                    <li class="current"><i class="fa-solid fa-bullhorn"></i> Social Media Marketing</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+
+
+    <div style="min-height: 50vh">
+        <div class="site-main">
+            <section class="service__banner-">
+                <div class="container">
+                    <div class="service__banner--content overflow">
+                        <div class="row flex-column-reverse flex-md-row">
+                            <div class="col-lg-7 col-md-6">
+                                <div class="left">
+                                    <div class="section__title clearfix">
+                                        <h1 class="title" data-aos="fade-right" style="color:var(--secondary-color);"
+                                            data-aos-delay="100">Social Media Marketing</h1>
+                                    </div>
+                                    <div class="title-desc" data-aos="fade-right" data-aos-delay="200">
+                                        <h4 class="sub-title-desc">Strategic social media management that builds brand
+                                            presence and drives engagement.</h4>
+                                        <p>Amplify Your Digital Presence with Expert Social Media Management: From
+                                            Content Creation to Community Engagement, We Develop Data-Driven Strategies
+                                            That Increase Followers, Boost Engagement, and Drive Meaningful Results
+                                            Across All Social Platforms!</p>
+                                        <a href="{% url 'frontend_app:contact' %}" class="l__button">
+                                            <span>lets start conversation</span>
+                                            <i class="bi bi-chevron-right"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-5 col-md-6 mb-4 mb-md-0">
+                                <div class="right mt-4" data-aos="fade-left" data-aos-delay="300">
+                                    <div class="image-container">
+                                        <!-- Using the same image path as in your original code -->
+                                        <img src="{% static 'images/Mask_group.svg' %}" class="main-image" alt="Social Media Handling">
+
+                                        <!-- Desktop Orbit -->
+                                        <div class="stats-orbit">
+                                            <div class="orbit-path" id="orbitPath">
+                                                <div class="info__card" data-aos="zoom-in" data-aos-delay="400">
+                                                    <img src="{% static 'images/calendar.gif' %}" alt="Years of Experience">
+                                                    <h4>5+</h4>
+                                                    <h6>Years Experience</h6>
+                                                </div>
+
+                                                <div class="info__card" data-aos="zoom-in" data-aos-delay="500">
+                                                    <img src="{% static 'images/like.gif' %}" alt="Happy Clients">
+                                                    <h4>200+</h4>
+                                                    <h6>Happy Clients</h6>
+                                                </div>
+
+                                                <div class="info__card" data-aos="zoom-in" data-aos-delay="600">
+                                                    <img src="{% static 'images/task.gif' %}" alt="Successful Projects">
+                                                    <h4>1500+</h4>
+                                                    <h6>Campaigns Managed</h6>
+                                                </div>
+
+                                                <div class="info__card" data-aos="zoom-in" data-aos-delay="700">
+                                                    <img src="{% static 'images/teamwork.gif' %}" alt="Team Members">
+                                                    <h4>20+</h4>
+                                                    <h6>Social Media Experts</h6>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Mobile Orbit -->
+                                        <div class="mobile-orbit-container">
+                                            <div class="mobile-orbit-path" id="mobileOrbitPath">
+                                                <div class="mobile-info-card">
+                                                    <img src="{% static 'images/calendar.gif' %}" alt="Years of Experience">
+                                                    <h4>5+</h4>
+                                                    <h6>Years Experience</h6>
+                                                </div>
+
+                                                <div class="mobile-info-card">
+                                                    <img src="{% static 'images/like.gif' %}" alt="Happy Clients">
+                                                    <h4>200+</h4>
+                                                    <h6>Happy Clients</h6>
+                                                </div>
+
+                                                <div class="mobile-info-card">
+                                                    <img src="{% static 'images/task.gif' %}" alt="Successful Projects">
+                                                    <h4>1500+</h4>
+                                                    <h6>Campaigns Managed</h6>
+                                                </div>
+
+                                                <div class="mobile-info-card">
+                                                    <img src="{% static 'images/teamwork.gif' %}" alt="Team Members">
+                                                    <h4>20+</h4>
+                                                    <h6>Social Media Experts</h6>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="service__info overflow">
+                        <div class="row row-cols-1 row-cols-md-3 g-4">
+
+                            <div class="col" data-aos="fade-up" data-aos-delay="100">
+                                <div class="service__info--card">
+                                    <div class="service__info--card-head">
+                                        <img src="{% static 'images/chess.gif' %}" alt="Content Strategy">
+                                        <h2 class="title">Content Strategy</h2>
+                                    </div>
+                                    <div class="service__info--content">
+                                        <p>We develop compelling content strategies that resonate with your audience and
+                                            drive engagement.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col" data-aos="fade-up" data-aos-delay="200">
+                                <div class="service__info--card">
+                                    <div class="service__info--card-head">
+                                        <img src="{% static 'images/woman-leader.gif' %}" alt="Community Management">
+                                        <h2 class="title">Community Management</h2>
+                                    </div>
+                                    <div class="service__info--content">
+                                        <p>We build and nurture online communities that foster brand loyalty and
+                                            meaningful interactions.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col" data-aos="fade-up" data-aos-delay="300">
+                                <div class="service__info--card">
+                                    <div class="service__info--card-head">
+                                        <img src="{% static 'images/analytics.gif' %}" alt="Performance Analytics">
+                                        <h2 class="title">Performance Analytics</h2>
+                                    </div>
+                                    <div class="service__info--content">
+                                        <p>We track and analyze performance metrics to optimize strategies and maximize
+                                            ROI.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+
+    <!-- Hero Section -->
+    <div class="buzz-gradient-bg text-white">
+        <div class="container">
+            <div class="row align-items-center py-4">
+                <div class="col-lg-6">
+                    <h1 class=" fw-bold mb-3">Amplify Your Social Presence</h1>
+                    <p class="mb-3 text-muted">We create digital waves that turn into tsunamis of engagement for
+                        your brand.</p>
+                    <div class="d-flex gap-3">
+                        <a href="{% url 'frontend_app:digital_marketing' %}#package"
+                            class="btn buzz-btn-flare px-4 buzz-pulse rounded-5">
+                            Get Started <i class="fas fa-arrow-right ms-2"></i>
+                        </a>
+                        
+                    </div>
+                </div>
+                <div class="col-lg-6 text-center">
+                    <img src="{% static 'img/features/Marketing-bro.png' %}" alt="Social Media Marketing"
+                        class="img-fluid buzz-float" style="max-height: 300px;">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Social Platform Cards -->
+    <section id="services" class="py-5 bg-light">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h3 class="fw-bold">Our Social Expertise</h3>
+                <p class="text-muted">We master every platform to maximize your reach</p>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="buzz-card buzz-card-fb h-100">
+                        <div class="card-body text-center p-4">
+                            <div class="buzz-icon-wrapper bg-primary bg-opacity-10 text-light">
+                                <i class="fab fa-facebook-f fa-2x"></i>
+                            </div>
+                            <h4>Facebook Growth</h4>
+                            <p class="text-muted">Targeted campaigns that convert scrollers into customers with
+                                precision audience targeting.</p>
+                            <div class="mt-3" style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                                <span class="buzz-badge bg-primary bg-opacity-10 text-light">Ads</span>
+                                <span class="buzz-badge bg-primary bg-opacity-10 text-light">Engagement</span>
+                                <span class="buzz-badge bg-primary bg-opacity-10 text-light">Community</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="buzz-card buzz-card-ig h-100">
+                        <div class="card-body text-center p-4">
+                            <div class="buzz-icon-wrapper bg-danger bg-opacity-10 text-danger">
+                                <i class="fab fa-instagram fa-2x"></i>
+                            </div>
+                            <h4>Instagram Influence</h4>
+                            <p class="text-muted">Visual storytelling that stops thumbs and starts conversations
+                                with stunning content.</p>
+                            <div class="mt-3">
+                                <span class="buzz-badge bg-danger bg-opacity-10 text-danger me-2">Reels</span>
+                                <span class="buzz-badge bg-danger bg-opacity-10 text-danger me-2">Stories</span>
+                                <span class="buzz-badge bg-danger bg-opacity-10 text-danger">Influencers</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="buzz-card buzz-card-tt h-100">
+                        <div class="card-body text-center p-4">
+                            <div class="buzz-icon-wrapper bg-dark bg-opacity-10 text-dark">
+                                <i class="fab fa-tiktok fa-2x"></i>
+                            </div>
+                            <h4>TikTok Viral</h4>
+                            <p class="text-muted">Trend-jacking content that rides the wave of what's hot right now.
+                            </p>
+                            <div class="mt-3">
+                                <span class="buzz-badge bg-dark bg-opacity-10 text-dark me-2">Challenges</span>
+                                <span class="buzz-badge bg-dark bg-opacity-10 text-dark me-2">Trends</span>
+                                <span class="buzz-badge bg-dark bg-opacity-10 text-dark">Duets</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4 mt-4">
+                    <div class="buzz-card buzz-card-tw h-100">
+                        <div class="card-body text-center p-4">
+                            <div class="buzz-icon-wrapper bg-info bg-opacity-10 text-info">
+                                <i class="fab fa-twitter fa-2x"></i>
+                            </div>
+                            <h4>Twitter Buzz</h4>
+                            <p class="text-muted">Conversation-starting tweets that get shared, liked, and
+                                remembered.</p>
+                            <div class="mt-3">
+                                <span class="buzz-badge bg-info bg-opacity-10 text-info me-2">Threads</span>
+                                <span class="buzz-badge bg-info bg-opacity-10 text-info me-2">Trends</span>
+                                <span class="buzz-badge bg-info bg-opacity-10 text-info">Engagement</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4 mt-4">
+                    <div class="buzz-card buzz-card-li h-100">
+                        <div class="card-body text-center p-4">
+                            <div class="buzz-icon-wrapper bg-primary bg-opacity-10 text-light">
+                                <i class="fab fa-linkedin-in fa-2x"></i>
+                            </div>
+                            <h4>LinkedIn Authority</h4>
+                            <p class="text-muted">Positioning you as the go-to expert in your industry with
+                                strategic content.</p>
+                            <div class="mt-3" style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                                <span class="buzz-badge bg-primary bg-opacity-10 text-light me-2">B2B</span>
+                                <span class="buzz-badge bg-primary bg-opacity-10 text-light me-2">Networking</span>
+                                <span class="buzz-badge bg-primary bg-opacity-10 text-light">Thought
+                                    Leadership</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4 mt-4">
+                    <div class="buzz-card buzz-card-yt h-100">
+                        <div class="card-body text-center p-4">
+                            <div class="buzz-icon-wrapper bg-danger bg-opacity-10 text-danger">
+                                <i class="fab fa-youtube fa-2x"></i>
+                            </div>
+                            <h4>YouTube Domination</h4>
+                            <p class="text-muted">Video content that educates, entertains, and converts viewers into
+                                fans.</p>
+                            <div class="mt-3">
+                                <span class="buzz-badge bg-danger bg-opacity-10 text-danger me-2">SEO</span>
+                                <span class="buzz-badge bg-danger bg-opacity-10 text-danger me-2">Videos</span>
+                                <span class="buzz-badge bg-danger bg-opacity-10 text-danger">Shorts</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Results Section -->
+    <section id="results" class="py-5">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h3 class="fw-bold">Proven Results</span></h3>
+                <p class="text-muted">We measure success in numbers and happy clients</p>
+            </div>
+
+            <div class="row g-4 text-center">
+                <div class="col-md-3">
+                    <div class="p-4 rounded-3 shadow-lg buzz-hover-lift">
+                        <i class="fas fa-users fa-3x mb-3 text-primary"></i>
+                        <h3 class="buzz-counter" data-count="1250">0</h3>
+                        <p class="text-muted mb-0">Clients Empowered</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="p-4 rounded-3 shadow-lg buzz-hover-lift">
+                        <i class="fas fa-chart-line fa-3x mb-3 text-primary"></i>
+                        <h3 class="buzz-counter" data-count="3570">0</h3>
+                        <p class="text-muted mb-0">Campaigns Launched</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="p-4 rounded-3 shadow-lg buzz-hover-lift">
+                        <i class="fas fa-heart fa-3x mb-3 text-danger"></i>
+                        <h3 class="buzz-counter" data-count="12.8">0</h3>
+                        <p class="text-muted mb-0">Million Engagements</p>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="p-4 rounded-3 shadow-lg buzz-hover-lift">
+                        <i class="fas fa-dollar-sign fa-3x mb-3 text-primary"></i>
+                        <h3 class="buzz-counter" data-count="98">0</h3>
+                        <p class="text-muted mb-0">ROI Average</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-5">
+                <div class="col-lg-6">
+                    <div class="pe-lg-5">
+                        <h3 class="fw-bold mb-4 mt-5">Our Data-Driven Approach</h3>
+                        <p class="text-muted">We don't just post content - we analyze, optimize, and iterate. Our
+                            proprietary algorithm identifies the perfect posting times, content types, and messaging
+                            that resonates with your audience.</p>
+                        <ul class="list-unstyled">
+                            <li class="mb-2 text-muted"><i class="fas fa-check-circle text-success me-2"></i>
+                                Real-time performance tracking</li>
+                            <li class="mb-2 text-muted"><i class="fas fa-check-circle text-success me-2"></i> A/B
+                                testing for optimal results</li>
+                            <li class="mb-2 text-muted"><i class="fas fa-check-circle text-success me-2"></i>
+                                Competitor benchmarking</li>
+                            <li class="mb-2 text-muted"><i class="fas fa-check-circle text-success me-2"></i>
+                                Predictive analytics</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <img src="{% static 'img/features/Marketing consulting-bro.png' %}" style="height: 70vh;"
+                        alt="Analytics Dashboard" class="img-fluid rounded-3 shadow buzz-float">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Portfolio Section - Updated with Dynamic Data -->
+    <!-- <section id="portfolio" class="py-5">
+        <div class="container py-5">
+            <h3 class="text-center mb-5 bg-infotechs-section-title mx-auto">Our Recent Work</h3>
+            <div class="row">
+                {% if related_projects %}
+                    {% for project in related_projects %}
+                    <div class="col-md-4 mb-4">
+                        <div class="bg-infotechs-portfolio-item">
+                            {% if project.image %}
+                                <img src="{{ project.image.url }}" alt="{{ project.title }}" class="img-fluid bg-infotechs-portfolio-img">
+                            {% else %}
+                                <img src="https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2069&q=80" alt="{{ project.title }}" class="img-fluid bg-infotechs-portfolio-img">
+                            {% endif %}
+                            <div class="bg-infotechs-portfolio-overlay">
+                                <h5 class="text-light fw-bold">{{ project.title }}</h5>
+                                <p>{{ project.company }}</p>
+                                {% if project.live_link %}
+                                    <a href="{{ project.live_link }}" target="_blank" class="btn btn-outline-light btn-sm mt-2 rounded-5">View Project</a>
+                                {% else %}
+                                    <a href="#" class="btn btn-outline-light btn-sm mt-2 rounded-5">View Details</a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+           
+            <div class="text-center mt-4">
+                <a href="{% url 'frontend_app:all_digital_marketing' %}" class="btn bg-infotechs-btn-primary">View All
+                    Projects</a>
+            </div>
+        </div>
+    </section> -->
+
+    <!-- Clients Section -->
+    <section class="py-5 bg-light">
+        <div class="container py-3">
+            <div class="text-center mb-5">
+                <h6 class="text-uppercase text-muted">Trusted By</h6>
+                <h3 class="fw-bold">Our Valued Clients</h3>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <div class="client-logos-slider">
+                        <div class="client-logos-track">
+                            {% if related_projects_logo %}
+                            {% for project in related_projects_logo %}
+                            <div class="client-logo-item">
+                                {% if project.logo %}
+                                <img src="{{ project.logo.url }}" alt="{{ project.company }} Logo" class="img-fluid">
+                                {% else %}
+                                <img src="{% static 'img/Logo.png' %}" alt="{{ project.company }} Logo"
+                                    class="img-fluid">
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+                            {% else %}
+                            <!-- Debug info (remove in production) -->
+                            <div class="text-center text-muted">
+                                <p>No client logos found. Total projects: {{ related_projects.count }}</p>
+                            </div>
+                            <!-- Fallback static client logos -->
+                            {% for i in "12345678" %}
+                            <div class="client-logo-item">
+                                <img src="{% static 'img/Logo.png' %}" alt="Client Logo" class="img-fluid">
+                            </div>
+                            {% endfor %}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Testimonials Section -->
+    {% if service_testimonials %}
+    <section id="testimonials" class="py-5 bg-light">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8 text-center mb-5 heading-section" data-aos="fade-up">
+                    <span class="badge custom-brown-badge text-uppercase mb-2">TESTIMONIALS</span>
+                    <h3 class="fw-bold mb-4">What Our Clients Say</h3>
+                    <p class="text-muted">Hear from businesses that have transformed their digital presence with us.</p>
+                </div>
+            </div>
+
+            <div class="row g-4">
+                {% for testimonial in service_testimonials %}
+                <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="{{ forloop.counter }}00">
+                    <div class="buzz-testimonial h-100 animate__animated" data-animate="animate__fadeInUp">
+                        <div class="d-flex mb-3">
+                            {% if testimonial.image %}
+                            <img src="{{ testimonial.image.url }}" width="80" height="80" alt="{{ testimonial.name }}"
+                                class="rounded-circle me-3 object-fit-cover">
+                            {% else %}
+                            <img src="{% static 'img/person/default-avatar.webp' %}" width="80" height="80"
+                                alt="{{ testimonial.name }}" class="rounded-circle me-3 object-fit-cover">
+                            {% endif %}
+                            <div>
+                                <h5 class="mb-0">{{ testimonial.name }}</h5>
+                                {% if testimonial.designation %}
+                                <p class="text-muted mb-0">{{ testimonial.designation }}</p>
+                                {% endif %}
+                                <div class="text-warning">
+                                    {% for i in "12345" %}
+                                    {% if forloop.counter <= testimonial.rating %} <i class="fas fa-star"></i>
+                                        {% else %}
+                                        <i class="far fa-star"></i>
+                                        {% endif %}
+                                        {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        <p class="mb-0">"{{ testimonial.message }}"</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+   {% if service_faqs %}
+<!-- FAQ Section -->
+<section class="sm-faq-section">
+    <div class="container-fluid">
+        <div class="text-center mb-5">
+            <h2 class="sm-faq-title">Frequently Asked <span>Questions</span></h2>
+            <p class="sm-faq-subtitle">Find answers to common questions about our services.</p>
+        </div>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="accordion" id="sm-faqAccordion">
+                        {% for faq in service_faqs %}
+                        <div class="accordion-item mb-3 border-0 shadow-sm">
+                            <h2 class="accordion-header" id="sm-heading{{ forloop.counter }}">
+                                <button class="accordion-button sm-accordion-button {% if not forloop.first %}collapsed{% endif %}"
+                                    type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#sm-collapse{{ forloop.counter }}"
+                                    aria-expanded="{% if forloop.first %}true{% else %}false{% endif %}"
+                                    aria-controls="sm-collapse{{ forloop.counter }}">
+                                    {{ faq.question }}
+                                </button>
+                            </h2>
+                            <div id="sm-collapse{{ forloop.counter }}"
+                                class="accordion-collapse collapse {% if forloop.first %}show{% endif %}"
+                                aria-labelledby="sm-heading{{ forloop.counter }}" data-bs-parent="#sm-faqAccordion">
+                                <div class="accordion-body sm-accordion-body">
+                                    {{ faq.answer }}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <img src="{% static 'img/38071986-removebg-preview.png' %}" class="img-fluid"
+                        style="height: 450px !important; margin-top: -20px !important;" alt="FAQ Illustration">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+    <!-- CTA Section -->
+    <section class="py-5 buzz-gradient-bg text-white">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-8">
+                    <h3 class="fw-bold display-5 mb-3">Ready to Dominate Social Media?</h3>
+                    <p class="text-muted mb-0">Schedule your free strategy session today and let's create something
+                        amazing together.</p>
+                </div>
+                <div class="col-lg-4 text-lg-end mt-4 mt-lg-0">
+                    <a href="{% url 'frontend_app:digital_marketing' %}#package"
+                        class="btn btn-light btn-lg px-4 fw-bold buzz-pulse">Book Now <i
+                            class="fas fa-calendar-check ms-2"></i></a>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+{% block extra_js %}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Initialize AOS
+        AOS.init({
+            duration: 800,
+            easing: 'ease-in-out',
+            once: true
+        });
+
+        // Desktop orbit animation control
+        const orbitPath = document.getElementById('orbitPath');
+        const infoCards = document.querySelectorAll('.info__card');
+
+        if (orbitPath) {
+            // Pause animation on hover
+            orbitPath.addEventListener('mouseenter', function () {
+                this.classList.add('paused');
+            });
+
+            orbitPath.addEventListener('mouseleave', function () {
+                this.classList.remove('paused');
+            });
+
+            // Add individual card hover effects
+            infoCards.forEach(card => {
+                card.addEventListener('mouseenter', function () {
+                    orbitPath.classList.add('paused');
+                    this.style.transform = 'scale(1.1)';
+                    this.style.boxShadow = 'var(--shadow-hover)';
+                    this.style.zIndex = '10';
+                });
+
+                card.addEventListener('mouseleave', function () {
+                    orbitPath.classList.remove('paused');
+                    this.style.transform = '';
+                    this.style.boxShadow = '';
+                    this.style.zIndex = '';
+                });
+            });
+        }
+
+        // Mobile orbit animation control
+        const mobileOrbitPath = document.getElementById('mobileOrbitPath');
+        const mobileInfoCards = document.querySelectorAll('.mobile-info-card');
+
+        if (mobileOrbitPath) {
+            // For mobile, we'll keep the animation running continuously
+            // but we can add touch events to pause on tap if needed
+
+            mobileInfoCards.forEach(card => {
+                card.addEventListener('touchstart', function () {
+                    mobileOrbitPath.classList.add('paused');
+                    this.style.transform = 'scale(1.1)';
+                    this.style.boxShadow = 'var(--shadow-hover)';
+                    this.style.zIndex = '10';
+                });
+
+                card.addEventListener('touchend', function () {
+                    setTimeout(() => {
+                        mobileOrbitPath.classList.remove('paused');
+                        this.style.transform = '';
+                        this.style.boxShadow = '';
+                        this.style.zIndex = '';
+                    }, 1000);
+                });
+            });
+        }
+    });
+</script>
+
+<script>
+    // Animated Counter
+    document.addEventListener('DOMContentLoaded', function () {
+        // Counter Animation
+        const counters = document.querySelectorAll('.buzz-counter');
+        const speed = 200;
+
+        counters.forEach(counter => {
+            const animate = () => {
+                const target = +counter.getAttribute('data-count');
+                const count = +counter.innerText;
+                const increment = target / speed;
+
+                if (count < target) {
+                    counter.innerText = Math.ceil(count + increment);
+                    setTimeout(animate, 1);
+                } else {
+                    counter.innerText = target;
+                }
+            };
+
+            animate();
+        });
+
+        // Intersection Observer for animations
+        const animateOnScroll = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const element = entry.target;
+                    const animation = element.getAttribute('data-animate');
+                    element.classList.add(animation);
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('[data-animate]').forEach(el => {
+            animateOnScroll.observe(el);
+        });
+    });
+</script>
+{% endblock %}
+{% endblock %}

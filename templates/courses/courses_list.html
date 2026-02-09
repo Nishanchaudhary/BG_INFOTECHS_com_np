@@ -1,0 +1,739 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="card border-dark">
+        <div class="card-header bg-primary text-white border-dark">
+            <h5 class="card-title mb-0">
+                <i class="fas fa-book me-2"></i>{{ page_title }}
+            </h5>
+        </div>
+        <div class="card-body p-0">
+            <!-- Loading Overlay -->
+            <div id="loading-overlay" style="display: none;">
+                <div class="d-flex justify-content-center align-items-center" style="height: 200px;">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <span class="ms-2">Loading courses...</span>
+                </div>
+            </div>
+            
+            <!-- DataTable -->
+            <div class="table-responsive">
+                <table id="courses-table" class="table table-hover table-striped table-bordered border-dark" style="width:100%; margin:0;">
+                    <thead class="table-primary border-dark">
+                        <tr>
+                            <th style="border: 1px solid #000; border-bottom: 2px solid #000; padding: 12px; text-align: center;">Image</th>
+                            <th style="border: 1px solid #000; border-bottom: 2px solid #000; padding: 12px; text-align: center;">Course Title</th>
+                            <th style="border: 1px solid #000; border-bottom: 2px solid #000; padding: 12px; text-align: center;">Duration</th>
+                            <th style="border: 1px solid #000; border-bottom: 2px solid #000; padding: 12px; text-align: center;">Price</th>
+                            <th style="border: 1px solid #000; border-bottom: 2px solid #000; padding: 12px; text-align: center;">Media</th>
+                            <th style="border: 1px solid #000; border-bottom: 2px solid #000; padding: 12px; text-align: center;">Description</th>
+                            <th style="border: 1px solid #000; border-bottom: 2px solid #000; padding: 12px; text-align: center;">Status</th>
+                            <th style="border: 1px solid #000; border-bottom: 2px solid #000; padding: 12px; text-align: center;">Author</th>
+                            <th style="border: 1px solid #000; border-bottom: 2px solid #000; padding: 12px; text-align: center;">Created</th>
+                            <th style="border: 1px solid #000; border-bottom: 2px solid #000; padding: 12px; text-align: center;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="table-light border-dark">
+                        <!-- Data will be loaded via AJAX -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Status Change Confirmation Modal -->
+<div class="modal fade" id="statusModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Change Course Status</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to change the course status?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="confirmStatusChange">Confirm</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Container -->
+<div id="toastContainer" class="toast-container position-fixed top-0 end-0 p-3"></div>
+{% endblock %}
+
+{% block extra_css %}
+<!-- DataTables CSS -->
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.bootstrap5.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.4.1/css/responsive.bootstrap5.min.css">
+
+<style>
+#courses-table {
+    border: 2px solid #000 !important;
+    border-collapse: separate !important;
+    background-color: white;
+}
+
+#courses-table th,
+#courses-table td {
+    border: 1px solid #000 !important;
+    vertical-align: middle !important;
+    padding: 12px 8px !important;
+}
+
+#courses-table thead th {
+    border-bottom: 2px solid #000 !important;
+    background-color: #a6d4fa !important;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+#loading-overlay {
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 5px;
+    display: none !important;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1000;
+}
+
+/* DataTables processing indicator styling */
+.dataTables_processing {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    border-radius: 5px;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    z-index: 1000;
+}
+
+/* Make sure the processing indicator is visible */
+div.dataTables_processing {
+    color: #000 !important;
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+#courses-table tbody tr {
+    border-bottom: 1px solid #000 !important;
+}
+
+.description-text {
+    cursor: help;
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: inline-block;
+}
+
+.course-thumbnail {
+    border-radius: 8px;
+    border: 2px solid #dee2e6;
+}
+
+.price-discount {
+    text-decoration: line-through;
+    color: #6c757d;
+    font-size: 0.9em;
+}
+
+.price-offer {
+    color: #28a745;
+    font-weight: bold;
+}
+
+.discount-badge {
+    font-size: 0.7em;
+    margin-left: 5px;
+}
+
+.media-count {
+    font-size: 0.85em;
+}
+
+.badge {
+    font-size: 0.75em;
+    margin: 1px;
+}
+
+.btn-group-vertical .btn {
+    margin-bottom: 2px;
+}
+
+.dt-buttons {
+    margin-bottom: 10px;
+}
+
+.dt-button {
+    margin-right: 5px;
+    margin-bottom: 5px;
+}
+
+/* Toast styling */
+.toast {
+    background-color: rgba(255, 255, 255, 0.95);
+    border-left: 4px solid;
+}
+
+.toast-success {
+    border-left-color: #28a745;
+}
+
+.toast-error {
+    border-left-color: #dc3545;
+}
+
+.toast-info {
+    border-left-color: #17a2b8;
+}
+
+/* Status dropdown styling */
+.status-dropdown .dropdown-toggle {
+    min-width: 120px;
+}
+
+/* Action buttons styling */
+.action-buttons {
+    min-width: 140px;
+}
+
+/* Print optimization */
+@media print {
+    .dt-buttons, .dataTables_filter, .dataTables_length, .dataTables_info, .dataTables_paginate {
+        display: none !important;
+    }
+    
+    #courses-table {
+        border: 1px solid #000 !important;
+        font-size: 10px;
+    }
+    
+    #courses-table th,
+    #courses-table td {
+        padding: 6px 4px !important;
+    }
+    
+    .course-thumbnail {
+        width: 40px !important;
+        height: 30px !important;
+    }
+    
+    .btn-group {
+        display: none !important;
+    }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    #courses-table {
+        font-size: 0.85rem;
+    }
+    
+    #courses-table th,
+    #courses-table td {
+        padding: 8px 4px !important;
+    }
+    
+    .dt-buttons .btn {
+        margin-bottom: 5px;
+        font-size: 0.8rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<!-- DataTables JS -->
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.bootstrap5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.print.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+
+<script>
+// CSRF token function for Django
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+// Toast notification function
+function showToast(message, type = 'info') {
+    const toastId = 'toast-' + Date.now();
+    const toastHtml = `
+        <div id="${toastId}" class="toast" role="alert">
+            <div class="toast-header">
+                <strong class="me-auto">Notification</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+            </div>
+            <div class="toast-body">
+                ${message}
+            </div>
+        </div>
+    `;
+    
+    $('#toastContainer').append(toastHtml);
+    const toastElement = document.getElementById(toastId);
+    const toast = new bootstrap.Toast(toastElement);
+    
+    // Add background color based on type
+    if (type === 'success') {
+        $(toastElement).addClass('toast-success');
+    } else if (type === 'error') {
+        $(toastElement).addClass('toast-error');
+    } else {
+        $(toastElement).addClass('toast-info');
+    }
+    
+    toast.show();
+    
+    // Remove toast from DOM after it's hidden
+    toastElement.addEventListener('hidden.bs.toast', function() {
+        $(this).remove();
+    });
+}
+
+$(document).ready(function() {
+    // Show loading overlay initially
+    $('#loading-overlay').show();
+    
+    var table = $('#courses-table').DataTable({
+        "processing": true,
+        "serverSide": true,
+        "ajax": {
+            "url": "{% url 'course_app:courses_datatables' %}",
+            "type": "GET",
+            "dataType": "json",
+            "data": function(d) {
+                // Add any additional parameters if needed
+            },
+            "dataSrc": function(json) {
+                // Hide loading overlay when data is loaded
+                $('#loading-overlay').hide();
+                return json.data;
+            },
+            "error": function(xhr, error, code) {
+                $('#loading-overlay').hide();
+                console.log('AJAX Error:', xhr, error, code);
+                showToast('Error loading courses. Please try again.', 'error');
+            }
+        },
+        "columns": [
+            {
+                "data": "image", 
+                "name": "image", 
+                "className": "text-center", 
+                "orderable": false,
+                "searchable": false,
+                "render": function(data, type, row) {
+                    // For export, return text representation
+                    if (type === 'export') {
+                        return data.includes('img') ? 'Has Image' : 'No Image';
+                    }
+                    return data;
+                }
+            },
+            {
+                "data": "title", 
+                "name": "title", 
+                "className": "text-center",
+                "render": function(data, type, row) {
+                    if (type === 'sort' || type === 'type' || type === 'export') {
+                        return $(data).text() || data;
+                    }
+                    return data;
+                }
+            },
+            {
+                "data": "duration", 
+                "name": "duration", 
+                "className": "text-center",
+                "render": function(data, type, row) {
+                    if (type === 'sort' || type === 'type' || type === 'export') {
+                        return $(data).text() || data;
+                    }
+                    return data;
+                }
+            },
+            {
+                "data": "price", 
+                "name": "price", 
+                "className": "text-center",
+                "render": function(data, type, row) {
+                    // For export, return plain text without HTML
+                    if (type === 'sort' || type === 'type' || type === 'export') {
+                        return $(data).text() || data;
+                    }
+                    return data;
+                }
+            },
+            {
+                "data": "media_count", 
+                "name": "media_count", 
+                "className": "text-center", 
+                "orderable": false,
+                "searchable": false,
+                "render": function(data, type, row) {
+                    // For export, return numeric count
+                    if (type === 'export') {
+                        // Extract number from badge
+                        var match = data.match(/>(\d+)</);
+                        return match ? match[1] + ' media' : '0 media';
+                    }
+                    return data;
+                }
+            },
+            {
+                "data": "description", 
+                "name": "description", 
+                "className": "text-center", 
+                "orderable": false,
+                "render": function(data, type, row) {
+                    // For export, return plain text without HTML
+                    if (type === 'sort' || type === 'type' || type === 'export') {
+                        return $(data).text() || data;
+                    }
+                    return data;
+                }
+            },
+            {
+                "data": "status", 
+                "name": "status", 
+                "className": "text-center", 
+                "orderable": false,
+                "render": function(data, type, row) {
+                    if (type === 'sort' || type === 'type' || type === 'export') {
+                        return $(data).text() || data;
+                    }
+                    return data;
+                }
+            },
+            {
+                "data": "author", 
+                "name": "author", 
+                "className": "text-center",
+                "render": function(data, type, row) {
+                    if (type === 'sort' || type === 'type' || type === 'export') {
+                        return $(data).text() || data;
+                    }
+                    return data;
+                }
+            },
+            {
+                "data": "created_at", 
+                "name": "created_at", 
+                "className": "text-center",
+                "render": function(data, type, row) {
+                    if (type === 'sort' || type === 'type' || type === 'export') {
+                        return $(data).text() || data;
+                    }
+                    return data;
+                }
+            },
+            {
+                "data": "actions", 
+                "name": "actions", 
+                "className": "text-center action-buttons", 
+                "orderable": false, 
+                "searchable": false,
+                "render": function(data, type, row) {
+                    // For export, don't include action buttons
+                    if (type === 'export') {
+                        return '';
+                    }
+                    return data;
+                }
+            }
+        ],
+        "order": [[8, 'desc']], // Default sort by created date (newest first)
+        "pageLength": 10,
+        "responsive": true,
+        "dom": '<"row"<"col-sm-12 col-md-6"B><"col-sm-12 col-md-6"f>><"row"<"col-sm-12"tr>><"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
+        "buttons": [
+            {
+                extend: 'copy',
+                text: '<i class="fas fa-copy"></i> Copy',
+                className: 'btn btn-secondary btn-sm',
+                exportOptions: {
+                    columns: [1, 2, 3, 4, 5, 6, 7, 8], // Exclude image and actions columns
+                    format: {
+                        body: function (data, row, column, node) {
+                            // Strip HTML for copy export
+                            return $(data).text() || data;
+                        }
+                    }
+                }
+            },
+            {
+                extend: 'excel',
+                text: '<i class="fas fa-file-excel"></i> Excel',
+                className: 'btn btn-success btn-sm',
+                exportOptions: {
+                    columns: [1, 2, 3, 4, 5, 6, 7, 8], // Exclude image and actions columns
+                    format: {
+                        body: function (data, row, column, node) {
+                            // Strip HTML for Excel export
+                            return $(data).text() || data;
+                        }
+                    }
+                },
+                filename: function() {
+                    return 'courses_' + new Date().toISOString().slice(0, 10);
+                }
+            },
+            {
+                extend: 'pdf',
+                text: '<i class="fas fa-file-pdf"></i> PDF',
+                className: 'btn btn-danger btn-sm',
+                exportOptions: {
+                    columns: [1, 2, 3, 4, 5, 6, 7, 8], // Exclude image and actions columns
+                    format: {
+                        body: function (data, row, column, node) {
+                            // Strip HTML for PDF export
+                            return $(data).text() || data;
+                        }
+                    }
+                },
+                customize: function(doc) {
+                    doc.defaultStyle.fontSize = 9;
+                    doc.styles.tableHeader.fontSize = 10;
+                    doc.styles.tableHeader.fillColor = '#a6d4fa';
+                    doc.pageMargins = [10, 10, 10, 10];
+                    doc.content[1].table.widths = ['*', '*', '*', '*', '*', '*', '*', '*'];
+                    doc.content[0].text = 'Courses List - ' + new Date().toLocaleDateString();
+                    doc.content[0].alignment = 'center';
+                    doc.content[0].margin = [0, 0, 0, 10];
+                },
+                filename: function() {
+                    return 'courses_' + new Date().toISOString().slice(0, 10);
+                }
+            },
+            {
+                extend: 'print',
+                text: '<i class="fas fa-print"></i> Print',
+                className: 'btn btn-info btn-sm',
+                exportOptions: {
+                    columns: [0, 1, 2, 3, 4, 5, 6, 7, 8], // Include all columns except actions
+                    format: {
+                        body: function (data, row, column, node) {
+                            // Strip HTML for print, but keep basic formatting
+                            return $(data).text() || data;
+                        }
+                    }
+                },
+                customize: function(win) {
+                    $(win.document.body).find('table').addClass('display').css('font-size', '10px');
+                    $(win.document.body).find('tr:nth-child(odd) td').each(function(index){
+                        $(this).css('background-color','#f8f9fa');
+                    });
+                    $(win.document.body).find('h1').css('text-align','center').text('Courses List');
+                    $(win.document.body).find('.dt-buttons, .dataTables_filter, .dataTables_length, .dataTables_info, .dataTables_paginate').remove();
+                }
+            },
+            {
+                text: '<i class="fas fa-plus"></i> Add Course',
+                className: 'btn btn-primary btn-sm',
+                action: function (e, dt, node, config) {
+                    {% if can_create_course %}
+                    window.location.href = "{% url 'course_app:course_create' %}";
+                    {% else %}
+                    showToast('You do not have permission to add courses.', 'error');
+                    {% endif %}
+                }
+            }
+        ],
+        "language": {
+            "search": "Search:",
+            "lengthMenu": "Show _MENU_ entries",
+            "info": "Showing _START_ to _END_ of _TOTAL_ courses",
+            "infoEmpty": "Showing 0 to 0 of 0 courses",
+            "infoFiltered": "(filtered from _MAX_ total courses)",
+            "zeroRecords": "No matching courses found",
+            "paginate": {
+                "first": "First",
+                "last": "Last",
+                "next": "Next",
+                "previous": "Previous"
+            },
+            "processing": '<div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div> Processing...'
+        },
+        "initComplete": function() {
+            // Add custom CSS to search box
+            $('.dataTables_filter input').addClass('form-control form-control-sm')
+                .attr('placeholder', 'Search by title, description, or author...')
+                .css('width', '300px');
+                
+            // Hide loading overlay after initialization
+            $('#loading-overlay').hide();
+        }
+    });
+
+    // Initialize tooltips when table is drawn
+    table.on('draw', function() {
+        $('[data-bs-toggle="tooltip"]').tooltip();
+        
+        // Attach click handlers for status change buttons
+        $('.status-change-btn').on('click', function(e) {
+            e.preventDefault();
+            var courseId = $(this).data('course-id');
+            var newStatus = $(this).data('status');
+            var courseTitle = $(this).closest('tr').find('td:nth-child(2)').text().trim();
+            
+            // Show confirmation modal
+            var statusModal = new bootstrap.Modal(document.getElementById('statusModal'));
+            statusModal.show();
+            
+            // Set up confirm button
+            $('#confirmStatusChange').off('click').on('click', function() {
+                statusModal.hide();
+                
+                // Show loading
+                $('#loading-overlay').show();
+                
+                // Perform status change via AJAX
+                $.ajax({
+                    url: "{% url 'course_app:toggle_course_status' 0 %}".replace('0', courseId),
+                    type: 'POST',
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken'),
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    data: {
+                        'status': newStatus
+                    },
+                    success: function(response) {
+                        $('#loading-overlay').hide();
+                        if (response.success) {
+                            table.ajax.reload(null, false);
+                            showToast(response.message, 'success');
+                        } else {
+                            showToast('Error changing status: ' + response.error, 'error');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        $('#loading-overlay').hide();
+                        showToast('Error changing course status. Please try again.', 'error');
+                        console.error('Status change error:', error);
+                    }
+                });
+            });
+            
+            return false;
+        });
+        
+        // Attach click handlers for delete buttons
+        $('.delete-btn').on('click', function(e) {
+            e.preventDefault();
+            var deleteUrl = $(this).attr('href');
+            var courseTitle = $(this).closest('tr').find('td:nth-child(2)').text().trim();
+            
+            if (confirm('Are you sure you want to delete the course "' + courseTitle + '"?')) {
+                // Show loading
+                $('#loading-overlay').show();
+                
+                // Perform delete via AJAX
+                $.ajax({
+                    url: deleteUrl,
+                    type: 'POST',
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    success: function(response) {
+                        $('#loading-overlay').hide();
+                        table.ajax.reload(null, false);
+                        showToast('Course deleted successfully!', 'success');
+                    },
+                    error: function(xhr, status, error) {
+                        $('#loading-overlay').hide();
+                        showToast('Error deleting course. Please try again.', 'error');
+                        console.error('Delete error:', error);
+                    }
+                });
+            }
+            
+            return false;
+        });
+    });
+
+    // Custom styling for buttons
+    $('.dt-buttons').addClass('btn-group');
+    $('.dt-button').addClass('btn btn-sm');
+    
+    // Handle window resize for responsive layout
+    $(window).on('resize', function() {
+        table.columns.adjust().responsive.recalc();
+    });
+    
+    // Add description tooltip functionality
+    $(document).on('click', '.description-tooltip', function() {
+        var description = $(this).data('description');
+        if (description) {
+            // Create and show a modal with full description
+            var modalHtml = `
+                <div class="modal fade" id="descriptionModal" tabindex="-1">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Course Description</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p>${description}</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            $('body').append(modalHtml);
+            var descriptionModal = new bootstrap.Modal(document.getElementById('descriptionModal'));
+            descriptionModal.show();
+            
+            // Remove modal from DOM after it's hidden
+            $('#descriptionModal').on('hidden.bs.modal', function() {
+                $(this).remove();
+            });
+        }
+    });
+});
+</script>
+{% endblock %}

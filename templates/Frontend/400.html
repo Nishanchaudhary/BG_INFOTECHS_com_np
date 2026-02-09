@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bad Request - BG Infotechs</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .error-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 50px 40px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            max-width: 500px;
+            width: 100%;
+            backdrop-filter: blur(10px);
+            animation: zoomIn 0.8s ease-out;
+        }
+        
+        .gif-container {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 30px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #a8edea, #fed6e3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: wobble 2s ease-in-out infinite;
+        }
+        
+        .gif-container img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+        }
+        
+        .error-code {
+            font-size: 6rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, #a8edea, #fed6e3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+        
+        .error-title {
+            font-size: 2rem;
+            color: #333;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        .error-message {
+            color: #666;
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        
+        .home-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: linear-gradient(45deg, #a8edea, #fed6e3);
+            color: #333;
+            padding: 15px 30px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(168, 237, 234, 0.4);
+            border: 2px solid transparent;
+        }
+        
+        .home-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(168, 237, 234, 0.6);
+            border-color: #a8edea;
+        }
+        
+        .warning-animation {
+            margin: 20px 0;
+        }
+        
+        .warning {
+            width: 60px;
+            height: 60px;
+            background: #ffa726;
+            border-radius: 50%;
+            margin: 0 auto;
+            position: relative;
+            animation: pulseWarning 1.5s infinite;
+        }
+        
+        .warning::before, .warning::after {
+            content: '';
+            position: absolute;
+            background: white;
+        }
+        
+        .warning::before {
+            width: 8px;
+            height: 25px;
+            top: 10px;
+            left: 26px;
+        }
+        
+        .warning::after {
+            width: 8px;
+            height: 8px;
+            top: 35px;
+            left: 26px;
+            border-radius: 50%;
+        }
+        
+        @keyframes zoomIn {
+            from {
+                opacity: 0;
+                transform: scale(0.5);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        @keyframes wobble {
+            0%, 100% {
+                transform: translateX(0%);
+            }
+            15% {
+                transform: translateX(-10px) rotate(-5deg);
+            }
+            30% {
+                transform: translateX(8px) rotate(3deg);
+            }
+            45% {
+                transform: translateX(-6px) rotate(-3deg);
+            }
+            60% {
+                transform: translateX(4px) rotate(2deg);
+            }
+            75% {
+                transform: translateX(-2px) rotate(-1deg);
+            }
+        }
+        
+        @keyframes pulseWarning {
+            0% {
+                transform: scale(1);
+                background: #ffa726;
+            }
+            50% {
+                transform: scale(1.1);
+                background: #ff9800;
+            }
+            100% {
+                transform: scale(1);
+                background: #ffa726;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .error-container {
+                padding: 30px 20px;
+            }
+            
+            .error-code {
+                font-size: 4rem;
+            }
+            
+            .error-title {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <div class="gif-container">
+            <img src="https://media.giphy.com/media/l0HU7JI1m1eEwz7Kw/giphy.gif" alt="Bad Request Animation" onerror="this.style.display='none'">
+        </div>
+        
+        <div class="warning-animation">
+            <div class="warning"></div>
+        </div>
+        
+        <div class="error-code">400</div>
+        <h1 class="error-title">Bad Request</h1>
+        <p class="error-message">
+            Oops! The server didn't understand your request. 
+            It seems like there might be a typo or something went wrong with your input.
+        </p>
+        
+        <a href="{% url 'frontend_app:home' %}" class="home-btn">
+            <i>🏠</i> Back to Home
+        </a>
+    </div>
+</body>
+</html>

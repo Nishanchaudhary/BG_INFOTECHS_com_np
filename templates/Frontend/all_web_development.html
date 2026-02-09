@@ -1,0 +1,987 @@
+{% extends 'Frontend/base.html' %}
+{% load static %}
+
+{% block title %}Web Development Projects - Our Portfolio{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Modern CSS Variables */
+    :root {
+        --primary: #0d6efd;
+        --primary-dark: #0b5ed7;
+        --secondary: #6c757d;
+        --accent: #3498db;
+        --gradient-primary: linear-gradient(135deg, #0d6efd 0%, #3498db 100%);
+        --gradient-secondary: linear-gradient(135deg, #20c997 0%, #198754 100%);
+        --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.08);
+        --shadow-medium: 0 10px 40px rgba(0, 0, 0, 0.12);
+        --shadow-large: 0 20px 60px rgba(0, 0, 0, 0.15);
+        --border-radius: 16px;
+        --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Page Title Section */
+    .page-title {
+        background: var(--gradient-primary);
+        color: white;
+        padding: 4rem 0 2rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .page-title::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100" fill="%23ffffff" opacity="0.1"><polygon points="1000,100 1000,0 0,100"/></svg>');
+        background-size: cover;
+        animation: wave 10s linear infinite;
+    }
+
+    @keyframes wave {
+        0% { transform: translateX(0); }
+        100% { transform: translateX(-50px); }
+    }
+
+    .page-title h1 {
+        font-size: clamp(2.5rem, 5vw, 3.5rem);
+        font-weight: 800;
+        margin-bottom: 1rem;
+        position: relative;
+        animation: slideInUp 0.8s ease-out;
+    }
+
+    .breadcrumbs ol {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .breadcrumbs a {
+        color: rgba(255, 255, 255, 0.9);
+        text-decoration: none;
+        transition: var(--transition);
+        font-weight: 500;
+    }
+
+    .breadcrumbs a:hover {
+        color: white;
+    }
+
+    .breadcrumbs .current {
+        color: white;
+        font-weight: 600;
+    }
+
+    @keyframes slideInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Portfolio Header Section */
+    .portfolio-header {
+        padding: 4rem 0;
+        background: white;
+        position: relative;
+    }
+
+    .portfolio-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(45deg, rgba(13, 110, 253, 0.03) 0%, rgba(52, 152, 219, 0.03) 100%);
+        animation: float 6s ease-in-out infinite;
+    }
+
+    @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-20px); }
+    }
+
+    .stats-container {
+        display: flex;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+        margin-top: 2rem;
+    }
+
+    .stat-item {
+        background: white;
+        border-radius: var(--border-radius);
+        padding: 1.5rem;
+        text-align: center;
+        min-width: 140px;
+        box-shadow: var(--shadow-soft);
+        border: 1px solid #f1f5f9;
+        transition: var(--transition);
+        animation: fadeInUp 0.6s ease-out;
+    }
+
+    .stat-item:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-medium);
+    }
+
+    .stat-number {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--primary);
+        display: block;
+        line-height: 1;
+    }
+
+    .stat-label {
+        font-size: 0.9rem;
+        color: var(--secondary);
+        margin-top: 0.5rem;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Search Section */
+    .search-section {
+        background: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow-medium);
+        padding: 2rem;
+        margin-top: 2rem;
+        position: relative;
+        animation: slideInRight 0.8s ease-out 0.3s both;
+    }
+
+    .search-container {
+        max-width: 100%;
+    }
+
+    .search-box {
+        position: relative;
+    }
+
+    .search-input {
+        width: 100%;
+        padding: 1.25rem 4.5rem 1.25rem 1.5rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 50px;
+        font-size: 1rem;
+        background: white;
+        transition: var(--transition);
+        box-shadow: var(--shadow-soft);
+    }
+
+    .search-input:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.1);
+        outline: none;
+        transform: translateY(-2px);
+    }
+
+    .search-btn {
+        position: absolute;
+        right: 8px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: var(--gradient-primary);
+        border: none;
+        color: white;
+        padding: 0.875rem 1.5rem;
+        border-radius: 25px;
+        cursor: pointer;
+        transition: var(--transition);
+        font-weight: 600;
+    }
+
+    .search-btn:hover {
+        transform: translateY(-50%) scale(1.05);
+        box-shadow: 0 5px 15px rgba(13, 110, 253, 0.4);
+    }
+
+    @keyframes slideInRight {
+        from {
+            opacity: 0;
+            transform: translateX(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    /* Enhanced Portfolio Item Styles */
+    .bg-infotechs-portfolio-item {
+        position: relative;
+        border-radius: var(--border-radius);
+        overflow: hidden;
+        transition: var(--transition);
+        height: 100%;
+        opacity: 0;
+        animation: cardSlideIn 0.6s ease-out forwards;
+    }
+
+    @keyframes cardSlideIn {
+        from {
+            opacity: 0;
+            transform: translateY(30px) scale(0.95);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+
+    .bg-infotechs-portfolio-item:hover {
+        transform: translateY(-8px);
+        box-shadow: var(--shadow-large);
+    }
+
+    .bg-infotechs-portfolio-img {
+        transition: transform 0.5s ease;
+        height: 250px;
+        object-fit: cover;
+    }
+
+    .bg-infotechs-portfolio-item:hover .bg-infotechs-portfolio-img {
+        transform: scale(1.1);
+    }
+
+    .bg-infotechs-portfolio-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, rgba(13, 110, 253, 0.9) 0%, rgba(52, 152, 219, 0.9) 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: var(--transition);
+        padding: 20px;
+    }
+
+    .bg-infotechs-portfolio-item:hover .bg-infotechs-portfolio-overlay {
+        opacity: 1;
+    }
+
+    .overlay-content {
+        text-align: center;
+        color: white;
+        transform: translateY(20px);
+        transition: var(--transition);
+    }
+
+    .bg-infotechs-portfolio-item:hover .overlay-content {
+        transform: translateY(0);
+    }
+
+    .bg-infotechs-btn-primary {
+        background: var(--gradient-primary);
+        border-color: var(--primary);
+        color: white;
+        transition: var(--transition);
+    }
+
+    .bg-infotechs-btn-primary:hover {
+        background: var(--primary-dark);
+        border-color: var(--primary-dark);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(13, 110, 253, 0.4);
+    }
+
+    /* Enhanced Card Styles */
+    .card {
+        transition: var(--transition);
+        border: none;
+        border-radius: var(--border-radius);
+    }
+
+    .card:hover {
+        box-shadow: var(--shadow-medium) !important;
+    }
+
+    /* Enhanced Badge Styles */
+    .badge {
+        transition: var(--transition);
+    }
+
+    .badge a {
+        text-decoration: none;
+    }
+
+    .badge a:hover {
+        opacity: 0.8;
+    }
+
+    /* Enhanced Search and Filter Styles */
+    .search-container {
+        max-width: 500px;
+        margin: 0 auto 30px;
+    }
+
+    .no-results {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: #6c757d;
+        display: none;
+        background: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow-soft);
+        animation: bounceIn 0.6s ease-out;
+    }
+
+    @keyframes bounceIn {
+        0% {
+            opacity: 0;
+            transform: scale(0.3);
+        }
+        50% {
+            opacity: 1;
+            transform: scale(1.05);
+        }
+        100% {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    .no-results i {
+        font-size: 4rem;
+        margin-bottom: 1.5rem;
+        color: #bdc3c7;
+        opacity: 0.7;
+    }
+
+    .no-results h4 {
+        color: #2c3e50;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        font-size: 1.5rem;
+    }
+
+    .no-results p {
+        color: #6c757d;
+        font-size: 1.125rem;
+    }
+
+    .results-count {
+        text-align: center;
+        margin-bottom: 20px;
+        color: #7f8c8d;
+        font-style: italic;
+        background: white;
+        padding: 1rem 2rem;
+        border-radius: 50px;
+        display: inline-block;
+        box-shadow: var(--shadow-soft);
+    }
+
+    .hidden {
+        display: none !important;
+    }
+
+    .filter-button-group {
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-bottom: 30px;
+    }
+
+    .bg-filter-btn {
+        background-color: #f8f9fa;
+        border: 2px solid #dee2e6;
+        color: #6c757d;
+        margin: 0 5px 10px;
+        border-radius: 25px;
+        padding: 10px 24px;
+        transition: var(--transition);
+        cursor: pointer;
+        font-weight: 500;
+    }
+
+    .bg-filter-btn:hover,
+    .bg-filter-btn.active {
+        background: var(--gradient-primary);
+        border-color: var(--primary);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3);
+    }
+
+    .portfolio-item {
+        margin-bottom: 30px;
+    }
+
+    /* Enhanced Pagination */
+    .page-link {
+        color: var(--primary);
+        border: 2px solid #dee2e6;
+        border-radius: 12px;
+        margin: 0 2px;
+        transition: var(--transition);
+        font-weight: 600;
+    }
+
+    .page-link:hover {
+        color: var(--primary-dark);
+        background-color: #e9ecef;
+        border-color: #dee2e6;
+        transform: translateY(-2px);
+    }
+
+    .page-item.active .page-link {
+        background: var(--gradient-primary);
+        border-color: var(--primary);
+        color: white;
+    }
+
+    /* Enhanced CTA Section */
+    .cta-section {
+        background: var(--gradient-primary);
+        color: white;
+        padding: 5rem 0;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .cta-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100" fill="%23ffffff" opacity="0.05"><polygon points="1000,0 1000,100 0,100"/></svg>');
+        background-size: cover;
+        animation: wave 15s linear infinite;
+    }
+
+    /* Enhanced Back Button */
+    .back-btn {
+        background: transparent;
+        border: 2px solid var(--primary);
+        color: var(--primary);
+        padding: 0.875rem 2rem;
+        border-radius: 50px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: var(--transition);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .back-btn:hover {
+        background: var(--primary);
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    /* Animation delays for cards */
+    .portfolio-item:nth-child(1) { animation-delay: 0.1s; }
+    .portfolio-item:nth-child(2) { animation-delay: 0.2s; }
+    .portfolio-item:nth-child(3) { animation-delay: 0.3s; }
+    .portfolio-item:nth-child(4) { animation-delay: 0.4s; }
+    .portfolio-item:nth-child(5) { animation-delay: 0.5s; }
+    .portfolio-item:nth-child(6) { animation-delay: 0.6s; }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .display-5 {
+            font-size: 2rem;
+        }
+        
+        .input-group {
+            flex-direction: column;
+        }
+        
+        .input-group .form-control {
+            border-radius: 0.375rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .input-group .btn {
+            border-radius: 0.375rem;
+            width: 100%;
+        }
+        
+        .col-6 {
+            flex: 0 0 auto;
+            width: 50%;
+        }
+
+        .stats-container {
+            gap: 1rem;
+        }
+
+        .stat-item {
+            min-width: 120px;
+            padding: 1rem;
+        }
+
+        .stat-number {
+            font-size: 1.5rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Page Title Section -->
+<div class="page-title light-background">
+    <div class="container">
+        <h1> Web Development</h1>
+        <nav class="breadcrumbs" data-aos="fade-right" data-aos-delay="100">
+            <ol>
+                <li><a href="{% url 'frontend_app:home' %}"><i class="fas fa-home"></i> Home</a></li>
+                <li><a href="{% url 'frontend_app:web_development' %}"><i class="fa-solid fa-laptop-code"></i> Web Development</a></li>
+                <li class="current">All Projects</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<!-- Portfolio Header Section -->
+<section class="portfolio-header">
+    <div class="container py-4">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-5 fw-bold text-primary mb-3">Web Development Portfolio</h1>
+                <p class="lead mb-4 text-primary">Explore our collection of custom web solutions, from e-commerce platforms to corporate websites and SaaS applications.</p>
+                
+                <!-- Project Statistics -->
+                <div class="stats-container">
+                    <div class="stat-item">
+                        <span class="stat-number">{{ total_projects }}+</span>
+                        <span class="stat-label">Projects Delivered</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">100%</span>
+                        <span class="stat-label">Client Satisfaction</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">5★</span>
+                        <span class="stat-label">Rated Quality</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <!-- Search and Filter Section -->
+                <div class="search-section">
+                    <!-- Search Box -->
+                    <div class="search-container">
+                        <div class="search-box">
+                            <input type="text" id="portfolioSearch" class="search-input" placeholder="Search projects by title, company, or category...">
+                            <button type="button" class="search-btn" id="searchButton">
+                                <i class="fas fa-search"></i> Search
+                            </button>
+                        </div>
+                    </div>
+                    <!-- Results Count -->
+                    <div class="results-count mt-3" id="resultsCount">
+                        Showing all {{ projects.paginator.count }} projects
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Portfolio Section -->
+<section id="portfolio" class="py-5">
+    <div class="container py-5">
+        <!-- Results Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h3 class="mb-1">Our Web Development Projects</h3>
+                <p class="text-muted mb-0">
+                    {% if active_category %}
+                        Showing projects in <strong>{{ active_category.title }}</strong>
+                    {% else %}
+                        Showing all web development projects
+                    {% endif %}
+                </p>
+            </div>
+            <div class="text-end">
+                <span class="badge bg-primary fs-6" id="projectCount">{{ projects.paginator.count }} Projects</span>
+                {% if active_category %}
+                <span class="badge bg-info fs-6 ms-2">Filtered</span>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Portfolio Grid -->
+        <div class="row portfolio-grid" id="portfolioGrid">
+            {% if projects %}
+                {% for project in projects %}
+                <div class="col-lg-4 col-md-6 portfolio-item 
+                    {% if project.category %}category-{{ project.category.slug|slugify }}{% endif %}"
+                    data-title="{{ project.title|lower }}"
+                    data-company="{{ project.company|lower }}"
+                    data-category="{% if project.category %}{{ project.category.title|lower }}{% else %}uncategorized{% endif %}"
+                    data-description="{{ project.description|lower }}">
+                    <div class="card border-0 shadow-sm h-100 bg-infotechs-portfolio-item overflow-hidden">
+                        {% if project.image %}
+                            <img src="{{ project.image.url }}" alt="{{ project.title }}" class="card-img-top bg-infotechs-portfolio-img">
+                        {% else %}
+                            <img src="https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2069&q=80" 
+                                 alt="{{ project.title }}" 
+                                 class="card-img-top bg-infotechs-portfolio-img">
+                        {% endif %}
+                        
+                        <div class="card-body position-relative">
+                            <!-- Company Logo and Category -->
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <div class="d-flex align-items-center">
+                                    {% if project.logo %}
+                                        <img src="{{ project.logo.url }}" alt="{{ project.company }} logo" class="rounded me-2" style="width: 30px; height: 30px; object-fit: contain;">
+                                    {% endif %}
+                                    <span class="text-muted small">{{ project.company }}</span>
+                                </div>
+                                {% if project.category %}
+                                    <span class="badge bg-light text-dark border small">{{ project.category.title }}</span>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Project Title and Description -->
+                            <h5 class="card-title fw-bold text-dark">{{ project.title }}</h5>
+                            <p class="card-text text-muted">{{ project.description|truncatewords:20 }}</p>
+                            
+                            <!-- Action Buttons -->
+                            <div class="d-flex justify-content-between align-items-center mt-3">
+                               
+                                <small class="text-muted">
+                                    <i class="fas fa-calendar me-1"></i>
+                                    {{ project.created_at|date:"M Y" }}
+                                </small>
+                            </div>
+                        </div>
+                        
+                        <!-- Hover Overlay -->
+                        <div class="bg-infotechs-portfolio-overlay d-flex align-items-center justify-content-center">
+                            <div class="text-center text-white">
+                                <h5 class="fw-bold mb-2">{{ project.title }}</h5>
+                                <p class="mb-2">{{ project.company }}</p>
+                                {% if project.category %}
+                                    <span class="badge bg-light text-dark mb-3">{{ project.category.title }}</span>
+                                {% endif %}
+                                <div class="mt-3">
+                                    {% if project.live_link %}
+                                        <a href="{{ project.live_link }}" target="_blank" class="btn btn-outline-light btn-sm rounded-pill px-3 me-2">
+                                            <i class="fas fa-external-link-alt me-1"></i> Live Demo
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <!-- No Projects Found -->
+                <div class="col-12 text-center py-5">
+                    <div class="mb-4">
+                        <i class="fas fa-folder-open display-1 text-muted"></i>
+                    </div>
+                    <h4 class="text-muted mb-3">No Projects Found</h4>
+                    <p class="text-muted mb-4">
+                        {% if search_query or active_category %}
+                            No projects match your current filters. Try adjusting your search criteria or category filter.
+                        {% else %}
+                            There are no web development projects to display at the moment.
+                        {% endif %}
+                    </p>
+                    {% if search_query or active_category %}
+                        <a href="{% url 'all_web_development' %}" class="btn bg-infotechs-btn-primary">
+                            View All Projects
+                        </a>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- No Results Message -->
+        <div class="no-results" id="noResults">
+            <i class="fas fa-search"></i>
+            <h4>No projects found</h4>
+            <p>Try adjusting your search or filter criteria</p>
+        </div>
+        
+        <!-- Pagination -->
+        {% if projects.paginator.num_pages > 1 %}
+        <div class="d-flex justify-content-center mt-5">
+            <nav aria-label="Project pagination">
+                <ul class="pagination">
+                    {% if projects.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page=1{% if search_query %}&search={{ search_query }}{% endif %}{% if category_filter %}&category={{ category_filter }}{% endif %}" aria-label="First">
+                                <i class="fas fa-angle-double-left"></i>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ projects.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if category_filter %}&category={{ category_filter }}{% endif %}" aria-label="Previous">
+                                <i class="fas fa-angle-left"></i>
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link"><i class="fas fa-angle-double-left"></i></span>
+                        </li>
+                        <li class="page-item disabled">
+                            <span class="page-link"><i class="fas fa-angle-left"></i></span>
+                        </li>
+                    {% endif %}
+
+                    {% for num in projects.paginator.page_range %}
+                        {% if projects.number == num %}
+                            <li class="page-item active">
+                                <span class="page-link">{{ num }}</span>
+                            </li>
+                        {% elif num > projects.number|add:'-3' and num < projects.number|add:'3' %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}{% if category_filter %}&category={{ category_filter }}{% endif %}">{{ num }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if projects.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ projects.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if category_filter %}&category={{ category_filter }}{% endif %}" aria-label="Next">
+                                <i class="fas fa-angle-right"></i>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ projects.paginator.num_pages }}{% if search_query %}&search={{ search_query }}{% endif %}{% if category_filter %}&category={{ category_filter }}{% endif %}" aria-label="Last">
+                                <i class="fas fa-angle-double-right"></i>
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link"><i class="fas fa-angle-right"></i></span>
+                        </li>
+                        <li class="page-item disabled">
+                            <span class="page-link"><i class="fas fa-angle-double-right"></i></span>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+        
+        <!-- Page Info -->
+        <div class="text-center mt-3">
+            <p class="text-muted">
+                Showing projects {{ projects.start_index }} - {{ projects.end_index }} of {{ projects.paginator.count }}
+                {% if active_category %}
+                    in {{ active_category.title }}
+                {% endif %}
+            </p>
+        </div>
+        {% endif %}
+
+        <!-- Back to Main Portfolio -->
+        <div class="text-center mt-5">
+            <a href="{% url 'frontend_app:web_development' %}" class="btn back-btn">
+                <i class="fas fa-arrow-left me-2"></i> Back to Web Development
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action Section -->
+<section class="py-5 bg-primary text-white">
+    <div class="container py-4">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h3 class="fw-bold mb-2">Ready to Start Your Web Development Project?</h3>
+                <p class="mb-0">Let's discuss how we can bring your ideas to life with our expertise in modern web technologies.</p>
+            </div>
+            <div class="col-lg-4 text-lg-end">
+                <a href="{% url 'frontend_app:contact' %}" class="btn btn-light btn-lg rounded-pill px-4">
+                    Start Your Project <i class="fas fa-arrow-right ms-2"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://unpkg.com/isotope-layout@3/dist/isotope.pkgd.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize Isotope
+    var grid = document.querySelector('.portfolio-grid');
+    var iso;
+    
+    if (grid) {
+        iso = new Isotope(grid, {
+            itemSelector: '.portfolio-item',
+            layoutMode: 'fitRows',
+            percentPosition: true,
+            fitRows: {
+                gutter: 20
+            }
+        });
+
+        // Filter buttons functionality
+        var filterButtons = document.querySelectorAll('.filter-button-group .btn');
+        
+        filterButtons.forEach(function(button) {
+            button.addEventListener('click', function() {
+                // Remove active class from all buttons
+                filterButtons.forEach(function(btn) {
+                    btn.classList.remove('active');
+                });
+                
+                // Add active class to clicked button
+                this.classList.add('active');
+                
+                // Get filter value
+                var filterValue = this.getAttribute('data-filter');
+                
+                // Filter items
+                iso.arrange({
+                    filter: filterValue
+                });
+                
+                // Update results count
+                updateResultsCount();
+            });
+        });
+    }
+
+    // Search functionality
+    var searchInput = document.getElementById('portfolioSearch');
+    var searchButton = document.getElementById('searchButton');
+    var noResults = document.getElementById('noResults');
+    var resultsCount = document.getElementById('resultsCount');
+    var projectCount = document.getElementById('projectCount');
+    var portfolioItems = document.querySelectorAll('.portfolio-item');
+
+    function performSearch() {
+        var searchTerm = searchInput.value.toLowerCase().trim();
+        var visibleCount = 0;
+        
+        portfolioItems.forEach(function(item) {
+            var title = item.getAttribute('data-title') || '';
+            var company = item.getAttribute('data-company') || '';
+            var category = item.getAttribute('data-category') || '';
+            var description = item.getAttribute('data-description') || '';
+            
+            var matchesSearch = searchTerm === '' || 
+                title.includes(searchTerm) || 
+                company.includes(searchTerm) || 
+                category.includes(searchTerm) ||
+                description.includes(searchTerm);
+            
+            // Get current active filter
+            var activeFilter = document.querySelector('.filter-button-group .btn.active');
+            var currentFilter = activeFilter ? activeFilter.getAttribute('data-filter') : '*';
+            var matchesFilter = currentFilter === '*' || item.classList.contains(currentFilter.replace('.', ''));
+            
+            if (matchesSearch && matchesFilter) {
+                item.style.display = 'block';
+                visibleCount++;
+            } else {
+                item.style.display = 'none';
+            }
+        });
+        
+        // Update Isotope layout if it exists
+        if (iso) {
+            iso.arrange();
+        }
+        
+        // Show/hide no results message
+        if (visibleCount === 0 && portfolioItems.length > 0) {
+            noResults.style.display = 'block';
+        } else {
+            noResults.style.display = 'none';
+        }
+        
+        // Update results count
+        updateResultsCount();
+    }
+
+    function updateResultsCount() {
+        var searchTerm = searchInput.value.toLowerCase().trim();
+        var visibleItems = document.querySelectorAll('.portfolio-item[style="display: block"]');
+        var totalItems = portfolioItems.length;
+        var visibleCount = visibleItems.length;
+        
+        if (searchTerm === '') {
+            var activeFilter = document.querySelector('.filter-button-group .btn.active');
+            var currentFilter = activeFilter ? activeFilter.getAttribute('data-filter') : '*';
+            
+            if (currentFilter === '*') {
+                resultsCount.textContent = 'Showing all ' + totalItems + ' projects';
+                projectCount.textContent = totalItems + ' Projects';
+            } else {
+                resultsCount.textContent = 'Showing ' + visibleCount + ' of ' + totalItems + ' projects';
+                projectCount.textContent = visibleCount + ' Projects';
+            }
+        } else {
+            resultsCount.textContent = 'Found ' + visibleCount + ' project' + (visibleCount !== 1 ? 's' : '') + ' for "' + searchTerm + '"';
+            projectCount.textContent = visibleCount + ' Projects';
+        }
+    }
+
+    // Event listeners for search
+    searchInput.addEventListener('input', performSearch);
+    searchButton.addEventListener('click', performSearch);
+    
+    // Clear search when filter changes
+    filterButtons.forEach(function(button) {
+        button.addEventListener('click', function() {
+            performSearch();
+        });
+    });
+
+    // Initialize
+    updateResultsCount();
+
+    // Add intersection observer for animations
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0) scale(1)';
+            }
+        });
+    }, observerOptions);
+
+    // Observe portfolio items for scroll animations
+    document.querySelectorAll('.portfolio-item').forEach(item => {
+        observer.observe(item);
+    });
+});
+</script>
+{% endblock %}

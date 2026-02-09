@@ -1,0 +1,135 @@
+<!-- FAQ_app/templates/faq/faq_detail.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Breadcrumb -->
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="">Home</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">FAQ Detail</li>
+                </ol>
+            </nav>
+
+            <!-- FAQ Card -->
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-primary text-white">
+                    <h1 class="h4 mb-0">
+                        <i class="fas fa-question-circle me-2"></i>{{ faq.question }}
+                    </h1>
+                </div>
+                <div class="card-body">
+                    <!-- FAQ Meta Information -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <small class="text-muted">
+                                <i class="fas fa-calendar me-1"></i>
+                                Published: {{ faq.published_at|date:"F d, Y" }}
+                            </small>
+                        </div>
+                        <div class="col-md-6 text-md-end">
+                            <small class="text-muted">
+                                <i class="fas fa-user me-1"></i>
+                                Author: {{ faq.author.get_full_name|default:faq.author.username }}
+                            </small>
+                        </div>
+                    </div>
+
+                    <!-- FAQ Answer -->
+                    <div class="faq-answer mb-4">
+                        {{ faq.answer|safe }}
+                    </div>
+
+                    <!-- Back to FAQs Button -->
+                    <div class="text-center mt-4">
+                        <a href="{% url 'faq_app:faq_list' %}" class="btn btn-primary">
+                            <i class="fas fa-arrow-left me-2"></i>Back to FAQs
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SEO Meta Information (hidden) -->
+            <div class="d-none">
+                <meta name="description" content="{{ faq.meta_description }}">
+                <meta name="keywords" content="FAQ, question, answer, {{ faq.question }}">
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.faq-answer {
+    line-height: 1.6;
+    font-size: 1.1rem;
+}
+
+.faq-answer h1, .faq-answer h2, .faq-answer h3, .faq-answer h4, .faq-answer h5, .faq-answer h6 {
+    color: #2c3e50;
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.faq-answer p {
+    margin-bottom: 1rem;
+}
+
+.faq-answer ul, .faq-answer ol {
+    margin-bottom: 1rem;
+    padding-left: 2rem;
+}
+
+.faq-answer blockquote {
+    border-left: 4px solid #007bff;
+    padding-left: 1rem;
+    margin-left: 0;
+    font-style: italic;
+    color: #6c757d;
+}
+
+.faq-answer table {
+    width: 100%;
+    margin-bottom: 1rem;
+    border-collapse: collapse;
+}
+
+.faq-answer table th,
+.faq-answer table td {
+    padding: 0.75rem;
+    border: 1px solid #dee2e6;
+}
+
+.faq-answer table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+}
+
+.card {
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.card-header {
+    border-radius: 0 !important;
+}
+
+.breadcrumb {
+    background-color: transparent;
+    padding: 0;
+}
+
+.breadcrumb-item a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.breadcrumb-item.active {
+    color: #6c757d;
+}
+</style>
+{% endblock %}

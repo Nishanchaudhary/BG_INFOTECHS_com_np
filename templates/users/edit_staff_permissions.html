@@ -1,0 +1,114 @@
+<!-- edit_staff_permissions.html -->
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Edit Permissions {% endblock %}
+{% block page_title %}Edit Staff Permissions{% endblock %}
+{% block breadcrumb_active %}Edit Permissions{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-edit me-2"></i>Edit Permissions for {{ staff_user.get_full_name|default:staff_user.username }}
+                </h5>
+            </div>
+            <div class="card-body">
+                
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="card mb-4">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0">Available Permissions</h6>
+                                </div>
+                                <div class="card-body">
+                                    {% if form.errors %}
+                                    <div class="alert alert-danger">
+                                        Please correct the errors below.
+                                    </div>
+                                    {% endif %}
+                                    
+                                    <div class="row">
+                                        <!-- Manual approach for permissions -->
+                                        {% for permission in all_permissions %}
+                                        <div class="col-md-6 mb-3">
+                                            <div class="form-check">
+                                                <input type="checkbox" name="permission_{{ permission.id }}" id="permission_{{ permission.id }}" 
+                                                       class="form-check-input" {% if permission in staff_user.custom_permissions.all %}checked{% endif %}>
+                                                <label class="form-check-label" for="permission_{{ permission.id }}">
+                                                    {{ permission.name }} - {{ permission.get_codename_display }}
+                                                </label>
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <div class="card">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0">Staff Information</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="text-center mb-3">
+                                        {% if staff_user.profile_picture %}
+                                        <img src="{{ staff_user.profile_picture.url }}" alt="{{ staff_user.username }}" class="rounded-circle" width="100" height="100">
+                                        {% else %}
+                                        <div class="bg-secondary rounded-circle mx-auto d-flex align-items-center justify-content-center" style="width: 100px; height: 100px;">
+                                            <i class="fas fa-user fa-2x text-white"></i>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <h6 class="text-center">{{ staff_user.get_full_name|default:staff_user.username }}</h6>
+                                    <p class="text-center text-muted mb-2">{{ staff_user.email }}</p>
+                                    
+                                    {% if staff_user.staff_profile %}
+                                    <div class="border-top pt-2 mt-2">
+                                        <small class="text-muted">Department:</small>
+                                        <p class="mb-1">{{ staff_user.staff_profile.department }}</p>
+                                        
+                                        <small class="text-muted">Position:</small>
+                                        <p class="mb-0">{{ staff_user.staff_profile.position }}</p>
+                                    </div>
+                                    {% endif %}
+                                    
+                                    <div class="border-top pt-2 mt-2">
+                                        <small class="text-muted">Current Permissions:</small>
+                                        {% if staff_user.custom_permissions.all %}
+                                        <ul class="list-unstyled mb-0">
+                                            {% for perm in staff_user.custom_permissions.all %}
+                                            <li><small class="text-success">✓ {{ perm.name }}</small></li>
+                                            {% endfor %}
+                                        </ul>
+                                        {% else %}
+                                        <p class="text-muted mb-0"><small>No permissions assigned</small></p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i> Update Permissions
+                            </button>
+                            <a href="{% url 'bg_app:staff_permissions' %}" class="btn btn-secondary">
+                                <i class="fas fa-times me-1"></i> Cancel
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

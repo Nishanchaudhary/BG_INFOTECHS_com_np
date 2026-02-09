@@ -1,0 +1,655 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="card border-dark">
+        <div class="card-header bg-success text-white border-dark">
+            <h5 class="card-title mb-0">
+                <i class="fas fa-users me-2"></i>{{ page_title }}
+            </h5>
+        </div>
+        <div class="card-body p-0">
+            <!-- Loading Overlay -->
+            <div id="loading-overlay" style="display: none;">
+                <div class="d-flex justify-content-center align-items-center" style="height: 200px;">
+                    <div class="spinner-border text-success" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <span class="ms-2">Loading subscribers...</span>
+                </div>
+            </div>
+            
+            <!-- DataTable -->
+            <div class="table-responsive">
+                <table id="subscribers-table" class="table table-hover table-striped table-bordered border-dark" style="width:100%; margin:0;">
+                    <thead class="table-success border-dark">
+                        <tr>
+                            <th style="border: 1px solid #000; border-bottom: 2px solid #000; padding: 12px; text-align: center;">ID</th>
+                            <th style="border: 1px solid #000; border-bottom: 2px solid #000; padding: 12px; text-align: center;">Name/Business</th>
+                            <th style="border: 1px solid #000; border-bottom: 2px solid #000; padding: 12px; text-align: center;">Email</th>
+                            <th style="border: 1px solid #000; border-bottom: 2px solid #000; padding: 12px; text-align: center;">Phone Number</th>
+                            <th style="border: 1px solid #000; border-bottom: 2px solid #000; padding: 12px; text-align: center;">Package</th>
+                            <th style="border: 1px solid #000; border-bottom: 2px solid #000; padding: 12px; text-align: center;">Created At</th>
+                            <th style="border: 1px solid #000; border-bottom: 2px solid #000; padding: 12px; text-align: center;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="table-light border-dark">
+                        <!-- Data will be loaded via AJAX -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Container -->
+<div id="toastContainer" class="toast-container position-fixed top-0 end-0 p-3"></div>
+{% endblock %}
+
+{% block extra_css %}
+<!-- DataTables CSS -->
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.bootstrap5.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.4.1/css/responsive.bootstrap5.min.css">
+
+<style>
+#subscribers-table {
+    border: 2px solid #000 !important;
+    border-collapse: separate !important;
+    background-color: white;
+}
+
+#subscribers-table th,
+#subscribers-table td {
+    border: 1px solid #000 !important;
+    vertical-align: middle !important;
+    padding: 12px 8px !important;
+}
+
+#subscribers-table thead th {
+    border-bottom: 2px solid #000 !important;
+    background-color: #7bf0bb !important;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+#loading-overlay {
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 5px;
+    display: none !important;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1000;
+}
+
+/* DataTables processing indicator styling */
+.dataTables_processing {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    border-radius: 5px;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    z-index: 1000;
+}
+
+/* Make sure the processing indicator is visible */
+div.dataTables_processing {
+    color: #000 !important;
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+#subscribers-table tbody tr {
+    border-bottom: 1px solid #000 !important;
+}
+
+.badge {
+    font-size: 0.75em;
+    margin: 1px;
+}
+
+.btn-group-vertical .btn {
+    margin-bottom: 2px;
+}
+
+.dt-buttons {
+    margin-bottom: 10px;
+}
+
+.dt-button {
+    margin-right: 5px;
+    margin-bottom: 5px;
+}
+
+/* Toast styling */
+.toast {
+    background-color: rgba(255, 255, 255, 0.95);
+    border-left: 4px solid;
+}
+
+.toast-success {
+    border-left-color: #28a745;
+}
+
+.toast-error {
+    border-left-color: #dc3545;
+}
+
+.toast-info {
+    border-left-color: #17a2b8;
+}
+
+/* Print optimization */
+@media print {
+    .dt-buttons, .dataTables_filter, .dataTables_length, .dataTables_info, 
+    .dataTables_paginate, .btn, .actions-column, .card-header {
+        display: none !important;
+    }
+    
+    body {
+        background: white !important;
+        color: black !important;
+        font-size: 12px !important;
+    }
+    
+    .container-fluid {
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    
+    .card {
+        border: none !important;
+        box-shadow: none !important;
+    }
+    
+    .card-body {
+        padding: 0 !important;
+    }
+    
+    #subscribers-table {
+        border: 1px solid #000 !important;
+        font-size: 10px;
+        width: 100% !important;
+        border-collapse: collapse !important;
+    }
+    
+    #subscribers-table th,
+    #subscribers-table td {
+        border: 1px solid #000 !important;
+        padding: 4px 3px !important;
+        font-size: 9px;
+    }
+    
+    #subscribers-table thead th {
+        background-color: #7bf0bb !important;
+        border-bottom: 2px solid #000 !important;
+        font-weight: bold;
+    }
+    
+    .table-responsive {
+        overflow: visible !important;
+    }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    #subscribers-table th,
+    #subscribers-table td {
+        padding: 8px 4px !important;
+        font-size: 0.85rem;
+    }
+}
+
+/* Export button styling */
+.dt-buttons .btn {
+    font-size: 0.875rem;
+    padding: 0.375rem 0.75rem;
+}
+
+/* DataTables export wrapper */
+.dt-button-collection {
+    background-color: white;
+    border: 1px solid #dee2e6;
+    border-radius: 0.375rem;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.dt-button-collection .dt-button {
+    margin: 2px;
+    display: block;
+    width: calc(100% - 4px);
+}
+
+/* Print-specific styles */
+.print-only {
+    display: none;
+}
+
+@media print {
+    .print-only {
+        display: block;
+    }
+    
+    .no-print {
+        display: none !important;
+    }
+}
+
+/* Email styling */
+.email-cell {
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Phone number styling */
+.phone-cell {
+    font-family: monospace;
+    font-weight: bold;
+}
+
+/* Row numbering */
+.row-number {
+    font-weight: bold;
+    color: #495057;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<!-- DataTables JS -->
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.bootstrap5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.print.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+
+<script>
+// CSRF token function for Django
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+// Toast notification function
+function showToast(message, type = 'info') {
+    const toastId = 'toast-' + Date.now();
+    const toastHtml = `
+        <div id="${toastId}" class="toast" role="alert">
+            <div class="toast-header">
+                <strong class="me-auto">Notification</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+            </div>
+            <div class="toast-body">
+                ${message}
+            </div>
+        </div>
+    `;
+    
+    $('#toastContainer').append(toastHtml);
+    const toastElement = document.getElementById(toastId);
+    const toast = new bootstrap.Toast(toastElement);
+    
+    // Add background color based on type
+    if (type === 'success') {
+        $(toastElement).addClass('toast-success');
+    } else if (type === 'error') {
+        $(toastElement).addClass('toast-error');
+    } else {
+        $(toastElement).addClass('toast-info');
+    }
+    
+    toast.show();
+    
+    // Remove toast from DOM after it's hidden
+    toastElement.addEventListener('hidden.bs.toast', function() {
+        $(this).remove();
+    });
+}
+
+// Function to strip HTML tags and get clean text
+function stripHtml(html) {
+    if (!html) return '';
+    
+    // Create a temporary div element
+    const tmp = document.createElement("div");
+    tmp.innerHTML = html;
+    
+    // Get text content
+    const text = tmp.textContent || tmp.innerText || '';
+    
+    // Clean up the text - remove extra whitespace and trim
+    return text.replace(/\s+/g, ' ').trim();
+}
+
+$(document).ready(function() {
+    // Show loading overlay initially
+    $('#loading-overlay').show();
+    
+    // Counter for row numbers
+    let rowCounter = 0;
+    
+    var table = $('#subscribers-table').DataTable({
+        "processing": true,
+        "serverSide": true,
+        "ajax": {
+            "url": "{% url 'package_app:planSubscriber_datatable_api' %}",
+            "type": "GET",
+            "dataType": "json",
+            "dataSrc": function(json) {
+                // Hide loading overlay when data is loaded
+                $('#loading-overlay').hide();
+                // Reset row counter for each data load
+                rowCounter = 0;
+                return json.data;
+            },
+            "error": function(xhr, error, code) {
+                $('#loading-overlay').hide();
+                console.log('AJAX Error:', xhr.responseText);
+                showToast('Error loading subscribers. Please try again.', 'error');
+            }
+        },
+        "columns": [
+            {
+                "data": null,
+                "className": "text-center row-number",
+                "orderable": false,
+                "searchable": false,
+                "render": function(data, type, row, meta) {
+                    // Calculate row number based on current page and position
+                    if (type === 'display' || type === 'filter') {
+                        return meta.row + meta.settings._iDisplayStart + 1;
+                    }
+                    return meta.row + 1;
+                }
+            },
+            {
+                "data": "name", 
+                "name": "name_business_name", 
+                "className": "text-center",
+                "render": function(data, type, row) {
+                    if (type === 'print' || type === 'export') {
+                        return stripHtml(data);
+                    }
+                    return data || '-';
+                }
+            },
+            {
+                "data": "email", 
+                "name": "email", 
+                "className": "text-center email-cell",
+                "render": function(data, type, row) {
+                    if (type === 'print' || type === 'export') {
+                        return stripHtml(data);
+                    }
+                    return data || '-';
+                }
+            },
+            {
+                "data": "phone_number", 
+                "name": "phone_number", 
+                "className": "text-center phone-cell",
+                "render": function(data, type, row) {
+                    if (type === 'print' || type === 'export') {
+                        return stripHtml(data);
+                    }
+                    return data || '-';
+                }
+            },
+            {
+                "data": "package", 
+                "name": "package__title", 
+                "className": "text-center",
+                "render": function(data, type, row) {
+                    if (type === 'print' || type === 'export') {
+                        return stripHtml(data);
+                    }
+                    return data || '-';
+                }
+            },
+            {
+                "data": "created_at", 
+                "name": "created_at", 
+                "className": "text-center",
+                "render": function(data, type, row) {
+                    if (type === 'print' || type === 'export') {
+                        return stripHtml(data);
+                    }
+                    return data || '-';
+                }
+            },
+            {
+                "data": "actions", 
+                "name": "actions", 
+                "className": "text-center actions-column", 
+                "orderable": false, 
+                "searchable": false,
+                "render": function(data, type, row) {
+                    // Hide actions in print and export
+                    if (type === 'print' || type === 'export') {
+                        return '';
+                    }
+                    return data || '<span class="text-muted">No actions</span>';
+                }
+            }
+        ],
+        "order": [[1, 'desc']], // Default sort by created date (column index 1 after adding row numbers)
+        "pageLength": 10,
+        "responsive": true,
+        "dom": '<"row"<"col-sm-12 col-md-6"B><"col-sm-12 col-md-6"f>>rtip',
+        "buttons": [
+            {
+                extend: 'copy',
+                text: '<i class="fas fa-copy"></i> Copy',
+                className: 'btn btn-secondary btn-sm',
+                title: 'Plan Subscribers List',
+                exportOptions: {
+                    columns: [0, 1, 2, 3, 4, 5],
+                    format: {
+                        body: function (data, row, column, node) {
+                            return stripHtml(data);
+                        }
+                    }
+                },
+                messageTop: 'Plan Subscribers List - Generated on: ' + new Date().toLocaleDateString()
+            },
+            {
+                extend: 'excel',
+                text: '<i class="fas fa-file-excel"></i> Excel',
+                className: 'btn btn-success btn-sm',
+                title: 'Plan Subscribers List',
+                filename: 'plan_subscribers_' + new Date().toISOString().slice(0, 10),
+                exportOptions: {
+                    columns: [0, 1, 2, 3, 4, 5],
+                    format: {
+                        body: function (data, row, column, node) {
+                            return stripHtml(data);
+                        }
+                    }
+                },
+                messageTop: 'Plan Subscribers List - Generated on: ' + new Date().toLocaleDateString()
+            },
+            {
+                extend: 'pdf',
+                text: '<i class="fas fa-file-pdf"></i> PDF',
+                className: 'btn btn-danger btn-sm',
+                title: 'Plan Subscribers List',
+                filename: 'plan_subscribers_' + new Date().toISOString().slice(0, 10),
+                exportOptions: {
+                    columns: [0, 1, 2, 3, 4, 5],
+                    format: {
+                        body: function (data, row, column, node) {
+                            return stripHtml(data);
+                        }
+                    }
+                },
+                customize: function(doc) {
+                    doc.defaultStyle.fontSize = 10;
+                    doc.styles.tableHeader.fontSize = 11;
+                    doc.styles.tableHeader.fillColor = '#7bf0bb';
+                    doc.pageMargins = [10, 40, 10, 10];
+                    doc.content[1].table.widths = ['8%', '22%', '20%', '15%', '20%', '15%'];
+                    
+                    // Add header with date
+                    doc.content.splice(0, 0, {
+                        text: 'Plan Subscribers List - Generated on: ' + new Date().toLocaleDateString(),
+                        style: 'header',
+                        margin: [10, 10, 10, 10]
+                    });
+                    
+                    // Define styles
+                    doc.styles.header = {
+                        fontSize: 12,
+                        bold: true,
+                        alignment: 'center',
+                        margin: [0, 0, 0, 10]
+                    };
+                }
+            },
+            {
+                extend: 'print',
+                text: '<i class="fas fa-print"></i> Print',
+                className: 'btn btn-info btn-sm',
+                title: '',
+                autoPrint: true,
+                exportOptions: {
+                    columns: [0, 1, 2, 3, 4, 5],
+                    format: {
+                        body: function (data, row, column, node) {
+                            return stripHtml(data);
+                        }
+                    }
+                },
+                customize: function(win) {
+                    // Remove default title
+                    $(win.document.body).find('h1').remove();
+                    
+                    // Add custom header
+                    $(win.document.body).prepend(
+                        '<div class="print-only" style="text-align: center; margin-bottom: 20px;">' +
+                        '<h2 style="margin-bottom: 10px; color: #000;">Plan Subscribers List</h2>' +
+                        '<p style="margin-bottom: 5px; color: #000;">Generated on: ' + new Date().toLocaleDateString() + '</p>' +
+                        '</div>'
+                    );
+
+                    // Add print styles
+                    $(win.document.body).find('table').css({
+                        'width': '100%',
+                        'border-collapse': 'collapse'
+                    });
+
+                    // Add page break support
+                    $(win.document.body).css('background', 'white');
+                }
+            }
+        ],
+        "language": {
+            "search": "Search:",
+            "lengthMenu": "Show _MENU_ entries",
+            "info": "Showing _START_ to _END_ of _TOTAL_ entries",
+            "infoEmpty": "Showing 0 to 0 of 0 entries",
+            "infoFiltered": "(filtered from _MAX_ total entries)",
+            "zeroRecords": "No matching subscribers found",
+            "emptyTable": "No subscribers available",
+            "processing": '<div class="spinner-border text-success" role="status"><span class="visually-hidden">Loading...</span></div> Processing...',
+            "paginate": {
+                "first": "First",
+                "last": "Last",
+                "next": "Next",
+                "previous": "Previous"
+            }
+        },
+        "initComplete": function() {
+            // Add custom CSS to search box
+            $('.dataTables_filter input').addClass('form-control form-control-sm')
+                .attr('placeholder', 'Search by name, email, phone, or package...')
+                .css('width', '300px');
+                
+            // Hide loading overlay after initialization
+            $('#loading-overlay').hide();
+        },
+        "drawCallback": function(settings) {
+            // Initialize tooltips after each draw
+            $('[data-bs-toggle="tooltip"]').tooltip();
+        }
+    });
+
+    // Handle delete button clicks using event delegation
+    $(document).on('click', '.delete-btn', function(e) {
+        e.preventDefault();
+        var deleteUrl = $(this).attr('href');
+        var subscriberName = $(this).closest('tr').find('td:nth-child(2)').text();
+        
+        if (confirm('Are you sure you want to delete the subscriber "' + subscriberName + '"?')) {
+            // Show loading
+            $('#loading-overlay').show();
+            
+            // Perform delete via AJAX
+            $.ajax({
+                url: deleteUrl,
+                type: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                success: function(response) {
+                    $('#loading-overlay').hide();
+                    table.ajax.reload(null, false);
+                    showToast('Subscriber deleted successfully!', 'success');
+                },
+                error: function(xhr, status, error) {
+                    $('#loading-overlay').hide();
+                    var errorMsg = 'Error deleting subscriber.';
+                    if (xhr.responseJSON && xhr.responseJSON.error) {
+                        errorMsg = xhr.responseJSON.error;
+                    }
+                    showToast(errorMsg, 'error');
+                    console.error('Delete error:', error, xhr.responseText);
+                }
+            });
+        }
+        
+        return false;
+    });
+
+    // Custom styling for buttons
+    $('.dt-buttons').addClass('btn-group');
+    $('.dt-button').addClass('btn btn-sm');
+    
+    // Handle window resize for responsive layout
+    $(window).on('resize', function() {
+        table.columns.adjust().responsive.recalc();
+    });
+});
+</script>
+{% endblock %}

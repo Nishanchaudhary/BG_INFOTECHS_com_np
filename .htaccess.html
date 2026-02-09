@@ -1,0 +1,21 @@
+# php --BEGIN cPanel-generated handler, do not edit
+# Set the “ea-php72” package as the default “PHP” programming language.
+<IfModule mime_module>
+    AddHandler application/x-httpd-ea-php72 .php .php7 .phtml
+</IfModule>
+
+# php --END cPanel-generated handler, do not edit
+# Do Not REMOVE. CLOUDLINUX PASSENGER CONFIGURATIONBEGIN
+
+PassengerAppRoot "/home2/bginfotechscom/project_bg"
+PassengerBaseURI "/"
+PassengerPython "/home2/bginfotechscom/virtualenv/project_bg/3.13/bin/python3.13"
+PassengerAppLogFile "/home2/bginfotechscom/logs/passenger.log"
+
+#DO NOT REMOVE. CLOUDLINUX PASSEMGER CONFIGURATION END 
+#DO NOT REMOVE OR MODIFY. CLOUDLINUX ENV VARS CONFIGURATION BEGIN
+
+<IfModule Litespeed></IfModule>
+
+  <!-- Favicons -->
+  <link type="image/png" href="{% static 'img/android-chrome-512x512.png' %}" style="width: 100%; height: 100%; " rel="icon">

@@ -1,0 +1,211 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8">
+            <div class="card border-danger shadow-lg">
+                <div class="card-header bg-danger text-white border-danger">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-exclamation-triangle me-2"></i>{{ page_title }}
+                    </h5>
+                </div>
+                
+                <div class="card-body p-4 text-center">
+                    <!-- Warning Icon -->
+                    <div class="mb-4">
+                        <i class="fas fa-trash-alt fa-4x text-danger mb-3"></i>
+                        <h4 class="text-danger">Confirm Deletion</h4>
+                    </div>
+
+                    <!-- FAQ Details -->
+                    <div class="alert alert-warning border-warning">
+                        <div class="d-flex align-items-start">
+                            <i class="fas fa-question-circle fa-lg text-warning me-3 mt-1"></i>
+                            <div class="text-start">
+                                <h6 class="alert-heading mb-2">You are about to delete the following FAQ:</h6>
+                                <p class="mb-1"><strong>Question:</strong> {{ faq.question }}</p>
+                                <p class="mb-1"><strong>Service:</strong> {{ faq.service.name }}</p>
+                                <p class="mb-1"><strong>Status:</strong> 
+                                    <span class="badge 
+                                        {% if faq.status == 'published' %}bg-success
+                                        {% elif faq.status == 'draft' %}bg-secondary
+                                        {% else %}bg-warning{% endif %}">
+                                        {{ faq.get_status_display }}
+                                    </span>
+                                </p>
+                                <p class="mb-0"><strong>Created:</strong> {{ faq.created_at|date:"M d, Y" }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Warning Message -->
+                    <div class="alert alert-danger border-danger">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-exclamation-circle fa-lg me-3"></i>
+                            <div class="text-start">
+                                <strong>Warning:</strong> This action cannot be undone. 
+                                All data associated with this FAQ will be permanently deleted.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <form method="post" class="mt-4">
+                        {% csrf_token %}
+                        <div class="d-flex gap-3 justify-content-center">
+                            <a href="{% url 'company_app:services_faq_list' %}" class="btn btn-outline-secondary btn-lg px-4">
+                                <i class="fas fa-arrow-left me-2"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-danger btn-lg px-4">
+                                <i class="fas fa-trash me-2"></i>Delete FAQ
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- Additional Info -->
+                    <div class="mt-4 text-muted">
+                        <small>
+                            <i class="fas fa-lightbulb me-1"></i>
+                            Consider archiving instead of deleting if you might need this information later.
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Related Information Card -->
+            <div class="card border-info mt-4">
+                <div class="card-header bg-info text-white">
+                    <h6 class="mb-0">
+                        <i class="fas fa-info-circle me-2"></i>Need Help?
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-md-4 mb-3">
+                            <i class="fas fa-archive fa-2x text-warning mb-2"></i>
+                            <h6>Archive Instead</h6>
+                            <small class="text-muted">Change status to archived instead of deleting</small>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <i class="fas fa-edit fa-2x text-primary mb-2"></i>
+                            <h6>Edit FAQ</h6>
+                            <small class="text-muted">Make changes instead of deleting</small>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <i class="fas fa-history fa-2x text-secondary mb-2"></i>
+                            <h6>View History</h6>
+                            <small class="text-muted">Check when this FAQ was created</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.card {
+    border-width: 2px !important;
+}
+
+.btn {
+    font-weight: 500;
+    transition: all 0.3s ease;
+    min-width: 140px;
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+    border: none;
+}
+
+.btn-danger:hover {
+    background: linear-gradient(135deg, #c82333 0%, #a71e2a 100%);
+    transform: translateY(-1px);
+}
+
+.alert {
+    border: none;
+    border-left: 4px solid;
+}
+
+.alert-warning {
+    border-left-color: #ffc107;
+    background-color: #fffef0;
+}
+
+.alert-danger {
+    border-left-color: #dc3545;
+    background-color: #fff5f5;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .card-body {
+        padding: 1.5rem !important;
+    }
+    
+    .btn-lg {
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
+    }
+    
+    .d-flex.gap-3 {
+        flex-direction: column;
+        gap: 1rem !important;
+    }
+    
+    .d-flex.gap-3 .btn {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+    
+    .fa-4x {
+        font-size: 3em;
+    }
+}
+
+/* Hover effects */
+.card:hover {
+    transform: translateY(-2px);
+    transition: transform 0.3s ease;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    // Add confirmation for delete button
+    $('form').on('submit', function(e) {
+        const btn = $(this).find('button[type="submit"]');
+        btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-2"></i>Deleting...');
+    });
+
+    // Cancel button go back to previous page
+    $('.btn-outline-secondary').on('click', function(e) {
+        e.preventDefault();
+        window.history.back();
+    });
+
+    // Add some interactive elements
+    $('.alert-warning').hover(
+        function() {
+            $(this).css('transform', 'scale(1.02)');
+        },
+        function() {
+            $(this).css('transform', 'scale(1)');
+        }
+    );
+});
+</script>
+{% endblock %}

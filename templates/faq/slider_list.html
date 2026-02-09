@@ -1,0 +1,860 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="card border-dark">
+        <div class="card-header bg-success text-white border-dark d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0">
+                <i class="fas fa-images me-2"></i>{{ page_title }}
+            </h5>
+            {% if can_add_slider %}
+            <a href="{% url 'faq_app:slider_create' %}" class="btn btn-light btn-sm">
+                <i class="fas fa-plus me-1"></i>Add Slider
+            </a>
+            {% endif %}
+        </div>
+        <div class="card-body p-0">
+            <!-- DataTable -->
+            <div class="table-responsive">
+                <table id="sliders-table" class="table table-hover table-striped table-bordered border-dark" style="width:100%; margin:0;">
+                    <thead class="table-success border-dark">
+                        <tr>
+                            <th style="border: 1px solid #000; border-bottom: 2px solid #000; padding: 12px; text-align: center;">Title & Description</th>
+                            <th style="border: 1px solid #000; border-bottom: 2px solid #000; padding: 12px; text-align: center;">Image</th>
+                            <th style="border: 1px solid #000; border-bottom: 2px solid #000; padding: 12px; text-align: center;">Status</th>
+                            <th style="border: 1px solid #000; border-bottom: 2px solid #000; padding: 12px; text-align: center;">Current Status</th>
+                            <th style="border: 1px solid #000; border-bottom: 2px solid #000; padding: 12px; text-align: center;">Order</th>
+                            <th style="border: 1px solid #000; border-bottom: 2px solid #000; padding: 12px; text-align: center;">Link</th>
+                            <th style="border: 1px solid #000; border-bottom: 2px solid #000; padding: 12px; text-align: center;">Author</th>
+                            <th style="border: 1px solid #000; border-bottom: 2px solid #000; padding: 12px; text-align: center;">Created</th>
+                            <th style="border: 1px solid #000; border-bottom: 2px solid #000; padding: 12px; text-align: center;">Start Date</th>
+                            <th style="border: 1px solid #000; border-bottom: 2px solid #000; padding: 12px; text-align: center;">End Date</th>
+                            <th style="border: 1px solid #000; border-bottom: 2px solid #000; padding: 12px; text-align: center;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="table-light border-dark">
+                        <!-- Data will be loaded via AJAX -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Custom Modal for Mobile Responsive View -->
+<div class="modal fade" id="responsiveModal" tabindex="-1" aria-labelledby="responsiveModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title" id="responsiveModalLabel">Slider Details</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="responsiveModalBody">
+                <!-- Content will be populated dynamically -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<!-- DataTables CSS -->
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.bootstrap5.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.4.1/css/responsive.bootstrap5.min.css">
+
+<style>
+#sliders-table {
+    border: 2px solid #000 !important;
+    border-collapse: separate !important;
+    background-color: white;
+}
+
+#sliders-table th,
+#sliders-table td {
+    border: 1px solid #000 !important;
+    vertical-align: middle !important;
+    padding: 12px 8px !important;
+}
+
+#sliders-table thead th {
+    border-bottom: 2px solid #000 !important;
+    background-color: #b8ffc9 !important;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.status-toggle-btn {
+    min-width: 120px;
+    font-size: 0.8rem;
+}
+
+.btn-group-sm .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.8rem;
+}
+
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.img-thumbnail {
+    cursor: pointer;
+    transition: transform 0.2s;
+    border: 2px solid #dee2e6;
+    border-radius: 0.375rem;
+    max-width: 80px;
+    max-height: 60px;
+}
+
+.img-thumbnail:hover {
+    transform: scale(1.1);
+    border-color: #28a745;
+}
+
+/* Enhanced Mobile-First Responsive Design */
+@media (max-width: 768px) {
+    .container-fluid {
+        padding-left: 8px;
+        padding-right: 8px;
+    }
+    
+    .card {
+        margin: 5px;
+        border: 1px solid #000 !important;
+    }
+    
+    .card-body {
+        padding: 0.5rem;
+    }
+    
+    .card-header {
+        padding: 0.75rem;
+        text-align: center;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .card-header h5 {
+        font-size: 1rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    #sliders-table {
+        font-size: 0.8rem;
+        border: 1px solid #000 !important;
+    }
+    
+    #sliders-table th,
+    #sliders-table td {
+        padding: 10px 6px !important;
+        font-size: 0.8rem;
+    }
+    
+    /* Enhanced responsive details */
+    .dtr-details {
+        width: 100% !important;
+        padding: 15px !important;
+        background: #f8f9fa !important;
+        border: 1px solid #dee2e6 !important;
+        border-radius: 8px !important;
+        margin: 10px 0 !important;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+    }
+    
+    .dtr-details li {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        align-items: flex-start !important;
+        margin-bottom: 12px !important;
+        padding: 8px 0 !important;
+        border-bottom: 1px solid #e9ecef !important;
+    }
+    
+    .dtr-details li:last-child {
+        border-bottom: none !important;
+        margin-bottom: 0 !important;
+    }
+    
+    .dtr-title {
+        font-weight: bold !important;
+        min-width: 120px !important;
+        color: #28a745 !important;
+        font-size: 0.8rem !important;
+        margin-bottom: 4px !important;
+        display: block !important;
+    }
+    
+    .dtr-data {
+        flex: 1 !important;
+        word-break: break-word !important;
+        font-size: 0.8rem !important;
+        line-height: 1.4 !important;
+        display: block !important;
+        width: 100% !important;
+    }
+    
+    /* Enhanced button container for mobile */
+    .dt-buttons {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        justify-content: center !important;
+        gap: 5px !important;
+        margin-bottom: 15px !important;
+    }
+    
+    .dt-buttons .btn {
+        flex: 1 1 auto !important;
+        min-width: 120px !important;
+        max-width: 160px !important;
+        font-size: 0.75rem !important;
+        text-align: center !important;
+        padding: 0.4rem 0.6rem !important;
+    }
+    
+    /* Enhanced search input for mobile */
+    .dataTables_filter {
+        width: 100% !important;
+        margin: 10px 0 !important;
+    }
+    
+    .dataTables_filter .input-group {
+        width: 100% !important;
+    }
+    
+    .dataTables_filter input {
+        width: 100% !important;
+        max-width: 100% !important;
+        font-size: 0.85rem !important;
+        padding: 0.5rem 0.75rem !important;
+    }
+}
+
+/* Enhanced DataTables Responsive specific styles */
+table.dataTable.dtr-inline.collapsed > tbody > tr > td.dtr-control:before,
+table.dataTable.dtr-inline.collapsed > tbody > tr > th.dtr-control:before {
+    background-color: #28a745 !important;
+    border-radius: 50% !important;
+    color: white !important;
+    content: '⊕' !important;
+    font-family: Arial, sans-serif !important;
+    font-weight: bold !important;
+    height: 24px !important;
+    line-height: 22px !important;
+    text-align: center !important;
+    width: 24px !important;
+    font-size: 1rem !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2) !important;
+    transition: all 0.3s ease !important;
+    border: 2px solid white !important;
+}
+
+table.dataTable.dtr-inline.collapsed > tbody > tr > td.dtr-control:hover:before,
+table.dataTable.dtr-inline.collapsed > tbody > tr > th.dtr-control:hover:before {
+    background-color: #218838 !important;
+    transform: scale(1.1) !important;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3) !important;
+}
+
+table.dataTable.dtr-inline.collapsed > tbody > tr.parent > td.dtr-control:before,
+table.dataTable.dtr-inline.collapsed > tbody > tr.parent > th.dtr-control:before {
+    content: '⊖' !important;
+    background-color: #dc3545 !important;
+}
+
+/* Custom Modal Styles for Mobile */
+#responsiveModal .modal-dialog {
+    max-width: 95%;
+    margin: 10px auto;
+}
+
+#responsiveModal .modal-body {
+    max-height: 70vh;
+    overflow-y: auto;
+    padding: 20px;
+}
+
+.responsive-detail-item {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.responsive-detail-item:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.responsive-detail-label {
+    font-weight: bold;
+    color: #28a745;
+    margin-bottom: 5px;
+    font-size: 0.9rem;
+}
+
+.responsive-detail-value {
+    word-break: break-word;
+    line-height: 1.5;
+    font-size: 0.9rem;
+}
+
+/* Ensure proper modal backdrop */
+.modal-backdrop {
+    z-index: 1040;
+}
+
+#responsiveModal {
+    z-index: 1050;
+}
+
+/* Loading state improvements */
+.overlay {
+    background: rgba(255, 255, 255, 0.98) !important;
+    backdrop-filter: blur(8px) !important;
+    z-index: 1060;
+}
+
+.overlay .spinner-border {
+    color: #28a745 !important;
+    animation: spin 1s linear infinite !important;
+    width: 3rem !important;
+    height: 3rem !important;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Custom scrollbar for mobile */
+@media (max-width: 768px) {
+    .table-responsive {
+        -webkit-overflow-scrolling: touch !important;
+        overflow-x: auto !important;
+    }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<!-- DataTables JS -->
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.bootstrap5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.print.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+<!-- DataTables Responsive JS -->
+<script src="https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.4.1/js/responsive.bootstrap5.min.js"></script>
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+$(document).ready(function() {
+    // Initialize Bootstrap modal
+    var responsiveModal = new bootstrap.Modal(document.getElementById('responsiveModal'));
+    
+    // Function to strip HTML tags and get clean text
+    function stripHtmlTags(html) {
+        if (!html) return '';
+        
+        // Create a temporary div element
+        var tempDiv = document.createElement('div');
+        tempDiv.innerHTML = html;
+        
+        // Get the text content, which strips HTML tags
+        return tempDiv.textContent || tempDiv.innerText || '';
+    }
+    
+    // Function to safely render HTML content
+    function safeHtmlRender(html) {
+        if (!html) return '';
+        
+        // For security, you might want to sanitize the HTML here
+        // For now, we'll return the HTML as is since it's from your own system
+        return html;
+    }
+    
+    // Custom responsive display function
+    function customResponsiveDisplay(api, rowIdx, columns) {
+        var data = $.map(columns, function (col, i) {
+            // Skip if no data
+            if (!col.data || col.data === '' || col.data === null) {
+                return '';
+            }
+            
+            // Use clean text for display, but preserve HTML where needed
+            var displayData = col.data;
+            
+            // For specific columns that need HTML rendering, use safeHtmlRender
+            // For others, use clean text
+            if (col.title === 'Title & Description' || col.title === 'Answer' || col.title === 'Description') {
+                displayData = safeHtmlRender(col.data);
+            } else {
+                // For other columns, strip HTML tags to show clean text
+                displayData = stripHtmlTags(col.data);
+            }
+            
+            return '<div class="responsive-detail-item">' +
+                   '<div class="responsive-detail-label">' + col.title + ':</div>' +
+                   '<div class="responsive-detail-value">' + displayData + '</div>' +
+                   '</div>';
+        }).join('');
+        
+        // Update modal content
+        $('#responsiveModalBody').html(data || '<div class="text-center text-muted">No data available</div>');
+        
+        // Set modal title with clean text (strip HTML from title)
+        var rowData = api.row(rowIdx).data();
+        var modalTitle = 'Slider Details';
+        
+        if (rowData && rowData.title) {
+            // Strip HTML from title for modal header
+            var cleanTitle = stripHtmlTags(rowData.title);
+            modalTitle = 'Slider: ' + (cleanTitle || 'Untitled');
+        }
+        
+        $('#responsiveModalLabel').text(modalTitle);
+        
+        // Show modal
+        responsiveModal.show();
+        
+        // Return false to prevent default DataTables responsive display
+        return false;
+    }
+
+    // Initialize DataTable with enhanced responsive settings
+    var table = $('#sliders-table').DataTable({
+        "processing": true,
+        "serverSide": true,
+        "ajax": {
+            "url": "{% url 'faq_app:sliders_datatables' %}",
+            "type": "GET",
+            "dataType": "json",
+            "dataSrc": "data",
+            "beforeSend": function() {
+                // Show loading overlay
+                $('#sliders-table').closest('.card').append(
+                    '<div class="overlay">' +
+                    '<div class="text-center">' +
+                    '<div class="spinner-border text-success mb-2" style="width: 3rem; height: 3rem;"></div>' +
+                    '<br><span class="text-dark fw-bold">Loading Sliders...</span>' +
+                    '</div>' +
+                    '</div>'
+                );
+            },
+            "complete": function() {
+                // Remove loading overlay
+                $('.overlay').remove();
+            },
+            "error": function(xhr, error, code) {
+                $('.overlay').remove();
+                console.error('DataTable Error:', error);
+                console.error('Response:', xhr.responseText);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Data Loading Error',
+                    text: 'Unable to load slider data. Please check console for details.',
+                    timer: 5000
+                });
+            }
+        },
+        "columns": [
+            { 
+                "data": "title",
+                "className": "text-left",
+                "responsivePriority": 1,
+                "render": function(data, type, row) {
+                    if (type === 'display' || type === 'filter') {
+                        // For display in table, render the HTML as is
+                        return data;
+                    }
+                    // For sorting and other operations, return clean text
+                    return data ? data.replace(/<[^>]*>/g, '') : '';
+                }
+            },
+            { 
+                "data": "image",
+                "className": "text-center",
+                "orderable": false,
+                "searchable": false,
+                "responsivePriority": 3
+            },
+            { 
+                "data": "status",
+                "className": "text-center",
+                "orderable": false,
+                "responsivePriority": 2,
+                "render": function(data, type, row) {
+                    if (type === 'display' || type === 'filter') {
+                        return data;
+                    }
+                    return data ? data.replace(/<[^>]*>/g, '') : '';
+                }
+            },
+            { 
+                "data": "current_status",
+                "className": "text-center",
+                "orderable": false,
+                "searchable": false,
+                "responsivePriority": 4,
+                "render": function(data, type, row) {
+                    if (type === 'display' || type === 'filter') {
+                        return data;
+                    }
+                    return data ? data.replace(/<[^>]*>/g, '') : '';
+                }
+            },
+            { 
+                "data": "order",
+                "className": "text-center",
+                "responsivePriority": 5
+            },
+            { 
+                "data": "link",
+                "className": "text-center",
+                "orderable": false,
+                "responsivePriority": 6,
+                "render": function(data, type, row) {
+                    if (type === 'display' || type === 'filter') {
+                        return data;
+                    }
+                    return data ? data.replace(/<[^>]*>/g, '') : '';
+                }
+            },
+            { 
+                "data": "author",
+                "className": "text-center",
+                "responsivePriority": 7,
+                "render": function(data, type, row) {
+                    if (type === 'display' || type === 'filter') {
+                        return data;
+                    }
+                    return data ? data.replace(/<[^>]*>/g, '') : '';
+                }
+            },
+            { 
+                "data": "created_at",
+                "className": "text-center",
+                "responsivePriority": 8
+            },
+            { 
+                "data": "start_date",
+                "className": "text-center",
+                "responsivePriority": 9
+            },
+            { 
+                "data": "end_date",
+                "className": "text-center",
+                "responsivePriority": 10
+            },
+            { 
+                "data": "actions",
+                "className": "text-center",
+                "orderable": false,
+                "searchable": false,
+                "responsivePriority": 1
+            }
+        ],
+        "order": [[4, 'asc']],
+        "pageLength": 10,
+        "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+        "responsive": {
+            "details": {
+                "type": "column",
+                "target": 0,
+                "renderer": function(api, rowIdx, columns) {
+                    // For mobile devices, use our custom modal display
+                    if ($(window).width() < 768) {
+                        return customResponsiveDisplay(api, rowIdx, columns);
+                    }
+                    
+                    // For larger screens, use default inline display with HTML rendering
+                    var data = $.map(columns, function (col, i) {
+                        if (col.hidden) {
+                            var displayData = col.data;
+                            
+                            // For specific columns, render HTML; for others, show clean text
+                            if (col.title === 'Title & Description' || col.title === 'Answer' || col.title === 'Description') {
+                                displayData = safeHtmlRender(col.data);
+                            } else {
+                                displayData = stripHtmlTags(col.data);
+                            }
+                            
+                            return '<li data-dtr-index="' + col.columnIndex + '" data-dt-row="' + col.rowIndex + '" data-dt-column="' + col.columnIndex + '">' +
+                                   '<span class="dtr-title">' + col.title + ':</span> ' +
+                                   '<span class="dtr-data">' + (displayData ? displayData : '<em class="text-muted">No data</em>') + '</span>' +
+                                   '</li>';
+                        }
+                        return '';
+                    }).join('');
+                    
+                    return data ? $('<ul/>', {'class': 'dtr-details', 'html': data}) : false;
+                }
+            }
+        },
+        "dom": '<"row"<"col-sm-12 col-md-6"B><"col-sm-12 col-md-6"f>><"row"<"col-sm-12"tr>><"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
+        "buttons": [
+            {
+                extend: 'copy',
+                text: '<i class="fas fa-copy me-1"></i>Copy',
+                className: 'btn btn-secondary btn-sm',
+                exportOptions: {
+                    columns: [0, 2, 3, 4, 5, 6, 7, 8, 9],
+                    format: {
+                        body: function (data, row, column, node) {
+                            // Strip HTML for clean export
+                            return $(data).text().trim() || data.replace(/<[^>]*>/g, '');
+                        }
+                    }
+                },
+                title: 'Sliders List'
+            },
+            {
+                extend: 'excel',
+                text: '<i class="fas fa-file-excel me-1"></i>Excel',
+                className: 'btn btn-success btn-sm',
+                exportOptions: {
+                    columns: [0, 2, 3, 4, 5, 6, 7, 8, 9],
+                    format: {
+                        body: function (data, row, column, node) {
+                            return $(data).text().trim() || data.replace(/<[^>]*>/g, '');
+                        }
+                    }
+                },
+                filename: 'sliders_list_' + new Date().toISOString().slice(0, 10),
+                title: 'Sliders List'
+            },
+            {
+                extend: 'pdf',
+                text: '<i class="fas fa-file-pdf me-1"></i>PDF',
+                className: 'btn btn-danger btn-sm',
+                exportOptions: {
+                    columns: [0, 2, 3, 4, 5, 6, 7, 8, 9],
+                    format: {
+                        body: function (data, row, column, node) {
+                            return $(data).text().trim() || data.replace(/<[^>]*>/g, '');
+                        }
+                    }
+                },
+                filename: 'sliders_list_' + new Date().toISOString().slice(0, 10),
+                title: 'Sliders List',
+                orientation: 'landscape',
+                pageSize: 'A4'
+            },
+            {
+                extend: 'print',
+                text: '<i class="fas fa-print me-1"></i>Print',
+                className: 'btn btn-info btn-sm',
+                exportOptions: {
+                    columns: [0, 2, 3, 4, 5, 6, 7, 8, 9],
+                    format: {
+                        body: function (data, row, column, node) {
+                            return $(data).text().trim() || data.replace(/<[^>]*>/g, '');
+                        }
+                    }
+                },
+                title: 'Sliders List',
+                customize: function (win) {
+                    $(win.document.body).find('table').addClass('display').css('font-size', '10px');
+                    $(win.document.body).find('tr:nth-child(odd) td').css('background-color','#f9f9f9');
+                }
+            },
+            {
+                text: '<i class="fas fa-plus me-1"></i>Add Slider',
+                className: 'btn btn-primary btn-sm',
+                action: function (e, dt, node, config) {
+                    window.location.href = "{% url 'faq_app:slider_create' %}";
+                }
+            },
+            {
+                text: '<i class="fas fa-sync-alt me-1"></i>Refresh',
+                className: 'btn btn-warning btn-sm',
+                action: function (e, dt, node, config) {
+                    table.ajax.reload(null, false);
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Refreshed',
+                        text: 'Slider data has been refreshed',
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+                }
+            }
+        ],
+        "language": {
+            "search": "Search:",
+            "lengthMenu": "Show _MENU_ entries",
+            "info": "Showing _START_ to _END_ of _TOTAL_ sliders",
+            "infoEmpty": "Showing 0 to 0 of 0 sliders",
+            "infoFiltered": "(filtered from _MAX_ total sliders)",
+            "zeroRecords": "No matching sliders found",
+            "emptyTable": "No slider data available",
+            "processing": '<div class="spinner-border text-success" role="status"><span class="visually-hidden">Loading...</span></div> Loading...',
+            "paginate": {
+                "first": "First",
+                "last": "Last",
+                "next": "Next",
+                "previous": "Previous"
+            }
+        },
+        "initComplete": function(settings, json) {
+            // Customize search input
+            $('.dataTables_filter input')
+                .addClass('form-control form-control-sm')
+                .attr('placeholder', 'Search titles, descriptions...')
+                .css('width', '300px')
+                .wrap('<div class="input-group input-group-sm"></div>')
+                .before('<span class="input-group-text bg-success text-white"><i class="fas fa-search"></i></span>');
+
+            // Customize length menu
+            $('.dataTables_length select').addClass('form-control form-control-sm');
+
+            // Style buttons group
+            $('.dt-buttons').addClass('btn-group btn-group-sm flex-wrap');
+        }
+    });
+
+    // Enhanced event handlers for dynamic content
+    $('#sliders-table').on('draw.dt', function() {
+        // Initialize tooltips
+        $('[data-bs-toggle="tooltip"]').tooltip();
+        
+        // Image preview functionality
+        $(this).find('.img-thumbnail').on('click', function(e) {
+            e.stopPropagation(); // Prevent row click event
+            var imgSrc = $(this).attr('src');
+            var imgAlt = $(this).attr('alt');
+            
+            if (imgSrc && !imgSrc.includes('text-muted')) {
+                Swal.fire({
+                    title: imgAlt || 'Slider Image',
+                    imageUrl: imgSrc,
+                    imageAlt: imgAlt || 'Slider Image',
+                    imageWidth: 600,
+                    imageHeight: 400,
+                    showCloseButton: true,
+                    showConfirmButton: false,
+                    background: '#f8f9fa',
+                    backdrop: 'rgba(0,0,0,0.8)'
+                });
+            }
+        });
+
+        // Status change functionality
+        $(this).find('.status-change-btn').on('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation(); // Prevent row click event
+            var sliderId = $(this).data('slider-id');
+            var newStatus = $(this).data('status');
+            
+            Swal.fire({
+                title: 'Change Status?',
+                text: `Are you sure you want to change the status to ${newStatus}?`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, change it!',
+                cancelButtonText: 'Cancel',
+                background: '#f8f9fa'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: "{% url 'faq_app:toggle_slider_status' 0 %}".replace('0', sliderId),
+                        type: 'POST',
+                        data: {
+                            'status': newStatus,
+                            'csrfmiddlewaretoken': '{{ csrf_token }}'
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Success!',
+                                    text: response.message,
+                                    timer: 1500,
+                                    showConfirmButton: false,
+                                    background: '#f8f9fa'
+                                });
+                                table.ajax.reload(null, false);
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: response.error,
+                                    background: '#f8f9fa'
+                                });
+                            }
+                        },
+                        error: function() {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: 'Failed to update status. Please try again.',
+                                background: '#f8f9fa'
+                            });
+                        }
+                    });
+                }
+            });
+        });
+    });
+
+    // Enhanced search with debouncing
+    var searchTimeout;
+    $('#sliders-table_filter input').on('keyup', function() {
+        clearTimeout(searchTimeout);
+        var searchValue = this.value;
+        searchTimeout = setTimeout(function() {
+            table.search(searchValue).draw();
+        }, 500);
+    });
+
+    // Row selection - only for desktop
+    $('#sliders-table tbody').on('click', 'tr', function(e) {
+        // Only apply row selection on desktop
+        if ($(window).width() >= 768) {
+            $(this).toggleClass('table-active');
+        }
+    });
+
+    // Enhanced window resize handling
+    $(window).on('resize', function() {
+        table.columns.adjust().responsive.recalc();
+    });
+
+    // Close modal when clicking outside
+    $('#responsiveModal').on('click', function(e) {
+        if (e.target === this) {
+            responsiveModal.hide();
+        }
+    });
+
+    // Close modal with escape key
+    $(document).on('keydown', function(e) {
+        if (e.key === 'Escape' && $('#responsiveModal').hasClass('show')) {
+            responsiveModal.hide();
+        }
+    });
+});
+</script>
+{% endblock %}

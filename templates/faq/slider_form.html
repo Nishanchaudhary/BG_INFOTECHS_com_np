@@ -1,0 +1,391 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid py-3">
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-10 col-xl-8">
+            <!-- Breadcrumb -->
+            <nav aria-label="breadcrumb" class="mb-3">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'faq_app:slider_list' %}">Slider Management</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">
+                        {% if slider %}Edit {{ slider.title }}{% else %}Create Slider{% endif %}
+                    </li>
+                </ol>
+            </nav>
+
+            <!-- Form Card -->
+            <div class="card shadow border-0">
+                <div class="card-header bg-success text-white py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-{% if slider %}edit{% else %}plus-circle{% endif %} me-2"></i>
+                            {% if slider %}Edit Slider{% else %}Create New Slider{% endif %}
+                        </h5>
+                        <span class="badge bg-light text-dark">
+                            <i class="fas fa-id-card me-1"></i>
+                            {% if slider %}ID: {{ slider.pk }}{% else %}New{% endif %}
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-body p-3 p-md-4">
+                    <form method="post" enctype="multipart/form-data" novalidate>
+                        {% csrf_token %}
+                        
+                        {% if form.non_field_errors %}
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            {{ form.non_field_errors }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                        {% endif %}
+
+                        <!-- Row 1: Title -->
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <label for="{{ form.title.id_for_label }}" class="form-label fw-semibold">
+                                    Title <span class="text-danger">*</span>
+                                </label>
+                                {{ form.title }}
+                                {% if form.title.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.title.errors }}
+                                </div>
+                                {% endif %}
+                                <div class="form-text">Enter a descriptive title for your slider (max 255 characters)</div>
+                            </div>
+                        </div>
+
+                        <!-- Row 2: Description -->
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <label for="{{ form.short_description.id_for_label }}" class="form-label fw-semibold">
+                                    Short Description <span class="text-danger">*</span>
+                                </label>
+                                {{ form.short_description }}
+                                {% if form.short_description.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.short_description.errors }}
+                                </div>
+                                {% endif %}
+                                <div class="form-text">Brief description of the slider content (max 500 characters)</div>
+                                <div class="text-end">
+                                    <small class="text-muted" id="description-counter">0/500</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Row 3: Image Upload -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <div class="border rounded p-3 bg-light">
+                                    <label for="{{ form.image.id_for_label }}" class="form-label fw-semibold">
+                                        Image <span class="text-danger">*</span>
+                                    </label>
+                                    {{ form.image }}
+                                    {% if form.image.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.image.errors }}
+                                    </div>
+                                    {% endif %}
+                                    <div class="form-text">Recommended size: 1200x600px. Supported formats: JPG, PNG, GIF</div>
+                                    
+                                    {% if slider and slider.image %}
+                                    <div class="mt-3">
+                                        <label class="form-label fw-semibold">Current Image:</label>
+                                        <div class="current-image-container text-center">
+                                            <img src="{{ slider.image.url }}" alt="{{ slider.title }}" 
+                                                 class="img-thumbnail current-image" style="max-height: 150px;">
+                                            <div class="mt-2">
+                                                <small class="text-muted">{{ slider.image.name }}</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Row 4: Link Configuration -->
+                        <div class="row mb-4">
+                            <div class="col-md-8 mb-3 mb-md-0">
+                                <label for="{{ form.link.id_for_label }}" class="form-label fw-semibold">Link URL</label>
+                                {{ form.link }}
+                                {% if form.link.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.link.errors }}
+                                </div>
+                                {% endif %}
+                                <div class="form-text">Optional URL that users will be directed to when clicking the slider</div>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <div class="form-check form-switch mt-3 mt-md-4">
+                                    {{ form.target_blank }}
+                                    <label class="form-check-label fw-semibold" for="{{ form.target_blank.id_for_label }}">
+                                        Open in New Tab
+                                    </label>
+                                </div>
+                                {% if form.target_blank.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.target_blank.errors }}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Row 5: Display Settings -->
+                        <div class="row mb-4">
+                            <div class="col-md-6 mb-3 mb-md-0">
+                                <label for="{{ form.status.id_for_label }}" class="form-label fw-semibold">
+                                    Status <span class="text-danger">*</span>
+                                </label>
+                                {{ form.status }}
+                                {% if form.status.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.status.errors }}
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="{{ form.order.id_for_label }}" class="form-label fw-semibold">Display Order</label>
+                                {{ form.order }}
+                                {% if form.order.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.order.errors }}
+                                </div>
+                                {% endif %}
+                                <div class="form-text">Lower numbers appear first</div>
+                            </div>
+                        </div>
+
+                        <!-- Row 6: Schedule -->
+                        <div class="row mb-4">
+                            <div class="col-md-6 mb-3 mb-md-0">
+                                <label for="{{ form.start_date.id_for_label }}" class="form-label fw-semibold">Start Date</label>
+                                {{ form.start_date }}
+                                {% if form.start_date.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.start_date.errors }}
+                                </div>
+                                {% endif %}
+                                <div class="form-text">Leave empty to start immediately</div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="{{ form.end_date.id_for_label }}" class="form-label fw-semibold">End Date</label>
+                                {{ form.end_date }}
+                                {% if form.end_date.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.end_date.errors }}
+                                </div>
+                                {% endif %}
+                                <div class="form-text">Leave empty for no expiration</div>
+                            </div>
+                        </div>
+
+                        {% if slider %}
+                        <!-- Row 7: Current Status Info -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <div class="alert alert-info">
+                                    <div class="d-flex">
+                                        <i class="fas fa-info-circle me-2 mt-1"></i>
+                                        <div>
+                                            <strong>Current Status:</strong> 
+                                            <span class="badge {% if slider.is_currently_active %}bg-success{% else %}bg-secondary{% endif %}">
+                                                {% if slider.is_currently_active %}Active{% else %}Inactive{% endif %}
+                                            </span>
+                                            {% if not slider.is_currently_active %}
+                                            <br><small class="mt-1 d-block">
+                                                {% if slider.status != 'active' %}• Status is not active{% endif %}
+                                                {% if slider.start_date and slider.start_date > now %}• Start date is in the future{% endif %}
+                                                {% if slider.end_date and slider.end_date < now %}• End date has passed{% endif %}
+                                            </small>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <!-- Row 8: Form Actions -->
+                        <div class="row mt-4 pt-3 border-top">
+                            <div class="col-md-6 mb-2 mb-md-0">
+                                <a href="{% url 'faq_app:slider_list' %}" class="btn btn-outline-secondary w-100">
+                                    <i class="fas fa-arrow-left me-2"></i>Back to List
+                                </a>
+                            </div>
+                            <div class="col-md-6">
+                                <button type="submit" class="btn btn-success w-100">
+                                    <i class="fas fa-{% if slider %}save{% else %}plus{% endif %} me-2"></i>
+                                    {% if slider %}Update Slider{% else %}Create Slider{% endif %}
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.card {
+    border-radius: 8px;
+}
+
+.card-header {
+    border-radius: 8px 8px 0 0 !important;
+}
+
+.current-image {
+    border: 2px solid #28a745;
+    border-radius: 6px;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #28a745;
+    box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+}
+
+.form-check-input:checked {
+    background-color: #28a745;
+    border-color: #28a745;
+}
+
+.btn-success {
+    background-color: #28a745;
+    border-color: #28a745;
+    font-weight: 500;
+}
+
+.btn-success:hover {
+    background-color: #218838;
+    border-color: #1e7e34;
+    transform: translateY(-1px);
+}
+
+.bg-light {
+    background-color: #f8f9fa !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .container-fluid {
+        padding: 10px;
+    }
+    
+    .card-body {
+        padding: 20px !important;
+    }
+    
+    .btn {
+        padding: 10px 16px;
+    }
+}
+
+@media (max-width: 576px) {
+    .card-body {
+        padding: 15px !important;
+    }
+    
+    .row {
+        margin-left: -8px;
+        margin-right: -8px;
+    }
+    
+    .col-12, .col-md-6, .col-md-8, .col-md-4 {
+        padding-left: 8px;
+        padding-right: 8px;
+    }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    // Character counter for description
+    $('#{{ form.short_description.id_for_label }}').on('input', function() {
+        const length = $(this).val().length;
+        $('#description-counter').text(length + '/500');
+        
+        if (length > 500) {
+            $('#description-counter').addClass('text-danger');
+        } else {
+            $('#description-counter').removeClass('text-danger');
+        }
+    });
+
+    // Initialize character counter on page load
+    const initialLength = $('#{{ form.short_description.id_for_label }}').val().length;
+    $('#description-counter').text(initialLength + '/500');
+
+    // Image preview for new uploads
+    $('#{{ form.image.id_for_label }}').on('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                // Remove existing preview if any
+                $('.image-preview').remove();
+                
+                // Create preview
+                $('<div class="image-preview mt-3 text-center">' +
+                  '<label class="form-label fw-semibold">New Image Preview:</label>' +
+                  '<div><img src="' + e.target.result + '" class="img-thumbnail" style="max-height: 150px; max-width: 100%;"></div>' +
+                  '<div><small class="text-muted">' + file.name + '</small></div>' +
+                  '</div>').insertAfter('#{{ form.image.id_for_label }}');
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    // Date validation
+    $('form').on('submit', function(e) {
+        const startDate = new Date($('#{{ form.start_date.id_for_label }}').val());
+        const endDate = new Date($('#{{ form.end_date.id_for_label }}').val());
+        
+        if ($('#{{ form.start_date.id_for_label }}').val() && $('#{{ form.end_date.id_for_label }}').val()) {
+            if (startDate >= endDate) {
+                e.preventDefault();
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Invalid Date Range',
+                    text: 'End date must be after start date.',
+                    confirmButtonColor: '#28a745'
+                });
+                $('#{{ form.end_date.id_for_label }}').focus();
+            }
+        }
+    });
+
+    // Add loading state to submit button
+    $('form').on('submit', function() {
+        const submitBtn = $(this).find('button[type="submit"]');
+        submitBtn.prop('disabled', true).html(
+            '<i class="fas fa-spinner fa-spin me-2"></i>Processing...'
+        );
+    });
+
+    // Auto-format datetime inputs for better UX
+    $('input[type="datetime-local"]').each(function() {
+        if (!$(this).val()) {
+            const now = new Date();
+            const formatted = now.toISOString().slice(0, 16);
+            $(this).val(formatted);
+        }
+    });
+
+    // Enhance form controls appearance
+    $('.form-control, .form-select').addClass('py-2');
+});
+</script>
+{% endblock %}

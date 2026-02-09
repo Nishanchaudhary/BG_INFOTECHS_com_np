@@ -1,0 +1,280 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <!-- Delete Confirmation Card -->
+            <div class="card border-0 shadow-lg">
+                <!-- Header -->
+                <div class="card-header bg-danger text-white text-center py-4">
+                    <i class="fas fa-comment-slash fa-2x mb-3"></i>
+                    <h4 class="mb-0">Delete Testimonial</h4>
+                </div>
+
+                <div class="card-body p-4">
+                    <!-- Warning Alert -->
+                    <div class="alert alert-warning border-0 text-center mb-4">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        This action cannot be undone
+                    </div>
+
+                    <!-- Testimonial Info -->
+                    <div class="testimonial-info text-center mb-4">
+                        <div class="testimonial-avatar mb-3">
+                            {% if testimonial.image %}
+                                <img src="{{ testimonial.image.url }}" alt="{{ testimonial.name }}" 
+                                     class="rounded-circle" width="80" height="80">
+                            {% else %}
+                                <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center" 
+                                     style="width: 80px; height: 80px;">
+                                    <i class="fas fa-user fa-2x"></i>
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <h5 class="text-dark mb-2">{{ testimonial.name }}</h5>
+                        
+                        {% if testimonial.designation %}
+                        <p class="text-muted mb-3">
+                            <i class="fas fa-briefcase me-2"></i>{{ testimonial.designation }}
+                        </p>
+                        {% endif %}
+
+                        {% if testimonial.company %}
+                        <p class="text-muted mb-3">
+                            <i class="fas fa-building me-2"></i>{{ testimonial.company }}
+                        </p>
+                        {% endif %}
+
+                        {% if testimonial.message %}
+                        <div class="testimonial-message bg-light p-3 rounded mb-3">
+                            <i class="fas fa-quote-left text-primary me-2"></i>
+                            <span class="fst-italic">{{ testimonial.message|truncatewords:30 }}</span>
+                            <i class="fas fa-quote-right text-primary ms-2"></i>
+                        </div>
+                        {% endif %}
+
+                        {% if testimonial.rating %}
+                        <div class="rating mb-3">
+                            <span class="text-warning">
+                                {% for i in "12345" %}
+                                    {% if forloop.counter <= testimonial.rating %}
+                                        <i class="fas fa-star"></i>
+                                    {% else %}
+                                        <i class="far fa-star"></i>
+                                    {% endif %}
+                                {% endfor %}
+                            </span>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Confirmation Form -->
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <!-- Confirmation Check -->
+                        <div class="confirmation-check mb-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="confirmDelete" required>
+                                <label class="form-check-label text-danger fw-bold" for="confirmDelete">
+                                    I understand this will permanently delete the testimonial
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-danger btn-lg" id="deleteBtn" disabled>
+                                <i class="fas fa-trash me-2"></i>
+                                Delete Testimonial
+                            </button>
+                            <a href="{% url 'company_app:testimonial_list' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>
+                                Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.card {
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.card-header {
+    border-radius: 0;
+}
+
+.alert-warning {
+    background: #fff3cd;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+}
+
+.testimonial-info {
+    padding: 1rem;
+}
+
+.testimonial-avatar img {
+    object-fit: cover;
+    border: 3px solid #e9ecef;
+}
+
+.testimonial-message {
+    border-left: 4px solid #0d6efd;
+    font-size: 0.95rem;
+}
+
+.rating {
+    font-size: 1.1rem;
+}
+
+.btn {
+    border-radius: 10px;
+    font-weight: 600;
+    padding: 12px 20px;
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, #dc3545, #c82333);
+    border-color: #dc3545;
+}
+
+.btn-danger:hover {
+    background: linear-gradient(135deg, #c82333, #a71e2a);
+    border-color: #c82333;
+}
+
+.btn-danger:disabled {
+    background: #6c757d;
+    border-color: #6c757d;
+    transform: none;
+    cursor: not-allowed;
+}
+
+.btn-outline-secondary {
+    border-color: #6c757d;
+    color: #6c757d;
+}
+
+.btn-outline-secondary:hover {
+    background: #6c757d;
+    border-color: #6c757d;
+    color: white;
+}
+
+.form-check-input {
+    width: 18px;
+    height: 18px;
+    margin-top: 0.25rem;
+}
+
+.form-check-input:checked {
+    background-color: #dc3545;
+    border-color: #dc3545;
+}
+
+.form-check-label {
+    cursor: pointer;
+    user-select: none;
+}
+
+/* Pulse animation for enabled delete button */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+    100% { transform: scale(1); }
+}
+
+#deleteBtn:not(:disabled) {
+    animation: pulse 2s infinite;
+}
+
+/* Smooth entrance animation */
+.card {
+    opacity: 0;
+    transform: translateY(30px);
+    animation: fadeInUp 0.6s ease forwards;
+}
+
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .container {
+        padding: 20px 15px;
+    }
+    
+    .card-body {
+        padding: 1.5rem !important;
+    }
+}
+
+@media (max-width: 576px) {
+    .btn {
+        padding: 10px 16px;
+        font-size: 0.9rem;
+    }
+    
+    .form-check-label {
+        font-size: 0.9rem;
+    }
+    
+    .testimonial-message {
+        font-size: 0.9rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const confirmCheckbox = document.getElementById('confirmDelete');
+    const deleteBtn = document.getElementById('deleteBtn');
+    const form = document.querySelector('form');
+    
+    // Toggle delete button based on checkbox
+    confirmCheckbox.addEventListener('change', function() {
+        deleteBtn.disabled = !this.checked;
+    });
+    
+    // Form submission handler
+    form.addEventListener('submit', function(e) {
+        if (!confirm('Are you sure you want to permanently delete this testimonial?')) {
+            e.preventDefault();
+            return false;
+        }
+        
+        // Show loading state
+        const originalText = deleteBtn.innerHTML;
+        deleteBtn.disabled = true;
+        deleteBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Deleting...';
+        
+        return true;
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,1720 @@
+{% extends 'Frontend/base.html' %}
+{% load static %}
+{% block title %}{% if service %}{{ service.title }}{% else %}SEO Services{% endif %}{% endblock %}
+{% block extra_css %}
+<style>
+    /* Global Styles */
+    :root {
+        --primary-color: #3498db;
+        --primary-dark: #2980b9;
+        --secondary-color: #2c3e50;
+        --secondary-light: #34495e;
+        --accent-color: #f1c40f;
+        --accent-dark: #f39c12;
+        --light-bg: #f8f9fa;
+        --light-bg-2: #ecf0f1;
+        --dark-text: #2c3e50;
+        --light-text: #7f8c8d;
+        --white: #ffffff;
+        --gradient-primary: linear-gradient(135deg, #3498db, #2c3e50);
+        --gradient-accent: linear-gradient(135deg, #d1b751, #d96457);
+        --shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        --shadow-hover: 0 15px 40px rgba(0, 0, 0, 0.15);
+        --transition: all 0.3s ease;
+        --border-radius: 15px;
+    }
+
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: var(--dark-text);
+        line-height: 1.6;
+        overflow-x: hidden;
+    }
+
+    .section {
+        padding: 80px 0;
+    }
+
+    .section-title {
+        text-align: center;
+        margin-bottom: 60px;
+    }
+
+    .section-title h2 {
+        color: var(--secondary-color);
+        font-weight: 700;
+        margin-bottom: 15px;
+    }
+
+    .section-title p {
+        color: var(--light-text);
+        font-size: 1.1rem;
+    }
+
+    /* Service Banner Section */
+    .service__banner- {
+        background: linear-gradient(135deg, #f8f9fa 0%, #ecf0f1 100%);
+        padding: 100px 0 60px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .service__banner-::before {
+        content: '';
+        position: absolute;
+        width: 300px;
+        height: 300px;
+        border-radius: 50%;
+        background: var(--primary-color);
+        opacity: 0.05;
+        top: -150px;
+        right: -150px;
+    }
+
+    .service__banner-::after {
+        content: '';
+        position: absolute;
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        background: var(--accent-color);
+        opacity: 0.05;
+        bottom: -100px;
+        left: -100px;
+    }
+
+    .service__banner--content .title {
+        font-size: 3rem;
+        font-weight: 800;
+        color: var(--secondary-color);
+        margin-bottom: 20px;
+        line-height: 1.2;
+        position: relative;
+        display: inline-block;
+    }
+
+    .service__banner--content .title::after {
+        content: '';
+        position: absolute;
+        width: 80px;
+        height: 5px;
+        background: var(--accent-color);
+        bottom: -10px;
+        left: 0;
+        border-radius: 5px;
+    }
+
+    .sub-title-desc {
+        font-size: 1.3rem;
+        color: var(--primary-color);
+        margin-bottom: 20px;
+        font-weight: 600;
+    }
+
+    .service__banner--content p {
+        font-size: 1rem;
+        color: var(--light-text);
+        margin-bottom: 30px;
+    }
+
+    .l__button {
+        display: inline-flex;
+        align-items: center;
+        background: var(--gradient-primary);
+        color: white;
+        padding: 12px 30px;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: var(--transition);
+        border: none;
+        cursor: pointer;
+        box-shadow: var(--shadow);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        position: relative;
+        overflow: hidden;
+        z-index: 1;
+    }
+
+    .l__button::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 0%;
+        height: 100%;
+        background: var(--gradient-accent);
+        transition: var(--transition);
+        z-index: -1;
+    }
+
+    .l__button:hover::before {
+        width: 100%;
+    }
+
+    .l__button:hover {
+        color: white;
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-hover);
+    }
+
+    .l__button i {
+        margin-left: 10px;
+        transition: var(--transition);
+    }
+
+    .l__button:hover i {
+        transform: translateX(5px);
+    }
+
+    .service__banner--content .right {
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+    }
+
+    /* CLEAN RESPONSIVE IMAGE + ORBIT FIXED */
+    .image-container {
+        position: relative;
+        width: 100%;
+        max-width: 360px;
+        margin: 0 auto;
+    }
+
+    .main-image {
+        width: 100%;
+        height: auto;
+        display: block;
+        margin: 0 auto;
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow);
+        z-index: 2;
+        position: relative;
+    }
+
+    /* DESKTOP ORBIT */
+    .stats-orbit {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 420px;
+        height: 420px;
+        transform: translate(-50%, -50%);
+        pointer-events: none;
+        z-index: 3;
+    }
+
+    .orbit-path {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        animation: rotate 25s linear infinite;
+    }
+
+    .orbit-path.paused {
+        animation-play-state: paused;
+    }
+
+    .info__card {
+        width: 90px;
+        height: 90px;
+        background: white;
+        border-radius: 12px;
+        position: absolute;
+        box-shadow: var(--shadow);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        padding: 10px 6px;
+        transition: var(--transition);
+        border-top: 4px solid var(--primary-color);
+        pointer-events: auto;
+    }
+
+    /* Four card positions - Perfect Square */
+    .info__card:nth-child(1) {
+        top: 0;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        border-top-color: var(--primary-color);
+    }
+
+    .info__card:nth-child(2) {
+        top: 50%;
+        right: 0;
+        transform: translate(50%, -50%);
+        border-top-color: var(--accent-color);
+    }
+
+    .info__card:nth-child(3) {
+        bottom: 0;
+        left: 50%;
+        transform: translate(-50%, 50%);
+        border-top-color: #2ecc71;
+    }
+
+    .info__card:nth-child(4) {
+        top: 50%;
+        left: 0;
+        transform: translate(-50%, -50%);
+        border-top-color: #9b59b6;
+    }
+
+    .info__card:hover {
+        transform: scale(1.1);
+        box-shadow: var(--shadow-hover);
+        z-index: 10;
+    }
+
+    .info__card img {
+        width: 25px;
+        height: 25px;
+        margin-bottom: 5px;
+        object-fit: contain;
+    }
+
+    .info__card h4 {
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        margin-bottom: 3px;
+        line-height: 1;
+    }
+
+    .info__card h6 {
+        font-size: 0.6rem;
+        color: var(--light-text);
+        margin: 0;
+        line-height: 1.2;
+    }
+
+    /* MOBILE ORBIT */
+    .mobile-orbit-container {
+        display: none;
+    }
+
+    @media(max-width: 576px) {
+        .stats-orbit {
+            display: none;
+        }
+
+        .mobile-orbit-container {
+            display: block;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 260px;
+            height: 260px;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 3;
+        }
+
+        .mobile-orbit-path {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            animation: rotate 20s linear infinite;
+        }
+
+        .mobile-orbit-path.paused {
+            animation-play-state: paused;
+        }
+
+        .mobile-info-card {
+            width: 65px;
+            height: 65px;
+            background: white;
+            border-radius: 10px;
+            position: absolute;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 8px 6px;
+            transition: var(--transition);
+            border-top: 3px solid var(--primary-color);
+            pointer-events: auto;
+        }
+
+        .mobile-info-card:nth-child(1) {
+            top: 0;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border-top-color: var(--primary-color);
+        }
+
+        .mobile-info-card:nth-child(2) {
+            top: 50%;
+            right: 0;
+            transform: translate(50%, -50%);
+            border-top-color: var(--accent-color);
+        }
+
+        .mobile-info-card:nth-child(3) {
+            bottom: 0;
+            left: 50%;
+            transform: translate(-50%, 50%);
+            border-top-color: #2ecc71;
+        }
+
+        .mobile-info-card:nth-child(4) {
+            top: 50%;
+            left: 0;
+            transform: translate(-50%, -50%);
+            border-top-color: #9b59b6;
+        }
+
+        .mobile-info-card:hover {
+            transform: scale(1.1);
+            box-shadow: var(--shadow-hover);
+            z-index: 10;
+        }
+
+        .mobile-info-card img {
+            width: 18px;
+            height: 18px;
+            margin-bottom: 3px;
+            object-fit: contain;
+        }
+
+        .mobile-info-card h4 {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 2px;
+            line-height: 1;
+        }
+
+        .mobile-info-card h6 {
+            font-size: 0.5rem;
+            color: var(--light-text);
+            margin: 0;
+            line-height: 1.1;
+        }
+    }
+
+    @keyframes rotate {
+        from {
+            transform: rotate(0deg);
+        }
+
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    /* Service Info Section */
+    .service__info {
+        margin-top: 80px;
+    }
+
+    .service__info--card {
+        background: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow);
+        padding: 25px;
+        height: 100%;
+        transition: var(--transition);
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+        border-top: 4px solid var(--primary-color);
+    }
+
+    .service__info--card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 0;
+        background: var(--gradient-primary);
+        opacity: 0.05;
+        transition: var(--transition);
+        z-index: 0;
+    }
+
+    .service__info--card:hover::before {
+        height: 100%;
+    }
+
+    .service__info--card:hover {
+        transform: translateY(-10px);
+        box-shadow: var(--shadow-hover);
+    }
+
+    .service__info--card:nth-child(2) {
+        border-top-color: var(--accent-color);
+    }
+
+    .service__info--card:nth-child(3) {
+        border-top-color: #2ecc71;
+    }
+
+    .service__info--card-head {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 15px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .service__info--card-head img {
+        width: 50px;
+        height: 50px;
+        margin-bottom: 12px;
+        object-fit: contain;
+    }
+
+    .service__info--card-head .title {
+        font-size: 1.3rem;
+        color: var(--secondary-color);
+    }
+
+    .service__info--content {
+        position: relative;
+        z-index: 1;
+    }
+
+    .service__info--content p {
+        color: var(--light-text);
+        margin: 0;
+        font-size: 0.9rem;
+    }
+
+    /* FIXED MOBILE LAYOUT */
+    @media (max-width: 768px) {
+        .service__banner- {
+            padding: 60px 0 30px;
+        }
+
+        .service__banner--content .right {
+            margin-top: 0;
+            padding-top: 0;
+            height: auto;
+            min-height: 300px;
+        }
+
+        .image-container {
+            max-width: 280px;
+            margin-bottom: 0;
+        }
+
+        .mobile-orbit-container {
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .service__info {
+            margin-top: 40px;
+        }
+
+        .service__banner--content .title {
+            font-size: 2.2rem;
+            margin-bottom: 15px;
+        }
+
+        .sub-title-desc {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+        }
+
+        .service__banner--content p {
+            font-size: 0.9rem;
+            margin-bottom: 25px;
+        }
+
+        .l__button {
+            padding: 10px 25px;
+            font-size: 0.9rem;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .section {
+            padding: 60px 0;
+        }
+
+        .service__banner- {
+            padding: 50px 0 20px;
+        }
+
+        .service__banner--content .title {
+            font-size: 2rem;
+        }
+
+        .service__banner--content .title::after {
+            width: 60px;
+            height: 4px;
+            bottom: -8px;
+        }
+
+        .sub-title-desc {
+            font-size: 1rem;
+        }
+
+        .service__banner--content p {
+            font-size: 0.85rem;
+        }
+
+        .l__button {
+            padding: 10px 25px;
+            font-size: 0.9rem;
+        }
+
+        .image-container {
+            max-width: 250px;
+        }
+
+        .service__info {
+            margin-top: 30px;
+        }
+
+        .service__info--card {
+            padding: 18px 12px;
+            margin-bottom: 15px;
+        }
+
+        .service__info--card-head img {
+            width: 40px;
+            height: 40px;
+            margin-bottom: 10px;
+        }
+
+        .service__info--card-head .title {
+            font-size: 1.1rem;
+        }
+    }
+
+    @media (max-width: 400px) {
+        .service__banner--content .title {
+            font-size: 1.8rem;
+        }
+
+        .sub-title-desc {
+            font-size: 0.95rem;
+        }
+
+        .service__banner--content p {
+            font-size: 0.8rem;
+        }
+
+        .l__button {
+            padding: 8px 20px;
+            font-size: 0.85rem;
+        }
+
+        .image-container {
+            max-width: 220px;
+        }
+
+        .mobile-orbit-container {
+            width: 240px;
+            height: 240px;
+        }
+
+        .mobile-info-card {
+            width: 60px;
+            height: 60px;
+        }
+    }
+</style>
+{% endblock %}
+{% block content %}
+<main class="main">
+    <style>
+        .page-title {
+            background-image: linear-gradient(rgba(28, 29, 31, 0.65), rgba(23, 4, 69, 0.65)),
+            url("{% static 'img/breadcrumb.jpg' %}");
+            background-size: cover;
+            background-position: center;
+            padding: 30px 0px;
+        }
+    </style>
+    <!-- Page Header -->
+    <div class="page-title light-background">
+        <div class="container">
+            <h1>{% if service %}{{ service.title }}{% else %}Professional SEO & Digital Marketing Services{% endif %}
+            </h1>
+            <nav class="breadcrumbs" data-aos="fade-right" data-aos-delay="100">
+                <ol>
+                    <li><a href="{% url 'frontend_app:home' %}"><i class="fas fa-home"></i> Home</a></li>
+                    <li class="current"><i class="fa-brands fa-searchengin"></i> SEO Services</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div style="min-height: 50vh">
+        <div class="site-main">
+            <section class="service__banner-">
+                <div class="container">
+                    <div class="service__banner--content overflow">
+                        <div class="row flex-column-reverse flex-md-row">
+                            <div class="col-lg-7 col-md-6">
+                                <div class="left">
+                                    <div class="section__title clearfix">
+                                        <h1 class="title" data-aos="fade-right" style="color:var(--secondary-color);"
+                                            data-aos-delay="100">SEO Services</h1>
+                                    </div>
+                                    <div class="title-desc" data-aos="fade-right" data-aos-delay="200">
+                                        <h4 class="sub-title-desc">Boost your search rankings and drive organic traffic
+                                            with our expert SEO strategies.</h4>
+                                        <p>Dominate Search Results and Drive Sustainable Growth: Our Comprehensive SEO
+                                            Services Combine Technical Excellence, Content Strategy, and Data-Driven
+                                            Optimization to Increase Your Visibility, Traffic, and Conversions!</p>
+                                        <a href="{% url 'frontend_app:contact' %}" class="l__button">
+                                            <span>lets start conversation</span>
+                                            <i class="bi bi-chevron-right"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-5 col-md-6 mb-4 mb-md-0">
+                                <div class="right mt-4" data-aos="fade-left" data-aos-delay="300">
+                                    <div class="image-container">
+                                        <!-- Using the same image path as in your original code -->
+                                        <img src="{%static 'images/Mask_group.svg' %}" class="main-image"
+                                            alt="SEO Services">
+
+                                        <!-- Desktop Orbit -->
+                                        <div class="stats-orbit">
+                                            <div class="orbit-path" id="orbitPath">
+                                                <div class="info__card" data-aos="zoom-in" data-aos-delay="400">
+                                                    <img src="{%static 'images/calendar.gif' %}"
+                                                        alt="Years of Experience">
+                                                    <h4>8+</h4>
+                                                    <h6>Years Experience</h6>
+                                                </div>
+
+                                                <div class="info__card" data-aos="zoom-in" data-aos-delay="500">
+                                                    <img src="{%static 'images/like.gif' %}" alt="Happy Clients">
+                                                    <h4>350+</h4>
+                                                    <h6>Happy Clients</h6>
+                                                </div>
+
+                                                <div class="info__card" data-aos="zoom-in" data-aos-delay="600">
+                                                    <img src="{%static 'images/task.gif' %}" alt="Successful Projects">
+                                                    <h4>1200+</h4>
+                                                    <h6>Keywords Ranked</h6>
+                                                </div>
+
+                                                <div class="info__card" data-aos="zoom-in" data-aos-delay="700">
+                                                    <img src="{%static 'images/teamwork.gif' %}" alt="Team Members">
+                                                    <h4>25+</h4>
+                                                    <h6>SEO Experts</h6>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Mobile Orbit -->
+                                        <div class="mobile-orbit-container">
+                                            <div class="mobile-orbit-path" id="mobileOrbitPath">
+                                                <div class="mobile-info-card">
+                                                    <img src="{% static 'images/calendar.gif' %}"
+                                                        alt="Years of Experience">
+                                                    <h4>8+</h4>
+                                                    <h6>Years Experience</h6>
+                                                </div>
+
+                                                <div class="mobile-info-card">
+                                                    <img src="{% static 'images/like.gif' %}" alt="Happy Clients">
+                                                    <h4>350+</h4>
+                                                    <h6>Happy Clients</h6>
+                                                </div>
+
+                                                <div class="mobile-info-card">
+                                                    <img src="{% static 'images/task.gif' %}" alt="Successful Projects">
+                                                    <h4>1200+</h4>
+                                                    <h6>Keywords Ranked</h6>
+                                                </div>
+
+                                                <div class="mobile-info-card">
+                                                    <img src="{% static 'images/teamwork.gif' %}" alt="Team Members">
+                                                    <h4>25+</h4>
+                                                    <h6>SEO Experts</h6>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="service__info overflow">
+                        <div class="row row-cols-1 row-cols-md-3 g-4">
+
+                            <div class="col" data-aos="fade-up" data-aos-delay="100">
+                                <div class="service__info--card">
+                                    <div class="service__info--card-head">
+                                        <img src="{% static 'images/social-engagment.gif' %}"
+                                            alt="Satisfaction Guarantee">
+                                        <h2 class="title">Proven Results</h2>
+                                    </div>
+                                    <div class="service__info--content">
+                                        <p>We deliver measurable SEO results that drive organic traffic and increase
+                                            conversions for your business.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col" data-aos="fade-up" data-aos-delay="200">
+                                <div class="service__info--card">
+                                    <div class="service__info--card-head">
+                                        <img src="{% static 'images/justice.gif' %}" alt="Best Quality work">
+                                        <h2 class="title">White-Hat Strategies</h2>
+                                    </div>
+                                    <div class="service__info--content">
+                                        <p>We use only ethical, sustainable SEO techniques that build lasting value for
+                                            your website.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col" data-aos="fade-up" data-aos-delay="300">
+                                <div class="service__info--card">
+                                    <div class="service__info--card-head">
+                                        <img src="{% static 'images/line-chart.gif' %}" alt="Interactive Interface">
+                                        <h2 class="title">Data-Driven Approach</h2>
+                                    </div>
+                                    <div class="service__info--content">
+                                        <p>Our SEO strategies are backed by comprehensive analytics and continuous
+                                            performance monitoring.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- Service Overview -->
+    <section class="bg-development-services">
+        <div class="bg-development-services-container">
+            <div class="bg-development-section-header">
+                <span class="bg-development-section-badge">Our Expertise</span>
+                <h2 class="bg-development-section-title">
+                    {% if service %}{{ service.title }}{% else %}Comprehensive SEO Solutions{% endif %}
+                </h2>
+                <p class="bg-development-section-subtitle">
+                    {% if service %}
+                    {{ service.description|truncatewords:30 }}
+                    {% else %}
+                    We deliver end-to-end SEO services tailored to boost your online visibility and drive sustainable
+                    growth
+                    {% endif %}
+                </p>
+            </div>
+
+            <!-- Dynamic SEO Services Grid -->
+            <div class="bg-development-services-grid">
+                <!-- Technical SEO -->
+                <div class="bg-development-service-card">
+                    <div class="bg-development-service-icon">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <h3 class="bg-development-service-title">Technical SEO</h3>
+                    <p class="bg-development-service-description">Comprehensive website audits and optimization to
+                        improve crawlability, indexability, and site performance.</p>
+                    <a href="#" class="bg-development-service-link">Learn More <i class="fas fa-arrow-right"></i></a>
+                </div>
+
+                <!-- On-Page SEO -->
+                <div class="bg-development-service-card">
+                    <div class="bg-development-service-icon">
+                        <i class="fas fa-keyboard"></i>
+                    </div>
+                    <h3 class="bg-development-service-title">On-Page SEO</h3>
+                    <p class="bg-development-service-description">Strategic optimization of content, meta tags, and HTML
+                        elements to improve search rankings.</p>
+                    <a href="#" class="bg-development-service-link">Learn More <i class="fas fa-arrow-right"></i></a>
+                </div>
+
+                <!-- Content Strategy -->
+                <div class="bg-development-service-card">
+                    <div class="bg-development-service-icon">
+                        <i class="fas fa-pen-fancy"></i>
+                    </div>
+                    <h3 class="bg-development-service-title">Content Strategy</h3>
+                    <p class="bg-development-service-description">Data-driven content creation and optimization to
+                        attract, engage, and convert your target audience.</p>
+                    <a href="#" class="bg-development-service-link">Learn More <i class="fas fa-arrow-right"></i></a>
+                </div>
+
+                <!-- Link Building -->
+                <div class="bg-development-service-card">
+                    <div class="bg-development-service-icon">
+                        <i class="fas fa-link"></i>
+                    </div>
+                    <h3 class="bg-development-service-title">Link Building</h3>
+                    <p class="bg-development-service-description">Strategic acquisition of high-quality backlinks to
+                        improve domain authority and search rankings.</p>
+                    <a href="#" class="bg-development-service-link">Learn More <i class="fas fa-arrow-right"></i></a>
+                </div>
+
+                <!-- Local SEO -->
+                <div class="bg-development-service-card">
+                    <div class="bg-development-service-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3 class="bg-development-service-title">Local SEO</h3>
+                    <p class="bg-development-service-description">Optimization for local search results to drive foot
+                        traffic and local customer acquisition.</p>
+                    <a href="#" class="bg-development-service-link">Learn More <i class="fas fa-arrow-right"></i></a>
+                </div>
+
+                <!-- E-commerce SEO -->
+                <div class="bg-development-service-card">
+                    <div class="bg-development-service-icon">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                    <h3 class="bg-development-service-title">E-commerce SEO</h3>
+                    <p class="bg-development-service-description">Specialized optimization for online stores to increase
+                        product visibility and drive sales.</p>
+                    <a href="#" class="bg-development-service-link">Learn More <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="bg-development-features">
+        <div class="bg-development-container">
+            <div class="bg-development-section-header">
+                <span class="bg-development-badge">Our Approach</span>
+                <h2 class="bg-development-title">Comprehensive SEO Strategies</h2>
+                <p class="bg-development-subtitle">Data-driven methodologies and cutting-edge tools to maximize your
+                    online presence</p>
+            </div>
+
+            <div class="bg-development-features-grid">
+                <div class="bg-development-feature-card">
+                    <div class="bg-development-feature-icon">
+                        <i class="fa-solid fa-chart-line"></i>
+                    </div>
+                    <h3 class="bg-development-feature-title">Analytics & Reporting</h3>
+                    <p class="bg-development-feature-description">Comprehensive tracking and detailed reporting to
+                        measure ROI and optimize campaign performance.</p>
+                    <div class="bg-development-tech-tags">
+                        <span class="bg-development-tech-tag">Google Analytics</span>
+                        <span class="bg-development-tech-tag">Search Console</span>
+                        <span class="bg-development-tech-tag">Data Studio</span>
+                        <span class="bg-development-tech-tag">SEMrush</span>
+                    </div>
+                    <a href="#" class="bg-development-feature-link">Learn More <i class="fas fa-arrow-right"></i></a>
+                </div>
+
+                <div class="bg-development-feature-card">
+                    <div class="bg-development-feature-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h3 class="bg-development-feature-title">Mobile-First Optimization</h3>
+                    <p class="bg-development-feature-description">Ensuring your website delivers exceptional experiences
+                        across all mobile devices and screen sizes.</p>
+                    <div class="bg-development-tech-tags">
+                        <span class="bg-development-tech-tag">Core Web Vitals</span>
+                        <span class="bg-development-tech-tag">Mobile UX</span>
+                        <span class="bg-development-tech-tag">AMP</span>
+                        <span class="bg-development-tech-tag">PWA</span>
+                    </div>
+                    <a href="#" class="bg-development-feature-link">Learn More <i class="fas fa-arrow-right"></i></a>
+                </div>
+
+                <div class="bg-development-feature-card">
+                    <div class="bg-development-feature-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3 class="bg-development-feature-title">Voice Search Optimization</h3>
+                    <p class="bg-development-feature-description">Adapting your content and technical structure for the
+                        growing voice search market.</p>
+                    <div class="bg-development-tech-tags">
+                        <span class="bg-development-tech-tag">Schema Markup</span>
+                        <span class="bg-development-tech-tag">FAQ Optimization</span>
+                        <span class="bg-development-tech-tag">Natural Language</span>
+                        <span class="bg-development-tech-tag">Featured Snippets</span>
+                    </div>
+                    <a href="#" class="bg-development-feature-link">Learn More <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SEO Process -->
+    <section class="bg-development-process">
+        <div class="bg-development-container">
+            <div class="bg-development-section-header">
+                <span class="bg-development-badge">Our Methodology</span>
+                <h2 class="bg-development-title">Strategic SEO Process</h2>
+                <p class="bg-development-subtitle">A proven, transparent approach to delivering measurable SEO results
+                </p>
+            </div>
+
+            <div class="bg-development-process-timeline">
+                <div class="bg-development-process-step">
+                    <div class="bg-development-step-number">1</div>
+                    <div class="bg-development-step-content">
+                        <div class="bg-development-step-icon">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <h3 class="bg-development-step-title">Discovery & Audit</h3>
+                        <p class="bg-development-step-description">Comprehensive analysis of your current SEO
+                            performance, competitors, and growth opportunities.</p>
+                        <ul class="bg-development-step-list">
+                            <li>Technical SEO audit</li>
+                            <li>Competitor analysis</li>
+                            <li>Keyword research</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="bg-development-process-step">
+                    <div class="bg-development-step-number">2</div>
+                    <div class="bg-development-step-content">
+                        <div class="bg-development-step-icon">
+                            <i class="fas fa-chess"></i>
+                        </div>
+                        <h3 class="bg-development-step-title">Strategy Development</h3>
+                        <p class="bg-development-step-description">Creating a customized SEO roadmap with clear
+                            objectives, timelines, and success metrics.</p>
+                        <ul class="bg-development-step-list">
+                            <li>Goal setting</li>
+                            <li>Content planning</li>
+                            <li>Technical requirements</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="bg-development-process-step">
+                    <div class="bg-development-step-number">3</div>
+                    <div class="bg-development-step-content">
+                        <div class="bg-development-step-icon">
+                            <i class="fas fa-tools"></i>
+                        </div>
+                        <h3 class="bg-development-step-title">Implementation</h3>
+                        <p class="bg-development-step-description">Executing the SEO strategy with technical
+                            optimizations, content creation, and link building.</p>
+                        <ul class="bg-development-step-list">
+                            <li>On-page optimization</li>
+                            <li>Content development</li>
+                            <li>Technical improvements</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="bg-development-process-step">
+                    <div class="bg-development-step-number">4</div>
+                    <div class="bg-development-step-content">
+                        <div class="bg-development-step-icon">
+                            <i class="fas fa-chart-bar"></i>
+                        </div>
+                        <h3 class="bg-development-step-title">Monitoring & Analysis</h3>
+                        <p class="bg-development-step-description">Continuous tracking of performance metrics and making
+                            data-driven optimizations.</p>
+                        <ul class="bg-development-step-list">
+                            <li>Ranking tracking</li>
+                            <li>Traffic analysis</li>
+                            <li>Conversion monitoring</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="bg-development-process-step">
+                    <div class="bg-development-step-number">5</div>
+                    <div class="bg-development-step-content">
+                        <div class="bg-development-step-icon">
+                            <i class="fas fa-sync-alt"></i>
+                        </div>
+                        <h3 class="bg-development-step-title">Optimization & Growth</h3>
+                        <p class="bg-development-step-description">Ongoing refinement and expansion of SEO efforts to
+                            maintain and improve results.</p>
+                        <ul class="bg-development-step-list">
+                            <li>Performance reporting</li>
+                            <li>Strategy refinement</li>
+                            <li>Scalable growth</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tools & Technologies -->
+    <section class="py-5 bg-light">
+        <div class="container py-5">
+            <div class="row">
+                <div class="col-lg-7">
+                    <h3 class="bg-infotechs-section-title">Our SEO Technology Stack</h3>
+                    <p class="text-muted">We leverage industry-leading tools and technologies to deliver exceptional SEO
+                        results for our clients.</p>
+                    <p class="text-muted">Our team stays updated with the latest algorithm changes, tools, and best
+                        practices to ensure your website maintains competitive advantage in search rankings.</p>
+                    <img class="mt-3" src="{% static 'img/seo.jpg' %}" width="100%" alt="SEO Tools and Technologies">
+                </div>
+                <div class="col-lg-5">
+                    <div class="bg-infotechs-tech-stack p-4">
+                        <h6 class="mb-3 fw-bold">Analytics & Tracking</h6>
+                        <div class="d-flex flex-wrap gap-2 mb-3">
+                            <span class="badge bg-primary text-white"><i class="fab fa-google me-2"></i>Google
+                                Analytics</span>
+                            <span class="badge bg-success text-white"><i class="fas fa-chart-line me-2"></i>Search
+                                Console</span>
+                            <span class="badge bg-info text-white"><i class="fas fa-tachometer-alt me-2"></i>Google Tag
+                                Manager</span>
+                        </div>
+
+                        <h6 class="mt-4 mb-3 fw-bold">SEO Platforms</h6>
+                        <div class="d-flex flex-wrap gap-2 mb-3">
+                            <span class="badge bg-warning text-dark text-white"><i
+                                    class="fas fa-search me-2"></i>SEMrush</span>
+                            <span class="badge bg-danger text-white"><i class="fas fa-chart-bar me-2"></i>Ahrefs</span>
+                            <span class="badge bg-secondary text-white"><i class="fas fa-toolbox me-2"></i>Moz
+                                Pro</span>
+                        </div>
+
+                        <h6 class="mt-4 mb-3 fw-bold">Technical Tools</h6>
+                        <div class="d-flex flex-wrap gap-2">
+                            <span class="badge bg-dark text-white"><i class="fas fa-bolt me-2"></i>PageSpeed
+                                Insights</span>
+                            <span class="badge bg-primary text-white"><i
+                                    class="fas fa-mobile-alt me-2"></i>Mobile-Friendly Test</span>
+                            <span class="badge bg-success text-white"><i class="fas fa-sitemap me-2"></i>Screaming
+                                Frog</span>
+                        </div>
+
+                        <h6 class="mt-4 mb-3 fw-bold">Content & Optimization</h6>
+                        <div class="d-flex flex-wrap gap-2">
+                            <span class="badge bg-info text-white"><i class="fas fa-edit me-2"></i>Grammarly</span>
+                            <span class="badge bg-warning text-white"><i class="fas fa-heading me-2"></i>Yoast
+                                SEO</span>
+                            <span class="badge bg-danger text-white"><i class="fas fa-code me-2"></i>Schema
+                                Markup</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Dynamic Success Stories Section -->
+    <section id="portfolio" class="py-5">
+        <div class="container py-5">
+            <h3 class="text-center mb-5 bg-infotechs-section-title mx-auto">SEO Success Stories</h3>
+
+            {% if related_projects %}
+            <div class="row">
+                {% for project in related_projects %}
+                <div class="col-md-4 mb-4">
+                    <div class="bg-infotechs-portfolio-item">
+                        {% if project.image %}
+                        <img src="{{ project.image.url }}" alt="{{ project.title }}"
+                            class="img-fluid bg-infotechs-portfolio-img">
+                        {% else %}
+                        <img src="{% static 'img/default-project.jpg' %}" alt="{{ project.title }}"
+                            class="img-fluid bg-infotechs-portfolio-img">
+                        {% endif %}
+                        <div class="bg-infotechs-portfolio-overlay">
+                            <h5 class="text-light fw-bold">{{ project.title }}</h5>
+                            <p class="text-light mb-2">{{ project.company }}</p>
+                            {% if project.category %}
+                            <span class="badge bg-primary mb-2">{{ project.category.title }}</span>
+                            {% endif %}
+                            <p class="text-light small">{{ project.description|truncatewords:15 }}</p>
+                            {% if project.live_link %}
+                            <a href="{{ project.live_link }}" target="_blank"
+                                class="btn btn-outline-light btn-sm mt-2 rounded-5">
+                                <i class="fas fa-external-link-alt me-1"></i> View Live
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <!-- Fallback content if no projects exist -->
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="bg-infotechs-portfolio-item">
+                        <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2015&q=80"
+                            alt="E-commerce SEO" class="img-fluid bg-infotechs-portfolio-img">
+                        <div class="bg-infotechs-portfolio-overlay">
+                            <h5 class="text-light fw-bold">Fashion Retailer</h5>
+                            <p>E-commerce Optimization</p>
+                            <div class="results-stats">
+                                <div class="stat-item">
+                                    <span class="stat-number">+245%</span>
+                                    <span class="stat-label">Traffic</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-number">+167%</span>
+                                    <span class="stat-label">Conversions</span>
+                                </div>
+                            </div>
+                            <a href="#" class="btn btn-outline-light btn-sm mt-2 rounded-5">View Case Study</a>
+                        </div>
+                    </div>
+                </div>
+                <!-- Add more fallback projects as needed -->
+            </div>
+            {% endif %}
+
+            <div class="text-center mt-4">
+                <a href="{% url 'frontend_app:all_seo' %}" class="btn bg-infotechs-btn-primary">View All SEO
+                    Projects</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Clients Section -->
+    <section class="py-5 bg-light">
+        <div class="container py-3">
+            <div class="text-center mb-5">
+                <h6 class="text-uppercase text-muted">Trusted By</h6>
+                <h3 class="fw-bold">Our Valued Clients</h3>
+            </div>
+
+            <div class="row">
+                <div class="col-12">
+                    <div class="client-logos-slider">
+                        <div class="client-logos-track">
+                            {% if related_projects_logo %}
+                            {% for project in related_projects_logo %}
+                            <div class="client-logo-item">
+                                {% if project.logo %}
+                                <img src="{{ project.logo.url }}" alt="{{ project.company }} Logo" class="img-fluid">
+                                {% else %}
+                                <img src="{% static 'img/Logo.png' %}" alt="{{ project.company }} Logo"
+                                    class="img-fluid">
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+                            {% else %}
+                            <!-- Fallback static client logos -->
+                            {% for i in "1234567890" %}
+                            <div class="client-logo-item">
+                                <img src="{% static 'img/Logo.png' %}" alt="Client Logo" class="img-fluid">
+                            </div>
+                            {% endfor %}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Dynamic Testimonials Section -->
+    {% if service_testimonials %}
+    <section class="py-5 bg-light">
+        <div class="container py-5">
+            <h3 class="text-center mb-5 bg-infotechs-section-title">What Our Clients Say</h3>
+            <div class="row">
+                {% for testimonial in service_testimonials %}
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body text-center">
+                            {% if testimonial.image %}
+                            <img src="{{ testimonial.image.url }}" alt="{{ testimonial.name }}"
+                                class="rounded-circle mb-3" width="80" height="80">
+                            {% else %}
+                            <div class="rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center mb-3"
+                                style="width: 80px; height: 80px;">
+                                <i class="fas fa-user fa-2x"></i>
+                            </div>
+                            {% endif %}
+                            <div class="text-warning mb-3">
+                                {% for i in "12345" %}
+                                {% if forloop.counter <= testimonial.rating %} <i class="fas fa-star"></i>
+                                    {% else %}
+                                    <i class="far fa-star"></i>
+                                    {% endif %}
+                                    {% endfor %}
+                            </div>
+                            <p class="card-text fst-italic">"{{ testimonial.message }}"</p>
+                            <h6 class="card-title mb-1">{{ testimonial.name }}</h6>
+                            {% if testimonial.designation %}
+                            <p class="text-muted small">{{ testimonial.designation }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+   <!-- Dynamic FAQ Section -->
+<section class="sm-faq-section">
+    <div class="container-fluid">
+        <div class="text-center mb-5">
+            <h2 class="sm-faq-title">Frequently Asked <span>Questions</span></h2>
+            <p class="sm-faq-subtitle">Find answers to common questions about our digital marketing services.</p>
+        </div>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="accordion" id="sm-faqAccordion">
+                        {% if service_faqs %}
+                        <!-- Dynamic FAQs from database -->
+                        {% for faq in service_faqs %}
+                        <div class="accordion-item mb-3 border-0 shadow-sm">
+                            <h2 class="accordion-header" id="sm-heading{{ forloop.counter }}">
+                                <button class="accordion-button sm-accordion-button collapsed" type="button"
+                                    data-bs-toggle="collapse" data-bs-target="#sm-collapse{{ forloop.counter }}"
+                                    aria-expanded="false" aria-controls="sm-collapse{{ forloop.counter }}">
+                                    {{ faq.question }}
+                                </button>
+                            </h2>
+                            <div id="sm-collapse{{ forloop.counter }}" class="accordion-collapse collapse"
+                                aria-labelledby="sm-heading{{ forloop.counter }}" data-bs-parent="#sm-faqAccordion">
+                                <div class="accordion-body sm-accordion-body">
+                                    {{ faq.answer|linebreaks }}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+
+                        {% else %}
+                        <!-- Static FAQs for SEO Service -->
+                        <div class="accordion-item mb-3 border-0 shadow-sm">
+                            <h2 class="accordion-header" id="sm-headingOne">
+                                <button class="accordion-button sm-accordion-button collapsed" type="button"
+                                    data-bs-toggle="collapse" data-bs-target="#sm-collapseOne" aria-expanded="false"
+                                    aria-controls="sm-collapseOne">
+                                    Can you do SEO for any type of website?
+                                </button>
+                            </h2>
+                            <div id="sm-collapseOne" class="accordion-collapse collapse"
+                                aria-labelledby="sm-headingOne" data-bs-parent="#sm-faqAccordion">
+                                <div class="accordion-body sm-accordion-body">
+                                    Yes. We optimize websites built with any platform, including WordPress, Django,
+                                    Laravel, Shopify, custom websites, etc.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item mb-3 border-0 shadow-sm">
+                            <h2 class="accordion-header" id="sm-headingTwo">
+                                <button class="accordion-button sm-accordion-button collapsed" type="button"
+                                    data-bs-toggle="collapse" data-bs-target="#sm-collapseTwo" aria-expanded="false"
+                                    aria-controls="sm-collapseTwo">
+                                    How long does it take to see SEO results?
+                                </button>
+                            </h2>
+                            <div id="sm-collapseTwo" class="accordion-collapse collapse"
+                                aria-labelledby="sm-headingTwo" data-bs-parent="#sm-faqAccordion">
+                                <div class="accordion-body sm-accordion-body">
+                                    SEO is a long-term strategy. You may see initial improvements in 3-6 months, but
+                                    significant results typically take 6-12 months of consistent optimization.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item mb-3 border-0 shadow-sm">
+                            <h2 class="accordion-header" id="sm-headingThree">
+                                <button class="accordion-button sm-accordion-button collapsed" type="button"
+                                    data-bs-toggle="collapse" data-bs-target="#sm-collapseThree" aria-expanded="false"
+                                    aria-controls="sm-collapseThree">
+                                    What's included in your SEO services?
+                                </button>
+                            </h2>
+                            <div id="sm-collapseThree" class="accordion-collapse collapse"
+                                aria-labelledby="sm-headingThree" data-bs-parent="#sm-faqAccordion">
+                                <div class="accordion-body sm-accordion-body">
+                                    Our comprehensive SEO services include: website audit, keyword research, on-page
+                                    optimization, technical SEO, content strategy, link building, and monthly
+                                    performance reporting.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item mb-3 border-0 shadow-sm">
+                            <h2 class="accordion-header" id="sm-headingFour">
+                                <button class="accordion-button sm-accordion-button collapsed" type="button"
+                                    data-bs-toggle="collapse" data-bs-target="#sm-collapseFour" aria-expanded="false"
+                                    aria-controls="sm-collapseFour">
+                                    Do you offer local SEO services?
+                                </button>
+                            </h2>
+                            <div id="sm-collapseFour" class="accordion-collapse collapse"
+                                aria-labelledby="sm-headingFour" data-bs-parent="#sm-faqAccordion">
+                                <div class="accordion-body sm-accordion-body">
+                                    Yes, we specialize in local SEO for businesses targeting specific geographic areas.
+                                    This includes Google My Business optimization, local citations, and location-based
+                                    keyword targeting.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item mb-3 border-0 shadow-sm">
+                            <h2 class="accordion-header" id="sm-headingFive">
+                                <button class="accordion-button sm-accordion-button collapsed" type="button"
+                                    data-bs-toggle="collapse" data-bs-target="#sm-collapseFive" aria-expanded="false"
+                                    aria-controls="sm-collapseFive">
+                                    How much does SEO cost?
+                                </button>
+                            </h2>
+                            <div id="sm-collapseFive" class="accordion-collapse collapse"
+                                aria-labelledby="sm-headingFive" data-bs-parent="#sm-faqAccordion">
+                                <div class="accordion-body sm-accordion-body">
+                                    <p>SEO investment varies based on several factors including:</p>
+                                    <ul>
+                                        <li>Website size and complexity</li>
+                                        <li>Competition level in your industry</li>
+                                        <li>Geographic target areas</li>
+                                        <li>Current SEO health of your website</li>
+                                        <li>Specific goals and timeline</li>
+                                    </ul>
+                                    <p>For a personalized quote and strategy tailored to your business, please contact
+                                        our BG Infotechs team. We'll provide a transparent assessment and custom pricing
+                                        based on your unique needs.</p>
+                                    <div class="mt-3">
+                                        <a href="/contact" class="btn btn-primary">Get Your Free SEO Audit</a>
+                                        <a href="tel:+1234567890" class="btn btn-outline-primary ms-2">Call for
+                                            Consultation</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item mb-3 border-0 shadow-sm">
+                            <h2 class="accordion-header" id="sm-headingSix">
+                                <button class="accordion-button sm-accordion-button collapsed" type="button"
+                                    data-bs-toggle="collapse" data-bs-target="#sm-collapseSix" aria-expanded="false"
+                                    aria-controls="sm-collapseSix">
+                                    Will SEO guarantee #1 ranking on Google?
+                                </button>
+                            </h2>
+                            <div id="sm-collapseSix" class="accordion-collapse collapse"
+                                aria-labelledby="sm-headingSix" data-bs-parent="#sm-faqAccordion">
+                                <div class="accordion-body sm-accordion-body">
+                                    No ethical SEO company can guarantee #1 rankings. Google's algorithm is complex and
+                                    constantly changing. We focus on sustainable growth, improved rankings, and
+                                    increased organic traffic.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item mb-3 border-0 shadow-sm">
+                            <h2 class="accordion-header" id="sm-headingSeven">
+                                <button class="accordion-button sm-accordion-button collapsed" type="button"
+                                    data-bs-toggle="collapse" data-bs-target="#sm-collapseSeven" aria-expanded="false"
+                                    aria-controls="sm-collapseSeven">
+                                    How do I get started with BG Infotechs SEO services?
+                                </button>
+                            </h2>
+                            <div id="sm-collapseSeven" class="accordion-collapse collapse"
+                                aria-labelledby="sm-headingSeven" data-bs-parent="#sm-faqAccordion">
+                                <div class="accordion-body sm-accordion-body">
+                                    <p>Getting started is easy:</p>
+                                    <ol>
+                                        <li><strong>Contact our team</strong> for an initial consultation</li>
+                                        <li><strong>Free website audit</strong> to identify opportunities</li>
+                                        <li><strong>Custom strategy</strong> tailored to your business goals</li>
+                                        <li><strong>Transparent proposal</strong> with clear deliverables</li>
+                                        <li><strong>Start optimization</strong> with our expert team</li>
+                                    </ol>
+                                    <p>Ready to improve your search rankings? Contact BG Infotechs today!</p>
+                                    <div class="mt-3">
+                                        <a href="/contact" class="btn btn-primary">Start Your SEO Journey</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <img src="{% static 'img/38071986-removebg-preview.png' %}" class="img-fluid"
+                        style="height: 450px !important; margin-top: -20px !important;" alt="SEO FAQ Illustration">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+   
+
+    <!-- CTA Section -->
+    <section id="contact" class="bg-infotechs-cta-section mb-5">
+        <div class="container bg-infotechs-cta-content">
+            <div class="row justify-content-center">
+                <div class="col-lg-8 text-center">
+                    <h3 class="fw-bold mb-4 text-light">Ready to Dominate Search Rankings?</h3>
+                    <p class="lead mb-5 text-light">Let's discuss how we can boost your online visibility and drive
+                        qualified traffic to your business.</p>
+                    <div class="d-flex gap-3 justify-content-center flex-wrap">
+                        {% if company_profile and company_profile.company_phone %}
+                        <a href="tel:{{ company_profile.company_phone }}"
+                            class="btn bg-infotechs-btn-outline btn-lg px-4">
+                            <i class="fas fa-phone me-2"></i> Call Us
+                        </a>
+                        {% else %}
+                        <a href="tel:+1234567890" class="btn bg-infotechs-btn-outline btn-lg px-4">
+                            <i class="fas fa-phone me-2"></i> Call Us
+                        </a>
+                        {% endif %}
+                        <a href="{% url 'frontend_app:contact' %}" class="btn bg-infotechs-btn-primary btn-lg px-4">
+                            <i class="fas fa-chart-line me-2"></i> Free SEO Audit
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+{% block extra_js %}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Initialize AOS
+        AOS.init({
+            duration: 800,
+            easing: 'ease-in-out',
+            once: true
+        });
+
+        // Desktop orbit animation control
+        const orbitPath = document.getElementById('orbitPath');
+        const infoCards = document.querySelectorAll('.info__card');
+
+        if (orbitPath) {
+            // Pause animation on hover
+            orbitPath.addEventListener('mouseenter', function () {
+                this.classList.add('paused');
+            });
+
+            orbitPath.addEventListener('mouseleave', function () {
+                this.classList.remove('paused');
+            });
+
+            // Add individual card hover effects
+            infoCards.forEach(card => {
+                card.addEventListener('mouseenter', function () {
+                    orbitPath.classList.add('paused');
+                    this.style.transform = 'scale(1.1)';
+                    this.style.boxShadow = 'var(--shadow-hover)';
+                    this.style.zIndex = '10';
+                });
+
+                card.addEventListener('mouseleave', function () {
+                    orbitPath.classList.remove('paused');
+                    this.style.transform = '';
+                    this.style.boxShadow = '';
+                    this.style.zIndex = '';
+                });
+            });
+        }
+
+        // Mobile orbit animation control
+        const mobileOrbitPath = document.getElementById('mobileOrbitPath');
+        const mobileInfoCards = document.querySelectorAll('.mobile-info-card');
+
+        if (mobileOrbitPath) {
+            // For mobile, we'll keep the animation running continuously
+            // but we can add touch events to pause on tap if needed
+
+            mobileInfoCards.forEach(card => {
+                card.addEventListener('touchstart', function () {
+                    mobileOrbitPath.classList.add('paused');
+                    this.style.transform = 'scale(1.1)';
+                    this.style.boxShadow = 'var(--shadow-hover)';
+                    this.style.zIndex = '10';
+                });
+
+                card.addEventListener('touchend', function () {
+                    setTimeout(() => {
+                        mobileOrbitPath.classList.remove('paused');
+                        this.style.transform = '';
+                        this.style.boxShadow = '';
+                        this.style.zIndex = '';
+                    }, 1000);
+                });
+            });
+        }
+    });
+</script>
+
+<script>
+    // Navbar scroll effect
+    window.addEventListener('scroll', function () {
+        const navbar = document.querySelector('.bg-infotechs-navbar');
+        if (window.scrollY > 50) {
+            navbar.classList.add('scrolled');
+        } else {
+            navbar.classList.remove('scrolled');
+        }
+    });
+
+    // Smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                window.scrollTo({
+                    top: target.offsetTop - 80,
+                    behavior: 'smooth'
+                });
+            }
+        });
+    });
+
+    // Animate elements when they come into view
+    const animateOnScroll = function () {
+        const elements = document.querySelectorAll('.bg-infotechs-feature-card, .bg-infotechs-process-step, .bg-infotechs-portfolio-item');
+
+        elements.forEach(element => {
+            const elementPosition = element.getBoundingClientRect().top;
+            const windowHeight = window.innerHeight;
+
+            if (elementPosition < windowHeight - 100) {
+                element.classList.add('animate_animated', 'animate_fadeInUp');
+            }
+        });
+    };
+
+    window.addEventListener('scroll', animateOnScroll);
+    window.addEventListener('load', animateOnScroll);
+
+    // Initialize Bootstrap tooltips
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl)
+    });
+
+    // FAQ accordion enhancement
+    document.addEventListener('DOMContentLoaded', function () {
+        const accordionItems = document.querySelectorAll('.accordion-button');
+        accordionItems.forEach(item => {
+            item.addEventListener('click', function () {
+                this.classList.toggle('active');
+            });
+        });
+    });
+</script>
+
+<style>
+    /* Custom SEO-specific styles */
+    .bg-infotechs-tech-stack .badge {
+        margin: 0.25rem;
+        padding: 0.5rem 0.75rem;
+        font-size: 0.85rem;
+        border-radius: 20px;
+    }
+
+    .results-stats {
+        display: flex;
+        justify-content: space-around;
+        margin: 1rem 0;
+    }
+
+    .stat-item {
+        text-align: center;
+    }
+
+    .stat-number {
+        display: block;
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #fff;
+    }
+
+    .stat-label {
+        font-size: 0.8rem;
+        color: rgba(255, 255, 255, 0.8);
+    }
+
+    /* Enhanced portfolio items for SEO case studies */
+    .bg-infotechs-portfolio-item {
+        position: relative;
+        overflow: hidden;
+        border-radius: 12px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        height: 300px;
+    }
+
+    .bg-infotechs-portfolio-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    .bg-infotechs-portfolio-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+
+    .bg-infotechs-portfolio-item:hover .bg-infotechs-portfolio-img {
+        transform: scale(1.05);
+    }
+
+    .bg-infotechs-portfolio-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(to bottom, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.8));
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+    }
+
+    .bg-infotechs-portfolio-item:hover .bg-infotechs-portfolio-overlay {
+        opacity: 1;
+    }
+
+    /* Accordion enhancements */
+    .accordion-button:not(.collapsed) {
+        background-color: #f8f9fa;
+        color: #0d6efd;
+        box-shadow: none;
+    }
+
+    .accordion-button:focus {
+        box-shadow: none;
+        border-color: rgba(0, 0, 0, .125);
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .results-stats {
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .stat-item {
+            margin-bottom: 10px;
+        }
+
+        .bg-infotechs-tech-stack .badge {
+            font-size: 0.8rem;
+            padding: 0.4rem 0.6rem;
+        }
+
+        .bg-infotechs-portfolio-item {
+            height: 250px;
+        }
+    }
+</style>
+{% endblock %}
+{% endblock %}

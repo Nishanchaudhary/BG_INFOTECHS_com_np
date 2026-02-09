@@ -1,0 +1,740 @@
+{% extends 'base.html' %}
+
+{% block title %}
+{% if role == 'student' %}Create Student Profile
+{% elif role == 'staff' %}Create Staff Profile
+{% else %}Create Profile
+{% endif %} - User Management System
+{% endblock %}
+
+{% block page_title %}
+{% if role == 'student' %}Create Student Profile
+{% elif role == 'staff' %}Create Staff Profile
+{% else %}Create Profile
+{% endif %}
+{% endblock %}
+
+{% block breadcrumb_active %}
+<li class="breadcrumb-item"><a href="{% url 'bg_app:user_list' %}">User Management</a></li>
+<li class="breadcrumb-item active">
+    {% if role == 'student' %}Create Student Profile
+    {% elif role == 'staff' %}Create Staff Profile
+    {% else %}Create Profile
+    {% endif %}
+</li>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10 col-xl-8">
+        <!-- User Info Header -->
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-body p-4">
+                <div class="d-flex align-items-center">
+                    <div class="flex-shrink-0">
+                        <div class="avatar-lg rounded-circle bg-primary bg-opacity-10 d-flex align-items-center justify-content-center">
+                            {% if user.profile_picture %}
+                                <img src="{{ user.profile_picture.url }}" alt="{{ user.username }}" class="rounded-circle" style="width: 80px; height: 80px; object-fit: cover;">
+                            {% else %}
+                                {% if role == 'student' %}
+                                <i class="fas fa-user-graduate fa-2x text-primary"></i>
+                                {% elif role == 'staff' %}
+                                <i class="fas fa-chalkboard-teacher fa-2x text-primary"></i>
+                                {% else %}
+                                <i class="fas fa-user fa-2x text-primary"></i>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="flex-grow-1 ms-4">
+                        <h3 class="mb-1 text-dark">{{ user.get_full_name|default:user.username }}</h3>
+                        <p class="text-muted mb-1">@{{ user.username }}</p>
+                        <p class="text-muted mb-0">Email: {{ user.email }}</p>
+                    </div>
+                    <div class="flex-shrink-0">
+                        <span class="badge {% if role == 'student' %}bg-success{% elif role == 'staff' %}bg-info{% else %}bg-primary{% endif %} fs-6 px-3 py-2">
+                            {% if role == 'student' %}STUDENT
+                            {% elif role == 'staff' %}STAFF
+                            {% else %}USER
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Form Card -->
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-transparent border-bottom py-3">
+                <h5 class="card-title mb-0 text-dark">
+                    <i class="fas fa-user-plus me-2 text-primary"></i>
+                    {% if role == 'student' %}Create Student Profile
+                    {% elif role == 'staff' %}Create Staff Profile
+                    {% else %}Create User Profile
+                    {% endif %}
+                </h5>
+            </div>
+            
+            <form method="post" class="needs-validation" novalidate>
+                {% csrf_token %}
+                <div class="card-body p-4">
+                    
+                    <!-- Display Form Errors -->
+                    {% if form.non_field_errors %}
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        {% for error in form.non_field_errors %}
+                            {{ error }}
+                        {% endfor %}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    {% endif %}
+
+                    <!-- Student Specific Fields -->
+                    {% if role == 'student' %}
+                    <!-- Academic Information Section -->
+                    <div class="section-card mb-4">
+                        <div class="section-header d-flex align-items-center mb-3">
+                            <div class="icon-wrapper bg-success bg-opacity-10 rounded p-2 me-3">
+                                <i class="fas fa-graduation-cap text-success fs-5"></i>
+                            </div>
+                            <h6 class="mb-0 text-dark fw-semibold">Academic Information</h6>
+                        </div>
+                        
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    {{ form.enrollment_number }}
+                                    <label for="{{ form.enrollment_number.id_for_label }}">
+                                        <i class="fas fa-id-card me-2 text-muted"></i>Enrollment Number *
+                                    </label>
+                                    {% if form.enrollment_number.errors %}
+                                    <div class="invalid-feedback d-block mt-1">
+                                        {% for error in form.enrollment_number.errors %}
+                                        <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    {{ form.qualification }}
+                                    <label for="{{ form.qualification.id_for_label }}">
+                                        <i class="fas fa-certificate me-2 text-muted"></i>Qualification *
+                                    </label>
+                                    {% if form.qualification.errors %}
+                                    <div class="invalid-feedback d-block mt-1">
+                                        {% for error in form.qualification.errors %}
+                                        <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mt-2">
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    {{ form.training }}
+                                    <label for="{{ form.training.id_for_label }}">
+                                        <i class="fas fa-book me-2 text-muted"></i>Training/Course *
+                                    </label>
+                                    {% if form.training.errors %}
+                                    <div class="invalid-feedback d-block mt-1">
+                                        {% for error in form.training.errors %}
+                                        <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="{{ form.training_end_date.id_for_label }}" class="form-label mb-2">
+                                        <i class="fas fa-calendar-alt me-2 text-muted"></i>Training End Date
+                                    </label>
+                                    <div class="input-group">
+                                        {{ form.training_end_date }}
+                                        
+                                    </div>
+                                    {% if form.training_end_date.errors %}
+                                    <div class="invalid-feedback d-block mt-1">
+                                        {% for error in form.training_end_date.errors %}
+                                        <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Fee Information Section -->
+                    <div class="section-card">
+                        <div class="section-header d-flex align-items-center mb-3">
+                            <div class="icon-wrapper bg-warning bg-opacity-10 rounded p-2 me-3">
+                                <i class="fas fa-money-bill-wave text-warning fs-5"></i>
+                            </div>
+                            <h6 class="mb-0 text-dark fw-semibold">Fee Information</h6>
+                        </div>
+                        
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <div class="form-floating">
+                                    {{ form.total_fees }}
+                                    <label for="{{ form.total_fees.id_for_label }}">
+                                        <i class="fas fa-receipt me-2 text-muted"></i>Total Fees *
+                                    </label>
+                                    {% if form.total_fees.errors %}
+                                    <div class="invalid-feedback d-block mt-1">
+                                        {% for error in form.total_fees.errors %}
+                                        <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-floating">
+                                    {{ form.fees_paid }}
+                                    <label for="{{ form.fees_paid.id_for_label }}">
+                                        <i class="fas fa-credit-card me-2 text-muted"></i>Fees Paid *
+                                    </label>
+                                    {% if form.fees_paid.errors %}
+                                    <div class="invalid-feedback d-block mt-1">
+                                        {% for error in form.fees_paid.errors %}
+                                        <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control bg-light" id="remaining_fees" placeholder="Remaining Fees" readonly>
+                                    <label for="remaining_fees">
+                                        <i class="fas fa-calculator me-2 text-muted"></i>Remaining Fees
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Fee Progress Bar -->
+                        <div class="mt-3">
+                            <div class="d-flex justify-content-between mb-1">
+                                <small class="text-muted">Fee Payment Progress</small>
+                                <small class="text-muted" id="fee-percentage">0%</small>
+                            </div>
+                            <div class="progress" style="height: 6px;">
+                                <div id="fee-progress-bar" class="progress-bar bg-success" role="progressbar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                
+
+                    <!-- Staff Specific Fields -->
+                    {% if role == 'staff' %}
+                    <!-- Employment Information Section -->
+                    <div class="section-card mb-4">
+                        <div class="section-header d-flex align-items-center mb-3">
+                            <div class="icon-wrapper bg-info bg-opacity-10 rounded p-2 me-3">
+                                <i class="fas fa-briefcase text-info fs-5"></i>
+                            </div>
+                            <h6 class="mb-0 text-dark fw-semibold">Employment Information</h6>
+                        </div>
+                        
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    {{ form.employee_id }}
+                                    <label for="{{ form.employee_id.id_for_label }}">
+                                        <i class="fas fa-id-badge me-2 text-muted"></i>Employee ID *
+                                    </label>
+                                    {% if form.employee_id.errors %}
+                                    <div class="invalid-feedback d-block mt-1">
+                                        {% for error in form.employee_id.errors %}
+                                        <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    {{ form.department }}
+                                    <label for="{{ form.department.id_for_label }}">
+                                        <i class="fas fa-building me-2 text-muted"></i>Department *
+                                    </label>
+                                    {% if form.department.errors %}
+                                    <div class="invalid-feedback d-block mt-1">
+                                        {% for error in form.department.errors %}
+                                        <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mt-2">
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    {{ form.position }}
+                                    <label for="{{ form.position.id_for_label }}">
+                                        <i class="fas fa-user-tie me-2 text-muted"></i>Position *
+                                    </label>
+                                    {% if form.position.errors %}
+                                    <div class="invalid-feedback d-block mt-1">
+                                        {% for error in form.position.errors %}
+                                        <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="{{ form.join_date.id_for_label }}" class="form-label mb-2">
+                                        <i class="fas fa-calendar-plus me-2 text-muted"></i>Join Date
+                                    </label>
+                                    <div class="input-group">
+                                        {{ form.join_date }}
+                                       
+                                    </div>
+                                    {% if form.join_date.errors %}
+                                    <div class="invalid-feedback d-block mt-1">
+                                        {% for error in form.join_date.errors %}
+                                        <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Salary Information Section -->
+                    
+                    <div class="section-card">
+                        <div class="section-header d-flex align-items-center mb-3">
+                            <div class="icon-wrapper bg-warning bg-opacity-10 rounded p-2 me-3">
+                                <i class="fas fa-money-check-alt text-warning fs-5"></i>
+                            </div>
+                            <h6 class="mb-0 text-dark fw-semibold">Salary Information</h6>
+                        </div>
+                        
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <div class="form-floating">
+                                    {{ form.salary }}
+                                    <label for="{{ form.salary.id_for_label }}">
+                                        <i class="fas fa-money-bill me-2 text-muted"></i>Total Salary *
+                                    </label>
+                                    {% if form.salary.errors %}
+                                    <div class="invalid-feedback d-block mt-1">
+                                        {% for error in form.salary.errors %}
+                                        <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-floating">
+                                    {{ form.paid_salary }}
+                                    <label for="{{ form.paid_salary.id_for_label }}">
+                                        <i class="fas fa-hand-holding-usd me-2 text-muted"></i>Paid Salary *
+                                    </label>
+                                    {% if form.paid_salary.errors %}
+                                    <div class="invalid-feedback d-block mt-1">
+                                        {% for error in form.paid_salary.errors %}
+                                        <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control bg-light" id="salary_due" placeholder="Salary Due" readonly>
+                                    <label for="salary_due">
+                                        <i class="fas fa-calculator me-2 text-muted"></i>Salary Due
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Salary Progress Bar -->
+                        <div class="mt-3">
+                            <div class="d-flex justify-content-between mb-1">
+                                <small class="text-muted">Salary Payment Progress</small>
+                                <small class="text-muted" id="salary-percentage">0%</small>
+                            </div>
+                            <div class="progress" style="height: 6px;">
+                                <div id="salary-progress-bar" class="progress-bar bg-success" role="progressbar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                   
+                </div>
+                
+                <div class="card-footer bg-light py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <a href="{% url 'bg_app:user_list' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i> Back to Users
+                        </a>
+                        <div>
+                            <button type="reset" class="btn btn-outline-danger me-2">
+                                <i class="fas fa-redo me-2"></i> Reset
+                            </button>
+                            <button type="submit" class="btn btn-primary px-4">
+                                <i class="fas fa-save me-2"></i>
+                                {% if role == 'student' %}Create Student Profile
+                                {% elif role == 'staff' %}Create Staff Profile
+                                {% else %}Create Profile
+                                {% endif %}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Include Flatpickr CSS and JS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+<script>
+    $(document).ready(function () {
+        // Add Bootstrap styling to form fields
+        $('input, select, textarea').addClass('form-control');
+        $('select').addClass('form-select');
+        
+        // Initialize Flatpickr for date fields with proper configuration
+        {% if role == 'student' %}
+        const trainingEndDatePicker = flatpickr("#id_training_end_date", {
+            dateFormat: "Y-m-d",
+            allowInput: true,
+            clickOpens: true,
+            position: "auto right",
+            theme: "light",
+            static: true,
+            wrap: true,
+            onReady: function(selectedDates, dateStr, instance) {
+                // Ensure the calendar opens when clicking the trigger
+                instance._input.nextElementSibling.addEventListener('click', function() {
+                    instance.open();
+                });
+            }
+        });
+
+        // Add click event to calendar icon
+        $('#training_end_date_trigger').on('click', function() {
+            trainingEndDatePicker.open();
+        });
+        {% endif %}
+        
+        {% if role == 'staff' %}
+        const joinDatePicker = flatpickr("#id_join_date", {
+            dateFormat: "Y-m-d",
+            allowInput: true,
+            clickOpens: true,
+            position: "auto right",
+            theme: "light",
+            static: true,
+            wrap: true,
+            onReady: function(selectedDates, dateStr, instance) {
+                // Ensure the calendar opens when clicking the trigger
+                instance._input.nextElementSibling.addEventListener('click', function() {
+                    instance.open();
+                });
+            }
+        });
+
+        // Add click event to calendar icon
+        $('#join_date_trigger').on('click', function() {
+            joinDatePicker.open();
+        });
+        {% endif %}
+
+        // Calculate remaining fees for students
+        {% if role == 'student' %}
+        function calculateStudentFees() {
+            const totalFees = parseFloat($('#id_total_fees').val()) || 0;
+            const feesPaid = parseFloat($('#id_fees_paid').val()) || 0;
+            const remainingFees = totalFees - feesPaid;
+            
+            $('#remaining_fees').val(remainingFees.toFixed(2));
+            
+            // Update progress bar
+            const paidPercentage = totalFees > 0 ? (feesPaid / totalFees) * 100 : 0;
+            $('#fee-percentage').text(paidPercentage.toFixed(1) + '%');
+            $('#fee-progress-bar').css('width', paidPercentage + '%');
+            
+            // Update visual feedback
+            if (remainingFees < 0) {
+                $('#id_fees_paid').addClass('is-invalid');
+                $('#remaining_fees').addClass('is-invalid');
+                $('#fee-progress-bar').removeClass('bg-success').addClass('bg-danger');
+            } else {
+                $('#id_fees_paid').removeClass('is-invalid');
+                $('#remaining_fees').removeClass('is-invalid');
+                $('#fee-progress-bar').removeClass('bg-danger').addClass('bg-success');
+                
+                if (remainingFees > 0) {
+                    $('#fee-progress-bar').addClass('bg-warning');
+                } else {
+                    $('#fee-progress-bar').removeClass('bg-warning');
+                }
+            }
+        }
+        
+        $('#id_total_fees, #id_fees_paid').on('input', calculateStudentFees);
+        calculateStudentFees(); // Initial calculation
+        {% endif %}
+
+        // Calculate salary due for staff
+        {% if role == 'staff' %}
+        function calculateStaffSalary() {
+            const totalSalary = parseFloat($('#id_salary').val()) || 0;
+            const paidSalary = parseFloat($('#id_paid_salary').val()) || 0;
+            const salaryDue = totalSalary - paidSalary;
+            
+            $('#salary_due').val(salaryDue.toFixed(2));
+            
+            // Update progress bar
+            const paidPercentage = totalSalary > 0 ? (paidSalary / totalSalary) * 100 : 0;
+            $('#salary-percentage').text(paidPercentage.toFixed(1) + '%');
+            $('#salary-progress-bar').css('width', paidPercentage + '%');
+            
+            // Update visual feedback
+            if (salaryDue < 0) {
+                $('#id_paid_salary').addClass('is-invalid');
+                $('#salary_due').addClass('is-invalid');
+                $('#salary-progress-bar').removeClass('bg-success').addClass('bg-danger');
+            } else {
+                $('#id_paid_salary').removeClass('is-invalid');
+                $('#salary_due').removeClass('is-invalid');
+                $('#salary-progress-bar').removeClass('bg-danger').addClass('bg-success');
+                
+                if (salaryDue > 0) {
+                    $('#salary-progress-bar').addClass('bg-warning');
+                } else {
+                    $('#salary-progress-bar').removeClass('bg-warning');
+                }
+            }
+        }
+        
+        $('#id_salary, #id_paid_salary').on('input', calculateStaffSalary);
+        calculateStaffSalary(); // Initial calculation
+        {% endif %}
+
+        // Real-time validation for fees/salary
+        function validateAmounts() {
+            {% if role == 'student' %}
+            const totalFees = parseFloat($('#id_total_fees').val()) || 0;
+            const feesPaid = parseFloat($('#id_fees_paid').val()) || 0;
+            
+            if (feesPaid > totalFees) {
+                $('#id_fees_paid').addClass('is-invalid');
+                return false;
+            } else {
+                $('#id_fees_paid').removeClass('is-invalid');
+                return true;
+            }
+            {% endif %}
+            
+            {% if role == 'staff' %}
+            const totalSalary = parseFloat($('#id_salary').val()) || 0;
+            const paidSalary = parseFloat($('#id_paid_salary').val()) || 0;
+            
+            if (paidSalary > totalSalary) {
+                $('#id_paid_salary').addClass('is-invalid');
+                return false;
+            } else {
+                $('#id_paid_salary').removeClass('is-invalid');
+                return true;
+            }
+            {% endif %}
+            
+            return true;
+        }
+
+        // Form validation
+        $('form').on('submit', function(e) {
+            if (!validateAmounts()) {
+                e.preventDefault();
+                $('.alert-danger').remove();
+                $(this).prepend(
+                    '<div class="alert alert-danger alert-dismissible fade show" role="alert">' +
+                    '<i class="fas fa-exclamation-triangle me-2"></i>' +
+                    '{% if role == "student" %}Fees paid cannot exceed total fees{% else %}Paid salary cannot exceed total salary{% endif %}' +
+                    '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>' +
+                    '</div>'
+                );
+                {% if role == 'student' %}
+                $('#id_fees_paid').focus();
+                {% else %}
+                $('#id_paid_salary').focus();
+                {% endif %}
+            }
+            
+            if (!this.checkValidity()) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            
+            $(this).addClass('was-validated');
+        });
+
+        // Real-time validation on input
+        {% if role == 'student' %}
+        $('#id_fees_paid').on('input', validateAmounts);
+        {% endif %}
+        {% if role == 'staff' %}
+        $('#id_paid_salary').on('input', validateAmounts);
+        {% endif %}
+    });
+</script>
+
+<style>
+    .section-card {
+        background: #f8f9fa;
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        border-left: 4px solid #007bff;
+    }
+    
+    .section-header h6 {
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+    
+    .icon-wrapper {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .form-floating {
+        margin-bottom: 0.5rem;
+    }
+    
+    .card {
+        border-radius: 0.75rem;
+        overflow: hidden;
+    }
+    
+    .card-header {
+        border-bottom: 1px solid #e9ecef;
+    }
+    
+    .avatar-lg {
+        width: 80px;
+        height: 80px;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        border-color: #80bdff;
+    }
+    
+    .btn {
+        border-radius: 0.375rem;
+        font-weight: 500;
+        padding: 0.5rem 1.5rem;
+    }
+    
+    .progress {
+        border-radius: 0.375rem;
+    }
+    
+    .bg-light {
+        background-color: #f8f9fa !important;
+    }
+    
+    /* Calendar trigger styling */
+    .calendar-trigger {
+        cursor: pointer;
+        border-left: 0;
+        transition: all 0.2s ease;
+    }
+    
+    .calendar-trigger:hover {
+        background-color: #e9ecef;
+        color: #007bff !important;
+    }
+    
+    /* Flatpickr customization */
+    .flatpickr-calendar {
+        border-radius: 0.5rem;
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        border: 1px solid #dee2e6;
+        z-index: 1060 !important;
+    }
+    
+    .flatpickr-day.selected {
+        background: #007bff;
+        border-color: #007bff;
+    }
+    
+    .flatpickr-day.today {
+        border-color: #007bff;
+    }
+    
+    .flatpickr-day.today:hover {
+        background: #007bff;
+        color: white;
+    }
+    
+    /* Input group styling */
+    .input-group .form-control {
+        border-right: 0;
+    }
+    
+    .input-group .form-control:focus {
+        border-right: 0;
+    }
+    
+    .input-group-text {
+        border-left: 0;
+    }
+    
+    @media (max-width: 768px) {
+        .card-body {
+            padding: 1rem;
+        }
+        
+        .section-card {
+            padding: 1rem;
+        }
+        
+        .d-flex.justify-content-between {
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .d-flex.justify-content-between > div {
+            width: 100%;
+            text-align: center;
+        }
+        
+        .flatpickr-calendar {
+            width: 100% !important;
+            left: 50% !important;
+            transform: translateX(-50%);
+        }
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,699 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ title }} - BG Infotech{% endblock %}
+{% block page_title %}{{ title }}{% endblock %}
+{% block breadcrumb_active %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-12 col-xl-10">
+        <div class="card shadow-lg border-0">
+            <div class="card-header bg-gradient-primary text-white py-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h3 class="card-title mb-0 text-white">
+                            <i class="fas fa-shield-alt me-3"></i>
+                            {{ title }}
+                        </h3>
+                        <p class="mb-0 opacity-75 mt-2">
+                            <i class="fas fa-info-circle me-1"></i>
+                            {% if title == 'Create Role' %}
+                                Create a new role with specific permissions
+                            {% else %}
+                                Modify role details and permissions
+                            {% endif %}
+                        </p>
+                    </div>
+                    <div class="card-tools">
+                        <a href="{% url 'bg_app:role_list' %}" class="btn btn-light btn-sm">
+                            <i class="fas fa-arrow-left me-2"></i> Back to Roles
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card-body p-5">
+                <form method="post" id="roleForm" class="needs-validation" novalidate>
+                    {% csrf_token %}
+                    
+                    <!-- Success/Error Messages -->
+                    {% if form.non_field_errors %}
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-exclamation-triangle me-3 fa-lg"></i>
+                            <div>
+                                <h6 class="alert-heading mb-2">Please fix the following errors:</h6>
+                                <ul class="mb-0 ps-3">
+                                    {% for error in form.non_field_errors %}
+                                    <li>{{ error }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Basic Information Section -->
+                    <div class="section-card mb-5">
+                        <div class="section-header mb-4">
+                            <h4 class="section-title text-primary">
+                                <i class="fas fa-info-circle me-2"></i>
+                                Basic Information
+                            </h4>
+                            <div class="section-divider"></div>
+                        </div>
+                        
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    {{ form.name }}
+                                    <label for="{{ form.name.id_for_label }}">
+                                        Role Name <span class="text-danger">*</span>
+                                    </label>
+                                    {% if form.name.errors %}
+                                    <div class="invalid-feedback d-block mt-2">
+                                        <i class="fas fa-exclamation-circle me-1"></i>
+                                        {% for error in form.name.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                    <div class="form-text mt-2">
+                                        <i class="fas fa-lightbulb me-1 text-warning"></i>
+                                        Choose from predefined role types
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    {{ form.description }}
+                                    <label for="{{ form.description.id_for_label }}">Description</label>
+                                    {% if form.description.errors %}
+                                    <div class="invalid-feedback d-block mt-2">
+                                        <i class="fas fa-exclamation-circle me-1"></i>
+                                        {% for error in form.description.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                    <div class="form-text mt-2">
+                                        <i class="fas fa-lightbulb me-1 text-warning"></i>
+                                        Optional description for this role
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Permissions Section -->
+                    <div class="section-card">
+                        <div class="section-header mb-4">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h4 class="section-title text-primary mb-2">
+                                        <i class="fas fa-key me-2"></i>
+                                        Role Permissions
+                                    </h4>
+                                    <p class="text-muted mb-0">Select the permissions that users with this role will have</p>
+                                </div>
+                                <div class="select-all-container">
+                                    <div class="form-check form-switch">
+                                        <input type="checkbox" class="form-check-input" id="selectAllPermissions" role="switch">
+                                        <label class="form-check-label fw-bold text-primary" for="selectAllPermissions">
+                                            Select All
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="section-divider"></div>
+                        </div>
+
+                        <div class="permissions-container">
+                            {% if form.permissions.field.choices %}
+                            <div class="row g-3">
+                                {% for value, label in form.permissions.field.choices %}
+                                <div class="col-12 col-sm-6 col-lg-4">
+                                    <div class="permission-card">
+                                        <div class="form-check">
+                                            <input type="checkbox" 
+                                                   name="permissions" 
+                                                   value="{{ value }}" 
+                                                   id="perm_{{ value }}" 
+                                                   class="form-check-input permission-checkbox"
+                                                   {% if value in form.permissions.value %}checked{% endif %}>
+                                            <label class="form-check-label w-100" for="perm_{{ value }}">
+                                                <div class="permission-content">
+                                                    <div class="permission-icon">
+                                                        <i class="fas fa-shield-check"></i>
+                                                    </div>
+                                                    <div class="permission-details">
+                                                        <h6 class="permission-title mb-1">{{ label }}</h6>
+                                                        <small class="permission-id text-muted">ID: {{ value }}</small>
+                                                    </div>
+                                                    <div class="permission-check">
+                                                        <i class="fas fa-check-circle"></i>
+                                                    </div>
+                                                </div>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% else %}
+                            <div class="empty-state text-center py-5">
+                                <div class="empty-icon mb-3">
+                                    <i class="fas fa-key fa-3x text-muted"></i>
+                                </div>
+                                <h5 class="text-muted">No Permissions Available</h5>
+                                <p class="text-muted mb-4">There are no permissions configured in the system.</p>
+                                <a href="#" class="btn btn-outline-primary">
+                                    <i class="fas fa-cog me-2"></i>Configure Permissions
+                                </a>
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        {% if form.permissions.errors %}
+                        <div class="alert alert-warning mt-4">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            {% for error in form.permissions.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="form-actions mt-5 pt-4 border-top">
+                        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-4">
+                            <div class="action-buttons">
+                                <button type="submit" class="btn btn-success btn-lg px-5 py-3">
+                                    <i class="fas fa-save me-2"></i> 
+                                    <span class="btn-text">{{ title }}</span>
+                                    <span class="btn-loading d-none">
+                                        <i class="fas fa-spinner fa-spin me-2"></i> Saving...
+                                    </span>
+                                </button>
+                                <a href="{% url 'bg_app:role_list' %}" class="btn btn-outline-secondary btn-lg px-5 py-3 ms-3">
+                                    <i class="fas fa-times me-2"></i> Cancel
+                                </a>
+                            </div>
+                            
+                            <div class="form-stats">
+                                <div class="stats-card bg-light rounded-3 p-3 text-center">
+                                    <div class="stats-number text-primary fw-bold fs-4" id="selectedCount">0</div>
+                                    <div class="stats-label text-muted small">Permissions Selected</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(document).ready(function() {
+        // Initialize form field styling
+        function initializeFormFields() {
+            // Style select and textarea fields
+            $('select').addClass('form-select form-select-lg');
+            $('textarea').addClass('form-control');
+            $('input[type="text"]').addClass('form-control form-control-lg');
+            
+            // Add floating label support
+            $('.form-floating input, .form-floating select, .form-floating textarea').on('focus', function() {
+                $(this).closest('.form-floating').addClass('focused');
+            }).on('blur', function() {
+                if (!$(this).val()) {
+                    $(this).closest('.form-floating').removeClass('focused');
+                }
+            });
+        }
+
+        // Permission selection functionality
+        function initializePermissions() {
+            const $selectAll = $('#selectAllPermissions');
+            const $checkboxes = $('.permission-checkbox');
+            const $selectedCount = $('#selectedCount');
+
+            // Update selected count
+            function updateSelectedCount() {
+                const selected = $checkboxes.filter(':checked').length;
+                const total = $checkboxes.length;
+                $selectedCount.text(selected);
+                
+                // Update stats card color based on selection
+                const $statsCard = $('.stats-card');
+                $statsCard.removeClass('bg-warning bg-success bg-light');
+                if (selected === 0) {
+                    $statsCard.addClass('bg-light');
+                } else if (selected === total) {
+                    $statsCard.addClass('bg-success text-white');
+                    $selectedCount.addClass('text-white');
+                } else {
+                    $statsCard.addClass('bg-warning');
+                }
+            }
+
+            // Select All functionality
+            $selectAll.on('change', function() {
+                const isChecked = $(this).prop('checked');
+                $checkboxes.prop('checked', isChecked).trigger('change');
+                updateSelectedCount();
+            });
+
+            // Individual checkbox change
+            $checkboxes.on('change', function() {
+                const total = $checkboxes.length;
+                const selected = $checkboxes.filter(':checked').length;
+                
+                // Update select all state
+                if (selected === 0) {
+                    $selectAll.prop('checked', false);
+                    $selectAll.prop('indeterminate', false);
+                } else if (selected === total) {
+                    $selectAll.prop('checked', true);
+                    $selectAll.prop('indeterminate', false);
+                } else {
+                    $selectAll.prop('checked', false);
+                    $selectAll.prop('indeterminate', true);
+                }
+                
+                // Update card visual state
+                const $card = $(this).closest('.permission-card');
+                if ($(this).prop('checked')) {
+                    $card.addClass('selected');
+                } else {
+                    $card.removeClass('selected');
+                }
+                
+                updateSelectedCount();
+            });
+
+            // Initialize counts and states
+            $checkboxes.trigger('change');
+            updateSelectedCount();
+        }
+
+        // Form submission handling
+        function initializeFormSubmission() {
+            $('#roleForm').on('submit', function(e) {
+                const $submitBtn = $(this).find('button[type="submit"]');
+                const $btnText = $submitBtn.find('.btn-text');
+                const $btnLoading = $submitBtn.find('.btn-loading');
+                
+                // Show loading state
+                $btnText.addClass('d-none');
+                $btnLoading.removeClass('d-none');
+                $submitBtn.prop('disabled', true);
+                
+                // Add loading state to form
+                $(this).addClass('form-loading');
+            });
+        }
+
+        // Initialize animations and interactions
+        function initializeAnimations() {
+            // Permission card hover effects
+            $('.permission-card').hover(
+                function() {
+                    $(this).addClass('hover');
+                },
+                function() {
+                    $(this).removeClass('hover');
+                }
+            );
+
+            // Add ripple effect to buttons
+            $('.btn').on('click', function(e) {
+                const $btn = $(this);
+                const x = e.pageX - $btn.offset().left;
+                const y = e.pageY - $btn.offset().top;
+                
+                const $ripple = $('<span class="btn-ripple"></span>');
+                $ripple.css({
+                    left: x,
+                    top: y
+                });
+                
+                $btn.append($ripple);
+                
+                setTimeout(() => {
+                    $ripple.remove();
+                }, 600);
+            });
+        }
+
+        // Initialize all functionality
+        initializeFormFields();
+        initializePermissions();
+        initializeFormSubmission();
+        initializeAnimations();
+
+        // Add form validation
+        $('#roleForm').on('submit', function() {
+            const $nameField = $('#{{ form.name.id_for_label }}');
+            if (!$nameField.val()) {
+                $nameField.addClass('is-invalid');
+                return false;
+            }
+            return true;
+        });
+    });
+</script>
+
+<style>
+    /* Custom CSS Variables */
+    :root {
+        --primary-color: #4e73df;
+        --success-color: #1cc88a;
+        --warning-color: #f6c23e;
+        --danger-color: #e74a3b;
+        --light-bg: #f8f9fc;
+        --border-color: #e3e6f0;
+        --shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+        --transition: all 0.3s ease;
+    }
+
+    /* Card Styling */
+    .card {
+        border: none;
+        border-radius: 1rem;
+        overflow: hidden;
+    }
+
+    .card-header.bg-gradient-primary {
+        background: linear-gradient(135deg, #4e73df 0%, #224abe 100%) !important;
+    }
+
+    /* Section Styling */
+    .section-card {
+        background: var(--light-bg);
+        border-radius: 0.75rem;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        border: 1px solid var(--border-color);
+    }
+
+    .section-header {
+        position: relative;
+    }
+
+    .section-title {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .section-divider {
+        height: 3px;
+        background: linear-gradient(90deg, var(--primary-color), transparent);
+        border-radius: 2px;
+        margin-top: 0.5rem;
+    }
+
+    /* Form Styling */
+    .form-floating {
+        position: relative;
+    }
+
+    .form-control, .form-select {
+        border-radius: 0.75rem;
+        border: 2px solid var(--border-color);
+        padding: 1rem 1.25rem;
+        font-size: 1rem;
+        transition: var(--transition);
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.25rem rgba(78, 115, 223, 0.25);
+        transform: translateY(-2px);
+    }
+
+    .form-control-lg, .form-select-lg {
+        padding: 1.25rem 1.5rem;
+        font-size: 1.1rem;
+    }
+
+    /* Permissions Grid */
+    .permissions-container {
+        max-height: 500px;
+        overflow-y: auto;
+        padding: 1rem;
+        background: white;
+        border-radius: 0.5rem;
+        border: 1px solid var(--border-color);
+    }
+
+    .permission-card {
+        background: white;
+        border: 2px solid var(--border-color);
+        border-radius: 0.75rem;
+        padding: 1rem;
+        transition: var(--transition);
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .permission-card:hover {
+        border-color: var(--primary-color);
+        transform: translateY(-3px);
+        box-shadow: var(--shadow);
+    }
+
+    .permission-card.selected {
+        border-color: var(--success-color);
+        background: linear-gradient(135deg, #f8fff9 0%, #e8f5e8 100%);
+    }
+
+    .permission-card.hover {
+        border-color: var(--primary-color);
+    }
+
+    .permission-content {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .permission-icon {
+        width: 40px;
+        height: 40px;
+        background: var(--light-bg);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--primary-color);
+        font-size: 1.1rem;
+        transition: var(--transition);
+    }
+
+    .permission-card.selected .permission-icon {
+        background: var(--success-color);
+        color: white;
+    }
+
+    .permission-details {
+        flex: 1;
+    }
+
+    .permission-title {
+        font-weight: 600;
+        color: #2d3748;
+        margin-bottom: 0.25rem;
+    }
+
+    .permission-id {
+        font-family: 'Courier New', monospace;
+        font-size: 0.75rem;
+    }
+
+    .permission-check {
+        opacity: 0;
+        color: var(--success-color);
+        font-size: 1.25rem;
+        transition: var(--transition);
+    }
+
+    .permission-card.selected .permission-check {
+        opacity: 1;
+        transform: scale(1.1);
+    }
+
+    /* Checkbox Styling */
+    .form-check-input {
+        position: absolute;
+        opacity: 0;
+        cursor: pointer;
+    }
+
+    .form-check {
+        margin: 0;
+    }
+
+    .form-switch .form-check-input {
+        width: 3rem;
+        height: 1.5rem;
+    }
+
+    /* Stats Card */
+    .stats-card {
+        transition: var(--transition);
+        min-width: 120px;
+    }
+
+    .stats-number {
+        font-size: 2rem;
+        line-height: 1;
+    }
+
+    /* Buttons */
+    .btn {
+        border-radius: 0.75rem;
+        font-weight: 600;
+        transition: var(--transition);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-lg {
+        padding: 1rem 2rem;
+        font-size: 1.1rem;
+    }
+
+    .btn-success {
+        background: linear-gradient(135deg, var(--success-color), #17a673);
+        border: none;
+    }
+
+    .btn-success:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 0.5rem 1rem rgba(28, 200, 138, 0.3);
+    }
+
+    /* Ripple Effect */
+    .btn-ripple {
+        position: absolute;
+        background: rgba(255, 255, 255, 0.5);
+        border-radius: 50%;
+        transform: scale(0);
+        animation: ripple 0.6s linear;
+        pointer-events: none;
+    }
+
+    @keyframes ripple {
+        to {
+            transform: scale(4);
+            opacity: 0;
+        }
+    }
+
+    /* Empty State */
+    .empty-state {
+        padding: 3rem 2rem;
+    }
+
+    .empty-icon {
+        opacity: 0.5;
+    }
+
+    /* Scrollbar Styling */
+    .permissions-container::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .permissions-container::-webkit-scrollbar-track {
+        background: var(--light-bg);
+        border-radius: 4px;
+    }
+
+    .permissions-container::-webkit-scrollbar-thumb {
+        background: var(--primary-color);
+        border-radius: 4px;
+    }
+
+    .permissions-container::-webkit-scrollbar-thumb:hover {
+        background: #224abe;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .card-body {
+            padding: 1.5rem !important;
+        }
+        
+        .section-card {
+            padding: 1.5rem;
+        }
+        
+        .permission-content {
+            gap: 0.75rem;
+        }
+        
+        .permission-icon {
+            width: 35px;
+            height: 35px;
+            font-size: 1rem;
+        }
+        
+        .btn-lg {
+            padding: 0.875rem 1.5rem;
+            font-size: 1rem;
+        }
+        
+        .form-actions {
+            text-align: center;
+        }
+        
+        .action-buttons {
+            width: 100%;
+        }
+        
+        .action-buttons .btn {
+            width: 100%;
+            margin-bottom: 1rem;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .card-body {
+            padding: 1rem !important;
+        }
+        
+        .section-card {
+            padding: 1rem;
+        }
+        
+        .permissions-container {
+            max-height: 400px;
+        }
+    }
+
+    /* Loading State */
+    .form-loading {
+        opacity: 0.7;
+        pointer-events: none;
+    }
+
+    .form-loading::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(255, 255, 255, 0.8);
+        z-index: 10;
+    }
+</style>
+{% endblock %}

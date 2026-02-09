@@ -1,0 +1,618 @@
+
+<div class="container-fluid">
+    <div class="card border-dark">
+        <div class="card-header bg-success text-white border-dark">
+            <h5 class="card-title font-weight-bold text-primary mb-0">
+                <i class="fa-solid fa-star me-2"></i>Services Testimonials
+            </h5>
+        </div>
+        <div class="card-body p-0">
+            <!-- Loading Overlay -->
+            <div id="loading-overlay" style="display: none;">
+                <div class="d-flex justify-content-center align-items-center" style="height: 200px;">
+                    <div class="spinner-border text-success" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <span class="ms-2">Loading testimonials...</span>
+                </div>
+            </div>
+            
+            <!-- DataTable -->
+            <div class="table-responsive">
+                <table id="services-testimonials-table" class="table table-hover table-striped table-bordered border-dark" style="width:100%; margin:0;">
+                    <thead class="table-success border-dark">
+                        <tr>
+                            <th style="border: 1px solid #000; border-bottom: 2px solid #000; padding: 12px; text-align: center;">Image</th>
+                            <th style="border: 1px solid #000; border-bottom: 2px solid #000; padding: 12px; text-align: center;">Name</th>
+                            <th style="border: 1px solid #000; border-bottom: 2px solid #000; padding: 12px; text-align: center;">Service</th>
+                            <th style="border: 1px solid #000; border-bottom: 2px solid #000; padding: 12px; text-align: center;">Designation</th>
+                            <th style="border: 1px solid #000; border-bottom: 2px solid #000; padding: 12px; text-align: center;">Message</th>
+                            <th style="border: 1px solid #000; border-bottom: 2px solid #000; padding: 12px; text-align: center;">Rating</th>
+                            <th style="border: 1px solid #000; border-bottom: 2px solid #000; padding: 12px; text-align: center;">Status</th>
+                            <th style="border: 1px solid #000; border-bottom: 2px solid #000; padding: 12px; text-align: center;">Created At</th>
+                            <th style="border: 1px solid #000; border-bottom: 2px solid #000; padding: 12px; text-align: center;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="table-light border-dark">
+                        <!-- Data will be loaded via AJAX -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Image View Modal -->
+<div class="modal fade" id="imageModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="imageModalTitle">Testimonial Image</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center">
+                <img id="modalImage" src="" alt="" class="img-fluid" style="max-height: 70vh;">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Container -->
+<div id="toastContainer" class="toast-container position-fixed top-0 end-0 p-3"></div>
+
+
+
+<!-- DataTables CSS -->
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.bootstrap5.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.4.1/css/responsive.bootstrap5.min.css">
+
+<style>
+#services-testimonials-table {
+    border: 2px solid #000 !important;
+    border-collapse: separate !important;
+    background-color: white;
+}
+
+#services-testimonials-table th,
+#services-testimonials-table td {
+    border: 1px solid #000 !important;
+    vertical-align: middle !important;
+    padding: 12px 8px !important;
+}
+
+#services-testimonials-table thead th {
+    border-bottom: 2px solid #000 !important;
+    background-color: #7bf0bb !important;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+#loading-overlay {
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 5px;
+    display: none !important;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1000;
+}
+
+/* DataTables processing indicator styling */
+.dataTables_processing {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    border-radius: 5px;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    z-index: 1000;
+}
+
+/* Make sure the processing indicator is visible */
+div.dataTables_processing {
+    color: #000 !important;
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+#services-testimonials-table tbody tr {
+    border-bottom: 1px solid #000 !important;
+}
+
+.message-text {
+    cursor: help;
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: inline-block;
+}
+
+.testimonial-thumbnail {
+    border-radius: 50%;
+    border: 2px solid #dee2e6;
+    transition: transform 0.2s;
+}
+
+.testimonial-thumbnail:hover {
+    transform: scale(1.1);
+}
+
+.rating-stars {
+    font-size: 16px;
+    letter-spacing: 2px;
+}
+
+.badge {
+    font-size: 0.75em;
+    margin: 1px;
+}
+
+.btn-group-vertical .btn {
+    margin-bottom: 2px;
+}
+
+.dt-buttons {
+    margin-bottom: 10px;
+}
+
+.dt-button {
+    margin-right: 5px;
+    margin-bottom: 5px;
+}
+
+/* Toast styling */
+.toast {
+    background-color: rgba(255, 255, 255, 0.95);
+    border-left: 4px solid;
+}
+
+.toast-success {
+    border-left-color: #28a745;
+}
+
+.toast-error {
+    border-left-color: #dc3545;
+}
+
+.toast-info {
+    border-left-color: #17a2b8;
+}
+
+/* Fix for pagination display */
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+    padding: 6px 12px !important;
+    margin-left: 2px;
+    border: 1px solid #dee2e6 !important;
+    background-color: white !important;
+    color: #000 !important;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.current {
+    background-color: #28a745 !important;
+    border-color: #28a745 !important;
+    color: white !important;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+    background-color: #e9ecef !important;
+    border-color: #dee2e6 !important;
+    color: #000 !important;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+    background-color: #218838 !important;
+    border-color: #1e7e34 !important;
+    color: white !important;
+}
+
+/* Print optimization */
+@media print {
+    .dt-buttons, .dataTables_filter, .dataTables_length, .dataTables_info, .dataTables_paginate {
+        display: none !important;
+    }
+    
+    #services-testimonials-table {
+        border: 1px solid #000 !important;
+        font-size: 10px;
+    }
+    
+    #services-testimonials-table th,
+    #services-testimonials-table td {
+        padding: 6px 4px !important;
+    }
+    
+    .testimonial-thumbnail {
+        width: 30px !important;
+        height: 30px !important;
+    }
+}
+</style>
+
+
+
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<!-- DataTables JS -->
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.bootstrap5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.print.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+
+<script>
+// CSRF token function for Django
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+// Toast notification function
+function showToast(message, type = 'info') {
+    const toastId = 'toast-' + Date.now();
+    const toastHtml = `
+        <div id="${toastId}" class="toast" role="alert">
+            <div class="toast-header">
+                <strong class="me-auto">Notification</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+            </div>
+            <div class="toast-body">
+                ${message}
+            </div>
+        </div>
+    `;
+    
+    $('#toastContainer').append(toastHtml);
+    const toastElement = document.getElementById(toastId);
+    const toast = new bootstrap.Toast(toastElement);
+    
+    // Add background color based on type
+    if (type === 'success') {
+        $(toastElement).addClass('toast-success');
+    } else if (type === 'error') {
+        $(toastElement).addClass('toast-error');
+    } else {
+        $(toastElement).addClass('toast-info');
+    }
+    
+    toast.show();
+    
+    // Remove toast from DOM after it's hidden
+    toastElement.addEventListener('hidden.bs.toast', function() {
+        $(this).remove();
+    });
+}
+
+// Function to view image in modal
+function viewImage(imageUrl, imageTitle) {
+    $('#modalImage').attr('src', imageUrl);
+    $('#imageModalTitle').text(imageTitle || 'Testimonial Image');
+    $('#imageModal').modal('show');
+}
+
+$(document).ready(function() {
+    // Show loading overlay initially
+    $('#loading-overlay').show();
+    
+    var table = $('#services-testimonials-table').DataTable({
+        "processing": true,
+        "serverSide": true,
+        "ajax": {
+            "url": "{% url 'company_app:services_testimonial_datatables_api' %}",
+            "type": "GET",
+            "dataType": "json",
+            "data": function(d) {
+                // Add any additional parameters if needed
+            },
+            "dataSrc": function(json) {
+                // Hide loading overlay when data is loaded
+                $('#loading-overlay').hide();
+                return json.data;
+            },
+            "error": function(xhr, error, code) {
+                $('#loading-overlay').hide();
+                console.log('AJAX Error:', xhr, error, code);
+                showToast('Error loading testimonials. Please try again.', 'error');
+            }
+        },
+        "columns": [
+            {
+                "data": "image", 
+                "name": "image", 
+                "className": "text-center", 
+                "orderable": false,
+                "searchable": false,
+                "render": function(data, type, row) {
+                    // For export, return text representation
+                    if (type === 'export') {
+                        return data.includes('img') ? 'Has Image' : 'No Image';
+                    }
+                    return data;
+                }
+            },
+            {
+                "data": "name", 
+                "name": "name", 
+                "className": "text-center",
+                "render": function(data, type, row) {
+                    if (type === 'sort' || type === 'type' || type === 'export') {
+                        return $(data).text() || data;
+                    }
+                    return data;
+                }
+            },
+            {
+                "data": "service", 
+                "name": "service", 
+                "className": "text-center",
+                "render": function(data, type, row) {
+                    if (type === 'sort' || type === 'type' || type === 'export') {
+                        return $(data).text() || data;
+                    }
+                    return data;
+                }
+            },
+            {
+                "data": "designation", 
+                "name": "designation", 
+                "className": "text-center",
+                "render": function(data, type, row) {
+                    if (type === 'sort' || type === 'type' || type === 'export') {
+                        return $(data).text() || data;
+                    }
+                    return data;
+                }
+            },
+            {
+                "data": "message", 
+                "name": "message", 
+                "className": "text-center", 
+                "orderable": false,
+                "render": function(data, type, row) {
+                    // For export, return plain text without HTML
+                    if (type === 'sort' || type === 'type' || type === 'export') {
+                        return $(data).text() || data;
+                    }
+                    return data;
+                }
+            },
+            {
+                "data": "rating", 
+                "name": "rating", 
+                "className": "text-center", 
+                "orderable": false,
+                "searchable": false,
+                "render": function(data, type, row) {
+                    // For export, return numeric rating
+                    if (type === 'export') {
+                        // Extract rating from stars - count filled stars
+                        var starCount = (data.match(/fa-star/g) || []).length;
+                        return starCount + '/5';
+                    }
+                    if (type === 'sort' || type === 'type') {
+                        // For sorting, return numeric value
+                        var starCount = (data.match(/fa-star/g) || []).length;
+                        return starCount;
+                    }
+                    return data;
+                }
+            },
+            {
+                "data": "status", 
+                "name": "status", 
+                "className": "text-center", 
+                "orderable": false,
+                "render": function(data, type, row) {
+                    if (type === 'sort' || type === 'type' || type === 'export') {
+                        return $(data).text() || data;
+                    }
+                    return data;
+                }
+            },
+            {
+                "data": "created_at", 
+                "name": "created_at", 
+                "className": "text-center",
+                "render": function(data, type, row) {
+                    if (type === 'sort' || type === 'type' || type === 'export') {
+                        return $(data).text() || data;
+                    }
+                    return data;
+                }
+            },
+            {
+                "data": "actions", 
+                "name": "actions", 
+                "className": "text-center", 
+                "orderable": false, 
+                "searchable": false,
+                "render": function(data, type, row) {
+                    // For export, don't include action buttons
+                    if (type === 'export') {
+                        return '';
+                    }
+                    return data;
+                }
+            }
+        ],
+        "order": [[1, 'asc']], // Default sort by name
+        "pageLength": 10,
+        "responsive": true,
+        "dom": "<'row'<'col-sm-12 col-md-6'B><'col-sm-12 col-md-6'f>>" +
+               "<'row'<'col-sm-12'tr>>" +
+               "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+        "buttons": [
+            {
+                extend: 'copy',
+                text: '<i class="fas fa-copy"></i> Copy',
+                className: 'btn btn-secondary btn-sm',
+                exportOptions: {
+                    columns: [1, 2, 3, 4, 5, 6, 7], // Exclude image and actions columns
+                    format: {
+                        body: function (data, row, column, node) {
+                            // Strip HTML for copy export
+                            if (data === null || data === undefined) {
+                                return '';
+                            }
+                            var temp = document.createElement('div');
+                            temp.innerHTML = data;
+                            return temp.textContent || temp.innerText || '';
+                        }
+                    }
+                }
+            },
+            {
+                extend: 'excel',
+                text: '<i class="fas fa-file-excel"></i> Excel',
+                className: 'btn btn-success btn-sm',
+                exportOptions: {
+                    columns: [1, 2, 3, 4, 5, 6, 7], // Exclude image and actions columns
+                    format: {
+                        body: function (data, row, column, node) {
+                            // Strip HTML for Excel export
+                            if (data === null || data === undefined) {
+                                return '';
+                            }
+                            var temp = document.createElement('div');
+                            temp.innerHTML = data;
+                            return temp.textContent || temp.innerText || '';
+                        }
+                    }
+                }
+            },
+            {
+                extend: 'pdf',
+                text: '<i class="fas fa-file-pdf"></i> PDF',
+                className: 'btn btn-danger btn-sm',
+                exportOptions: {
+                    columns: [1, 2, 3, 4, 5, 6, 7], // Exclude image and actions columns
+                    format: {
+                        body: function (data, row, column, node) {
+                            // Strip HTML for PDF export
+                            if (data === null || data === undefined) {
+                                return '';
+                            }
+                            var temp = document.createElement('div');
+                            temp.innerHTML = data;
+                            return temp.textContent || temp.innerText || '';
+                        }
+                    }
+                },
+                customize: function(doc) {
+                    doc.defaultStyle.fontSize = 10;
+                    doc.styles.tableHeader.fontSize = 11;
+                    doc.pageMargins = [10, 10, 10, 10];
+                    doc.content[1].table.widths = ['*', '*', '*', '*', '*', '*', '*'];
+                }
+            },
+            {
+                extend: 'print',
+                text: '<i class="fas fa-print"></i> Print',
+                className: 'btn btn-info btn-sm',
+                exportOptions: {
+                    columns: [0, 1, 2, 3, 4, 5, 6, 7], // Include all columns except actions
+                    format: {
+                        body: function (data, row, column, node) {
+                            // Strip HTML for print, but keep basic formatting
+                            if (data === null || data === undefined) {
+                                return '';
+                            }
+                            var temp = document.createElement('div');
+                            temp.innerHTML = data;
+                            return temp.textContent || temp.innerText || '';
+                        }
+                    }
+                },
+                customize: function(win) {
+                    $(win.document.body).find('table').addClass('display').css('font-size', '10px');
+                    $(win.document.body).find('tr:nth-child(odd) td').each(function(index){
+                        $(this).css('background-color','#D0D0D0');
+                    });
+                    $(win.document.body).find('h1').css('text-align','center');
+                }
+            }{% if can_add_services_testimonial %},
+            {
+                text: '<i class="fas fa-plus"></i> Add Testimonial',
+                className: 'btn btn-primary btn-sm',
+                action: function (e, dt, node, config) {
+                    window.location.href = "{% url 'company_app:services_testimonial_create' %}";
+                }
+            }
+            {% endif %}
+        ],
+        "language": {
+            "search": "Search:",
+            "lengthMenu": "Show _MENU_ entries",
+            "info": "Showing _START_ to _END_ of _TOTAL_ entries",
+            "infoEmpty": "Showing 0 to 0 of 0 entries",
+            "infoFiltered": "(filtered from _MAX_ total entries)",
+            "zeroRecords": "No matching testimonials found",
+            "paginate": {
+                "first": "First",
+                "last": "Last",
+                "next": "Next",
+                "previous": "Previous"
+            },
+            "processing": '<div class="spinner-border text-success" role="status"><span class="visually-hidden">Loading...</span></div> Processing...'
+        },
+        "initComplete": function() {
+            // Add custom CSS to search box
+            $('.dataTables_filter input').addClass('form-control form-control-sm')
+                .attr('placeholder', 'Search by name, designation, or message...')
+                .css('width', '300px');
+                
+            // Hide loading overlay after initialization
+            $('#loading-overlay').hide();
+        }
+    });
+
+    // Initialize tooltips when table is drawn
+    table.on('draw', function() {
+        $('[data-bs-toggle="tooltip"]').tooltip();
+        
+        // Attach click handlers for image thumbnails
+        $('.testimonial-thumbnail').on('click', function() {
+            var imageUrl = $(this).attr('src');
+            var imageTitle = $(this).attr('alt');
+            viewImage(imageUrl, imageTitle);
+        });
+    });
+
+    // Custom styling for buttons
+    $('.dt-buttons').addClass('btn-group');
+    $('.dt-button').addClass('btn btn-sm');
+    
+    // Handle window resize for responsive layout
+    $(window).on('resize', function() {
+        table.columns.adjust().responsive.recalc();
+    });
+});
+</script>

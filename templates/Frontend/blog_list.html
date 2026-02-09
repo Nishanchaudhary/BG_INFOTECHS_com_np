@@ -1,0 +1,943 @@
+{% extends 'Frontend/base.html' %}
+{% load static %}
+{% block title %}Blog List{% endblock %}
+{% block extra_css %} {% endblock %}
+{% block content %}
+<main class="main">
+  <div class="page-title light-background">
+    <div class="container">
+      <h1>BG-Infotechs</h1>
+      <nav class="breadcrumbs">
+        <ol>
+          <li><a href="{% url 'frontend_app:home' %}"><i class="fas fa-home"></i> Home</a></li>
+          <li><a href="{% url 'frontend_app:blogs' %}"><i class="fas fa-blog"></i> Blog</a></li>
+          <li class="current">Blog List</li>
+        </ol>
+      </nav>
+    </div>
+  </div>
+
+  <section>
+    <div class="bg-infotechs-blog">
+      <div class="blog-header">
+        <h1 class="blog-title">Tech Insights</h1>
+        <p class="blog-subtitle">Latest trends, tutorials, and industry knowledge from BG Infotechs experts</p>
+
+        <!-- Search and Filter Section -->
+        <div class="blog-filters">
+          <div class="search-filter-form">
+            <div class="search-container">
+              <div class="search-box">
+                <input type="text" id="blogSearch" class="search-input" placeholder="Search articles by title, content, or author..." value="{{ search_query|default:'' }}">
+                <button type="button" class="search-btn" id="searchButton">
+                  <i class="fas fa-search"></i>
+                </button>
+              </div>
+            </div>
+            
+            <select id="categoryFilter" class="category-filter">
+              <option value="">All Categories</option>
+              {% for category in categories %}
+                <option value="{{ category.name }}" {% if category_filter == category.name %}selected{% endif %}>
+                  {{ category.name }}
+                </option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Results Count -->
+      <div class="results-count" id="resultsCount">
+        Showing all {{ page_obj.paginator.count }} articles
+      </div>
+
+      <!-- Display active filters -->
+      <div class="active-filters" id="activeFilters">
+        {% if search_query or category_filter %}
+          <span class="text-black">Active filters:</span>
+          {% if search_query %}
+          <span class="filter-tag">
+            Search: "{{ search_query }}"
+            <span class="remove-filter" data-type="search">×</span>
+          </span>
+          {% endif %}
+          {% if category_filter %}
+          <span class="filter-tag">
+            Category: {{ category_filter }}
+            <span class="remove-filter" data-type="category">×</span>
+          </span>
+          {% endif %}
+          <a href="{% url 'frontend_app:blog_list' %}" class="clear-all">Clear all</a>
+        {% endif %}
+      </div>
+
+      <!-- Loading Spinner -->
+      <div class="loading-spinner" id="loadingSpinner">
+        <div class="spinner"></div>
+        <p>Loading articles...</p>
+      </div>
+
+      <!-- Blog Grid -->
+      <div class="blog-grid" id="blogGrid">
+        {% for blog in blogs %}
+        <div class="blog-card" 
+             data-title="{{ blog.title|lower }}" 
+             data-category="{% if blog.category %}{{ blog.category.name|lower }}{% endif %}"
+             data-content="{{ blog.short_description|lower }} {{ blog.description|striptags|lower }}"
+             data-author="{{ blog.author.get_full_name|default:blog.author.username|lower }}"
+             data-tags="{{ blog.tags|default:''|lower }}">
+          <div class="blog-card-image-container">
+            {% if blog.image %}
+            <img src="{{ blog.image.url }}" alt="{{ blog.title }}" class="blog-card-image" loading="lazy">
+            {% else %}
+            <img src="{% static 'img/aiimg.jpg' %}" alt="{{ blog.title }}" class="blog-card-image" loading="lazy">
+            {% endif %}
+            <div class="blog-card-overlay">
+              <span class="blog-card-tag" style="background-color: rgba(0, 255, 255, 0.721); color: #1e293b;" >
+                {% if blog.category %}
+                  {{ blog.category.name }}
+                {% else %}
+                  Technology
+                {% endif %}
+              </span>
+            </div>
+          </div>
+          <div class="blog-card-content">
+            <span class="blog-card-category">
+              {% if blog.category %}
+                {{ blog.category.name }}
+              {% else %}
+                Technology
+              {% endif %}
+            </span>
+            <h3 class="blog-card-title">{{ blog.title }}</h3>
+            <p class="blog-card-excerpt">
+              {% if blog.short_description %}
+              {{ blog.short_description|truncatewords:20 }}
+              {% else %}
+              {{ blog.description|striptags|truncatewords:20 }}
+              {% endif %}
+            </p>
+            <div class="blog-card-footer">
+              <div class="blog-card-author">
+                {% if blog.author.profile_picture %}
+                <img src="{{ blog.author.profile_picture.url }}"
+                  alt="{{ blog.author.get_full_name|default:blog.author.username }}" class="author-avatar" loading="lazy">
+                {% else %}
+                <img
+                  src="https://ui-avatars.com/api/?name={{ blog.author.get_full_name|default:blog.author.username|urlencode }}&background=3b82f6&color=ffffff"
+                  alt="{{ blog.author.get_full_name|default:blog.author.username }}" class="author-avatar" loading="lazy">
+                {% endif %}
+                <div class="author-info">
+                  <span class="author-name">{{ blog.author.get_full_name|default:blog.author.username }}</span>
+                  <span class="author-role">Author</span>
+                </div>
+              </div>
+              <div class="blog-card-meta">
+                <span class="blog-card-date">
+                  {% if blog.published_at %}
+                  {{ blog.published_at|date:"M d, Y" }}
+                  {% else %}
+                  {{ blog.created_at|date:"M d, Y" }}
+                  {% endif %}
+                </span>
+                <span class="blog-card-readtime">{{ blog.reading_time }} min read</span>
+              </div>
+            </div>
+            <a href="{% url 'frontend_app:blog_details' blog.slug %}" class="blog-card-cta">
+              Read Article
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" />
+              </svg>
+            </a>
+          </div>
+        </div>
+        {% empty %}
+        <div class="no-blogs">
+          <div class="no-blogs-icon">
+            <i class="fas fa-newspaper"></i>
+          </div>
+          <h3>No Blog Posts Found</h3>
+          <p id="noResultsMessage">
+            {% if search_query or category_filter %}
+            No articles match your search criteria. Try adjusting your filters.
+            {% else %}
+            There are no blog posts available at the moment. Please check back later.
+            {% endif %}
+          </p>
+          {% if search_query or category_filter %}
+          <a href="{% url 'frontend_app:blog_list' %}" class="view-all-btn">View All Articles</a>
+          {% endif %}
+        </div>
+        {% endfor %}
+      </div>
+
+      <!-- No Results Message -->
+      <div class="no-results" id="noResults">
+        <i class="fas fa-search"></i>
+        <h4>No articles found</h4>
+        <p>Try adjusting your search or filter criteria</p>
+      </div>
+
+      <!-- Pagination -->
+      {% if is_paginated %}
+      <div class="pagination-container" id="paginationContainer">
+        <nav class="pagination" aria-label="Blog pagination">
+          {% if page_obj.has_previous %}
+            <a href="?page=1{% if search_query %}&search={{ search_query }}{% endif %}{% if category_filter %}&category={{ category_filter }}{% endif %}" 
+               class="pagination-link pagination-first" data-page="1">
+              <i class="fas fa-angle-double-left"></i>
+            </a>
+            <a href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if category_filter %}&category={{ category_filter }}{% endif %}" 
+               class="pagination-link pagination-prev" data-page="{{ page_obj.previous_page_number }}">
+              <i class="fas fa-angle-left"></i>
+            </a>
+          {% endif %}
+
+          {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+              <span class="pagination-link pagination-current">{{ num }}</span>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+              <a href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}{% if category_filter %}&category={{ category_filter }}{% endif %}" 
+                 class="pagination-link" data-page="{{ num }}">{{ num }}</a>
+            {% endif %}
+          {% endfor %}
+
+          {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if category_filter %}&category={{ category_filter }}{% endif %}" 
+               class="pagination-link pagination-next" data-page="{{ page_obj.next_page_number }}">
+              <i class="fas fa-angle-right"></i>
+            </a>
+            <a href="?page={{ page_obj.paginator.num_pages }}{% if search_query %}&search={{ search_query }}{% endif %}{% if category_filter %}&category={{ category_filter }}{% endif %}" 
+               class="pagination-link pagination-last" data-page="{{ page_obj.paginator.num_pages }}">
+              <i class="fas fa-angle-double-right"></i>
+            </a>
+          {% endif %}
+        </nav>
+        
+        <div class="pagination-info">
+          Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+        </div>
+      </div>
+      {% endif %}
+
+    </div>
+  </section>
+</main>
+
+<style>
+    .page-title {
+        background-image: linear-gradient(rgba(28, 29, 31, 0.65), rgba(23, 4, 69, 0.65)),
+        url("{% static 'img/breadcrumb.jpg' %}");
+        background-size: cover;
+        background-position: center;
+        padding: 30px 0px;
+    }
+</style>
+
+<style>
+  .bg-infotechs-blog {
+    padding: 3rem 0;
+    background-color: #f8fafc;
+    min-height: 70vh;
+  }
+
+  .blog-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .blog-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 0.75rem;
+  }
+
+  .blog-subtitle {
+    font-size: 1.125rem;
+    color: #64748b;
+    max-width: 600px;
+    margin: 0 auto 2rem;
+  }
+
+  /* Search and Filter Styles */
+  .blog-filters {
+    max-width: 800px;
+    margin: 2rem auto 0;
+  }
+
+  .search-filter-form {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  /* Search Container Styles from Portfolio Template */
+  .search-container {
+    max-width: 500px;
+    margin: 0 auto;
+    flex: 1;
+  }
+
+  .search-box {
+    position: relative;
+  }
+
+  .search-input {
+    padding: 12px 50px 12px 20px;
+    border: 2px solid #dee2e6;
+    border-radius: 25px;
+    width: 100%;
+    font-size: 16px;
+    transition: all 0.3s ease;
+  }
+
+  .search-input:focus {
+    border-color: #3498db;
+    box-shadow: 0 0 10px rgba(52, 152, 219, 0.3);
+    outline: none;
+  }
+
+  .search-btn {
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #3498db;
+    border: none;
+    color: white;
+    padding: 8px 15px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+
+  .search-btn:hover {
+    background: #2980b9;
+  }
+
+  /* Results Count from Portfolio Template */
+  .results-count {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #7f8c8d;
+    font-style: italic;
+  }
+
+  /* No Results from Portfolio Template */
+  .no-results {
+    text-align: center;
+    padding: 50px 20px;
+    color: #6c757d;
+    display: none;
+  }
+
+  .no-results i {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    color: #bdc3c7;
+  }
+
+  .hidden {
+    display: none !important;
+  }
+
+  /* Category Filter */
+  .category-filter {
+    padding: 0.75rem 1rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 1rem;
+    background: white;
+    min-width: 200px;
+    cursor: pointer;
+    transition: border-color 0.3s ease;
+  }
+
+  .category-filter:focus {
+    outline: none;
+    border-color: #3b82f6;
+  }
+
+  /* Active Filters */
+  .active-filters {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 2rem;
+    padding: 1rem;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .filter-tag {
+    background: #3b82f6;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .remove-filter {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    cursor: pointer;
+    padding: 2px;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease;
+  }
+
+  .remove-filter:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+
+  .clear-all {
+    color: #ef4444;
+    text-decoration: none;
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin-left: auto;
+    transition: color 0.3s ease;
+  }
+
+  .clear-all:hover {
+    color: #dc2626;
+  }
+
+  /* Loading State */
+  .loading-spinner {
+    display: none;
+    text-align: center;
+    padding: 2rem;
+    background: white;
+    border-radius: 8px;
+    margin: 1rem 0;
+  }
+
+  .loading-spinner p {
+    margin-top: 1rem;
+    color: #64748b;
+  }
+
+  .spinner {
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #3b82f6;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  /* Blog Grid */
+  .blog-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    transition: opacity 0.3s ease;
+  }
+
+  .blog-card {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    border: 1px solid #f1f5f9;
+  }
+
+  .blog-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  }
+
+  .blog-card-image-container {
+    position: relative;
+    height: 220px;
+    overflow: hidden;
+  }
+
+  .blog-card-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+  }
+
+  .blog-card:hover .blog-card-image {
+    transform: scale(1.05);
+  }
+
+  .blog-card-overlay {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+  }
+
+  .blog-card-tag {
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
+  }
+
+  .blog-card-content {
+    padding: 1.75rem;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+  }
+
+  .blog-card-category {
+    color: #3b82f6;
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .blog-card-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 1rem;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .blog-card-excerpt {
+    color: #64748b;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+    flex-grow: 1;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .blog-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    gap: 1rem;
+  }
+
+  .blog-card-author {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex: 1;
+  }
+
+  .author-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #f1f5f9;
+  }
+
+  .author-info {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .author-name {
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: #1e293b;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .author-role {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    font-weight: 500;
+  }
+
+  .blog-card-meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.25rem;
+    flex-shrink: 0;
+  }
+
+  .blog-card-date {
+    font-size: 0.875rem;
+    color: #64748b;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  .blog-card-readtime {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    font-weight: 500;
+  }
+
+  .blog-card-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #3b82f6;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    margin-top: auto;
+    padding: 0.75rem 0;
+    border-top: 1px solid #f1f5f9;
+  }
+
+  .blog-card-cta:hover {
+    color: #1d4ed8;
+    gap: 0.75rem;
+  }
+
+  /* No Blogs State */
+  .no-blogs {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 4rem 2rem;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    border: 1px solid #f1f5f9;
+  }
+
+  .no-blogs-icon {
+    font-size: 4rem;
+    color: #cbd5e1;
+    margin-bottom: 1.5rem;
+  }
+
+  .no-blogs h3 {
+    color: #1e293b;
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+    font-weight: 600;
+  }
+
+  .no-blogs p {
+    color: #64748b;
+    font-size: 1.125rem;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* Pagination */
+  .pagination-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid #e2e8f0;
+  }
+
+  .pagination {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  .pagination-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    color: #64748b;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+
+  .pagination-link:hover {
+    border-color: #3b82f6;
+    color: #3b82f6;
+    transform: translateY(-2px);
+  }
+
+  .pagination-current {
+    background: #3b82f6;
+    border-color: #3b82f6;
+    color: white;
+  }
+
+  .pagination-info {
+    color: #64748b;
+    font-size: 0.875rem;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .blog-grid {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+      padding: 0 1rem;
+    }
+
+    .blog-title {
+      font-size: 2rem;
+    }
+
+    .search-filter-form {
+      flex-direction: column;
+      width: 100%;
+    }
+
+    .search-container {
+      min-width: 100%;
+    }
+
+    .active-filters {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.75rem;
+    }
+
+    .clear-all {
+      margin-left: 0;
+      margin-top: 0.5rem;
+    }
+
+    .blog-card-footer {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+
+    .blog-card-meta {
+      align-items: flex-start;
+    }
+
+    .pagination {
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .bg-infotechs-blog {
+      padding: 2rem 0;
+    }
+
+    .blog-card-content {
+      padding: 1.5rem;
+    }
+
+    .blog-card-title {
+      font-size: 1.125rem;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Search functionality
+    const blogSearch = document.getElementById('blogSearch');
+    const searchButton = document.getElementById('searchButton');
+    const categoryFilter = document.getElementById('categoryFilter');
+    const noResults = document.getElementById('noResults');
+    const resultsCount = document.getElementById('resultsCount');
+    const blogCards = document.querySelectorAll('.blog-card');
+    const noBlogs = document.querySelector('.no-blogs');
+    const loadingSpinner = document.getElementById('loadingSpinner');
+    const activeFilters = document.getElementById('activeFilters');
+    
+    // Initialize with current values
+    let currentSearchTerm = '{{ search_query|escapejs }}' || '';
+    let currentCategory = '{{ category_filter|escapejs }}' || '';
+    
+    function performSearch() {
+        const searchTerm = blogSearch.value.toLowerCase().trim();
+        const category = categoryFilter.value.toLowerCase().trim();
+        
+        let visibleCount = 0;
+        
+        blogCards.forEach(function(card) {
+            const title = card.getAttribute('data-title') || '';
+            const categoryData = card.getAttribute('data-category') || '';
+            const content = card.getAttribute('data-content') || '';
+            const author = card.getAttribute('data-author') || '';
+            const tags = card.getAttribute('data-tags') || '';
+            
+            const matchesSearch = searchTerm === '' || 
+                title.includes(searchTerm) || 
+                categoryData.includes(searchTerm) || 
+                content.includes(searchTerm) ||
+                author.includes(searchTerm) ||
+                tags.includes(searchTerm);
+            
+            const matchesCategory = category === '' || categoryData.includes(category);
+            
+            if (matchesSearch && matchesCategory) {
+                card.style.display = 'block';
+                visibleCount++;
+            } else {
+                card.style.display = 'none';
+            }
+        });
+        
+        // Show/hide no results message
+        if (visibleCount === 0 && blogCards.length > 0) {
+            noResults.style.display = 'block';
+            if (noBlogs) noBlogs.style.display = 'none';
+        } else {
+            noResults.style.display = 'none';
+            if (noBlogs && blogCards.length > 0) noBlogs.style.display = 'none';
+        }
+        
+        // Update results count
+        updateResultsCount(visibleCount, searchTerm, category);
+        
+        // Update active filters display
+        updateActiveFilters(searchTerm, category);
+        
+        // Update URL without page reload
+        updateURL(searchTerm, category);
+    }
+    
+    function updateResultsCount(visibleCount, searchTerm, category) {
+        const totalItems = blogCards.length;
+        
+        if (searchTerm === '' && category === '') {
+            resultsCount.textContent = 'Showing all ' + totalItems + ' articles';
+        } else {
+            let searchText = '';
+            if (searchTerm) {
+                searchText = ' for "' + searchTerm + '"';
+            }
+            
+            let categoryText = '';
+            if (category) {
+                categoryText = ' in "' + category + '"';
+            }
+            
+            resultsCount.textContent = 'Found ' + visibleCount + ' article' + 
+                (visibleCount !== 1 ? 's' : '') + searchText + categoryText;
+        }
+    }
+    
+    function updateActiveFilters(searchTerm, category) {
+        if (!activeFilters) return;
+        
+        let filtersHTML = '';
+        
+        if (searchTerm || category) {
+            filtersHTML += '<span class="text-black">Active filters:</span>';
+            
+            if (searchTerm) {
+                filtersHTML += `
+                    <span class="filter-tag">
+                        Search: "${searchTerm}"
+                        <span class="remove-filter" data-type="search">×</span>
+                    </span>
+                `;
+            }
+            
+            if (category) {
+                filtersHTML += `
+                    <span class="filter-tag">
+                        Category: ${category}
+                        <span class="remove-filter" data-type="category">×</span>
+                    </span>
+                `;
+            }
+            
+            filtersHTML += '<a href="{% url 'frontend_app:blog_list' %}" class="clear-all">Clear all</a>';
+        }
+        
+        activeFilters.innerHTML = filtersHTML;
+        
+        // Add event listeners to remove filter buttons
+        document.querySelectorAll('.remove-filter').forEach(button => {
+            button.addEventListener('click', function() {
+                const filterType = this.getAttribute('data-type');
+                if (filterType === 'search') {
+                    blogSearch.value = '';
+                } else if (filterType === 'category') {
+                    categoryFilter.value = '';
+                }
+                performSearch();
+            });
+        });
+    }
+    
+    function updateURL(searchTerm, category) {
+        const params = new URLSearchParams();
+        if (searchTerm) params.append('search', searchTerm);
+        if (category) params.append('category', category);
+        
+        const newUrl = `${window.location.pathname}?${params.toString()}`;
+        window.history.replaceState(null, '', newUrl);
+    }
+    
+    // Event listeners for search
+    blogSearch.addEventListener('input', performSearch);
+    searchButton.addEventListener('click', performSearch);
+    categoryFilter.addEventListener('change', performSearch);
+    
+    // Initialize
+    updateResultsCount(blogCards.length, currentSearchTerm, currentCategory);
+    updateActiveFilters(currentSearchTerm, currentCategory);
+});
+</script>
+{% endblock %}

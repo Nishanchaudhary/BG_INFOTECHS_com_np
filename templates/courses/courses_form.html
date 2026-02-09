@@ -1,0 +1,594 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-12">
+            <div class="card border-dark shadow-lg">
+                <div class="card-header bg-primary text-white border-dark">
+                    <h5 class="card-title mb-0">
+                        <i class="fas {% if form.instance.pk %}fa-edit{% else %}fa-plus-circle{% endif %} me-2"></i>
+                        {{ page_title }}
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post" enctype="multipart/form-data" id="courseForm" novalidate>
+                        {% csrf_token %}
+                        
+                        {% if form.non_field_errors %}
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            {{ form.non_field_errors }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                        {% endif %}
+
+                        <div class="row g-4">
+                            <!-- Basic Information -->
+                            <div class="col-xl-6">
+                                <div class="card h-100 border-primary">
+                                    <div class="card-header bg-light border-primary">
+                                        <h6 class="mb-0">
+                                            <i class="fas fa-info-circle text-primary me-2"></i>
+                                            Basic Information
+                                        </h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <!-- Title -->
+                                        <div class="mb-3">
+                                            <label for="{{ form.title.id_for_label }}" class="form-label fw-semibold">
+                                                Course Title <span class="text-danger">*</span>
+                                            </label>
+                                            {{ form.title }}
+                                            {% if form.title.errors %}
+                                            <div class="text-danger small mt-1">
+                                                {% for error in form.title.errors %}
+                                                <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
+                                                {% endfor %}
+                                            </div>
+                                            {% endif %}
+                                        </div>
+
+                                        <!-- Short Description -->
+                                        <div class="mb-3">
+                                            <label for="{{ form.short_description.id_for_label }}" class="form-label fw-semibold">
+                                                Short Description <span class="text-danger">*</span>
+                                            </label>
+                                            {{ form.short_description }}
+                                            <div class="form-text">Brief description displayed in listings (max 500 characters)</div>
+                                            {% if form.short_description.errors %}
+                                            <div class="text-danger small mt-1">
+                                                {% for error in form.short_description.errors %}
+                                                <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
+                                                {% endfor %}
+                                            </div>
+                                            {% endif %}
+                                        </div>
+
+                                        <!-- Image -->
+                                        <div class="mb-3">
+                                            <label for="{{ form.image.id_for_label }}" class="form-label fw-semibold">
+                                                Course Image <span class="text-danger">*</span>
+                                            </label>
+                                            {{ form.image }}
+                                            {% if form.instance.image %}
+                                            <div class="mt-2">
+                                                <img src="{{ form.instance.image.url }}" alt="Current image" class="img-thumbnail mt-2" style="max-height: 150px;">
+                                                <div class="form-text">Current image</div>
+                                            </div>
+                                            {% endif %}
+                                            {% if form.image.errors %}
+                                            <div class="text-danger small mt-1">
+                                                {% for error in form.image.errors %}
+                                                <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
+                                                {% endfor %}
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Pricing & Duration -->
+                            <div class="col-xl-6">
+                                <div class="card h-100 border-success">
+                                    <div class="card-header bg-light border-success">
+                                        <h6 class="mb-0">
+                                            <i class="fas fa-clock text-success me-2"></i>
+                                            Duration & Pricing
+                                        </h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <!-- Duration -->
+                                        <div class="mb-3">
+                                            <label for="{{ form.duration.id_for_label }}" class="form-label fw-semibold">
+                                                Duration <span class="text-danger">*</span>
+                                            </label>
+                                            {{ form.duration }}
+                                            <div class="form-text">Format: DD HH:MM:SS or HH:MM:SS (e.g., 5 00:00:00 for 5 days)</div>
+                                            {% if form.duration.errors %}
+                                            <div class="text-danger small mt-1">
+                                                {% for error in form.duration.errors %}
+                                                <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
+                                                {% endfor %}
+                                            </div>
+                                            {% endif %}
+                                        </div>
+
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                                <!-- Regular Price -->
+                                                <div class="mb-3">
+                                                    <label for="{{ form.price.id_for_label }}" class="form-label fw-semibold">
+                                                        Regular Price (₹) <span class="text-danger">*</span>
+                                                    </label>
+                                                    {{ form.price }}
+                                                    {% if form.price.errors %}
+                                                    <div class="text-danger small mt-1">
+                                                        {% for error in form.price.errors %}
+                                                        <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
+                                                        {% endfor %}
+                                                    </div>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <!-- Offer Price -->
+                                                <div class="mb-3">
+                                                    <label for="{{ form.offer_price.id_for_label }}" class="form-label fw-semibold">
+                                                        Offer Price (₹)
+                                                    </label>
+                                                    {{ form.offer_price }}
+                                                    <div class="form-text">Optional discount</div>
+                                                    {% if form.offer_price.errors %}
+                                                    <div class="text-danger small mt-1">
+                                                        {% for error in form.offer_price.errors %}
+                                                        <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
+                                                        {% endfor %}
+                                                    </div>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Status -->
+                                        <div class="mb-3">
+                                            <label for="{{ form.status.id_for_label }}" class="form-label fw-semibold">
+                                                Status <span class="text-danger">*</span>
+                                            </label>
+                                            <div class="form-check form-switch">
+                                                {{ form.status }}
+                                                <label class="form-check-label" for="{{ form.status.id_for_label }}">
+                                                    {% if form.instance.pk %}
+                                                        {% if form.instance.status %}
+                                                            <span class="text-success">Active</span>
+                                                        {% else %}
+                                                            <span class="text-danger">Inactive</span>
+                                                        {% endif %}
+                                                    {% else %}
+                                                        Active
+                                                    {% endif %}
+                                                </label>
+                                            </div>
+                                            {% if form.status.errors %}
+                                            <div class="text-danger small mt-1">
+                                                {% for error in form.status.errors %}
+                                                <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
+                                                {% endfor %}
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Description with Summernote -->
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <div class="card border-info">
+                                    <div class="card-header bg-light border-info d-flex justify-content-between align-items-center">
+                                        <h6 class="mb-0">
+                                            <i class="fas fa-file-alt text-info me-2"></i>
+                                            Course Description
+                                        </h6>
+                                        <small class="text-muted">Rich text editor with formatting options</small>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="mb-3">
+                                            <label for="{{ form.description.id_for_label }}" class="form-label fw-semibold">
+                                                Detailed Description <span class="text-danger">*</span>
+                                            </label>
+                                            <div class="summernote-container">
+                                                {{ form.description }}
+                                            </div>
+                                            {% if form.description.errors %}
+                                            <div class="text-danger small mt-1">
+                                                {% for error in form.description.errors %}
+                                                <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
+                                                {% endfor %}
+                                            </div>
+                                            {% endif %}
+                                            <div class="form-text">
+                                                Use the toolbar above to format your content. You can add images, links, lists, and more.
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Form Actions -->
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <a href="{% url 'course_app:courses_list' %}" class="btn btn-outline-secondary">
+                                        <i class="fas fa-arrow-left me-2"></i>Back to List
+                                    </a>
+                                    <div>
+                                        <button type="reset" class="btn btn-outline-danger me-2">
+                                            <i class="fas fa-redo me-2"></i>Reset
+                                        </button>
+                                        <button type="submit" class="btn btn-primary btn-lg">
+                                            <i class="fas fa-save me-2"></i>
+                                            {% if form.instance.pk %}Update Course{% else %}Create Course{% endif %}
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<!-- Summernote CSS -->
+<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
+<style>
+.card {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    border-radius: 0.5rem;
+}
+
+.card-header {
+    border-radius: 0.5rem 0.5rem 0 0 !important;
+}
+
+.form-control, .form-select {
+    border-radius: 0.375rem;
+    border: 1px solid #ced4da;
+    transition: all 0.15s ease-in-out;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+.form-label {
+    font-weight: 600;
+    color: #495057;
+}
+
+.alert {
+    border-radius: 0.5rem;
+    border: none;
+}
+
+.btn {
+    border-radius: 0.375rem;
+    font-weight: 500;
+}
+
+.img-thumbnail {
+    border-radius: 0.375rem;
+    border: 2px solid #dee2e6;
+}
+
+/* Summernote Custom Styling */
+.summernote-container {
+    border-radius: 0.375rem;
+    overflow: hidden;
+}
+
+.note-editor.note-frame {
+    border: 1px solid #ced4da !important;
+    border-radius: 0.375rem !important;
+    box-shadow: none !important;
+}
+
+.note-editor.note-frame .note-toolbar {
+    background-color: #f8f9fa !important;
+    border-bottom: 1px solid #dee2e6 !important;
+    border-radius: 0.375rem 0.375rem 0 0 !important;
+}
+
+.note-editor.note-frame .note-statusbar {
+    background-color: #f8f9fa !important;
+    border-top: 1px solid #dee2e6 !important;
+    border-radius: 0 0 0.375rem 0.375rem !important;
+}
+
+.note-editor.note-frame .note-editing-area {
+    border-radius: 0 !important;
+}
+
+.note-btn {
+    border-radius: 0.25rem !important;
+}
+
+.note-btn:hover {
+    background-color: #e9ecef !important;
+}
+
+/* Form Switch Styling */
+.form-check-input:checked {
+    background-color: #198754;
+    border-color: #198754;
+}
+
+.form-check-input:focus {
+    border-color: #198754;
+    box-shadow: 0 0 0 0.2rem rgba(25, 135, 84, 0.25);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .card-body {
+        padding: 1rem !important;
+    }
+    
+    .btn {
+        padding: 0.375rem 1rem;
+        font-size: 0.875rem;
+    }
+    
+    .d-flex {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .d-flex > * {
+        width: 100%;
+    }
+    
+    .note-toolbar {
+        padding: 0.25rem !important;
+    }
+    
+    .note-toolbar .note-btn-group {
+        margin-bottom: 0.25rem !important;
+    }
+}
+
+@media (max-width: 1200px) {
+    .col-xl-6 {
+        margin-bottom: 1.5rem;
+    }
+}
+
+/* Loading state */
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Character counter for textareas */
+.char-counter {
+    font-size: 0.875rem;
+    color: #6c757d;
+}
+
+.char-counter.warning {
+    color: #ffc107;
+}
+
+.char-counter.danger {
+    color: #dc3545;
+}
+
+/* Price comparison styling */
+.price-comparison {
+    background: #f8f9fa;
+    border-radius: 0.375rem;
+    padding: 1rem;
+    margin-top: 0.5rem;
+}
+
+.discount-badge {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+}
+
+/* Ensure form elements have proper spacing */
+.mb-3:last-child {
+    margin-bottom: 0 !important;
+}
+
+/* Summernote responsive fix */
+.note-editor.note-frame .note-editable {
+    min-height: 300px;
+}
+
+@media (max-width: 576px) {
+    .note-editor.note-frame .note-editable {
+        min-height: 200px;
+    }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Summernote JS -->
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
+<script>
+$(document).ready(function() {
+    // Initialize Summernote
+    $('#{{ form.description.id_for_label }}').summernote({
+        height: 300,
+        toolbar: [
+            ['style', ['style']],
+            ['font', ['bold', 'italic', 'underline', 'clear']],
+            ['fontname', ['fontname']],
+            ['color', ['color']],
+            ['para', ['ul', 'ol', 'paragraph']],
+            ['table', ['table']],
+            ['insert', ['link', 'picture', 'video']],
+            ['view', ['fullscreen', 'codeview', 'help']]
+        ],
+        fontNames: ['Arial', 'Arial Black', 'Comic Sans MS', 'Courier New', 'Helvetica', 'Impact', 'Tahoma', 'Times New Roman', 'Verdana'],
+        fontSizes: ['8', '9', '10', '11', '12', '14', '18', '24', '36'],
+        placeholder: 'Write detailed course description here...',
+        dialogsInBody: true,
+        callbacks: {
+            onInit: function() {
+                console.log('Summernote initialized');
+            },
+            onChange: function(contents) {
+                // Update the textarea value
+                $('#{{ form.description.id_for_label }}').val(contents);
+            }
+        }
+    });
+
+    // Character counter for short description
+    const shortDescTextarea = $('#{{ form.short_description.id_for_label }}');
+    const shortDescCounter = $('<div class="char-counter mt-1">0/500 characters</div>');
+    shortDescTextarea.after(shortDescCounter);
+    
+    function updateShortDescCounter() {
+        const length = shortDescTextarea.val().length;
+        shortDescCounter.text(`${length}/500 characters`);
+        
+        if (length > 450) {
+            shortDescCounter.addClass('warning');
+            shortDescCounter.removeClass('danger');
+        } else if (length > 490) {
+            shortDescCounter.addClass('danger');
+            shortDescCounter.removeClass('warning');
+        } else {
+            shortDescCounter.removeClass('warning danger');
+        }
+    }
+    
+    shortDescTextarea.on('input', updateShortDescCounter);
+    updateShortDescCounter();
+    
+    // Price validation and comparison
+    const priceInput = $('#{{ form.price.id_for_label }}');
+    const offerPriceInput = $('#{{ form.offer_price.id_for_label }}');
+    
+    function validatePrices() {
+        const price = parseFloat(priceInput.val()) || 0;
+        const offerPrice = parseFloat(offerPriceInput.val()) || 0;
+        
+        // Remove existing feedback
+        $('.price-feedback').remove();
+        priceInput.removeClass('is-invalid is-valid');
+        offerPriceInput.removeClass('is-invalid is-valid');
+        
+        if (price <= 0) {
+            priceInput.addClass('is-invalid');
+            priceInput.after('<div class="invalid-feedback price-feedback">Price must be greater than 0.</div>');
+        } else {
+            priceInput.addClass('is-valid');
+        }
+        
+        if (offerPrice > 0) {
+            if (offerPrice >= price) {
+                offerPriceInput.addClass('is-invalid');
+                offerPriceInput.after('<div class="invalid-feedback price-feedback">Offer price must be less than regular price.</div>');
+            } else {
+                offerPriceInput.addClass('is-valid');
+                
+                // Calculate discount percentage
+                const discountPercent = Math.round(((price - offerPrice) / price) * 100);
+                $('.discount-info').remove();
+                offerPriceInput.after(`<div class="discount-info text-success small mt-1"><i class="fas fa-tag me-1"></i>${discountPercent}% discount applied</div>`);
+            }
+        }
+    }
+    
+    priceInput.on('input', validatePrices);
+    offerPriceInput.on('input', validatePrices);
+    
+    // Form submission handling
+    $('#courseForm').on('submit', function(e) {
+        // Ensure Summernote content is saved to textarea
+        $('#{{ form.description.id_for_label }}').val($('#{{ form.description.id_for_label }}').summernote('code'));
+        
+        // Validate required fields
+        const title = $('#{{ form.title.id_for_label }}').val().trim();
+        const shortDesc = $('#{{ form.short_description.id_for_label }}').val().trim();
+        const description = $('#{{ form.description.id_for_label }}').val().trim();
+        
+        if (!title || !shortDesc || !description) {
+            e.preventDefault();
+            alert('Please fill in all required fields.');
+            return false;
+        }
+        
+        // Add loading state to submit button
+        const submitBtn = $(this).find('button[type="submit"]');
+        submitBtn.prop('disabled', true);
+        submitBtn.html('<i class="fas fa-spinner fa-spin me-2"></i>Processing...');
+    });
+    
+    // Image preview
+    const imageInput = $('#{{ form.image.id_for_label }}');
+    imageInput.on('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            // Validate file type
+            const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+            if (!validTypes.includes(file.type)) {
+                alert('Please select a valid image file (JPEG, PNG, GIF, WebP).');
+                $(this).val('');
+                return;
+            }
+            
+            // Validate file size (max 5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                alert('Image size must be less than 5MB.');
+                $(this).val('');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                // Remove existing preview
+                $('.image-preview').remove();
+                
+                // Create new preview
+                const previewHtml = `
+                    <div class="image-preview mt-2">
+                        <img src="${e.target.result}" alt="Preview" class="img-thumbnail" style="max-height: 150px;">
+                        <div class="form-text text-success">New image preview</div>
+                    </div>
+                `;
+                imageInput.after(previewHtml);
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+    
+    // Auto-format duration input
+    $('#{{ form.duration.id_for_label }}').on('blur', function() {
+        let value = $(this).val().trim();
+        if (value) {
+            // Basic validation for duration format
+            if (!value.match(/^(\d+\s+)?(\d{1,2}:)?(\d{1,2}:)?\d{1,2}$/)) {
+                $(this).addClass('is-invalid');
+            } else {
+                $(this).removeClass('is-invalid');
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

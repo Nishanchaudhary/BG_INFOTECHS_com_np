@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load rbac_tags %}
+
+{% block title %}Role Management - BG Infotech{% endblock %}
+{% block page_title %}Role Management{% endblock %}
+{% block breadcrumb_active %}Roles{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Roles List</h3>
+                <div class="card-tools">
+                    {% if request.user.is_superuser or request.user|has_permission:'role_manage' %}
+                    <a href="{% url 'bg_app:role_create' %}" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Create New Role
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="card-body">
+                {% if roles %}
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Role Name</th>
+                                <th>Description</th>
+                                <th>Django Permissions</th>
+                                <th>Custom Permissions</th>
+                                <th>Total Permissions</th>
+                                <th>Users Count</th>
+                                <th>Created Date</th>
+                                <th width="120">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for role in roles %}
+                            <tr>
+                                <td>
+                                    <span class="badge bg-{% if role.name == 'admin' %}danger{% elif role.name == 'staff' %}warning{% elif role.name == 'student' %}info{% else %}secondary{% endif %} p-2">
+                                        <i class="fas 
+                                            {% if role.name == 'admin' %}fa-crown 
+                                            {% elif role.name == 'staff' %}fa-user-tie 
+                                            {% elif role.name == 'student' %}fa-user-graduate 
+                                            {% else %}fa-user{% endif %} me-1">
+                                        </i>
+                                        {{ role.get_name_display }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="text-muted">{{ role.description|default:"No description"|truncatewords:10 }}</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-primary">
+                                        <i class="fas fa-key me-1"></i>
+                                        {{ role.django_perms_count }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-info">
+                                        <i class="fas fa-shield-alt me-1"></i>
+                                        {{ role.custom_perms_count }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-success">
+                                        <i class="fas fa-tasks me-1"></i>
+                                        {{ role.total_perms_count }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-warning text-dark">
+                                        <i class="fas fa-users me-1"></i>
+                                        {{ role.users_count }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <small class="text-muted">
+                                        <i class="fas fa-calendar me-1"></i>
+                                        {{ role.created_at|date:"M d, Y" }}
+                                    </small>
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        {% if request.user.is_superuser or request.user|has_permission:'role_manage' %}
+                                        <a href="{% url 'bg_app:role_edit' role.id %}" class="btn btn-warning" title="Edit Role" data-bs-toggle="tooltip">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        {% if role.name not in 'admin,staff,student' %}
+                                        <a href="{% url 'bg_app:role_delete' role.id %}" class="btn btn-danger" title="Delete Role" data-bs-toggle="tooltip" onclick="return confirm('Are you sure you want to delete the role \\'{{ role.get_name_display }}\\'? This action cannot be undone.')">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                        {% else %}
+                                        <button class="btn btn-danger" disabled title="System role cannot be deleted" data-bs-toggle="tooltip">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                        {% endif %}
+                                        {% else %}
+                                        <span class="text-muted small">No actions</span>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="alert alert-info text-center py-5">
+                    <i class="fas fa-users fa-3x mb-3 text-info"></i>
+                    <h4>No Roles Found</h4>
+                    <p class="mb-3">No roles have been created yet.</p>
+                    {% if request.user.is_superuser or request.user|has_permission:'role_manage' %}
+                    <a href="{% url 'bg_app:role_create' %}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-plus me-2"></i>Create Your First Role
+                    </a>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+            {% if roles %}
+            <div class="card-footer">
+                <div class="row">
+                    <div class="col-md-6">
+                        <small class="text-muted">
+                            Showing {{ roles.count }} role{{ roles.count|pluralize }}
+                        </small>
+                    </div>
+                    <div class="col-md-6 text-end">
+                        <small class="text-muted">
+                            <i class="fas fa-info-circle me-1"></i>
+                            System roles (Admin, Staff, Student) cannot be deleted
+                        </small>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

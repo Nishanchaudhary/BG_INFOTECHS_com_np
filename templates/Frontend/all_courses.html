@@ -1,0 +1,952 @@
+{% extends 'Frontend/base.html' %}
+{% load static %}
+{% block title %}All Courses - BG Infotechs{% endblock %}
+{% block extra_css %}
+<style>
+  :root {
+    --primary-color: #3a86ff;
+    --secondary-color: #8338ec;
+    --accent-color: #ff006e;
+    --success-color: #22c55e;
+    --light-color: #f8f9fa;
+    --dark-color: #212529;
+    --ink-color: #23273a;
+    --gradient-primary: linear-gradient(135deg, #3a86ff 0%, #8338ec 100%);
+    --gradient-accent: linear-gradient(135deg, #ff006e 0%, #ff6b6b 100%);
+    --gradient-success: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+    --shadow-light: 0 8px 25px rgba(0, 0, 0, 0.08);
+    --shadow-medium: 0 15px 35px rgba(0, 0, 0, 0.15);
+    --shadow-heavy: 0 20px 40px rgba(0, 0, 0, 0.2);
+  }
+
+  /* Bootstrap Enhancements */
+  .page-header {
+    background: var(--gradient-primary);
+    color: white;
+    padding: 4rem 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .page-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23ffffff' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
+  }
+
+  .page-titles {
+    font-size: 3.5rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  }
+
+  .page-subtitle {
+    font-size: 1.25rem;
+    opacity: 0.9;
+    max-width: 600px;
+    margin: 0 auto 2rem;
+  }
+
+  .course-count-badge {
+    display: inline-flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    padding: 0.75rem 1.5rem;
+    border-radius: 50px;
+    font-weight: 600;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+  }
+
+  /* Enhanced Search Section */
+  .search-section {
+    padding: 3rem 0 2rem;
+    background: white;
+    position: relative;
+    z-index: 10;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  }
+
+  .search-container {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .search-form {
+    position: relative;
+    background: white;
+    border-radius: 20px;
+    box-shadow: var(--shadow-medium);
+    padding: 8px;
+    border: 2px solid transparent;
+    transition: all 0.4s ease;
+    background: linear-gradient(135deg, white, #f8faff);
+  }
+
+  .search-form:focus-within {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 40px rgba(58, 134, 255, 0.3);
+    transform: translateY(-2px);
+  }
+
+  .search-input {
+    padding: 20px 30px;
+    border: none;
+    border-radius: 15px;
+    width: 100%;
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
+    outline: none;
+    background: transparent;
+    font-weight: 400;
+  }
+
+  .search-input::placeholder {
+    color: #9ca3af;
+    font-weight: 400;
+  }
+
+  .search-btn {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--gradient-primary);
+    border: none;
+    color: white;
+    padding: 15px 30px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 5px 15px rgba(58, 134, 255, 0.4);
+  }
+
+  .search-btn:hover {
+    transform: translateY(-50%) scale(1.05);
+    box-shadow: 0 8px 25px rgba(58, 134, 255, 0.6);
+  }
+
+  .search-loading {
+    display: none;
+    position: absolute;
+    right: 140px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--primary-color);
+  }
+
+  .results-count {
+    margin-top: 1.5rem;
+    font-size: 1.1rem;
+    color: #6c757d;
+    font-weight: 500;
+  }
+
+  /* Course Grid */
+  .training-listings {
+    padding: 4rem 0;
+    background: #f8faff;
+  }
+
+  .course-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+  }
+
+  .training-card {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: var(--shadow-light);
+    transition: all 0.4s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+
+  .training-card:hover {
+    transform: translateY(-10px);
+    box-shadow: var(--shadow-heavy);
+  }
+
+  .training-badge {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: var(--gradient-accent);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    z-index: 2;
+    box-shadow: 0 4px 15px rgba(255, 0, 110, 0.3);
+  }
+
+  .training-image {
+    height: 200px;
+    overflow: hidden;
+  }
+
+  .training-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+  }
+
+  .training-card:hover .training-image img {
+    transform: scale(1.05);
+  }
+
+  .training-content {
+    padding: 1.5rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .training-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: var(--dark-color);
+    line-height: 1.3;
+  }
+
+  .training-provider {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+
+  .provider-logo {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--gradient-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    margin-right: 10px;
+  }
+
+  .provider-name {
+    font-weight: 600;
+    color: var(--primary-color);
+  }
+
+  .training-details {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .detail-item {
+    display: flex;
+    align-items: center;
+    font-size: 0.9rem;
+    color: #6c757d;
+  }
+
+  .detail-item i {
+    margin-right: 5px;
+    color: var(--primary-color);
+  }
+
+  .training-feature {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding: 0.75rem;
+    background: #f8f9fa;
+    border-radius: 10px;
+    font-size: 0.9rem;
+  }
+
+  .training-feature i {
+    color: var(--success-color);
+    margin-right: 10px;
+  }
+
+  .training-price {
+    margin-top: auto;
+    margin-bottom: 1.5rem;
+  }
+
+  .price-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .current-price {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--primary-color);
+  }
+
+  .original-price {
+    font-size: 1.1rem;
+    text-decoration: line-through;
+    color: #6c757d;
+  }
+
+  .card-actions {
+    display: flex;
+    gap: 10px;
+  }
+
+  .btn-enroll,
+  .btn-details {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border-radius: 10px;
+    font-weight: 600;
+    text-align: center;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .btn-enroll {
+    background: var(--gradient-primary);
+    color: white;
+    box-shadow: 0 4px 15px rgba(58, 134, 255, 0.3);
+  }
+
+  .btn-enroll:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(58, 134, 255, 0.4);
+    color: white;
+  }
+
+  .btn-details {
+    background: white;
+    color: var(--primary-color);
+    border: 2px solid var(--primary-color);
+  }
+
+  .btn-details:hover {
+    background: var(--primary-color);
+    color: white;
+    transform: translateY(-2px);
+  }
+
+  /* No Results Section */
+  .no-results {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: white;
+    border-radius: 20px;
+    box-shadow: var(--shadow-light);
+    margin: 2rem 0;
+  }
+
+  .no-results i {
+    font-size: 4rem;
+    color: #dee2e6;
+    margin-bottom: 1.5rem;
+  }
+
+  .no-results h3 {
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+    color: var(--dark-color);
+  }
+
+  .no-results p {
+    color: #6c757d;
+    max-width: 500px;
+    margin: 0 auto 2rem;
+    font-size: 1.1rem;
+  }
+
+  /* Pagination */
+  .pagination-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 3rem;
+  }
+
+  .pagination {
+    display: flex;
+    gap: 5px;
+  }
+
+  .page-item .page-link {
+    padding: 0.75rem 1.25rem;
+    border-radius: 10px;
+    border: none;
+    color: var(--dark-color);
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+
+  .page-item.active .page-link {
+    background: var(--gradient-primary);
+    color: white;
+    box-shadow: 0 4px 15px rgba(58, 134, 255, 0.3);
+  }
+
+  .page-item:not(.active):not(.disabled) .page-link:hover {
+    background: #f8f9fa;
+    transform: translateY(-2px);
+  }
+
+  /* Stats Section */
+  .stats-section {
+    padding: 4rem 0;
+    background: white;
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem;
+  }
+
+  .stat-card {
+    text-align: center;
+    padding: 2rem 1rem;
+    border-radius: 20px;
+    background: white;
+    box-shadow: var(--shadow-light);
+    transition: all 0.4s ease;
+  }
+
+  .stat-card:hover {
+    transform: translateY(-10px);
+    box-shadow: var(--shadow-medium);
+  }
+
+  .stat-value {
+    font-size: 3rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .stat-label {
+    color: #6c757d;
+    font-weight: 500;
+  }
+
+  /* Animation Classes */
+  .animate-on-scroll {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+
+  .animate-on-scroll.animated {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Responsive Adjustments */
+  @media (max-width: 768px) {
+    .page-titles {
+      font-size: 2.5rem;
+    }
+
+    .course-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .search-btn span {
+      display: none;
+    }
+
+    .search-btn {
+      padding: 15px;
+    }
+
+    .card-actions {
+      flex-direction: column;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<main class="main">
+
+  <style>
+    .page-title {
+      background-image: linear-gradient(rgba(28, 29, 31, 0.65), rgba(23, 4, 69, 0.65)),
+      url("{% static 'img/breadcrumb.jpg' %}");
+      background-size: cover;
+      background-position: center;
+      padding: 30px 0px;
+    }
+  </style>
+
+  <div class="page-title light-background">
+    <div class="container">
+      <h1>{{ service.title|default:"All Career" }}</h1>
+      <nav class="breadcrumbs" data-aos="fade-right" data-aos-delay="100">
+        <ol>
+          <li><a href="{% url 'frontend_app:home' %}"><i class="fas fa-home"></i> Home</a></li>
+          <li><a href="{% url 'frontend_app:training' %}"><i class="fa-solid fa-graduation-cap"></i>
+              Training/Courses</a></li>
+          <li class="current">{{ service.title|default:"All Training/Courses" }}</li>
+        </ol>
+      </nav>
+    </div>
+  </div>
+
+  <!-- Enhanced Header Section -->
+  <header class="page-header">
+    <div class="container">
+      <div class="header-content text-center">
+        <h1 class="page-titles animate-on-scroll">Unlock Your Potential</h1>
+        <p class="page-subtitle animate-on-scroll">Discover comprehensive training programs designed to accelerate your
+          career growth and master in-demand skills</p>
+        <div class="course-count-badge animate-on-scroll">
+          <i class="fas fa-graduation-cap me-2"></i>
+          <span>{{ total_courses_count }} Premium Courses Available</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Search Section -->
+  <section class="search-section">
+    <div class="container">
+      <div class="search-container">
+        <form method="GET" action="{% url 'frontend_app:all_courses' %}" class="search-form" id="searchForm">
+          <input type="text" name="search" id="courseSearch" class="search-input"
+            placeholder="Search courses by title, description, category..." value="{{ search_query }}"
+            autocomplete="off">
+          <div class="search-loading" id="searchLoading">
+            <i class="fas fa-spinner fa-spin"></i>
+          </div>
+          <button type="submit" class="search-btn" id="searchButton">
+            <i class="fas fa-search"></i>
+            <span>Search Courses</span>
+          </button>
+        </form>
+      </div>
+
+      <!-- Results Count -->
+      <div class="text-center">
+        <div class="results-count" id="resultsCount">
+          <i class="fas fa-list-check me-2"></i>
+          <span>
+            {% if search_query %}
+            Found {{ paginator.count }} course{{ paginator.count|pluralize }} for "{{ search_query }}"
+            {% else %}
+            Showing all {{ total_courses_count }} courses
+            {% endif %}
+          </span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Course Listings -->
+  <section class="training-listings" id="training-listings">
+    <div class="container">
+      <!-- Course Grid -->
+      <div class="course-grid" id="courseGrid">
+        <!-- Courses from Database -->
+        {% for course in courses %}
+        <div class="course-item animate-on-scroll">
+          <div class="training-card">
+            {% if course.has_discount %}
+            <div class="training-badge">
+              <i class="fas fa-bolt me-1"></i>
+              {{ course.discount_percentage }}% OFF
+            </div>
+            {% endif %}
+
+            <div class="training-image">
+              {% if course.image %}
+              <img src="{{ course.image.url }}" class="img-fluid" alt="{{ course.title }}">
+              {% else %}
+              <img src="{% static 'img/default-course.jpg' %}" class="img-fluid" alt="{{ course.title }}">
+              {% endif %}
+            </div>
+
+            <div class="training-content">
+              <h3 class="training-title">{{ course.title }}</h3>
+
+              <div class="training-provider">
+                <div class="provider-logo">
+                  <i class="fas fa-graduation-cap"></i>
+                </div>
+                <div class="provider-name">BG Infotechs</div>
+              </div>
+
+              <div class="training-details">
+                <div class="detail-item">
+                  <i class="far fa-clock"></i>
+                  <span>{{ course.duration_display }}</span>
+                </div>
+                <div class="detail-item">
+                  <i class="fas fa-users"></i>
+                  <span>{{ course.enrolled_students|default:"0" }} Students</span>
+                </div>
+                <div class="detail-item">
+                  <i class="fas fa-star"></i>
+                  <span>4.8 Rating</span>
+                </div>
+              </div>
+
+              <p class="text-dark mb-3">{{ course.short_description }}</p>
+
+              <!-- Fixed Price Display -->
+              <div class="training-price">
+                <div class="price-container">
+                  {% if course.has_discount %}
+                  <span class="current-price">Rs. {{ course.get_actual_price }}</span>
+                  <span class="original-price">Rs. {{ course.price }}</span>
+                  {% else %}
+                  <span class="current-price">Rs. {{ course.price }}</span>
+                  {% endif %}
+                </div>
+              </div>
+
+              <div class="card-actions">
+                <a href="{% url 'frontend_app:enroll_course' course.pk %}" class="btn-enroll">
+                  <i class="fas fa-rocket me-2"></i>
+                  Enroll Now
+                </a>
+                <a href="{% url 'frontend_app:course_detail' course.pk %}" class="btn-details">
+                  <i class="fas fa-eye me-2"></i>
+                  View Details
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% empty %}
+       
+        {% endfor %}
+      </div>
+
+      <!-- No Results Message -->
+      {% if search_query and not courses %}
+      <div class="no-results" id="noResults" style="display: block;">
+        <i class="fas fa-search"></i>
+        <h3>No Courses Found</h3>
+        <p>We couldn't find any courses matching your search criteria. Try adjusting your keywords or browse all
+          available courses.</p>
+      </div>
+
+      {% else %}
+      <div class="no-results" id="noResults" style="display: none;">
+        <i class="fas fa-search"></i>
+        <h3>No Courses Found</h3>
+        <p>We couldn't find any courses matching your search criteria. Try adjusting your keywords or browse all
+          available courses.</p>
+        <div class="card-actions justify-content-center">
+          <a href="{% url 'frontend_app:all_courses' %}" class="btn-enroll">
+            <i class="fas fa-times me-2"></i>
+            Clear Search
+          </a>
+          <a href="{% url 'frontend_app:all_courses' %}" class="btn-details">
+            <i class="fas fa-list me-2"></i>
+            View All Courses
+          </a>
+        </div>
+      </div>
+      
+
+      {% endif %}
+
+      <!-- Pagination -->
+      {% if is_paginated %}
+      <div class="pagination-container">
+        <nav aria-label="Course pagination">
+          <ul class="pagination">
+            {% if page_obj.has_previous %}
+            <li class="page-item">
+              <a class="page-link"
+                href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}">
+                <i class="fas fa-chevron-left me-1"></i>
+                Previous
+              </a>
+            </li>
+            {% else %}
+            <li class="page-item disabled">
+              <span class="page-link">
+                <i class="fas fa-chevron-left me-1"></i>
+                Previous
+              </span>
+            </li>
+            {% endif %}
+
+            {% for num in paginator.page_range %}
+            {% if page_obj.number == num %}
+            <li class="page-item active">
+              <span class="page-link">{{ num }}</span>
+            </li>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %} <li class="page-item">
+              <a class="page-link" href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}">{{
+                num }}</a>
+              </li>
+              {% endif %}
+              {% endfor %}
+
+              {% if page_obj.has_next %}
+              <li class="page-item">
+                <a class="page-link"
+                  href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}">
+                  Next
+                  <i class="fas fa-chevron-right ms-1"></i>
+                </a>
+              </li>
+              {% else %}
+              <li class="page-item disabled">
+                <span class="page-link">
+                  Next
+                  <i class="fas fa-chevron-right ms-1"></i>
+                </span>
+              </li>
+              {% endif %}
+          </ul>
+        </nav>
+      </div>
+      {% endif %}
+    </div>
+  </section>
+
+  <!-- Enhanced Stats Section -->
+  <section class="stats-section">
+    <div class="container">
+      <div class="stats-grid">
+        <div class="stat-card animate-on-scroll">
+          <div class="stat-value" data-target="4.8">4.8</div>
+          <div class="stat-label">Average Learner Rating</div>
+        </div>
+        <div class="stat-card animate-on-scroll">
+          <div class="stat-value" data-target="2000+">2000+</div>
+          <div class="stat-label">Successful Graduates</div>
+        </div>
+        <div class="stat-card animate-on-scroll">
+          <div class="stat-value" data-target="95%">95%</div>
+          <div class="stat-label">Course Completion Rate</div>
+        </div>
+        <div class="stat-card animate-on-scroll">
+          <div class="stat-value" data-target="50+">50+</div>
+          <div class="stat-label">Industry Expert Instructors</div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    // Elements
+    const searchForm = document.getElementById('searchForm');
+    const searchInput = document.getElementById('courseSearch');
+    const searchButton = document.getElementById('searchButton');
+    const searchLoading = document.getElementById('searchLoading');
+    const noResults = document.getElementById('noResults');
+    const resultsCount = document.getElementById('resultsCount');
+    const courseGrid = document.getElementById('courseGrid');
+
+    // Enhanced animation on scroll
+    const animateElements = document.querySelectorAll('.animate-on-scroll');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('animated');
+        }
+      });
+    }, {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    });
+
+    animateElements.forEach(el => observer.observe(el));
+
+    // Enhanced search functionality with AJAX
+    function performSearch(searchTerm) {
+      // Show loading indicator
+      searchLoading.style.display = 'block';
+      searchButton.disabled = true;
+
+      // Create URL with search parameters
+      const url = new URL(window.location.href);
+      url.searchParams.set('search', searchTerm);
+      url.searchParams.set('page', '1'); // Reset to first page when searching
+
+      // Use AJAX for smoother experience
+      fetch(url, {
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',
+        }
+      })
+        .then(response => response.text())
+        .then(html => {
+          // Update the course grid and pagination
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(html, 'text/html');
+          const newContent = doc.querySelector('.training-listings').innerHTML;
+
+          document.querySelector('.training-listings').innerHTML = newContent;
+
+          // Update results count
+          const newResultsCount = doc.querySelector('#resultsCount');
+          if (newResultsCount) {
+            resultsCount.innerHTML = newResultsCount.innerHTML;
+          }
+
+          // Re-initialize animations for new content
+          initializeAnimations();
+        })
+        .catch(error => {
+          console.error('Search error:', error);
+          // Fallback to normal form submission if AJAX fails
+          searchForm.submit();
+        })
+        .finally(() => {
+          searchLoading.style.display = 'none';
+          searchButton.disabled = false;
+        });
+    }
+
+    // Initialize animations for newly loaded content
+    function initializeAnimations() {
+      const newAnimateElements = document.querySelectorAll('.animate-on-scroll:not(.animated)');
+      newAnimateElements.forEach(el => {
+        observer.observe(el);
+      });
+    }
+
+    // Event listeners with enhanced UX
+    let searchTimeout;
+    searchInput.addEventListener('input', function () {
+      clearTimeout(searchTimeout);
+      const searchTerm = this.value.trim();
+
+      // Only search if term is long enough or empty
+      if (searchTerm.length === 0 || searchTerm.length >= 2) {
+        searchTimeout = setTimeout(() => {
+          if (searchTerm.length === 0) {
+            // Clear search - reload page without search parameter
+            window.location.href = "{% url 'frontend_app:all_courses' %}";
+          } else {
+            performSearch(searchTerm);
+          }
+        }, 500);
+      }
+    });
+
+    // Form submission handler
+    searchForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      const searchTerm = searchInput.value.trim();
+      if (searchTerm) {
+        performSearch(searchTerm);
+      } else {
+        // Clear search
+        window.location.href = "{% url 'frontend_app:all_courses' %}";
+      }
+    });
+
+    // Enhanced counter animation for stats
+    const statValues = document.querySelectorAll('.stat-value');
+    const counterObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const element = entry.target;
+          const target = element.getAttribute('data-target');
+
+          if (!element.classList.contains('counted')) {
+            element.classList.add('counted');
+
+            if (target.includes('%') || target.includes('+')) {
+              element.textContent = target;
+            } else {
+              animateCounter(element, parseFloat(target));
+            }
+          }
+        }
+      });
+    }, { threshold: 0.5 });
+
+    statValues.forEach(value => counterObserver.observe(value));
+
+    function animateCounter(element, target) {
+      const duration = 2000;
+      const startTime = performance.now();
+
+      function updateCounter(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+
+        // Easing function for smooth animation
+        const easeOutQuart = 1 - Math.pow(1 - progress, 4);
+        const currentValue = target * easeOutQuart;
+
+        if (target % 1 !== 0) {
+          element.textContent = currentValue.toFixed(1);
+        } else {
+          element.textContent = Math.floor(currentValue);
+        }
+
+        if (progress < 1) {
+          requestAnimationFrame(updateCounter);
+        } else {
+          element.textContent = target;
+        }
+      }
+
+      requestAnimationFrame(updateCounter);
+    }
+
+    // Add loading animation
+    setTimeout(() => {
+      document.body.classList.add('loaded');
+    }, 500);
+  });
+
+  // Additional utility functions
+  function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+      const later = () => {
+        clearTimeout(timeout);
+        func(...args);
+      };
+      clearTimeout(timeout);
+      timeout = setTimeout(later, wait);
+    };
+  }
+
+  // Enhanced scroll to top functionality
+  window.addEventListener('scroll', function () {
+    const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+    if (scrollTop > 300) {
+      document.body.classList.add('scrolled');
+    } else {
+      document.body.classList.remove('scrolled');
+    }
+  });
+</script>
+{% endblock %}

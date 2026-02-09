@@ -1,0 +1,650 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="card border-dark">
+        <div class="card-header bg-primary text-white border-dark d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0">
+                <i class="fas fa-question-circle me-2"></i>{{ page_title }}
+            </h5>
+            
+        </div>
+        <div class="card-body p-0">
+            <!-- DataTable -->
+            <div class="table-responsive">
+                <table id="faqs-table" class="table table-hover table-striped table-bordered border-dark" style="width:100%; margin:0;">
+                    <thead class="table-primary border-dark">
+                        <tr>
+                            <th style="border: 1px solid #000; border-bottom: 2px solid #000; padding: 12px; text-align: center;">Question</th>
+                            <th style="border: 1px solid #000; border-bottom: 2px solid #000; padding: 12px; text-align: center;">Slug</th>
+                            <th style="border: 1px solid #000; border-bottom: 2px solid #000; padding: 12px; text-align: center;">Answer</th>
+                            <th style="border: 1px solid #000; border-bottom: 2px solid #000; padding: 12px; text-align: center;">Status</th>
+                            <th style="border: 1px solid #000; border-bottom: 2px solid #000; padding: 12px; text-align: center;">Order</th>
+                            <th style="border: 1px solid #000; border-bottom: 2px solid #000; padding: 12px; text-align: center;">Author</th>
+                            <th style="border: 1px solid #000; border-bottom: 2px solid #000; padding: 12px; text-align: center;">Created</th>
+                            <th style="border: 1px solid #000; border-bottom: 2px solid #000; padding: 12px; text-align: center;">Updated</th>
+                            <th style="border: 1px solid #000; border-bottom: 2px solid #000; padding: 12px; text-align: center;">Published</th>
+                            <th style="border: 1px solid #000; border-bottom: 2px solid #000; padding: 12px; text-align: center;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="table-light border-dark">
+                        <!-- Data will be loaded via AJAX -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<!-- DataTables CSS -->
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.bootstrap5.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.4.1/css/responsive.bootstrap5.min.css">
+<!-- Summernote CSS -->
+<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.css" rel="stylesheet">
+
+<style>
+#faqs-table {
+    border: 2px solid #000 !important;
+    border-collapse: separate !important;
+    background-color: white;
+}
+
+#faqs-table th,
+#faqs-table td {
+    border: 1px solid #000 !important;
+    vertical-align: middle !important;
+    padding: 12px 8px !important;
+}
+
+#faqs-table thead th {
+    border-bottom: 2px solid #000 !important;
+    background-color: #b8d4ff !important;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.answer-tooltip {
+    cursor: pointer;
+    color: #007bff;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+
+.answer-tooltip:hover {
+    background-color: #f8f9fa;
+    text-decoration: underline;
+}
+
+.status-toggle-btn {
+    min-width: 120px;
+    font-size: 0.8rem;
+}
+
+.btn-group-sm .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.8rem;
+}
+
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.dropdown-menu {
+    min-width: 150px;
+}
+
+.note-editor.note-frame {
+    border: 1px solid #ced4da !important;
+    border-radius: 0.375rem !important;
+}
+
+.note-editor.note-frame .note-toolbar {
+    background-color: #f8f9fa !important;
+    border-bottom: 1px solid #ced4da !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .card-body {
+        padding: 0.5rem;
+    }
+    
+    #faqs-table {
+        font-size: 0.8rem;
+    }
+    
+    .dt-buttons .btn {
+        font-size: 0.7rem;
+        padding: 0.2rem 0.4rem;
+    }
+    
+    .status-toggle-btn {
+        min-width: 100px;
+        font-size: 0.7rem;
+    }
+    
+    /* Mobile-specific styles for DataTables responsive */
+    .dtr-details {
+        padding: 10px;
+        background-color: #f8f9fa;
+        border-radius: 5px;
+        margin-top: 5px;
+        font-size: 0.8rem;
+    }
+    
+    .dtr-title {
+        font-weight: bold;
+        margin-right: 5px;
+        min-width: 80px;
+        display: inline-block;
+    }
+    
+    .dtr-data {
+        margin-bottom: 8px;
+        display: inline;
+    }
+    
+    /* Adjust button container for mobile */
+    .dt-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 2px;
+    }
+    
+    .dt-buttons .btn {
+        margin: 1px;
+        flex-grow: 1;
+        max-width: 130px;
+        font-size: 0.7rem;
+    }
+    
+    /* Adjust search input for mobile */
+    .dataTables_filter {
+        width: 100%;
+        margin-top: 10px;
+    }
+    
+    .dataTables_filter input {
+        width: 100% !important;
+        max-width: 100%;
+    }
+    
+    /* Ensure proper spacing in responsive details */
+    .dtr-details li {
+        margin-bottom: 8px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid #dee2e6;
+    }
+}
+
+@media (max-width: 576px) {
+    .container-fluid {
+        padding-left: 5px;
+        padding-right: 5px;
+    }
+    
+    .card-header h5 {
+        font-size: 1rem;
+    }
+    
+    .dataTables_length,
+    .dataTables_info {
+        text-align: center;
+        margin-bottom: 5px;
+    }
+    
+    .dataTables_paginate {
+        text-align: center;
+    }
+    
+    .pagination {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .page-item .page-link {
+        padding: 0.3rem 0.6rem;
+        font-size: 0.8rem;
+    }
+    
+    /* Stack buttons vertically on very small screens */
+    .dt-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .dt-buttons .btn {
+        max-width: 200px;
+        width: 100%;
+        margin-bottom: 3px;
+    }
+}
+
+/* DataTables Responsive specific styles */
+table.dataTable.dtr-inline.collapsed > tbody > tr > td.dtr-control:before,
+table.dataTable.dtr-inline.collapsed > tbody > tr > th.dtr-control:before {
+    background-color: #007bff;
+    border-radius: 50%;
+    color: white;
+    content: '+';
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: bold;
+    height: 1.2em;
+    line-height: 1.1em;
+    text-align: center;
+    width: 1.2em;
+}
+
+table.dataTable.dtr-inline.collapsed > tbody > tr.parent > td.dtr-control:before,
+table.dataTable.dtr-inline.collapsed > tbody > tr.parent > th.dtr-control:before {
+    content: '-';
+    background-color: #dc3545;
+}
+
+/* Ensure proper styling for responsive child rows */
+.dtr-details {
+    width: 100%;
+}
+
+.dtr-details > li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    margin-bottom: 10px;
+}
+
+.answer-popup .swal2-popup {
+    max-width: 800px !important;
+}
+
+/* Button styling adjustments for responsive */
+.dt-buttons .btn {
+    margin: 2px;
+    font-size: 0.8rem;
+}
+
+.dt-button-collection {
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<!-- DataTables JS -->
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.bootstrap5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.print.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+<!-- DataTables Responsive JS -->
+<script src="https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.4.1/js/responsive.bootstrap5.min.js"></script>
+<!-- Summernote JS -->
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.js"></script>
+
+<script>
+$(document).ready(function() {
+    var table = $('#faqs-table').DataTable({
+        "processing": true,
+        "serverSide": true,
+        "ajax": {
+            "url": "{% url 'faq_app:faqs_datatables' %}",
+            "type": "GET",
+            "dataType": "json",
+            "error": function(xhr, error, code) {
+                console.log(xhr);
+                console.log(error);
+                console.log(code);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Data Loading Error',
+                    text: 'Unable to load FAQ data. Please try again.',
+                    timer: 3000
+                });
+            }
+        },
+        "columns": [
+            {
+                "data": "question", 
+                "name": "question", 
+                "className": "text-left",
+                "responsivePriority": 1
+            },
+            {
+                "data": "slug", 
+                "name": "slug", 
+                "className": "text-center",
+                "responsivePriority": 4
+            },
+            {
+                "data": "answer", 
+                "name": "answer", 
+                "className": "text-center", 
+                "orderable": false,
+                "responsivePriority": 3
+            },
+            {
+                "data": "status", 
+                "name": "status", 
+                "className": "text-center", 
+                "orderable": false,
+                "responsivePriority": 2
+            },
+            {
+                "data": "display_order", 
+                "name": "display_order", 
+                "className": "text-center",
+                "responsivePriority": 6
+            },
+            {
+                "data": "author", 
+                "name": "author", 
+                "className": "text-center",
+                "responsivePriority": 7
+            },
+            {
+                "data": "created_at", 
+                "name": "created_at", 
+                "className": "text-center",
+                "responsivePriority": 8
+            },
+            {
+                "data": "updated_at", 
+                "name": "updated_at", 
+                "className": "text-center",
+                "responsivePriority": 9
+            },
+            {
+                "data": "published_at", 
+                "name": "published_at", 
+                "className": "text-center",
+                "responsivePriority": 10
+            },
+            {
+                "data": "actions", 
+                "name": "actions", 
+                "className": "text-center", 
+                "orderable": false, 
+                "searchable": false,
+                "responsivePriority": 1
+            }
+        ],
+        "order": [[5, 'desc']],
+        "pageLength": 10,
+        "lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+        "responsive": {
+            "details": {
+                "type": "column",
+                "target": 0
+            }
+        },
+        "dom": '<"row"<"col-sm-12 col-md-6"B><"col-sm-12 col-md-6"f>>rtip',
+        "buttons": [
+            {
+                extend: 'copy',
+                text: '<i class="fas fa-copy"></i> Copy',
+                className: 'btn btn-secondary btn-sm',
+                exportOptions: {
+                    columns: [0, 1, 3, 4, 5, 6, 7, 8]
+                }
+            },
+            {
+                extend: 'excel',
+                text: '<i class="fas fa-file-excel"></i> Excel',
+                className: 'btn btn-success btn-sm',
+                exportOptions: {
+                    columns: [0, 1, 3, 4, 5, 6, 7, 8]
+                },
+                filename: 'faqs_list_' + new Date().toISOString().slice(0, 10)
+            },
+            {
+                extend: 'pdf',
+                text: '<i class="fas fa-file-pdf"></i> PDF',
+                className: 'btn btn-danger btn-sm',
+                exportOptions: {
+                    columns: [0, 1, 3, 4, 5, 6, 7, 8]
+                },
+                filename: 'faqs_list_' + new Date().toISOString().slice(0, 10),
+                orientation: 'landscape',
+                pageSize: 'A4'
+            },
+            {
+                extend: 'print',
+                text: '<i class="fas fa-print"></i> Print',
+                className: 'btn btn-info btn-sm',
+                exportOptions: {
+                    columns: [0, 1, 3, 4, 5, 6, 7, 8]
+                },
+                customize: function (win) {
+                    $(win.document.body).find('table').addClass('display').css('font-size', '10px');
+                    $(win.document.body).find('tr:nth-child(odd) td').css('background-color','#f9f9f9');
+                    $(win.document.body).find('h1').text('FAQ List - ' + new Date().toLocaleDateString());
+                }
+            },
+            {
+                text: '<i class="fas fa-plus"></i> Add FAQ',
+                className: 'btn btn-primary btn-sm',
+                action: function (e, dt, node, config) {
+                    window.location.href = "{% url 'faq_app:faq_create' %}";
+                }
+            },
+            {
+                text: '<i class="fas fa-sync-alt"></i> Refresh',
+                className: 'btn btn-warning btn-sm',
+                action: function (e, dt, node, config) {
+                    table.ajax.reload();
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Refreshed',
+                        text: 'Data has been refreshed successfully',
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+                }
+            }
+        ],
+        "language": {
+            "search": "Search in all columns:",
+            "lengthMenu": "Show _MENU_ entries",
+            "info": "Showing _START_ to _END_ of _TOTAL_ entries",
+            "infoEmpty": "Showing 0 to 0 of 0 entries",
+            "infoFiltered": "(filtered from _MAX_ total entries)",
+            "zeroRecords": "No matching FAQs found",
+            "emptyTable": "No FAQ data available",
+            "processing": '<i class="fas fa-spinner fa-spin"></i> Loading...',
+            "paginate": {
+                "first": "First",
+                "last": "Last",
+                "next": "Next",
+                "previous": "Previous"
+            },
+            "buttons": {
+                "copy": "Copy",
+                "excel": "Excel",
+                "pdf": "PDF",
+                "print": "Print",
+                "colvis": "Columns"
+            }
+        },
+        "initComplete": function() {
+            $('.dataTables_filter input')
+                .addClass('form-control form-control-sm')
+                .attr('placeholder', 'Search in question, answer, slug...')
+                .css('width', '300px')
+                .wrap('<div class="input-group"></div>')
+                .before('<span class="input-group-text"><i class="fas fa-search"></i></span>');
+
+            $('.dataTables_length select').addClass('form-control form-control-sm');
+            
+            $('#faqs-table').on('processing.dt', function (e, settings, processing) {
+                if (processing) {
+                    $(this).closest('.card').append('<div class="overlay"><i class="fas fa-3x fa-sync-alt fa-spin"></i></div>');
+                } else {
+                    $(this).closest('.card').find('.overlay').remove();
+                }
+            });
+        },
+        "drawCallback": function() {
+            $('[data-bs-toggle="tooltip"]').tooltip();
+            
+            // Answer click functionality
+            $('.answer-tooltip').on('click', function() {
+                var answer = $(this).data('answer');
+                Swal.fire({
+                    title: 'Full Answer',
+                    html: '<div style="text-align: left; max-height: 400px; overflow-y: auto; padding: 10px; background: #f8f9fa; border-radius: 5px;">' + 
+                          answer.replace(/\n/g, '<br>') + '</div>',
+                    icon: 'info',
+                    confirmButtonText: 'Close',
+                    width: '700px',
+                    customClass: {
+                        popup: 'answer-popup'
+                    }
+                });
+            });
+
+            // Status change functionality
+            $('.status-change-btn').on('click', function(e) {
+                e.preventDefault();
+                var faqId = $(this).data('faq-id');
+                var newStatus = $(this).data('status');
+                var button = $(this).closest('.dropdown').find('.status-toggle-btn');
+                
+                Swal.fire({
+                    title: 'Change Status?',
+                    text: `Are you sure you want to change the status to ${newStatus}?`,
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, change it!',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: "{% url 'faq_app:toggle_faq_status' 0 %}".replace('0', faqId),
+                            type: 'POST',
+                            data: {
+                                'status': newStatus,
+                                'csrfmiddlewaretoken': '{{ csrf_token }}'
+                            },
+                            beforeSend: function() {
+                                button.prop('disabled', true);
+                                button.html('<i class="fas fa-spinner fa-spin me-1"></i>Updating...');
+                            },
+                            success: function(response) {
+                                if (response.success) {
+                                    // Update button appearance based on new status
+                                    var statusClasses = {
+                                        'draft': 'btn-secondary',
+                                        'published': 'btn-success',
+                                        'archived': 'btn-warning'
+                                    };
+                                    var statusIcons = {
+                                        'draft': 'fa-edit',
+                                        'published': 'fa-check-circle',
+                                        'archived': 'fa-archive'
+                                    };
+                                    var statusTexts = {
+                                        'draft': 'Draft',
+                                        'published': 'Published',
+                                        'archived': 'Archived'
+                                    };
+                                    
+                                    button.removeClass('btn-secondary btn-success btn-warning')
+                                          .addClass(statusClasses[response.new_status]);
+                                    button.html('<i class="fas ' + statusIcons[response.new_status] + ' me-1"></i>' + statusTexts[response.new_status]);
+                                    
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'Status Updated',
+                                        text: response.message,
+                                        timer: 1500,
+                                        showConfirmButton: false
+                                    });
+                                    
+                                    // Reload table after a short delay
+                                    setTimeout(function() {
+                                        table.ajax.reload();
+                                    }, 1000);
+                                } else {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Error',
+                                        text: response.error
+                                    });
+                                }
+                            },
+                            error: function(xhr, status, error) {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: 'Failed to update status. Please try again.'
+                                });
+                            },
+                            complete: function() {
+                                button.prop('disabled', false);
+                            }
+                        });
+                    }
+                });
+            });
+        }
+    });
+
+    $('#faqs-table_filter input').unbind().bind('keyup', function() {
+        table.search(this.value).draw();
+    });
+
+    $('.dt-buttons').addClass('btn-group flex-wrap');
+    $('.dt-button').addClass('btn btn-sm m-1');
+    $('.dt-buttons').css('margin-bottom', '10px');
+
+    $('#faqs-table tbody').on('click', 'tr', function() {
+        $(this).toggleClass('table-active');
+    });
+
+    // Initialize Summernote
+    $('#summernote').summernote({
+        height: 300,
+        toolbar: [
+            ['style', ['style']],
+            ['font', ['bold', 'underline', 'clear']],
+            ['fontname', ['fontname']],
+            ['color', ['color']],
+            ['para', ['ul', 'ol', 'paragraph']],
+            ['table', ['table']],
+            ['insert', ['link', 'picture', 'video']],
+            ['view', ['fullscreen', 'codeview', 'help']]
+        ],
+        fontNames: ['Arial', 'Arial Black', 'Comic Sans MS', 'Courier New', 'Helvetica', 'Impact', 'Tahoma', 'Times New Roman', 'Verdana'],
+        fontSizes: ['8', '9', '10', '11', '12', '14', '18', '24', '36'],
+        callbacks: {
+            onInit: function() {
+                console.log('Summernote is launched');
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

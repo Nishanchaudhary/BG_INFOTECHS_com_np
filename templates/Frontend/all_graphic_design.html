@@ -1,0 +1,726 @@
+{% extends 'Frontend/base.html' %}
+{% load static %}
+{% block title %}{{ service.title|default:"Graphic Design Portfolio" }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Reset and Base Styles */
+    .portfolio-section {
+        padding: 5rem 0;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    }
+    
+    /* Section Title */
+    .bg-section-title {
+        color: #2c3e50;
+        font-weight: 800;
+        font-size: clamp(2rem, 4vw, 3rem);
+        text-align: center;
+        margin-bottom: 3rem;
+        position: relative;
+    }
+    
+    .bg-section-title::after {
+        content: '';
+        position: absolute;
+        bottom: -15px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80px;
+        height: 4px;
+        background: linear-gradient(90deg, #3498db, #2980b9);
+        border-radius: 2px;
+    }
+    
+    /* Search Container */
+    .search-container {
+        max-width: 600px;
+        margin: 0 auto 3rem;
+    }
+    
+    .search-box {
+        position: relative;
+        background: white;
+        border-radius: 50px;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+        padding: 5px;
+    }
+    
+    .search-input {
+        width: 100%;
+        padding: 1rem 5rem 1rem 2rem;
+        border: none;
+        border-radius: 50px;
+        font-size: 1rem;
+        background: transparent;
+        outline: none;
+    }
+    
+    .search-btn {
+        position: absolute;
+        right: 5px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: linear-gradient(135deg, #3498db, #2980b9);
+        border: none;
+        color: white;
+        padding: 0.8rem 1.8rem;
+        border-radius: 25px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 500;
+    }
+    
+    .search-btn:hover {
+        transform: translateY(-50%) scale(1.05);
+        box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+    }
+    
+    /* Filter Buttons */
+    .filter-button-group {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.8rem;
+        margin-bottom: 3rem;
+    }
+    
+    .bg-filter-btn {
+        background: white;
+        border: 2px solid #e9ecef;
+        color: #6c757d;
+        padding: 0.8rem 1.8rem;
+        border-radius: 25px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        font-weight: 500;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    }
+    
+    .bg-filter-btn:hover,
+    .bg-filter-btn.active {
+        background: linear-gradient(135deg, #3498db, #2980b9);
+        border-color: #3498db;
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(52, 152, 219, 0.3);
+    }
+    
+    /* Results Count */
+    .results-count {
+        text-align: center;
+        margin-bottom: 2rem;
+        color: #7f8c8d;
+        font-size: 1.1rem;
+        background: white;
+        padding: 1rem 2rem;
+        border-radius: 50px;
+        display: inline-block;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    }
+    
+    /* Portfolio Grid - Fixed Image Sizing */
+    .portfolio-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 2rem;
+        margin-bottom: 3rem;
+    }
+    
+    /* Responsive Grid Breakpoints */
+    @media (max-width: 1200px) {
+        .portfolio-grid {
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.8rem;
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .portfolio-grid {
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+    }
+    
+    @media (max-width: 576px) {
+        .portfolio-grid {
+            grid-template-columns: 1fr;
+            gap: 1.2rem;
+        }
+        
+        .filter-button-group {
+            gap: 0.5rem;
+        }
+        
+        .bg-filter-btn {
+            padding: 0.6rem 1.2rem;
+            font-size: 0.9rem;
+        }
+    }
+    
+    /* Portfolio Item */
+    .portfolio-item {
+        background: white;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        height: fit-content;
+    }
+    
+    .portfolio-item:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+    }
+    
+    /* Fixed Image Container */
+    .portfolio-image-container {
+        position: relative;
+        width: 100%;
+        height: 280px; /* Fixed height for all images */
+        overflow: hidden;
+        background: #f8f9fa;
+    }
+    
+    .portfolio-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover; /* Ensures consistent image display */
+        transition: transform 0.4s ease;
+    }
+    
+    .portfolio-item:hover .portfolio-image {
+        transform: scale(1.1);
+    }
+    
+    /* Overlay with Proper Content Display */
+    .portfolio-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(135deg, 
+            rgba(52, 152, 219, 0.95) 0%, 
+            rgba(41, 128, 185, 0.95) 50%, 
+            rgba(31, 97, 141, 0.95) 100%);
+        color: white;
+        opacity: 0;
+        transition: all 0.4s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+    }
+    
+    .portfolio-item:hover .portfolio-overlay {
+        opacity: 1;
+    }
+    
+    .overlay-content {
+        text-align: center;
+        transform: translateY(20px);
+        transition: transform 0.4s ease 0.1s;
+        width: 100%;
+        max-height: 100%;
+    }
+    
+    .portfolio-item:hover .overlay-content {
+        transform: translateY(0);
+    }
+    
+    .overlay-content h3 {
+        font-size: 1.4rem;
+        font-weight: 700;
+        margin-bottom: 0.8rem;
+        line-height: 1.3;
+    }
+    
+    .overlay-content .company {
+        font-size: 1rem;
+        margin-bottom: 1rem;
+        opacity: 0.9;
+        font-weight: 500;
+    }
+    
+    .overlay-content .category-badge {
+        background: rgba(255, 255, 255, 0.95);
+        color: #2c3e50;
+        padding: 0.5rem 1.2rem;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        display: inline-block;
+        margin-bottom: 1.2rem;
+    }
+    
+    .overlay-content .description {
+        font-size: 0.9rem;
+        line-height: 1.5;
+        margin-bottom: 1.5rem;
+        opacity: 0.9;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    
+    .overlay-content .project-link {
+        background: rgba(255, 255, 255, 0.95);
+        color: #2c3e50;
+        padding: 0.7rem 1.8rem;
+        border-radius: 25px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+        display: inline-block;
+    }
+    
+    .overlay-content .project-link:hover {
+        background: white;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+    
+    /* No Results Styling */
+    .no-results {
+        grid-column: 1 / -1;
+        text-align: center;
+        padding: 4rem 2rem;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        display: none;
+    }
+    
+    .no-results i {
+        font-size: 4rem;
+        color: #bdc3c7;
+        margin-bottom: 1.5rem;
+        opacity: 0.7;
+    }
+    
+    .no-results h4 {
+        color: #2c3e50;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        font-size: 1.5rem;
+    }
+    
+    .no-results p {
+        color: #7f8c8d;
+        font-size: 1.1rem;
+    }
+
+    /* Pagination Styles */
+    .pagination-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 3rem;
+        padding-top: 2rem;
+        border-top: 1px solid #e9ecef;
+    }
+
+    .pagination {
+        display: flex;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        gap: 0.5rem;
+    }
+
+    .page-item {
+        margin: 0;
+    }
+
+    .page-link {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 45px;
+        height: 45px;
+        padding: 0.5rem 1rem;
+        border: 2px solid #e9ecef;
+        border-radius: 12px;
+        color: #6c757d;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        background: white;
+    }
+
+    .page-link:hover {
+        background: #3498db;
+        border-color: #3498db;
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    .page-item.active .page-link {
+        background: linear-gradient(135deg, #3498db, #2980b9);
+        border-color: #3498db;
+        color: white;
+    }
+
+    .page-item.disabled .page-link {
+        background: #f8f9fa;
+        border-color: #e9ecef;
+        color: #6c757d;
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    /* Page Info */
+    .page-info {
+        text-align: center;
+        margin-top: 1rem;
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<style>
+    .page-title {
+        background-image: linear-gradient(rgba(28, 29, 31, 0.65), rgba(23, 4, 69, 0.65)),
+        url("{% static 'img/breadcrumb.jpg' %}");
+        background-size: cover;
+        background-position: center;
+    }
+</style>
+<main class="main">
+    <!-- Hero Section -->
+    <div class="page-title light-background">
+        <div class="container">
+            <h1>{{ service.title|default:"Creative Graphic & Visual Designing Services" }}</h1>
+            <nav class="breadcrumbs" data-aos="fade-right" data-aos-delay="100">
+                <ol>
+                    <li><a href="{% url 'frontend_app:home' %}"><i class="fas fa-home"></i> Home</a></li>
+                    <li><a href="{% url 'frontend_app:graphic_designing' %}"><i class="fa-solid fa-palette"></i> {{ service.title|default:"Graphic Designing" }}</a></li>
+                    <li class="current">All Projects</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Portfolio Section -->
+    <section class="portfolio-section">
+        <div class="container">
+            <h2 class="bg-section-title">Our Creative Portfolio</h2>
+
+            <!-- Search Box -->
+            <div class="search-container">
+                <div class="search-box">
+                    <input type="text" id="portfolioSearch" class="search-input" placeholder="Search projects by title, company, or category...">
+                    <button type="button" class="search-btn" id="searchButton">
+                        <i class="fas fa-search"></i> Search
+                    </button>
+                </div>
+            </div>
+
+            <!-- Filter Buttons -->
+            <div class="filter-button-group">
+                <button type="button" class="bg-filter-btn active" data-filter="*">All Work</button>
+                {% for category in categories %}
+                    <button type="button" class="bg-filter-btn" data-filter=".category-{{ category.slug|slugify }}">{{ category.title }}</button>
+                {% endfor %}
+            </div>
+
+            <!-- Results Count -->
+            <div class="text-center">
+                <div class="results-count" id="resultsCount">
+                    Showing {{ related_projects.start_index }} - {{ related_projects.end_index }} of {{ paginator.count }} projects
+                </div>
+            </div>
+
+            <!-- Portfolio Grid -->
+            <div class="portfolio-grid" id="portfolioGrid">
+                {% for project in related_projects %}
+                <div class="portfolio-item 
+                    {% if project.category %}category-{{ project.category.slug|slugify }}{% endif %}"
+                    data-title="{{ project.title|lower }}"
+                    data-company="{{ project.company|lower }}"
+                    data-category="{% if project.category %}{{ project.category.title|lower }}{% else %}uncategorized{% endif %}"
+                    data-description="{{ project.description|lower }}">
+                    <div class="portfolio-image-container">
+                        {% if project.image %}
+                            <img src="{{ project.image.url }}" alt="{{ project.title }}" class="portfolio-image">
+                        {% else %}
+                            <img src="{% static 'img/graphic-design.jpg' %}" alt="{{ project.title }}" class="portfolio-image">
+                        {% endif %}
+                        <div class="portfolio-overlay">
+                            <div class="overlay-content">
+                                <h3>{{ project.title }}</h3>
+                                <p class="company">{{ project.company }}</p>
+                                {% if project.category %}
+                                    <span class="category-badge">{{ project.category.title }}</span>
+                                {% endif %}
+                                <p class="description">{{ project.description|truncatewords:20 }}</p>
+                                {% if project.live_link %}
+                                    <a href="{{ project.live_link }}" target="_blank" class="project-link">View Live Project</a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="no-results" id="noResults" style="display: block;">
+                    <i class="fas fa-palette"></i>
+                    <h4>No Projects Available</h4>
+                    <p>Check back later for new portfolio items</p>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- No Results Message -->
+            <div class="no-results" id="noResults">
+                <i class="fas fa-search"></i>
+                <h4>No Projects Found</h4>
+                <p>Try adjusting your search or filter criteria</p>
+            </div>
+
+            <!-- Pagination -->
+            {% if is_paginated %}
+            <div class="pagination-container">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination">
+                        {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page=1" aria-label="First">
+                                    <i class="fas fa-angle-double-left"></i>
+                                </a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                                    <i class="fas fa-angle-left"></i>
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link">
+                                    <i class="fas fa-angle-double-left"></i>
+                                </span>
+                            </li>
+                            <li class="page-item disabled">
+                                <span class="page-link">
+                                    <i class="fas fa-angle-left"></i>
+                                </span>
+                            </li>
+                        {% endif %}
+
+                        {% for num in page_obj.paginator.page_range %}
+                            {% if page_obj.number == num %}
+                                <li class="page-item active">
+                                    <span class="page-link">{{ num }}</span>
+                                </li>
+                            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+                                    <i class="fas fa-angle-right"></i>
+                                </a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}" aria-label="Last">
+                                    <i class="fas fa-angle-double-right"></i>
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link">
+                                    <i class="fas fa-angle-right"></i>
+                                </span>
+                            </li>
+                            <li class="page-item disabled">
+                                <span class="page-link">
+                                    <i class="fas fa-angle-double-right"></i>
+                                </span>
+                            </li>
+                        {% endif %}
+                    </ul>
+                    <div class="page-info">
+                        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                    </div>
+                </nav>
+            </div>
+            {% endif %}
+        </div>
+    </section>
+</main>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://unpkg.com/isotope-layout@3/dist/isotope.pkgd.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize Isotope
+    const grid = document.querySelector('.portfolio-grid');
+    let iso;
+    
+    if (grid) {
+        iso = new Isotope(grid, {
+            itemSelector: '.portfolio-item',
+            layoutMode: 'fitRows',
+            percentPosition: true,
+            fitRows: {
+                gutter: 20
+            },
+            transitionDuration: '0.4s'
+        });
+
+        // Filter buttons functionality
+        const filterButtons = document.querySelectorAll('.filter-button-group .bg-filter-btn');
+        
+        filterButtons.forEach(function(button) {
+            button.addEventListener('click', function() {
+                // Remove active class from all buttons
+                filterButtons.forEach(function(btn) {
+                    btn.classList.remove('active');
+                });
+                
+                // Add active class to clicked button
+                this.classList.add('active');
+                
+                // Get filter value
+                const filterValue = this.getAttribute('data-filter');
+                
+                // Filter items
+                iso.arrange({
+                    filter: filterValue
+                });
+                
+                // Update results count
+                updateResultsCount();
+            });
+        });
+    }
+
+    // Search functionality
+    const searchInput = document.getElementById('portfolioSearch');
+    const searchButton = document.getElementById('searchButton');
+    const noResults = document.getElementById('noResults');
+    const resultsCount = document.getElementById('resultsCount');
+    const portfolioItems = document.querySelectorAll('.portfolio-item');
+
+    function performSearch() {
+        const searchTerm = searchInput.value.toLowerCase().trim();
+        let visibleCount = 0;
+        
+        portfolioItems.forEach(function(item) {
+            const title = item.getAttribute('data-title') || '';
+            const company = item.getAttribute('data-company') || '';
+            const category = item.getAttribute('data-category') || '';
+            const description = item.getAttribute('data-description') || '';
+            
+            const matchesSearch = searchTerm === '' || 
+                title.includes(searchTerm) || 
+                company.includes(searchTerm) || 
+                category.includes(searchTerm) ||
+                description.includes(searchTerm);
+            
+            // Get current active filter
+            const activeFilter = document.querySelector('.filter-button-group .bg-filter-btn.active');
+            const currentFilter = activeFilter ? activeFilter.getAttribute('data-filter') : '*';
+            const matchesFilter = currentFilter === '*' || item.classList.contains(currentFilter.replace('.', ''));
+            
+            if (matchesSearch && matchesFilter) {
+                item.style.display = 'block';
+                visibleCount++;
+            } else {
+                item.style.display = 'none';
+            }
+        });
+        
+        // Update Isotope layout if it exists
+        if (iso) {
+            iso.arrange();
+        }
+        
+        // Show/hide no results message
+        if (visibleCount === 0 && portfolioItems.length > 0) {
+            noResults.style.display = 'block';
+        } else {
+            noResults.style.display = 'none';
+        }
+        
+        // Update results count
+        updateResultsCount();
+    }
+
+    function updateResultsCount() {
+        const searchTerm = searchInput.value.toLowerCase().trim();
+        const visibleItems = document.querySelectorAll('.portfolio-item[style="display: block"]');
+        const totalItems = portfolioItems.length;
+        const visibleCount = visibleItems.length;
+        
+        if (searchTerm === '') {
+            const activeFilter = document.querySelector('.filter-button-group .bg-filter-btn.active');
+            const currentFilter = activeFilter ? activeFilter.getAttribute('data-filter') : '*';
+            
+            if (currentFilter === '*') {
+                resultsCount.textContent = `Showing {{ related_projects.start_index }} - {{ related_projects.end_index }} of {{ paginator.count }} projects`;
+            } else {
+                resultsCount.textContent = `Showing ${visibleCount} of ${totalItems} projects on this page`;
+            }
+        } else {
+            resultsCount.textContent = `Found ${visibleCount} project${visibleCount !== 1 ? 's' : ''} for "${searchTerm}" on this page`;
+        }
+    }
+
+    // Event listeners for search
+    searchInput.addEventListener('input', performSearch);
+    searchButton.addEventListener('click', performSearch);
+    
+    // Clear search when filter changes
+    filterButtons.forEach(function(button) {
+        button.addEventListener('click', function() {
+            performSearch();
+        });
+    });
+
+    // Keyboard shortcut for search (Ctrl/Cmd + K)
+    document.addEventListener('keydown', function(e) {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+            e.preventDefault();
+            searchInput.focus();
+        }
+    });
+
+    // Initialize
+    updateResultsCount();
+    
+    // Add resize observer for responsive adjustments
+    const resizeObserver = new ResizeObserver(entries => {
+        if (iso) {
+            iso.layout();
+        }
+    });
+    
+    if (grid) {
+        resizeObserver.observe(grid);
+    }
+});
+</script>
+
+<!-- Tawk.to Script -->
+<script type="text/javascript">
+    var Tawk_API = Tawk_API || {}, Tawk_LoadStart = new Date();
+    (function() {
+        var s1 = document.createElement("script"), s0 = document.getElementsByTagName("script")[0];
+        s1.async = true;
+        s1.src = 'https://embed.tawk.to/6874e5bce5777f190f9b0393/1j04a2r5d';
+        s1.charset = 'UTF-8';
+        s1.setAttribute('crossorigin', '*');
+        s0.parentNode.insertBefore(s1, s0);
+    })();
+</script>
+{% endblock %}

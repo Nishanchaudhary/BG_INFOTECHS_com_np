@@ -1,0 +1,623 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-xxl-8 col-xl-10 col-lg-12">
+            <div class="card border-0 shadow-lg rounded-4">
+                <div class="card-header bg-gradient-success text-white py-3 border-0 rounded-top-4">
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
+                        <div class="mb-2 mb-md-0">
+                            <h2 class="h4 mb-1 text-white fw-bold">
+                                <i class="fas {% if testimonial %}fa-edit{% else %}fa-plus-circle{% endif %} me-2"></i>
+                                {{ page_title }}
+                            </h2>
+                            <p class="mb-0 opacity-85 text-white small">
+                                {% if testimonial %}
+                                    Update client testimonial information
+                                {% else %}
+                                    Add a new client testimonial to showcase your work
+                                {% endif %}
+                            </p>
+                        </div>
+                        <a href="{% url 'company_app:services_testimonial_list' %}" class="btn btn-light btn-sm px-3 rounded-pill shadow-sm">
+                            <i class="fas fa-arrow-left me-1"></i> Back to List
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="card-body p-4">
+                    <!-- Success/Error Messages -->
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show rounded-3 border-0 shadow-sm mb-4" role="alert">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas {% if message.tags == 'success' %}fa-check-circle{% elif message.tags == 'error' %}fa-exclamation-circle{% else %}fa-info-circle{% endif %} me-2"></i>
+                                    <div class="flex-grow-1">
+                                        {{ message }}
+                                    </div>
+                                </div>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <!-- Display Form Errors -->
+                    {% if form.errors %}
+                    <div class="alert alert-danger rounded-3 border-0 shadow-sm mb-4">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <div>
+                                <strong>Please correct the following errors:</strong>
+                                <ul class="mb-0 mt-1">
+                                    {% for field in form %}
+                                        {% for error in field.errors %}
+                                            <li><strong>{{ field.label }}:</strong> {{ error }}</li>
+                                        {% endfor %}
+                                    {% endfor %}
+                                    {% for error in form.non_field_errors %}
+                                        <li>{{ error }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <form method="post" enctype="multipart/form-data" novalidate class="needs-validation">
+                        {% csrf_token %}
+                        
+                        <div class="row g-3">
+                            <!-- Name Field -->
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="id_name" class="form-label fw-semibold mb-2">
+                                        Client Name <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text" name="name" 
+                                           value="{% if form.name.value %}{{ form.name.value }}{% endif %}" 
+                                           class="form-control form-control-xl {% if form.name.errors %}is-invalid{% endif %}" 
+                                           id="id_name" 
+                                           placeholder="Enter client name" 
+                                           required
+                                           style="height: 65px; font-size: 18px; padding: 15px 20px;">
+                                </div>
+                                {% if form.name.errors %}
+                                    <div class="text-danger small mt-1 ps-2">
+                                        {% for error in form.name.errors %}
+                                            <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Designation Field -->
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="id_designation" class="form-label fw-semibold mb-2">
+                                        Designation / Position
+                                    </label>
+                                    <input type="text" name="designation" 
+                                           value="{% if form.designation.value %}{{ form.designation.value }}{% endif %}" 
+                                           class="form-control form-control-xl {% if form.designation.errors %}is-invalid{% endif %}" 
+                                           id="id_designation" 
+                                           placeholder="Enter designation/position"
+                                           style="height: 65px; font-size: 18px; padding: 15px 20px;">
+                                </div>
+                                {% if form.designation.errors %}
+                                    <div class="text-danger small mt-1 ps-2">
+                                        {% for error in form.designation.errors %}
+                                            <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Service Field - FIXED HEIGHT -->
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="id_service" class="form-label fw-semibold mb-2">
+                                        Service <span class="text-danger">*</span>
+                                    </label>
+                                    <select name="service" 
+                                            id="id_service" 
+                                            class="form-select form-select-xl {% if form.service.errors %}is-invalid{% endif %}" 
+                                            required
+                                            style="height: 65px; font-size: 18px; padding: 15px 20px;">
+                                        <option value="">Select a Service</option>
+                                        {% for service in form.service.field.queryset %}
+                                            <option value="{{ service.id }}" 
+                                                    {% if form.service.value|stringformat:"s" == service.id|stringformat:"s" %}selected{% endif %}>
+                                                {{ service.title }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                {% if form.service.errors %}
+                                    <div class="text-danger small mt-1 ps-2">
+                                        {% for error in form.service.errors %}
+                                            <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Rating Field - FIXED HEIGHT -->
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="id_rating" class="form-label fw-semibold mb-2">
+                                        Rating <span class="text-danger">*</span>
+                                    </label>
+                                    <select name="rating" 
+                                            id="id_rating" 
+                                            class="form-select form-select-xl {% if form.rating.errors %}is-invalid{% endif %}" 
+                                            required
+                                            style="height: 65px; font-size: 18px; padding: 15px 20px;">
+                                        <option value="">Select Rating</option>
+                                        <option value="1" {% if form.rating.value|stringformat:"s" == "1" %}selected{% endif %}>⭐ (1 star)</option>
+                                        <option value="2" {% if form.rating.value|stringformat:"s" == "2" %}selected{% endif %}>⭐⭐ (2 stars)</option>
+                                        <option value="3" {% if form.rating.value|stringformat:"s" == "3" %}selected{% endif %}>⭐⭐⭐ (3 stars)</option>
+                                        <option value="4" {% if form.rating.value|stringformat:"s" == "4" %}selected{% endif %}>⭐⭐⭐⭐ (4 stars)</option>
+                                        <option value="5" {% if form.rating.value|stringformat:"s" == "5" or not form.rating.value %}selected{% endif %}>⭐⭐⭐⭐⭐ (5 stars)</option>
+                                    </select>
+                                </div>
+                                {% if form.rating.errors %}
+                                    <div class="text-danger small mt-1 ps-2">
+                                        {% for error in form.rating.errors %}
+                                            <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Message Field with Summernote -->
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label for="id_message" class="form-label fw-semibold mb-2">
+                                        Testimonial Message <span class="text-danger">*</span>
+                                    </label>
+                                    {{ form.message }}
+                                    {% if form.message.errors %}
+                                        <div class="text-danger small mt-1">
+                                            {% for error in form.message.errors %}
+                                                <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                    <div class="form-text text-muted">
+                                        Minimum 10 characters required
+                                    </div>
+                                    <div class="form-text char-counter-message mt-1"></div>
+                                </div>
+                            </div>
+
+                            <!-- Image Field -->
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold mb-2">
+                                    Client Photo
+                                </label>
+                                
+                                <!-- Current Image Display - Only show when editing -->
+                                {% if testimonial and testimonial.image %}
+                                <div class="current-image-section mb-3 p-2 bg-light rounded-2 border">
+                                    <p class="small fw-semibold mb-1 text-success">
+                                        <i class="fas fa-image me-1"></i>Current Photo:
+                                    </p>
+                                    <div class="text-center">
+                                        <img src="{{ testimonial.image.url }}" alt="Current image" 
+                                             class="img-thumbnail rounded-circle shadow-sm mb-1" 
+                                             style="width: 80px; height: 80px; object-fit: cover;">
+                                        <p class="small text-muted mb-0">Current image</p>
+                                    </div>
+                                </div>
+                                {% endif %}
+                                
+                                <!-- File Upload -->
+                                <div class="file-upload-container border rounded-2 p-3 text-center bg-light">
+                                    <input type="file" 
+                                           name="image" 
+                                           id="id_image" 
+                                           class="d-none" 
+                                           accept="image/*">
+                                    
+                                    <div class="file-upload-content" id="fileUploadContent">
+                                        <i class="fas fa-cloud-upload-alt text-muted mb-2" style="font-size: 2rem;"></i>
+                                        <p class="mb-1 small fw-semibold">
+                                            {% if testimonial and testimonial.image %}Update Photo{% else %}Upload Client Photo{% endif %}
+                                        </p>
+                                        <p class="text-muted small mb-2">PNG, JPG, JPEG up to 5MB</p>
+                                        
+                                        <button type="button" class="btn btn-outline-success btn-sm rounded-pill px-3" id="browseButton">
+                                            <i class="fas fa-folder-open me-1"></i>Choose File
+                                        </button>
+                                        
+                                        <div class="file-info mt-2" id="fileInfo">
+                                            <span class="file-name text-muted small">No file chosen</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                {% if form.image.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.image.errors %}
+                                            <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Status Field - FIXED HEIGHT -->
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="id_status" class="form-label fw-semibold mb-2">
+                                        Publication Status
+                                    </label>
+                                    <select name="status" 
+                                            id="id_status" 
+                                            class="form-select form-select-xl {% if form.status.errors %}is-invalid{% endif %}"
+                                            style="height: 65px; font-size: 18px; padding: 15px 20px;">
+                                        <!-- Use proper boolean values for Django form -->
+                                        <option value="True" {% if form.status.value == True or form.status.value == 'True' or form.status.value == 'true' or not form.status.value %}selected{% endif %}>
+                                            🟢 Active - Visible on website
+                                        </option>
+                                        <option value="False" {% if form.status.value == False or form.status.value == 'False' or form.status.value == 'false' %}selected{% endif %}>
+                                            🔴 Inactive - Hidden from website
+                                        </option>
+                                    </select>
+                                </div>
+                                {% if form.status.errors %}
+                                    <div class="text-danger small mt-1 ps-2">
+                                        {% for error in form.status.errors %}
+                                            <i class="fas fa-exclamation-circle me-1"></i>{{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                                <div class="form-text ps-2 mt-1 small">
+                                    Active testimonials are visible on the website
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Form Actions -->
+                        <div class="row mt-4 pt-3 border-top">
+                            <div class="col-12">
+                                <div class="d-flex flex-column flex-md-row gap-2 justify-content-end align-items-stretch align-items-md-center">
+                                    <a href="{% url 'company_app:services_testimonial_list' %}" class="btn btn-outline-secondary btn-sm px-4 rounded-pill">
+                                        <i class="fas fa-times me-1"></i>Cancel
+                                    </a>
+                                    <button type="submit" class="btn btn-success btn-sm px-4 rounded-pill shadow">
+                                        <i class="fas fa-save me-1"></i>
+                                        {% if testimonial %}Update Testimonial{% else %}Create Testimonial{% endif %}
+                                    </button>
+                                    {% if testimonial %}
+                                    <a href="{% url 'company_app:services_testimonial_detail' testimonial.pk %}" class="btn btn-info btn-sm px-3 rounded-pill">
+                                        <i class="fas fa-eye me-1"></i> View Details
+                                    </a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<!-- Summernote CSS -->
+<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.css" rel="stylesheet">
+<style>
+.card-header.bg-gradient-success {
+    background: linear-gradient(135deg, #198754 0%, #157347 100%) !important;
+}
+
+/* Custom XL Form Controls */
+.form-control-xl,
+.form-select-xl {
+    height: 65px !important;
+    font-size: 18px !important;
+    padding: 15px 20px !important;
+    border: 2px solid #e9ecef !important;
+    border-radius: 0.5rem !important;
+    background-color: #fff !important;
+    transition: all 0.3s ease !important;
+    line-height: 1.5 !important;
+}
+
+.form-control-xl:focus,
+.form-select-xl:focus {
+    border-color: #198754 !important;
+    box-shadow: 0 0 0 0.2rem rgba(25, 135, 84, 0.25) !important;
+    transform: translateY(-1px);
+}
+
+.form-control-xl.is-invalid,
+.form-select-xl.is-invalid {
+    border-color: #dc3545 !important;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25) !important;
+}
+
+/* Form Label Styling */
+.form-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 8px;
+}
+
+/* File Upload Styling */
+.file-upload-container {
+    border: 2px dashed #dee2e6 !important;
+    transition: all 0.3s ease;
+    min-height: 150px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.file-upload-container:hover {
+    border-color: #198754 !important;
+    background: #f8fff9 !important;
+}
+
+/* Button Styling */
+.btn-success {
+    background: linear-gradient(135deg, #198754 0%, #157347 100%);
+    border: none;
+}
+
+.btn-success:hover {
+    background: linear-gradient(135deg, #157347 0%, #0f5132 100%);
+}
+
+/* Select Dropdown Arrow Styling */
+.form-select-xl {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 20px center;
+    background-size: 16px 12px;
+    padding-right: 50px !important;
+}
+
+/* Summernote Editor Styling */
+.note-editor.note-frame {
+    border: 1px solid #ced4da !important;
+    border-radius: 0.5rem !important;
+    width: 100% !important;
+}
+
+.note-editor .note-toolbar {
+    background-color: #f8f9fa !important;
+    border-bottom: 1px solid #dee2e6 !important;
+}
+
+.note-editor .note-btn {
+    background: white !important;
+    border: 1px solid #dee2e6 !important;
+}
+
+.note-editable {
+    min-height: 200px !important;
+    padding: 1rem !important;
+    font-size: 16px !important;
+    line-height: 1.6 !important;
+}
+
+/* Character Counter */
+.char-counter {
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+.char-counter.text-danger {
+    color: #dc3545 !important;
+    font-weight: bold;
+}
+
+.char-counter.text-success {
+    color: #198754 !important;
+}
+
+/* Status option styling */
+.form-select-xl option {
+    padding: 12px 15px !important;
+    font-size: 16px !important;
+    border-bottom: 1px solid #f8f9fa;
+}
+
+.form-select-xl option:checked {
+    background-color: #e8f5e8 !important;
+    color: #198754 !important;
+    font-weight: 600;
+}
+
+.form-select-xl option:hover {
+    background-color: #f8f9fa !important;
+}
+
+@media (max-width: 768px) {
+    .card-body {
+        padding: 1rem !important;
+    }
+    
+    .form-control-xl,
+    .form-select-xl {
+        height: 60px !important;
+        font-size: 16px !important;
+        padding: 12px 16px !important;
+    }
+}
+
+@media (max-width: 576px) {
+    .form-control-xl,
+    .form-select-xl {
+        height: 55px !important;
+        font-size: 16px !important;
+    }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Summernote JS -->
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.js"></script>
+
+<script>
+$(document).ready(function() {
+    // Initialize Summernote editor
+    $('#id_message').summernote({
+        height: 300,
+        toolbar: [
+            ['style', ['style']],
+            ['font', ['bold', 'italic', 'underline', 'clear']],
+            ['fontname', ['fontname']],
+            ['fontsize', ['fontsize']],
+            ['color', ['color']],
+            ['para', ['ul', 'ol', 'paragraph']],
+            ['table', ['table']],
+            ['insert', ['link', 'picture', 'video']],
+            ['view', ['fullscreen', 'codeview', 'help']]
+        ],
+        callbacks: {
+            onChange: function(contents) {
+                updateMessageCounter();
+            },
+            onInit: function() {
+                updateMessageCounter();
+            }
+        }
+    });
+
+    // Character counter for Summernote message
+    function updateMessageCounter() {
+        var messageText = $('#id_message').summernote('code');
+        var plainText = $(messageText).text();
+        var length = plainText.length;
+        var minLength = 10;
+        var counter = $('.char-counter-message');
+        
+        counter.text(length + ' characters (minimum ' + minLength + ')');
+        
+        if (length < minLength) {
+            counter.addClass('text-danger');
+        } else {
+            counter.removeClass('text-danger').addClass('text-success');
+        }
+    }
+
+    // File Upload Functionality
+    const fileInput = $('#id_image');
+    const browseButton = $('#browseButton');
+    const fileInfo = $('#fileInfo');
+    const fileName = fileInfo.find('.file-name');
+
+    // Browse button click handler
+    browseButton.on('click', function() {
+        fileInput.click();
+    });
+
+    // File input change handler
+    fileInput.on('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            // Validate file type
+            const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+            if (!validTypes.includes(file.type)) {
+                alert('Error: Please select a valid image file (JPEG, PNG, GIF, WebP)');
+                resetFileInput();
+                return;
+            }
+
+            // Validate file size (5MB)
+            const maxSize = 5 * 1024 * 1024;
+            if (file.size > maxSize) {
+                alert('Error: File size must be less than 5MB');
+                resetFileInput();
+                return;
+            }
+
+            // Update file info
+            fileName.text(file.name).removeClass('text-muted').addClass('text-success fw-semibold');
+        }
+    });
+
+    // Reset file input
+    function resetFileInput() {
+        fileInput.val('');
+        fileName.text('No file chosen').removeClass('text-success fw-semibold').addClass('text-muted');
+    }
+
+    // Form validation
+    $('form').on('submit', function(e) {
+        let isValid = true;
+        
+        // Remove previous invalid classes
+        $('.is-invalid').removeClass('is-invalid');
+        
+        // Check required fields
+        const requiredFields = [
+            {id: '#id_name', name: 'Client Name'},
+            {id: '#id_service', name: 'Service'}, 
+            {id: '#id_rating', name: 'Rating'},
+            {id: '#id_message', name: 'Testimonial Message'}
+        ];
+        
+        requiredFields.forEach(function(field) {
+            const element = $(field.id);
+            if (field.id === '#id_message') {
+                // Special handling for Summernote content
+                const messageContent = $('#id_message').summernote('code');
+                const plainText = $(messageContent).text().trim();
+                if (!plainText) {
+                    $('#id_message').addClass('is-invalid');
+                    isValid = false;
+                } else if (plainText.length < 10) {
+                    $('#id_message').addClass('is-invalid');
+                    isValid = false;
+                }
+            } else {
+                if (!element.val().trim()) {
+                    element.addClass('is-invalid');
+                    isValid = false;
+                }
+            }
+        });
+
+        if (!isValid) {
+            e.preventDefault();
+            $('.is-invalid').first().focus();
+            
+            // Simple alert message instead of toast
+            alert('Please fill in all required fields correctly:\n\n• Client Name is required\n• Service must be selected\n• Rating must be selected\n• Testimonial Message must be at least 10 characters long');
+            return false;
+        }
+
+        // Show loading state
+        $('button[type="submit"]')
+            .prop('disabled', true)
+            .html('<i class="fas fa-spinner fa-spin me-1"></i>Processing...');
+            
+        return true;
+    });
+
+    // Auto-focus on first field
+    $('#id_name').focus();
+
+    // Log current form values for debugging
+    console.log('Form initialized with values:', {
+        service: $('#id_service').val(),
+        rating: $('#id_rating').val(),
+        status: $('#id_status').val()
+    });
+
+    console.log('Testimonial form initialized with proper field heights');
+
+    // Initialize character counter
+    updateMessageCounter();
+});
+</script>
+{% endblock %}

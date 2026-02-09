@@ -1,0 +1,1706 @@
+{% extends 'Frontend/base.html' %}
+{% load static %}
+{% block title %}Mobile Apps{% endblock %}
+{% block extra_css %}
+<style>
+    /* Global Styles */
+    :root {
+        --primary-color: #3498db;
+        --primary-dark: #2980b9;
+        --secondary-color: #2c3e50;
+        --secondary-light: #34495e;
+        --accent-color: #f1c40f;
+        --accent-dark: #f39c12;
+        --light-bg: #f8f9fa;
+        --light-bg-2: #ecf0f1;
+        --dark-text: #2c3e50;
+        --light-text: #7f8c8d;
+        --white: #ffffff;
+        --gradient-primary: linear-gradient(135deg, #3498db, #2c3e50);
+        --gradient-accent: linear-gradient(135deg, #d1b751, #d96457);
+        --shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        --shadow-hover: 0 15px 40px rgba(0, 0, 0, 0.15);
+        --transition: all 0.3s ease;
+        --border-radius: 15px;
+    }
+
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: var(--dark-text);
+        line-height: 1.6;
+        overflow-x: hidden;
+    }
+
+    .section {
+        padding: 80px 0;
+    }
+
+    .section-title {
+        text-align: center;
+        margin-bottom: 60px;
+    }
+
+    .section-title h2 {
+        color: var(--secondary-color);
+        font-weight: 700;
+        margin-bottom: 15px;
+    }
+
+    .section-title p {
+        color: var(--light-text);
+        font-size: 1.1rem;
+    }
+
+    /* Service Banner Section */
+    .service__banner- {
+        background: linear-gradient(135deg, #f8f9fa 0%, #ecf0f1 100%);
+        padding: 100px 0 60px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .service__banner-::before {
+        content: '';
+        position: absolute;
+        width: 300px;
+        height: 300px;
+        border-radius: 50%;
+        background: var(--primary-color);
+        opacity: 0.05;
+        top: -150px;
+        right: -150px;
+    }
+
+    .service__banner-::after {
+        content: '';
+        position: absolute;
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        background: var(--accent-color);
+        opacity: 0.05;
+        bottom: -100px;
+        left: -100px;
+    }
+
+    .service__banner--content .title {
+        font-size: 3rem;
+        font-weight: 800;
+        color: var(--secondary-color);
+        margin-bottom: 20px;
+        line-height: 1.2;
+        position: relative;
+        display: inline-block;
+    }
+
+    .service__banner--content .title::after {
+        content: '';
+        position: absolute;
+        width: 80px;
+        height: 5px;
+        background: var(--accent-color);
+        bottom: -10px;
+        left: 0;
+        border-radius: 5px;
+    }
+
+    .sub-title-desc {
+        font-size: 1.3rem;
+        color: var(--primary-color);
+        margin-bottom: 20px;
+        font-weight: 600;
+    }
+
+    .service__banner--content p {
+        font-size: 1rem;
+        color: var(--light-text);
+        margin-bottom: 30px;
+    }
+
+    .l__button {
+        display: inline-flex;
+        align-items: center;
+        background: var(--gradient-primary);
+        color: white;
+        padding: 12px 30px;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: var(--transition);
+        border: none;
+        cursor: pointer;
+        box-shadow: var(--shadow);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        position: relative;
+        overflow: hidden;
+        z-index: 1;
+    }
+
+    .l__button::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 0%;
+        height: 100%;
+        background: var(--gradient-accent);
+        transition: var(--transition);
+        z-index: -1;
+    }
+
+    .l__button:hover::before {
+        width: 100%;
+    }
+
+    .l__button:hover {
+        color: white;
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-hover);
+    }
+
+    .l__button i {
+        margin-left: 10px;
+        transition: var(--transition);
+    }
+
+    .l__button:hover i {
+        transform: translateX(5px);
+    }
+
+    .service__banner--content .right {
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+    }
+
+    /* CLEAN RESPONSIVE IMAGE + ORBIT FIXED */
+    .image-container {
+        position: relative;
+        width: 100%;
+        max-width: 360px;
+        margin: 0 auto;
+    }
+
+    .main-image {
+        width: 100%;
+        height: auto;
+        display: block;
+        margin: 0 auto;
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow);
+        z-index: 2;
+        position: relative;
+    }
+
+    /* DESKTOP ORBIT */
+    .stats-orbit {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 420px;
+        height: 420px;
+        transform: translate(-50%, -50%);
+        pointer-events: none;
+        z-index: 3;
+    }
+
+    .orbit-path {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        animation: rotate 25s linear infinite;
+    }
+
+    .orbit-path.paused {
+        animation-play-state: paused;
+    }
+
+    .info__card {
+        width: 90px;
+        height: 90px;
+        background: white;
+        border-radius: 12px;
+        position: absolute;
+        box-shadow: var(--shadow);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        padding: 10px 6px;
+        transition: var(--transition);
+        border-top: 4px solid var(--primary-color);
+        pointer-events: auto;
+    }
+
+    /* Four card positions - Perfect Square */
+    .info__card:nth-child(1) {
+        top: 0;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        border-top-color: var(--primary-color);
+    }
+
+    .info__card:nth-child(2) {
+        top: 50%;
+        right: 0;
+        transform: translate(50%, -50%);
+        border-top-color: var(--accent-color);
+    }
+
+    .info__card:nth-child(3) {
+        bottom: 0;
+        left: 50%;
+        transform: translate(-50%, 50%);
+        border-top-color: #2ecc71;
+    }
+
+    .info__card:nth-child(4) {
+        top: 50%;
+        left: 0;
+        transform: translate(-50%, -50%);
+        border-top-color: #9b59b6;
+    }
+
+    .info__card:hover {
+        transform: scale(1.1);
+        box-shadow: var(--shadow-hover);
+        z-index: 10;
+    }
+
+    .info__card img {
+        width: 25px;
+        height: 25px;
+        margin-bottom: 5px;
+        object-fit: contain;
+    }
+
+    .info__card h4 {
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        margin-bottom: 3px;
+        line-height: 1;
+    }
+
+    .info__card h6 {
+        font-size: 0.6rem;
+        color: var(--light-text);
+        margin: 0;
+        line-height: 1.2;
+    }
+
+    /* MOBILE ORBIT */
+    .mobile-orbit-container {
+        display: none;
+    }
+
+    @media(max-width: 576px) {
+        .stats-orbit {
+            display: none;
+        }
+
+        .mobile-orbit-container {
+            display: block;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 260px;
+            height: 260px;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 3;
+        }
+
+        .mobile-orbit-path {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            animation: rotate 20s linear infinite;
+        }
+
+        .mobile-orbit-path.paused {
+            animation-play-state: paused;
+        }
+
+        .mobile-info-card {
+            width: 65px;
+            height: 65px;
+            background: white;
+            border-radius: 10px;
+            position: absolute;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 8px 6px;
+            transition: var(--transition);
+            border-top: 3px solid var(--primary-color);
+            pointer-events: auto;
+        }
+
+        .mobile-info-card:nth-child(1) {
+            top: 0;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border-top-color: var(--primary-color);
+        }
+
+        .mobile-info-card:nth-child(2) {
+            top: 50%;
+            right: 0;
+            transform: translate(50%, -50%);
+            border-top-color: var(--accent-color);
+        }
+
+        .mobile-info-card:nth-child(3) {
+            bottom: 0;
+            left: 50%;
+            transform: translate(-50%, 50%);
+            border-top-color: #2ecc71;
+        }
+
+        .mobile-info-card:nth-child(4) {
+            top: 50%;
+            left: 0;
+            transform: translate(-50%, -50%);
+            border-top-color: #9b59b6;
+        }
+
+        .mobile-info-card:hover {
+            transform: scale(1.1);
+            box-shadow: var(--shadow-hover);
+            z-index: 10;
+        }
+
+        .mobile-info-card img {
+            width: 18px;
+            height: 18px;
+            margin-bottom: 3px;
+            object-fit: contain;
+        }
+
+        .mobile-info-card h4 {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 2px;
+            line-height: 1;
+        }
+
+        .mobile-info-card h6 {
+            font-size: 0.5rem;
+            color: var(--light-text);
+            margin: 0;
+            line-height: 1.1;
+        }
+    }
+
+    @keyframes rotate {
+        from {
+            transform: rotate(0deg);
+        }
+
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    /* Service Info Section */
+    .service__info {
+        margin-top: 80px;
+    }
+
+    .service__info--card {
+        background: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow);
+        padding: 25px;
+        height: 100%;
+        transition: var(--transition);
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+        border-top: 4px solid var(--primary-color);
+    }
+
+    .service__info--card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 0;
+        background: var(--gradient-primary);
+        opacity: 0.05;
+        transition: var(--transition);
+        z-index: 0;
+    }
+
+    .service__info--card:hover::before {
+        height: 100%;
+    }
+
+    .service__info--card:hover {
+        transform: translateY(-10px);
+        box-shadow: var(--shadow-hover);
+    }
+
+    .service__info--card:nth-child(2) {
+        border-top-color: var(--accent-color);
+    }
+
+    .service__info--card:nth-child(3) {
+        border-top-color: #2ecc71;
+    }
+
+    .service__info--card-head {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 15px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .service__info--card-head img {
+        width: 50px;
+        height: 50px;
+        margin-bottom: 12px;
+        object-fit: contain;
+    }
+
+    .service__info--card-head .title {
+        font-size: 1.3rem;
+        color: var(--secondary-color);
+    }
+
+    .service__info--content {
+        position: relative;
+        z-index: 1;
+    }
+
+    .service__info--content p {
+        color: var(--light-text);
+        margin: 0;
+        font-size: 0.9rem;
+    }
+
+    /* FIXED MOBILE LAYOUT */
+    @media (max-width: 768px) {
+        .service__banner- {
+            padding: 60px 0 30px;
+        }
+
+        .service__banner--content .right {
+            margin-top: 0;
+            padding-top: 0;
+            height: auto;
+            min-height: 300px;
+        }
+
+        .image-container {
+            max-width: 280px;
+            margin-bottom: 0;
+        }
+
+        .mobile-orbit-container {
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .service__info {
+            margin-top: 40px;
+        }
+
+        .service__banner--content .title {
+            font-size: 2.2rem;
+            margin-bottom: 15px;
+        }
+
+        .sub-title-desc {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+        }
+
+        .service__banner--content p {
+            font-size: 0.9rem;
+            margin-bottom: 25px;
+        }
+
+        .l__button {
+            padding: 10px 25px;
+            font-size: 0.9rem;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .section {
+            padding: 60px 0;
+        }
+
+        .service__banner- {
+            padding: 50px 0 20px;
+        }
+
+        .service__banner--content .title {
+            font-size: 2rem;
+        }
+
+        .service__banner--content .title::after {
+            width: 60px;
+            height: 4px;
+            bottom: -8px;
+        }
+
+        .sub-title-desc {
+            font-size: 1rem;
+        }
+
+        .service__banner--content p {
+            font-size: 0.85rem;
+        }
+
+        .l__button {
+            padding: 10px 25px;
+            font-size: 0.9rem;
+        }
+
+        .image-container {
+            max-width: 250px;
+        }
+
+        .service__info {
+            margin-top: 30px;
+        }
+
+        .service__info--card {
+            padding: 18px 12px;
+            margin-bottom: 15px;
+        }
+
+        .service__info--card-head img {
+            width: 40px;
+            height: 40px;
+            margin-bottom: 10px;
+        }
+
+        .service__info--card-head .title {
+            font-size: 1.1rem;
+        }
+    }
+
+    @media (max-width: 400px) {
+        .service__banner--content .title {
+            font-size: 1.8rem;
+        }
+
+        .sub-title-desc {
+            font-size: 0.95rem;
+        }
+
+        .service__banner--content p {
+            font-size: 0.8rem;
+        }
+
+        .l__button {
+            padding: 8px 20px;
+            font-size: 0.85rem;
+        }
+
+        .image-container {
+            max-width: 220px;
+        }
+
+        .mobile-orbit-container {
+            width: 240px;
+            height: 240px;
+        }
+
+        .mobile-info-card {
+            width: 60px;
+            height: 60px;
+        }
+    }
+</style>
+{% endblock %}
+{% block content %}
+<main class="main">
+
+    <style>
+        .page-title {
+            background-image: linear-gradient(rgba(28, 29, 31, 0.65), rgba(23, 4, 69, 0.65)),
+            url("{% static 'img/breadcrumb.jpg' %}");
+            background-size: cover;
+            background-position: center;
+            padding: 30px 0px;
+        }
+    </style>
+
+    <div class="page-title light-background">
+        <div class="container">
+            <h1>Innovative Mobile App Development Services</h1>
+            <nav class="breadcrumbs" data-aos="fade-right" data-aos-delay="100">
+                <ol>
+                    <li><a href="{% url 'frontend_app:home' %}"><i class="fas fa-home"></i> Home</a></li>
+                    <li class="current"><i class="fa-solid fa-mobile-screen"></i> Mobile Apps</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+
+
+
+    <div style="min-height: 50vh">
+        <div class="site-main">
+            <section class="service__banner-">
+                <div class="container">
+                    <div class="service__banner--content overflow">
+                        <div class="row flex-column-reverse flex-md-row">
+                            <div class="col-lg-7 col-md-6">
+                                <div class="left">
+                                    <div class="section__title clearfix">
+                                        <h1 class="title" data-aos="fade-right" style="color:var(--secondary-color);"
+                                            data-aos-delay="100">Mobile App Development</h1>
+                                    </div>
+                                    <div class="title-desc" data-aos="fade-right" data-aos-delay="200">
+                                        <h4 class="sub-title-desc">Powerful iOS and Android applications that drive
+                                            business growth and user engagement.</h4>
+                                        <p>Transforming Your Vision into High-Performance Mobile Experiences: From
+                                            Concept to Deployment, We Build Scalable, User-Friendly Apps That Solve Real
+                                            Problems and Deliver Exceptional Value Across All Mobile Platforms!</p>
+                                        <a href="{% url 'frontend_app:contact' %}" class="l__button">
+                                            <span>lets start conversation</span>
+                                            <i class="bi bi-chevron-right"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-5 col-md-6 mb-4 mb-md-0">
+                                <div class="right mt-4" data-aos="fade-left" data-aos-delay="300">
+                                    <div class="image-container">
+                                        <!-- Using the same image path as in your original code -->
+                                        <img src="{% static 'images/Mask_group.svg' %}" class="main-image"
+                                            alt="Mobile App Development">
+
+                                        <!-- Desktop Orbit -->
+                                        <div class="stats-orbit">
+                                            <div class="orbit-path" id="orbitPath">
+                                                <div class="info__card" data-aos="zoom-in" data-aos-delay="400">
+                                                    <img src="{% static 'images/calendar.gif' %}"
+                                                        alt="Years of Experience">
+                                                    <h4>7+</h4>
+                                                    <h6>Years Experience</h6>
+                                                </div>
+
+                                                <div class="info__card" data-aos="zoom-in" data-aos-delay="500">
+                                                    <img src="{% static 'images/like.gif' %}" alt="Happy Clients">
+                                                    <h4>180+</h4>
+                                                    <h6>Happy Clients</h6>
+                                                </div>
+
+                                                <div class="info__card" data-aos="zoom-in" data-aos-delay="600">
+                                                    <img src="{% static 'images/task.gif' %}" alt="Successful Projects">
+                                                    <h4>300+</h4>
+                                                    <h6>Apps Developed</h6>
+                                                </div>
+
+                                                <div class="info__card" data-aos="zoom-in" data-aos-delay="700">
+                                                    <img src="{% static 'images/teamwork.gif' %}" alt="Team Members">
+                                                    <h4>25+</h4>
+                                                    <h6>App Developers</h6>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Mobile Orbit -->
+                                        <div class="mobile-orbit-container">
+                                            <div class="mobile-orbit-path" id="mobileOrbitPath">
+                                                <div class="mobile-info-card">
+                                                    <img src="{% static 'images/calendar.gif' %}"
+                                                        alt="Years of Experience">
+                                                    <h4>7+</h4>
+                                                    <h6>Years Experience</h6>
+                                                </div>
+
+                                                <div class="mobile-info-card">
+                                                    <img src="{% static 'images/like.gif' %}" alt="Happy Clients">
+                                                    <h4>180+</h4>
+                                                    <h6>Happy Clients</h6>
+                                                </div>
+
+                                                <div class="mobile-info-card">
+                                                    <img src="{% static 'images/task.gif' %}" alt="Successful Projects">
+                                                    <h4>300+</h4>
+                                                    <h6>Apps Developed</h6>
+                                                </div>
+
+                                                <div class="mobile-info-card">
+                                                    <img src="{% static 'images/teamwork.gif' %}" alt="Team Members">
+                                                    <h4>25+</h4>
+                                                    <h6>App Developers</h6>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="service__info overflow">
+                        <div class="row row-cols-1 row-cols-md-3 g-4">
+
+                            <div class="col" data-aos="fade-up" data-aos-delay="100">
+                                <div class="service__info--card">
+                                    <div class="service__info--card-head">
+                                        <img src="{% static 'images/programmer.gif' %}"
+                                            alt="Cross-Platform Development">
+                                        <h2 class="title">Cross-Platform Development</h2>
+                                    </div>
+                                    <div class="service__info--content">
+                                        <p>We build apps that work seamlessly across iOS and Android platforms,
+                                            maximizing your reach and ROI.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col" data-aos="fade-up" data-aos-delay="200">
+                                <div class="service__info--card">
+                                    <div class="service__info--card-head">
+                                        <img src="{% static 'images/digital-native.gif' %}" alt="Native Performance">
+                                        <h2 class="title">Native Performance</h2>
+                                    </div>
+                                    <div class="service__info--content">
+                                        <p>Our apps deliver smooth, responsive performance that users expect from native
+                                            mobile applications.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col" data-aos="fade-up" data-aos-delay="300">
+                                <div class="service__info--card">
+                                    <div class="service__info--card-head">
+                                        <img src="{% static 'images/interface.gif' %}" alt="Intuitive UX">
+                                        <h2 class="title">Intuitive User Experience</h2>
+                                    </div>
+                                    <div class="service__info--content">
+                                        <p>We design apps with user-centric interfaces that are easy to navigate and
+                                            delightful to use.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- Service Overview -->
+    <section class="bg-development-services">
+        <div class="bg-development-services-container">
+            <div class="bg-development-section-header">
+                <span class="bg-development-section-badge">Our Expertise</span>
+                <h2 class="bg-development-section-title">Comprehensive Mobile App Solutions</h2>
+                <p class="bg-development-section-subtitle">We deliver end-to-end mobile app development services
+                    tailored to your unique business requirements</p>
+            </div>
+
+            <div class="bg-development-services-grid">
+                <div class="bg-development-service-card">
+                    <div class="bg-development-service-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h3 class="bg-development-service-title">Native iOS Apps</h3>
+                    <p class="bg-development-service-description">High-performance iOS applications built with Swift and
+                        Objective-C for optimal user experience.</p>
+                    <a href="#" class="bg-development-service-link">Learn More <i class="fas fa-arrow-right"></i></a>
+                </div>
+
+                <div class="bg-development-service-card">
+                    <div class="bg-development-service-icon">
+                        <i class="fab fa-android"></i>
+                    </div>
+                    <h3 class="bg-development-service-title">Native Android Apps</h3>
+                    <p class="bg-development-service-description">Robust Android applications developed with Kotlin and
+                        Java for seamless performance.</p>
+                    <a href="#" class="bg-development-service-link">Learn More <i class="fas fa-arrow-right"></i></a>
+                </div>
+
+                <div class="bg-development-service-card">
+                    <div class="bg-development-service-icon">
+                        <i class="fas fa-code"></i>
+                    </div>
+                    <h3 class="bg-development-service-title">Cross-Platform Apps</h3>
+                    <p class="bg-development-service-description">Cost-effective solutions built with React Native and
+                        Flutter for both iOS and Android.</p>
+                    <a href="#" class="bg-development-service-link">Learn More <i class="fas fa-arrow-right"></i></a>
+                </div>
+
+                <div class="bg-development-service-card">
+                    <div class="bg-development-service-icon">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                    <h3 class="bg-development-service-title">E-Commerce Apps</h3>
+                    <p class="bg-development-service-description">Feature-rich mobile shopping experiences with secure
+                        payment integration.</p>
+                    <a href="#" class="bg-development-service-link">Learn More <i class="fas fa-arrow-right"></i></a>
+                </div>
+
+                <div class="bg-development-service-card">
+                    <div class="bg-development-service-icon">
+                        <i class="fas fa-gamepad"></i>
+                    </div>
+                    <h3 class="bg-development-service-title">Mobile Games</h3>
+                    <p class="bg-development-service-description">Engaging mobile games developed with Unity and other
+                        game engines.</p>
+                    <a href="#" class="bg-development-service-link">Learn More <i class="fas fa-arrow-right"></i></a>
+                </div>
+
+                <div class="bg-development-service-card">
+                    <div class="bg-development-service-icon">
+                        <i class="fas fa-sync-alt"></i>
+                    </div>
+                    <h3 class="bg-development-service-title">App Maintenance</h3>
+                    <p class="bg-development-service-description">Ongoing support, updates, and optimization to keep
+                        your app performing at its best.</p>
+                    <a href="#" class="bg-development-service-link">Learn More <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="bg-development-features">
+        <div class="bg-development-container">
+            <div class="bg-development-section-header">
+                <span class="bg-development-badge">Our Approach</span>
+                <h2 class="bg-development-title">Comprehensive Mobile Development Solutions</h2>
+                <p class="bg-development-subtitle">Cutting-edge technologies and frameworks to power your mobile
+                    presence</p>
+            </div>
+
+            <div class="bg-development-features-grid">
+                <div class="bg-development-feature-card">
+                    <div class="bg-development-feature-icon">
+                        <i class="fab fa-apple"></i>
+                    </div>
+                    <h3 class="bg-development-feature-title">iOS Development</h3>
+                    <p class="bg-development-feature-description">Creating stunning, intuitive iOS applications that
+                        leverage the full power of Apple's ecosystem.</p>
+                    <div class="bg-development-tech-tags">
+                        <span class="bg-development-tech-tag">Swift</span>
+                        <span class="bg-development-tech-tag">SwiftUI</span>
+                        <span class="bg-development-tech-tag">UIKit</span>
+                        <span class="bg-development-tech-tag">Xcode</span>
+                    </div>
+                    <a href="#" class="bg-development-feature-link">Learn More <i class="fas fa-arrow-right"></i></a>
+                </div>
+
+                <div class="bg-development-feature-card">
+                    <div class="bg-development-feature-icon">
+                        <i class="fab fa-android"></i>
+                    </div>
+                    <h3 class="bg-development-feature-title">Android Development</h3>
+                    <p class="bg-development-feature-description">Building robust, scalable Android applications with
+                        modern Material Design principles.</p>
+                    <div class="bg-development-tech-tags">
+                        <span class="bg-development-tech-tag">Kotlin</span>
+                        <span class="bg-development-tech-tag">Java</span>
+                        <span class="bg-development-tech-tag">Jetpack</span>
+                        <span class="bg-development-tech-tag">Android Studio</span>
+                    </div>
+                    <a href="#" class="bg-development-feature-link">Learn More <i class="fas fa-arrow-right"></i></a>
+                </div>
+
+                <div class="bg-development-feature-card">
+                    <div class="bg-development-feature-icon">
+                        <i class="fas fa-mobile"></i>
+                    </div>
+                    <h3 class="bg-development-feature-title">Cross-Platform Development</h3>
+                    <p class="bg-development-feature-description">Efficient development of apps that work seamlessly
+                        across both iOS and Android platforms.</p>
+                    <div class="bg-development-tech-tags">
+                        <span class="bg-development-tech-tag">React Native</span>
+                        <span class="bg-development-tech-tag">Flutter</span>
+                        <span class="bg-development-tech-tag">Xamarin</span>
+                        <span class="bg-development-tech-tag">Ionic</span>
+                    </div>
+                    <a href="#" class="bg-development-feature-link">Learn More <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Development Process -->
+    <section class="bg-development-process">
+        <div class="bg-development-container">
+            <div class="bg-development-section-header">
+                <span class="bg-development-badge">Our Methodology</span>
+                <h2 class="bg-development-title">Streamlined App Development Process</h2>
+                <p class="bg-development-subtitle">A transparent, collaborative approach to delivering exceptional
+                    mobile solutions</p>
+            </div>
+
+            <div class="bg-development-process-timeline">
+                <div class="bg-development-process-step">
+                    <div class="bg-development-step-number">1</div>
+                    <div class="bg-development-step-content">
+                        <div class="bg-development-step-icon">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <h3 class="bg-development-step-title">Discovery & Strategy</h3>
+                        <p class="bg-development-step-description">We analyze your business goals, target audience, and
+                            technical requirements to create a comprehensive app strategy.</p>
+                        <ul class="bg-development-step-list">
+                            <li>Market research</li>
+                            <li>User persona development</li>
+                            <li>Platform selection</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="bg-development-process-step">
+                    <div class="bg-development-step-number">2</div>
+                    <div class="bg-development-step-content">
+                        <div class="bg-development-step-icon">
+                            <i class="fas fa-pencil-ruler"></i>
+                        </div>
+                        <h3 class="bg-development-step-title">UI/UX Design</h3>
+                        <p class="bg-development-step-description">Our designers craft intuitive user interfaces and
+                            engaging user experiences optimized for mobile devices.</p>
+                        <ul class="bg-development-step-list">
+                            <li>Wireframing & prototyping</li>
+                            <li>User journey mapping</li>
+                            <li>Mobile-first design</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="bg-development-process-step">
+                    <div class="bg-development-step-number">3</div>
+                    <div class="bg-development-step-content">
+                        <div class="bg-development-step-icon">
+                            <i class="fas fa-laptop-code"></i>
+                        </div>
+                        <h3 class="bg-development-step-title">Development & Implementation</h3>
+                        <p class="bg-development-step-description">Using agile methodologies, we build your app with
+                            clean, maintainable code following platform-specific guidelines.</p>
+                        <ul class="bg-development-step-list">
+                            <li>Agile development</li>
+                            <li>API integration</li>
+                            <li>Feature implementation</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="bg-development-process-step">
+                    <div class="bg-development-step-number">4</div>
+                    <div class="bg-development-step-content">
+                        <div class="bg-development-step-icon">
+                            <i class="fas fa-vial"></i>
+                        </div>
+                        <h3 class="bg-development-step-title">Testing & QA</h3>
+                        <p class="bg-development-step-description">Rigorous testing across devices and OS versions
+                            ensures flawless functionality, performance, and security.</p>
+                        <ul class="bg-development-step-list">
+                            <li>Device compatibility testing</li>
+                            <li>Performance optimization</li>
+                            <li>Security validation</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="bg-development-process-step">
+                    <div class="bg-development-step-number">5</div>
+                    <div class="bg-development-step-content">
+                        <div class="bg-development-step-icon">
+                            <i class="fas fa-rocket"></i>
+                        </div>
+                        <h3 class="bg-development-step-title">Deployment & Support</h3>
+                        <p class="bg-development-step-description">App store submission followed by ongoing maintenance,
+                            updates, and dedicated support for long-term success.</p>
+                        <ul class="bg-development-step-list">
+                            <li>App store optimization</li>
+                            <li>Post-launch monitoring</li>
+                            <li>Continuous improvement</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tech Stack -->
+    <section class="py-5 bg-light">
+        <div class="container py-5">
+            <div class="row">
+                <div class="col-lg-7">
+                    <h3 class="bg-infotechs-section-title">Our Mobile Technology Stack</h3>
+                    <p class="text-muted">We use cutting-edge technologies to build fast, secure, and scalable mobile
+                        applications.</p>
+                    <p class="text-muted">Our team stays updated with the latest frameworks, tools, and best practices
+                        to deliver high-quality mobile apps that stand out in today's competitive app market.</p>
+                    <img class="mt-3" src="{% static 'img/Mobile-App.jpg' %}" width="100%" alt="Mobile App Development">
+                </div>
+                <div class="col-lg-5">
+                    <div class="bg-infotechs-tech-stack p-4">
+                        <h6 class="mb-4 fw-bold text-center">iOS Technologies</h6>
+                        <div class="d-flex flex-wrap justify-content-center gap-4 mb-4">
+                            <div class="tech-logo-container" data-bs-toggle="tooltip" title="Swift">
+                                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/swift/swift-original.svg"
+                                    alt="Swift" width="50" height="50" class="tech-logo">
+                            </div>
+                            <div class="tech-logo-container" data-bs-toggle="tooltip" title="Xcode">
+                                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/xcode/xcode-original.svg"
+                                    alt="Xcode" width="50" height="50" class="tech-logo">
+                            </div>
+                        </div>
+
+                        <h6 class="mt-5 mb-4 fw-bold text-center">Android Technologies</h6>
+                        <div class="d-flex flex-wrap justify-content-center gap-4 mb-4">
+                            <div class="tech-logo-container" data-bs-toggle="tooltip" title="Kotlin">
+                                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/kotlin/kotlin-original.svg"
+                                    alt="Kotlin" width="50" height="50" class="tech-logo">
+                            </div>
+                            <div class="tech-logo-container" data-bs-toggle="tooltip" title="Android Studio">
+                                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/androidstudio/androidstudio-original.svg"
+                                    alt="Android Studio" width="50" height="50" class="tech-logo">
+                            </div>
+                            <div class="tech-logo-container" data-bs-toggle="tooltip" title="Java">
+                                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg"
+                                    alt="Java" width="50" height="50" class="tech-logo">
+                            </div>
+                        </div>
+
+                        <h6 class="mt-5 mb-4 fw-bold text-center">Cross-Platform</h6>
+                        <div class="d-flex flex-wrap justify-content-center gap-4">
+                            <div class="tech-logo-container" data-bs-toggle="tooltip" title="React Native">
+                                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg"
+                                    alt="React Native" width="50" height="50" class="tech-logo">
+                            </div>
+                            <div class="tech-logo-container" data-bs-toggle="tooltip" title="Flutter">
+                                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/flutter/flutter-original.svg"
+                                    alt="Flutter" width="50" height="50" class="tech-logo">
+                            </div>
+                            <div class="tech-logo-container" data-bs-toggle="tooltip" title="Firebase">
+                                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/firebase/firebase-plain.svg"
+                                    alt="Firebase" width="50" height="50" class="tech-logo">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Initialize Bootstrap Tooltips -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl, {
+                    trigger: 'hover'
+                });
+            });
+        });
+    </script>
+
+    <style>
+        .tech-logo-container {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+        }
+
+        .tech-logo {
+            transition: all 0.3s ease;
+            filter: grayscale(30%);
+            opacity: 0.8;
+            border-radius: 10px;
+            padding: 8px;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .tech-logo:hover {
+            transform: scale(1.15);
+            filter: grayscale(0%);
+            opacity: 1;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Custom tooltip styling */
+        .tooltip {
+            font-family: inherit;
+        }
+
+        .tooltip-inner {
+            background-color: #333;
+            color: white;
+            border-radius: 6px;
+            padding: 6px 12px;
+            font-weight: 500;
+            font-size: 0.875rem;
+        }
+
+        .bs-tooltip-top .tooltip-arrow::before {
+            border-top-color: #333;
+        }
+    </style>
+
+    <!-- Portfolio Section - Updated with Dynamic Data -->
+    <section id="portfolio" class="py-5">
+        <div class="container py-5">
+            <h3 class="text-center mb-5 bg-infotechs-section-title mx-auto">Our Mobile App Portfolio</h3>
+            <div class="row">
+                {% if related_projects %}
+                {% for project in related_projects %}
+                <div class="col-md-4 mb-4">
+                    <div class="bg-infotechs-portfolio-item">
+                        {% if project.image %}
+                        <img src="{{ project.image.url }}" loading="lazy" alt="{{ project.title }}"
+                            class="img-fluid bg-infotechs-portfolio-img">
+                        {% else %}
+                        <img src="https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
+                            alt="{{ project.title }}" loading="lazy" class="img-fluid bg-infotechs-portfolio-img">
+                        {% endif %}
+                        <div class="bg-infotechs-portfolio-overlay">
+                            <h5 class="text-light fw-bold">{{ project.title }}</h5>
+                            <p>{{ project.category }}</p>
+                            {% if project.live_link %}
+                            <a href="{{ project.live_link }}" target="_blank"
+                                class="btn btn-outline-light btn-sm mt-2 rounded-5">View in App Store</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                {% else %}
+                <!-- Fallback content if no projects exist -->
+                <div class="col-md-4">
+                    <div class="bg-infotechs-portfolio-item">
+                        <img src="https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
+                            alt="Fitness App" class="img-fluid bg-infotechs-portfolio-img">
+                        <div class="bg-infotechs-portfolio-overlay">
+                            <h5 class="text-light fw-bold">FitTrack Pro</h5>
+                            <p>iOS & Android fitness tracking application</p>
+                            <a href="#" class="btn btn-outline-light btn-sm mt-2 rounded-5">View Project</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="bg-infotechs-portfolio-item">
+                        <img src="https://images.unsplash.com/photo-1551650975-87deedd944c3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1974&q=80"
+                            alt="E-commerce App" class="img-fluid bg-infotechs-portfolio-img">
+                        <div class="bg-infotechs-portfolio-overlay">
+                            <h5 class="text-light fw-bold">ShopEasy Mobile</h5>
+                            <p>Cross-platform e-commerce application</p>
+                            <a href="#" class="btn btn-outline-light btn-sm mt-2 rounded-5">View Project</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="bg-infotechs-portfolio-item">
+                        <img src="https://images.unsplash.com/photo-1611224923853-80b023f02d71?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2069&q=80"
+                            alt="Finance App" class="img-fluid bg-infotechs-portfolio-img">
+                        <div class="bg-infotechs-portfolio-overlay">
+                            <h5 class="text-light fw-bold">FinTrack Mobile</h5>
+                            <p>Personal finance management application</p>
+                            <a href="#" class="btn btn-outline-light btn-sm mt-2 rounded-5">View Project</a>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            <div class="text-center mt-4">
+                <a href="{% url 'frontend_app:all_mobile_apps' %}" class="btn bg-infotechs-btn-primary">View All
+                    Apps</a>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Clients Section -->
+    <section class="py-5 bg-light">
+        <div class="container py-3">
+            <div class="text-center mb-5">
+                <h6 class="text-uppercase text-muted">Trusted By</h6>
+                <h3 class="fw-bold">Our Valued Clients</h3>
+            </div>
+
+            <div class="row">
+                <div class="col-12">
+                    <div class="client-logos-slider">
+                        <div class="client-logos-track">
+                            {% if related_projects_logo %}
+                            {% for project in related_projects_logo %}
+                            <div class="client-logo-item">
+                                {% if project.logo %}
+                                <img src="{{ project.logo.url }}" alt="{{ project.company }} Logo" class="img-fluid">
+                                {% else %}
+                                <img src="{% static 'img/Logo.png' %}" alt="{{ project.company }} Logo"
+                                    class="img-fluid">
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+                            {% else %}
+                            <!-- Fallback static client logos -->
+                            {% for i in "1234567890" %}
+                            <div class="client-logo-item">
+                                <img src="{% static 'img/Logo.png' %}" alt="Client Logo" class="img-fluid">
+                            </div>
+                            {% endfor %}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="bg-testimonials">
+        <!-- Decorative elements -->
+        <div class="bg-testimonials__decor bg-testimonials__decor--top"></div>
+        <div class="bg-testimonials__decor bg-testimonials__decor--bottom"></div>
+
+        <div class="container">
+            <h2 class="text-center bg-testimonials__title">What Our Clients Say</h2>
+            <div class="row">
+                {% if service_testimonials %}
+                {% for testimonial in service_testimonials %}
+                <div class="col-md-4 mb-4">
+                    <div class="bg-testimonial-card">
+                        <div class="d-flex align-items-center mb-3">
+                            {% if testimonial.image %}
+                            <img src="{{ testimonial.image.url }}" alt="{{ testimonial.name }}"
+                                class="bg-testimonial-card__client me-3">
+                            {% else %}
+                            <img src="https://randomuser.me/api/portraits/women/{{ forloop.counter|add:30 }}.jpg"
+                                alt="{{ testimonial.name }}" class="bg-testimonial-card__client me-3">
+                            {% endif %}
+                            <div>
+                                <h4 class="bg-testimonial-card__name mb-0">{{ testimonial.name }}</h4>
+                                {% if testimonial.designation %}
+                                <small class="bg-testimonial-card__position">{{ testimonial.designation }}</small>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <p class="bg-testimonial-card__quote">{{ testimonial.message }}</p>
+                        <div class="bg-testimonial-card__stars text-warning">
+                            {% for i in "12345" %}
+                            {% if forloop.counter <= testimonial.rating %} <i class="fas fa-star"></i>
+                                {% else %}
+                                <i class="far fa-star"></i>
+                                {% endif %}
+                                {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                {% else %}
+                <!-- Fallback static testimonials -->
+                <div class="col-md-4">
+                    <div class="bg-testimonial-card">
+                        <div class="d-flex align-items-center mb-3">
+                            <img src="https://randomuser.me/api/portraits/women/32.jpg" alt="Sarah Johnson"
+                                class="bg-testimonial-card__client me-3">
+                            <div>
+                                <h4 class="bg-testimonial-card__name mb-0">Sarah Johnson</h4>
+                                <small class="bg-testimonial-card__position">CEO, Bloom Cosmetics</small>
+                            </div>
+                        </div>
+                        <p class="bg-testimonial-card__quote">The branding package BG Designs created for us
+                            perfectly captured our company's essence. Our sales increased by 40% after the rebrand!
+                        </p>
+                        <div class="bg-testimonial-card__stars text-warning">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="bg-testimonial-card">
+                        <div class="d-flex align-items-center mb-3">
+                            <img src="https://randomuser.me/api/portraits/men/45.jpg" alt="Michael Chen"
+                                class="bg-testimonial-card__client me-3">
+                            <div>
+                                <h4 class="bg-testimonial-card__name mb-0">Michael Chen</h4>
+                                <small class="bg-testimonial-card__position">Founder, TechNova</small>
+                            </div>
+                        </div>
+                        <p class="bg-testimonial-card__quote">Their UI/UX design transformed our app's user
+                            engagement. The attention to detail and user-centric approach was exceptional.</p>
+                        <div class="bg-testimonial-card__stars text-warning">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="bg-testimonial-card">
+                        <div class="d-flex align-items-center mb-3">
+                            <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Emily Rodriguez"
+                                class="bg-testimonial-card__client me-3">
+                            <div>
+                                <h4 class="bg-testimonial-card__name mb-0">Emily Rodriguez</h4>
+                                <small class="bg-testimonial-card__position">Marketing Director, UrbanEats</small>
+                            </div>
+                        </div>
+                        <p class="bg-testimonial-card__quote">From packaging to social media assets, BG Designs
+                            delivers consistently stunning work that aligns perfectly with our brand vision.</p>
+                        <div class="bg-testimonial-card__stars text-warning">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star-half-alt"></i>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+
+<!-- FAQ Section -->
+<section class="sm-faq-section">
+    <div class="container-fluid">
+        <div class="text-center mb-5">
+            <h2 class="sm-faq-title">Frequently Asked <span>Questions</span></h2>
+            <p class="sm-faq-subtitle">Find answers to common questions about our mobile app development services.</p>
+        </div>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="accordion" id="sm-faqAccordion">
+                        {% if service_faqs %}
+                        <!-- Dynamic FAQs from database -->
+                        {% for faq in service_faqs %}
+                        <div class="accordion-item mb-3 border-0 shadow-sm">
+                            <h2 class="accordion-header" id="sm-heading{{ forloop.counter }}">
+                                <button class="accordion-button sm-accordion-button {% if not forloop.first %}collapsed{% endif %}" 
+                                    type="button" 
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#sm-collapse{{ forloop.counter }}"
+                                    aria-expanded="{% if forloop.first %}true{% else %}false{% endif %}"
+                                    aria-controls="sm-collapse{{ forloop.counter }}">
+                                    {{ faq.question }}
+                                </button>
+                            </h2>
+                            <div id="sm-collapse{{ forloop.counter }}"
+                                class="accordion-collapse collapse {% if forloop.first %}show{% endif %}"
+                                aria-labelledby="sm-heading{{ forloop.counter }}" 
+                                data-bs-parent="#sm-faqAccordion">
+                                <div class="accordion-body sm-accordion-body">
+                                    {{ faq.answer }}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+
+                        {% else %}
+                        <!-- Static FAQs for Mobile Apps Service -->
+                        <div class="accordion-item mb-3 border-0 shadow-sm">
+                            <h2 class="accordion-header" id="sm-headingOne">
+                                <button class="accordion-button sm-accordion-button" 
+                                    type="button" 
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#sm-collapseOne" 
+                                    aria-expanded="true" 
+                                    aria-controls="sm-collapseOne">
+                                    How much does mobile app development cost?
+                                </button>
+                            </h2>
+                            <div id="sm-collapseOne" 
+                                class="accordion-collapse collapse show" 
+                                aria-labelledby="sm-headingOne"
+                                data-bs-parent="#sm-faqAccordion">
+                                <div class="accordion-body sm-accordion-body">
+                                    Mobile app development costs vary based on complexity, features, and platforms. For
+                                    a detailed quote tailored to your specific requirements, please contact our team at
+                                    BG Infotechs. We'll provide a transparent cost estimate after understanding your
+                                    project needs.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item mb-3 border-0 shadow-sm">
+                            <h2 class="accordion-header" id="sm-headingTwo">
+                                <button class="accordion-button sm-accordion-button collapsed" 
+                                    type="button" 
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#sm-collapseTwo" 
+                                    aria-expanded="false" 
+                                    aria-controls="sm-collapseTwo">
+                                    How long does it take to develop a mobile app?
+                                </button>
+                            </h2>
+                            <div id="sm-collapseTwo" 
+                                class="accordion-collapse collapse" 
+                                aria-labelledby="sm-headingTwo"
+                                data-bs-parent="#sm-faqAccordion">
+                                <div class="accordion-body sm-accordion-body">
+                                    Development timeline depends on app complexity: Simple apps (4-6 weeks), Medium apps
+                                    (8-12 weeks), Complex apps (3-6 months). This includes planning, design,
+                                    development, testing, and deployment. Contact BG Infotechs team for a precise
+                                    timeline for your project.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item mb-3 border-0 shadow-sm">
+                            <h2 class="accordion-header" id="sm-headingThree">
+                                <button class="accordion-button sm-accordion-button collapsed" 
+                                    type="button" 
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#sm-collapseThree" 
+                                    aria-expanded="false" 
+                                    aria-controls="sm-collapseThree">
+                                    Do you develop native or cross-platform apps?
+                                </button>
+                            </h2>
+                            <div id="sm-collapseThree" 
+                                class="accordion-collapse collapse" 
+                                aria-labelledby="sm-headingThree"
+                                data-bs-parent="#sm-faqAccordion">
+                                <div class="accordion-body sm-accordion-body">
+                                    We develop both! Native apps (Swift for iOS, Kotlin for Android) for maximum
+                                    performance, and cross-platform apps (Flutter, React Native) for cost-effectiveness
+                                    and faster development. Our BG Infotechs team will recommend the best approach based
+                                    on your requirements.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item mb-3 border-0 shadow-sm">
+                            <h2 class="accordion-header" id="sm-headingFour">
+                                <button class="accordion-button sm-accordion-button collapsed" 
+                                    type="button" 
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#sm-collapseFour" 
+                                    aria-expanded="false" 
+                                    aria-controls="sm-collapseFour">
+                                    What's included in your mobile app development process?
+                                </button>
+                            </h2>
+                            <div id="sm-collapseFour" 
+                                class="accordion-collapse collapse" 
+                                aria-labelledby="sm-headingFour"
+                                data-bs-parent="#sm-faqAccordion">
+                                <div class="accordion-body sm-accordion-body">
+                                    Our process includes: Requirement analysis, UI/UX design, development, quality
+                                    testing, app store submission, post-launch support, and maintenance. Contact BG
+                                    Infotechs team to get a detailed breakdown of our development process.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item mb-3 border-0 shadow-sm">
+                            <h2 class="accordion-header" id="sm-headingFive">
+                                <button class="accordion-button sm-accordion-button collapsed" 
+                                    type="button" 
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#sm-collapseFive" 
+                                    aria-expanded="false" 
+                                    aria-controls="sm-collapseFive">
+                                    Will you help with app store submission?
+                                </button>
+                            </h2>
+                            <div id="sm-collapseFive" 
+                                class="accordion-collapse collapse" 
+                                aria-labelledby="sm-headingFive"
+                                data-bs-parent="#sm-faqAccordion">
+                                <div class="accordion-body sm-accordion-body">
+                                    Yes! We handle complete app store submission including creating developer accounts
+                                    (if needed), preparing assets, meeting guidelines, and publishing to Apple App Store
+                                    and Google Play Store. Our BG Infotechs team ensures smooth submission process.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item mb-3 border-0 shadow-sm">
+                            <h2 class="accordion-header" id="sm-headingSix">
+                                <button class="accordion-button sm-accordion-button collapsed" 
+                                    type="button" 
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#sm-collapseSix" 
+                                    aria-expanded="false" 
+                                    aria-controls="sm-collapseSix">
+                                    Do you provide maintenance and updates after launch?
+                                </button>
+                            </h2>
+                            <div id="sm-collapseSix" 
+                                class="accordion-collapse collapse" 
+                                aria-labelledby="sm-headingSix"
+                                data-bs-parent="#sm-faqAccordion">
+                                <div class="accordion-body sm-accordion-body">
+                                    Absolutely. We offer post-launch maintenance packages that include bug fixes, OS
+                                    updates, security patches, feature enhancements, and 24/7 support. Contact BG
+                                    Infotechs team to discuss our maintenance plans.
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <img src="{% static 'img/38071986-removebg-preview.png' %}" class="img-fluid"
+                        style="height: 450px !important; margin-top: -20px !important;" alt="Mobile App FAQ Illustration">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+   
+
+    <!-- CTA Section -->
+    <section id="contact" class="bg-infotechs-cta-section mb-5">
+        <div class="container bg-infotechs-cta-content">
+            <div class="row justify-content-center">
+                <div class="col-lg-8 text-center">
+                    <h3 class="fw-bold mb-4 text-light">Ready to Build Your Next Mobile App?</h3>
+                    <p class="lead mb-5 text-light">Let's discuss how we can create a custom mobile solution that
+                        engages your users and drives business growth.</p>
+                    <div class="d-flex gap-3 justify-content-center">
+                        <a href="tel:{{company_profile.company_phone}}"
+                            class="btn bg-infotechs-btn-outline btn-lg px-4">
+                            <i class="fas fa-phone me-2"></i> Call Us
+                        </a>
+                        <a href="{% url 'frontend_app:contact' %}" class="btn bg-infotechs-btn-primary btn-lg px-4">
+                            <i class="fas fa-envelope me-2"></i> Get Quote
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+{% block extra_js %}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Initialize AOS
+        AOS.init({
+            duration: 800,
+            easing: 'ease-in-out',
+            once: true
+        });
+
+        // Desktop orbit animation control
+        const orbitPath = document.getElementById('orbitPath');
+        const infoCards = document.querySelectorAll('.info__card');
+
+        if (orbitPath) {
+            // Animation starts automatically on page load
+            // Only pause when hovering over individual cards
+
+            // Add individual card hover effects
+            infoCards.forEach(card => {
+                card.addEventListener('mouseenter', function () {
+                    orbitPath.classList.add('paused');
+                    this.style.transform = 'scale(1.1)';
+                    this.style.boxShadow = 'var(--shadow-hover)';
+                    this.style.zIndex = '10';
+                });
+
+                card.addEventListener('mouseleave', function () {
+                    orbitPath.classList.remove('paused');
+                    this.style.transform = '';
+                    this.style.boxShadow = '';
+                    this.style.zIndex = '';
+                });
+            });
+        }
+
+        // Mobile orbit animation control
+        const mobileOrbitPath = document.getElementById('mobileOrbitPath');
+        const mobileInfoCards = document.querySelectorAll('.mobile-info-card');
+
+        if (mobileOrbitPath) {
+            // For mobile, the animation runs continuously
+            // Pause only when tapping on individual cards
+
+            mobileInfoCards.forEach(card => {
+                card.addEventListener('touchstart', function () {
+                    mobileOrbitPath.classList.add('paused');
+                    this.style.transform = 'scale(1.1)';
+                    this.style.boxShadow = 'var(--shadow-hover)';
+                    this.style.zIndex = '10';
+                });
+
+                card.addEventListener('touchend', function () {
+                    setTimeout(() => {
+                        mobileOrbitPath.classList.remove('paused');
+                        this.style.transform = '';
+                        this.style.boxShadow = '';
+                        this.style.zIndex = '';
+                    }, 1000);
+                });
+            });
+        }
+    });
+</script>
+
+<script>
+    // Navbar scroll effect
+    window.addEventListener('scroll', function () {
+        const navbar = document.querySelector('.bg-infotechs-navbar');
+        if (window.scrollY > 50) {
+            navbar.classList.add('scrolled');
+        } else {
+            navbar.classList.remove('scrolled');
+        }
+    });
+
+    // Smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                window.scrollTo({
+                    top: target.offsetTop - 80,
+                    behavior: 'smooth'
+                });
+            }
+        });
+    });
+
+    // Animate elements when they come into view
+    const animateOnScroll = function () {
+        const elements = document.querySelectorAll('.bg-infotechs-feature-card, .bg-infotechs-process-step, .bg-infotechs-portfolio-item');
+
+        elements.forEach(element => {
+            const elementPosition = element.getBoundingClientRect().top;
+            const windowHeight = window.innerHeight;
+
+            if (elementPosition < windowHeight - 100) {
+                element.classList.add('animate_animated', 'animate_fadeInUp');
+            }
+        });
+    };
+
+    window.addEventListener('scroll', animateOnScroll);
+    window.addEventListener('load', animateOnScroll);
+</script>
+{% endblock %}
+{% endblock %}

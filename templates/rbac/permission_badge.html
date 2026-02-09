@@ -1,0 +1,10 @@
+<!-- bg_app/templates/rbac/permission_badge.html -->
+{% if has_permission %}
+<span class="badge bg-success" title="{{ permission }}">
+    <i class="fas fa-check-circle"></i> Allowed
+</span>
+{% else %}
+<span class="badge bg-danger" title="{{ permission }}">
+    <i class="fas fa-times-circle"></i> Denied
+</span>
+{% endif %}

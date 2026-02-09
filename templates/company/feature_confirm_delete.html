@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">{{ page_title }}</h1>
+        <a href="{% url 'company_app:feature_list' %}" class="d-none d-sm-inline-block btn btn-sm btn-secondary shadow-sm">
+            <i class="fas fa-arrow-left fa-sm text-white-50"></i> Back to List
+        </a>
+    </div>
+
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'company_app:feature_list' %}">Features</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ breadcrumb_active }}</li>
+        </ol>
+    </nav>
+
+    <!-- Delete Confirmation -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-danger">Confirm Delete</h6>
+        </div>
+        <div class="card-body">
+            <div class="alert alert-warning">
+                <h5><i class="fas fa-exclamation-triangle"></i> Warning!</h5>
+                <p>You are about to delete the following feature:</p>
+                <ul>
+                    <li><strong>Title:</strong> {{ feature.title }}</li>
+                    <li><strong>Description:</strong> {{ feature.description|truncatewords:10 }}</li>
+                </ul>
+                <p class="mb-0">This action cannot be undone.</p>
+            </div>
+            
+            <form method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash"></i> Confirm Delete
+                    </button>
+                    <a href="{% url 'company_app:feature_list' %}" class="btn btn-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

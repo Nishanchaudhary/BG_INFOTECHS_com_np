@@ -1,0 +1,244 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8">
+            <div class="card border-danger shadow-lg">
+                <div class="card-header bg-danger text-white border-danger">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        {{ page_title }}
+                    </h5>
+                </div>
+                <div class="card-body p-4 text-center">
+                    <!-- Warning Icon -->
+                    <div class="mb-4">
+                        <i class="fas fa-trash-alt fa-4x text-danger mb-3"></i>
+                        <h4 class="text-danger">Confirm Deletion</h4>
+                    </div>
+
+                    <!-- Course Details -->
+                    <div class="card border-warning mb-4">
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-auto">
+                                    {% if course.image %}
+                                    <img src="{{ course.image.url }}" alt="{{ course.title }}" class="rounded" style="width: 80px; height: 60px; object-fit: cover;">
+                                    {% else %}
+                                    <div class="bg-light rounded d-flex align-items-center justify-content-center" style="width: 80px; height: 60px;">
+                                        <i class="fas fa-book text-muted fa-2x"></i>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                <div class="col">
+                                    <h6 class="fw-bold text-start">{{ course.title }}</h6>
+                                    <p class="text-muted text-start mb-1">{{ course.short_description }}</p>
+                                    <div class="d-flex gap-2 mt-2 justify-content-start">
+                                        <span class="badge bg-primary">
+                                            <i class="fas fa-clock me-1"></i>{{ course.duration_display }}
+                                        </span>
+                                        <span class="badge bg-secondary">
+                                            <i class="fas fa-tag me-1"></i>${{ course.get_actual_price }}
+                                        </span>
+                                        <span class="badge {% if course.status %}bg-success{% else %}bg-danger{% endif %}">
+                                            <i class="fas {% if course.status %}fa-check{% else %}fa-times{% endif %} me-1"></i>
+                                            {% if course.status %}Active{% else %}Inactive{% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Warning Message -->
+                    <div class="alert alert-warning border-warning">
+                        <h6 class="alert-heading">
+                            <i class="fas fa-exclamation-circle me-2"></i>Important Notice
+                        </h6>
+                        <p class="mb-2">You are about to delete the course <strong>"{{ course.title }}"</strong>. This action will also remove:</p>
+                        <ul class="list-unstyled mb-2 small">
+                            <li><i class="fas fa-images text-danger me-2"></i>All associated media files ({{ course.media.count }} items)</li>
+                            <li><i class="fas fa-history text-danger me-2"></i>Course creation history</li>
+                        </ul>
+                        <p class="mb-0 fw-bold">This action cannot be undone!</p>
+                    </div>
+
+                    <!-- Statistics -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="card border-info">
+                                <div class="card-body py-2">
+                                    <h6 class="text-info mb-0">{{ course.media.count }}</h6>
+                                    <small class="text-muted">Media Files</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card border-success">
+                                <div class="card-body py-2">
+                                    <h6 class="text-success mb-0">{{ course.created_at|date:"M d, Y" }}</h6>
+                                    <small class="text-muted">Created Date</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Confirmation Form -->
+                    <form method="post" id="deleteForm">
+                        {% csrf_token %}
+                        <div class="d-flex justify-content-center gap-3">
+                            <a href="{% url 'courses_app:courses_list' %}" class="btn btn-success btn-lg">
+                                <i class="fas fa-arrow-left me-2"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-danger btn-lg" id="confirmDelete">
+                                <i class="fas fa-trash me-2"></i>Delete Course
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- Additional Warning -->
+                    <div class="mt-4">
+                        <p class="text-muted small">
+                            <i class="fas fa-info-circle me-1"></i>
+                            If you're unsure, consider deactivating the course instead of deleting it.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.card {
+    border-radius: 0.75rem;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.card-header {
+    border-radius: 0.75rem 0.75rem 0 0 !important;
+}
+
+.alert {
+    border-radius: 0.5rem;
+    border-left: 4px solid;
+}
+
+.btn {
+    border-radius: 0.5rem;
+    font-weight: 600;
+    padding: 0.75rem 2rem;
+    min-width: 140px;
+}
+
+.badge {
+    font-size: 0.7em;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .btn-lg {
+        padding: 0.5rem 1.5rem;
+        font-size: 0.9rem;
+    }
+    
+    .d-flex {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .card-body {
+        padding: 1.5rem !important;
+    }
+}
+
+/* Hover effects */
+.btn:hover {
+    transform: translateY(-1px);
+    transition: all 0.2s ease;
+}
+
+/* Loading state */
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    // Confirm delete with additional warning
+    $('#deleteForm').on('submit', function(e) {
+        e.preventDefault();
+        
+        const courseTitle = "{{ course.title }}";
+        const finalWarning = `Type "DELETE" to confirm deletion of "${courseTitle}"`;
+        
+        // Create custom confirmation modal
+        const confirmationHtml = `
+            <div class="modal fade" id="finalConfirmModal" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header bg-danger text-white">
+                            <h5 class="modal-title">
+                                <i class="fas fa-skull-crossbones me-2"></i>Final Confirmation
+                            </h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="alert alert-danger">
+                                <i class="fas fa-radiation me-2"></i>
+                                <strong>This is your final warning!</strong>
+                            </div>
+                            <p>You are about to permanently delete the course <strong>"${courseTitle}"</strong>.</p>
+                            <div class="mb-3">
+                                <label for="confirmText" class="form-label">Please type <code>DELETE</code> to confirm:</label>
+                                <input type="text" class="form-control" id="confirmText" placeholder="Type DELETE here">
+                                <div class="invalid-feedback">You must type DELETE to confirm deletion.</div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="button" class="btn btn-danger" id="finalDelete">Delete Permanently</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        $('body').append(confirmationHtml);
+        const finalModal = new bootstrap.Modal(document.getElementById('finalConfirmModal'));
+        finalModal.show();
+        
+        // Handle final deletion
+        $('#finalDelete').on('click', function() {
+            const confirmText = $('#confirmText').val();
+            if (confirmText === 'DELETE') {
+                // Show loading state
+                $('#confirmDelete').prop('disabled', true);
+                $('#confirmDelete').html('<i class="fas fa-spinner fa-spin me-2"></i>Deleting...');
+                
+                // Submit the form
+                $('#deleteForm').off('submit').submit();
+            } else {
+                $('#confirmText').addClass('is-invalid');
+            }
+        });
+        
+        // Remove modal from DOM when hidden
+        $('#finalConfirmModal').on('hidden.bs.modal', function() {
+            $(this).remove();
+        });
+        
+        return false;
+    });
+});
+</script>
+{% endblock %}

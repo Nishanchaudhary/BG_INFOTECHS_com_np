@@ -1,0 +1,240 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Page Header Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h1 class="h3 mb-0 text-gray-800">
+                    <i class="fas fa-folder me-2"></i>{{ page_title }}
+                </h1>
+                <a href="{% url 'blog_app:category_list' %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Categories
+                </a>
+            </div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'bg_app:profile' %}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'blog_app:category_list' %}">Categories</a></li>
+                    <li class="breadcrumb-item active">{{ breadcrumb_active }}</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Category Form Section -->
+    <div class="row justify-content-center">
+        <div class="col-12 col-xl-10 col-xxl-8">
+            <div class="card shadow-lg border-0 rounded-lg">
+                <!-- Card Header -->
+                <div class="card-header bg-gradient-primary text-white py-4">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-edit fa-2x me-3 text-white "></i>
+                        <div>
+                            <h4 class="mb-0 fw-bold text-white ">Category Details</h4>
+                            <p class="mb-0 opacity-75 text-white ">{% if category %}Edit existing category{% else %}Create new category{% endif %}</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Card Body -->
+                <div class="card-body p-5">
+                    <form method="post" novalidate class="needs-validation">
+                        {% csrf_token %}
+                        
+                        <!-- Non Field Errors -->
+                        {% if form.non_field_errors %}
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            {% for error in form.non_field_errors %}
+                                {{ error }}
+                            {% endfor %}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                        {% endif %}
+
+                        <div class="row g-4">
+                            <!-- Category Name Field -->
+                            <div class="col-12 col-md-8">
+                                <div class="form-floating">
+                                    {{ form.name }}
+                                    <label for="{{ form.name.id_for_label }}" class="form-label">
+                                        <i class="fas fa-tag me-2"></i>Category Name *
+                                    </label>
+                                </div>
+                                {% if form.name.errors %}
+                                <div class="text-danger small mt-2 d-flex align-items-center">
+                                    <i class="fas fa-exclamation-circle me-1"></i>
+                                    {% for error in form.name.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Slug Field -->
+                            <div class="col-12 col-md-4">
+                                <div class="form-floating">
+                                    {{ form.slug }}
+                                    <label for="{{ form.slug.id_for_label }}" class="form-label">
+                                        <i class="fas fa-link me-2"></i>Slug
+                                    </label>
+                                </div>
+                                <div class="form-text text-muted small mt-2">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    Leave empty to auto-generate from name
+                                </div>
+                                {% if form.slug.errors %}
+                                <div class="text-danger small mt-2 d-flex align-items-center">
+                                    <i class="fas fa-exclamation-circle me-1"></i>
+                                    {% for error in form.slug.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Description Field with Increased Height -->
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label for="{{ form.description.id_for_label }}" class="form-label fw-bold mb-3">
+                                        <i class="fas fa-align-left me-2"></i>Description
+                                    </label>
+                                    {{ form.description }}
+                                    {% if form.description.errors %}
+                                    <div class="text-danger small mt-2 d-flex align-items-center">
+                                        <i class="fas fa-exclamation-circle me-1"></i>
+                                        {% for error in form.description.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Form Actions -->
+                        <div class="row mt-5">
+                            <div class="col-12">
+                                <div class="d-flex gap-3 justify-content-end">
+                                    <a href="{% url 'blog_app:category_list' %}" class="btn btn-outline-secondary px-4">
+                                        <i class="fas fa-times me-2"></i>Cancel
+                                    </a>
+                                    <button type="submit" class="btn btn-primary px-4">
+                                        <i class="fas fa-save me-2"></i>
+                                        {% if category %}Update Category{% else %}Create Category{% endif %}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .card {
+        transition: transform 0.2s ease-in-out;
+    }
+    
+    .card:hover {
+        transform: translateY(-2px);
+    }
+    
+    .form-floating, .form-group {
+        margin-bottom: 1rem;
+    }
+    
+    .form-control, .form-select, textarea {
+        border-radius: 0.5rem;
+        border: 2px solid #e9ecef;
+        transition: all 0.3s ease;
+    }
+    
+    .form-control:focus, .form-select:focus, textarea:focus {
+        border-color: #4e73df;
+        box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+    }
+    
+    /* Increased height for description textarea */
+    #{{ form.description.id_for_label }} {
+        min-height: 120px;
+        height: 120px;
+        resize: vertical;
+        padding: 1rem;
+        line-height: 1.5;
+    }
+    
+    /* Optional: Make it even taller for larger screens */
+    @media (min-width: 768px) {
+        #{{ form.description.id_for_label }} {
+            min-height: 140px;
+            height: 140px;
+        }
+    }
+    
+    @media (min-width: 1200px) {
+        #{{ form.description.id_for_label }} {
+            min-height: 160px;
+            height: 160px;
+        }
+    }
+    
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, #4e73df 0%, #224abe 100%) !important;
+    }
+    
+    .btn {
+        border-radius: 0.5rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+        border: none;
+    }
+    
+    .btn-primary:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(78, 115, 223, 0.3);
+    }
+    
+    /* Style for form labels */
+    .form-label {
+        color: #495057;
+        font-weight: 500;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Auto-resize textarea as user types (optional enhancement)
+    document.addEventListener('DOMContentLoaded', function() {
+        const descriptionTextarea = document.getElementById('{{ form.description.id_for_label }}');
+        
+        if (descriptionTextarea) {
+            // Auto-resize function
+            const autoResize = () => {
+                descriptionTextarea.style.height = 'auto';
+                descriptionTextarea.style.height = (descriptionTextarea.scrollHeight) + 'px';
+            };
+            
+            // Add event listener for input
+            descriptionTextarea.addEventListener('input', autoResize);
+            
+            // Initial resize
+            autoResize();
+        }
+    });
+</script>
+{% endblock %}

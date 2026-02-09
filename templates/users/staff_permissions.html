@@ -1,0 +1,497 @@
+<!-- staff_permissions.html -->
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Staff Permissions{% endblock %}
+{% block breadcrumb_active %}Staff Permissions{% endblock %}
+
+{% block content %}
+
+<div class="staff-permissions">
+    <!-- User Information Section -->
+    <div class="user-info card mb-4">
+        <div class="card-header">
+            <h3 class="card-title mb-0">
+                <i class="fas fa-user-shield me-2"></i>Staff Information
+            </h3>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-2 text-center">
+                    {% if staff_user.profile_picture %}
+                        <img src="{{ staff_user.profile_picture.url }}" 
+                             alt="{{ staff_user.username }}" 
+                             class="img-thumbnail user-avatar mb-3"
+                             style="width: 120px; height: 120px; object-fit: cover;">
+                    {% else %}
+                        <div class="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center mb-3 mx-auto"
+                             style="width: 120px; height: 120px;">
+                            <i class="fas fa-user fa-3x"></i>
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="col-md-10">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <table class="table table-borderless table-sm">
+                                <tr>
+                                    <th class="text-muted" style="width: 120px;">Username:</th>
+                                    <td><strong>{{ staff_user.username }}</strong></td>
+                                </tr>
+                                <tr>
+                                    <th class="text-muted">Email:</th>
+                                    <td>{{ staff_user.email|default:"Not provided" }}</td>
+                                </tr>
+                                <tr>
+                                    <th class="text-muted">Full Name:</th>
+                                    <td>{{ staff_user.get_full_name|default:"Not provided" }}</td>
+                                </tr>
+                                <tr>
+                                    <th class="text-muted">Role:</th>
+                                    <td>
+                                        <span class="badge bg-primary">
+                                            {% if staff_user.role %}{{ staff_user.role.name }}{% else %}No Role{% endif %}
+                                        </span>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <table class="table table-borderless table-sm">
+                                {% if staff_user.staff_profile %}
+                                <tr>
+                                    <th class="text-muted" style="width: 120px;">Employee ID:</th>
+                                    <td>{{ staff_user.staff_profile.employee_id }}</td>
+                                </tr>
+                                <tr>
+                                    <th class="text-muted">Department:</th>
+                                    <td>{{ staff_user.staff_profile.department }}</td>
+                                </tr>
+                                <tr>
+                                    <th class="text-muted">Position:</th>
+                                    <td>{{ staff_user.staff_profile.position }}</td>
+                                </tr>
+                                {% endif %}
+                                <tr>
+                                    <th class="text-muted">Status:</th>
+                                    <td>
+                                        <span class="badge bg-{% if staff_user.is_active %}success{% else %}danger{% endif %}">
+                                            {% if staff_user.is_active %}Active{% else %}Inactive{% endif %}
+                                        </span>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <form method="post" id="permissionsForm">
+        {% csrf_token %}
+        
+        <!-- User Groups Section -->
+        <div class="form-section card mb-4">
+            <div class="card-header">
+                <h4 class="card-title mb-0">
+                    <i class="fas fa-users me-2"></i>User Groups
+                </h4>
+            </div>
+            <div class="card-body">
+                <p class="text-muted mb-3">
+                    A user will get all permissions granted to each of their groups. 
+                    Select groups to assign them to this user.
+                </p>
+                
+                <div class="permission-selector">
+                    <div class="row">
+                        <div class="col-md-5">
+                            <h6>Available Groups</h6>
+                            <select multiple size="8" class="form-control available-groups" id="availableGroups">
+                                {% for group in all_groups %}
+                                    {% if group not in user_groups %}
+                                    <option value="{{ group.id }}" data-name="{{ group.name }}">
+                                        {{ group.name }}
+                                    </option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-2 d-flex flex-column justify-content-center align-items-center">
+                            <button type="button" class="btn btn-primary btn-sm mb-2 add-group" style="min-width: 60px;">
+                                <i class="fas fa-arrow-right"></i>
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm remove-group" style="min-width: 60px;">
+                                <i class="fas fa-arrow-left"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="col-md-5">
+                            <h6>Selected Groups</h6>
+                            <select name="groups" multiple size="8" class="form-control selected-groups" id="selectedGroups">
+                                {% for group in user_groups %}
+                                    <option value="{{ group.id }}" data-name="{{ group.name }}" selected>
+                                        {{ group.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Django Permissions Section -->
+        <div class="form-section card mb-4">
+            <div class="card-header">
+                <h4 class="card-title mb-0">
+                    <i class="fas fa-key me-2"></i>Django Permissions
+                </h4>
+            </div>
+            <div class="card-body">
+                <p class="text-muted mb-3">
+                    Select individual Django permissions for this user.
+                </p>
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <input type="text" class="form-control filter-input" placeholder="Filter available permissions..." id="filterAvailable">
+                    </div>
+                    <div class="col-md-6">
+                        <input type="text" class="form-control filter-input" placeholder="Filter selected permissions..." id="filterSelected">
+                    </div>
+                </div>
+                
+                <div class="permission-selector">
+                    <div class="row">
+                        <div class="col-md-5">
+                            <h6>Available Permissions</h6>
+                            <select multiple size="12" class="form-control available-permissions" id="availablePermissions">
+                                {% for permission in all_permissions %}
+                                    {% if permission not in user_permissions %}
+                                    <option value="{{ permission.id }}" 
+                                            data-app="{{ permission.content_type.app_label }}"
+                                            data-model="{{ permission.content_type.model }}"
+                                            data-name="{{ permission.name }}"
+                                            data-codename="{{ permission.codename }}">
+                                        <strong>{{ permission.content_type.app_label }}</strong><br>
+                                        <small>{{ permission.content_type.model }} | {{ permission.name }}</small>
+                                    </option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-2 d-flex flex-column justify-content-center align-items-center">
+                            <button type="button" class="btn btn-primary btn-sm mb-2 add-permission" style="min-width: 60px;">
+                                <i class="fas fa-arrow-right"></i>
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm remove-permission" style="min-width: 60px;">
+                                <i class="fas fa-arrow-left"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="col-md-5">
+                            <h6>Selected Permissions</h6>
+                            <select name="permissions" multiple size="12" class="form-control selected-permissions" id="selectedPermissions">
+                                {% for permission in user_permissions %}
+                                    <option value="{{ permission.id }}" 
+                                            data-app="{{ permission.content_type.app_label }}"
+                                            data-model="{{ permission.content_type.model }}"
+                                            data-name="{{ permission.name }}"
+                                            data-codename="{{ permission.codename }}" selected>
+                                        <strong>{{ permission.content_type.app_label }}</strong><br>
+                                        <small>{{ permission.content_type.model }} | {{ permission.name }}</small>
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Permission Summary -->
+        <div class="form-section card mb-4">
+            <div class="card-header">
+                <h4 class="card-title mb-0">
+                    <i class="fas fa-list-check me-2"></i>Permission Summary
+                </h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Selected Groups (<span id="groupsCount">{{ user_groups.count }}</span>)</h6>
+                        <div id="groupsSummary" class="summary-box">
+                            {% for group in user_groups %}
+                                <span class="badge bg-primary me-1 mb-1 group-badge" data-id="{{ group.id }}">
+                                    {{ group.name }} <i class="fas fa-times ms-1 remove-group-badge" style="cursor: pointer;"></i>
+                                </span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Selected Permissions (<span id="permissionsCount">{{ user_permissions.count }}</span>)</h6>
+                        <div id="permissionsSummary" class="summary-box">
+                            {% for permission in user_permissions %}
+                                <span class="badge bg-success me-1 mb-1 permission-badge" data-id="{{ permission.id }}">
+                                    {{ permission.content_type.app_label }}.{{ permission.codename }}
+                                    <i class="fas fa-times ms-1 remove-permission-badge" style="cursor: pointer;"></i>
+                                </span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Active Status -->
+        <div class="form-section card mb-4">
+            <div class="card-body">
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" name="is_active" 
+                           id="isActive" {% if staff_user.is_active %}checked{% endif %}>
+                    <label class="form-check-label" for="isActive">
+                        <strong>Active User Account</strong>
+                    </label>
+                    <small class="form-text text-muted d-block">
+                        When unchecked, this user will not be able to log in regardless of permissions.
+                    </small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Submit Buttons -->
+        <div class="form-actions">
+            <button type="submit" class="btn btn-success">
+                <i class="fas fa-save me-2"></i>Save Permissions
+            </button>
+            <a href="{% url 'bg_app:staff_permissions' %}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Back to Staff List
+            </a>
+        </div>
+    </form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize counters
+    updateCounters();
+    
+    // Group selection functionality
+    const addGroupBtn = document.querySelector('.add-group');
+    const removeGroupBtn = document.querySelector('.remove-group');
+    const availableGroups = document.getElementById('availableGroups');
+    const selectedGroups = document.getElementById('selectedGroups');
+
+    addGroupBtn.addEventListener('click', function() {
+        moveSelectedOptions(availableGroups, selectedGroups);
+        updateGroupsSummary();
+        updateCounters();
+    });
+
+    removeGroupBtn.addEventListener('click', function() {
+        moveSelectedOptions(selectedGroups, availableGroups);
+        updateGroupsSummary();
+        updateCounters();
+    });
+
+    // Permission selection functionality
+    const addPermissionBtn = document.querySelector('.add-permission');
+    const removePermissionBtn = document.querySelector('.remove-permission');
+    const availablePermissions = document.getElementById('availablePermissions');
+    const selectedPermissions = document.getElementById('selectedPermissions');
+
+    addPermissionBtn.addEventListener('click', function() {
+        moveSelectedOptions(availablePermissions, selectedPermissions);
+        updatePermissionsSummary();
+        updateCounters();
+    });
+
+    removePermissionBtn.addEventListener('click', function() {
+        moveSelectedOptions(selectedPermissions, availablePermissions);
+        updatePermissionsSummary();
+        updateCounters();
+    });
+
+    // Filter functionality
+    document.getElementById('filterAvailable').addEventListener('input', function() {
+        filterOptions(availablePermissions, this.value);
+    });
+
+    document.getElementById('filterSelected').addEventListener('input', function() {
+        filterOptions(selectedPermissions, this.value);
+    });
+
+    // Remove badges functionality
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('remove-group-badge')) {
+            const groupId = e.target.closest('.group-badge').dataset.id;
+            removeGroupById(groupId);
+            updateCounters();
+        }
+        
+        if (e.target.classList.contains('remove-permission-badge')) {
+            const permissionId = e.target.closest('.permission-badge').dataset.id;
+            removePermissionById(permissionId);
+            updateCounters();
+        }
+    });
+
+    function moveSelectedOptions(fromSelect, toSelect) {
+        const selectedOptions = Array.from(fromSelect.selectedOptions);
+        
+        selectedOptions.forEach(option => {
+            // Check if option already exists in target select
+            const exists = Array.from(toSelect.options).some(
+                opt => opt.value === option.value
+            );
+            
+            if (!exists) {
+                const newOption = new Option(option.text, option.value, false, true);
+                newOption.dataset.name = option.dataset.name;
+                if (option.dataset.app) newOption.dataset.app = option.dataset.app;
+                if (option.dataset.model) newOption.dataset.model = option.dataset.model;
+                if (option.dataset.codename) newOption.dataset.codename = option.dataset.codename;
+                toSelect.appendChild(newOption);
+            }
+            option.remove();
+        });
+    }
+
+    function filterOptions(selectElement, filterText) {
+        const filter = filterText.toLowerCase();
+        Array.from(selectElement.options).forEach(option => {
+            const text = option.textContent.toLowerCase();
+            option.style.display = text.includes(filter) ? '' : 'none';
+        });
+    }
+
+    function updateGroupsSummary() {
+        const summaryBox = document.getElementById('groupsSummary');
+        summaryBox.innerHTML = '';
+        
+        Array.from(selectedGroups.options).forEach(option => {
+            const badge = document.createElement('span');
+            badge.className = 'badge bg-primary me-1 mb-1 group-badge';
+            badge.dataset.id = option.value;
+            badge.innerHTML = `
+                ${option.dataset.name} 
+                <i class="fas fa-times ms-1 remove-group-badge" style="cursor: pointer;"></i>
+            `;
+            summaryBox.appendChild(badge);
+        });
+    }
+
+    function updatePermissionsSummary() {
+        const summaryBox = document.getElementById('permissionsSummary');
+        summaryBox.innerHTML = '';
+        
+        Array.from(selectedPermissions.options).forEach(option => {
+            const badge = document.createElement('span');
+            badge.className = 'badge bg-success me-1 mb-1 permission-badge';
+            badge.dataset.id = option.value;
+            const displayName = option.dataset.app + '.' + option.dataset.codename;
+            badge.innerHTML = `
+                ${displayName} 
+                <i class="fas fa-times ms-1 remove-permission-badge" style="cursor: pointer;"></i>
+            `;
+            summaryBox.appendChild(badge);
+        });
+    }
+
+    function removeGroupById(groupId) {
+        const option = Array.from(selectedGroups.options).find(opt => opt.value === groupId);
+        if (option) {
+            availableGroups.appendChild(option);
+            updateGroupsSummary();
+        }
+    }
+
+    function removePermissionById(permissionId) {
+        const option = Array.from(selectedPermissions.options).find(opt => opt.value === permissionId);
+        if (option) {
+            availablePermissions.appendChild(option);
+            updatePermissionsSummary();
+        }
+    }
+
+    function updateCounters() {
+        document.getElementById('groupsCount').textContent = selectedGroups.options.length;
+        document.getElementById('permissionsCount').textContent = selectedPermissions.options.length;
+    }
+
+    // Initialize summaries
+    updateGroupsSummary();
+    updatePermissionsSummary();
+});
+</script>
+
+<style>
+.staff-permissions {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.user-avatar {
+    border: 3px solid #dee2e6;
+}
+
+.permission-selector select[multiple] {
+    min-height: 200px;
+}
+
+.summary-box {
+    min-height: 100px;
+    max-height: 200px;
+    overflow-y: auto;
+    padding: 10px;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    background-color: #f8f9fa;
+}
+
+.badge {
+    font-size: 0.8em;
+    padding: 6px 10px;
+}
+
+.form-actions {
+    padding: 20px 0;
+    border-top: 1px solid #dee2e6;
+    text-align: center;
+}
+
+.form-actions .btn {
+    min-width: 150px;
+    margin: 0 5px;
+}
+
+.card-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.table th {
+    font-weight: 500;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .permission-selector .row > div {
+        margin-bottom: 15px;
+    }
+    
+    .permission-selector .row > div.col-md-2 {
+        order: 3;
+        flex-direction: row !important;
+        justify-content: center !important;
+    }
+    
+    .permission-selector .row > div.col-md-2 button {
+        margin: 0 5px;
+    }
+}
+</style>
+{% endblock %}

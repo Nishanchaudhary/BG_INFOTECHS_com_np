@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-exclamation-triangle me-2"></i>{{ page_title }}
+                    </h5>
+                </div>
+                <div class="card-body text-center">
+                    <div class="mb-4">
+                        <i class="fas fa-user-slash fa-4x text-danger mb-3"></i>
+                        <h4>Confirm Deletion</h4>
+                        <p class="text-muted">Are you sure you want to delete the following team member?</p>
+                    </div>
+                    
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ team.name }}</h5>
+                            <p class="card-text">
+                                <strong>Designation:</strong> {{ team.designation|default:"Not set" }}<br>
+                                <strong>Email:</strong> {{ team.email }}<br>
+                                <strong>Status:</strong> 
+                                <span class="badge {% if team.status == 'active' %}bg-success{% else %}bg-secondary{% endif %}">
+                                    {{ team.get_status_display }}
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="d-flex justify-content-center gap-3">
+                            <a href="{% url 'teams_app:teams_list' %}" class="btn btn-secondary">
+                                <i class="fas fa-times me-1"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-trash me-1"></i>Yes, Delete
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

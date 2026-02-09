@@ -1,0 +1,463 @@
+{% extends 'Frontend/base.html' %}
+{% load static %}
+{% block title %}{{ vacancy.title }} - Career - BG-Infotechs{% endblock %}
+
+{% block extra_css %}
+<style>
+    .btn.rounded-circle {
+        transition: all 0.3s ease;
+    }
+
+    .btn.rounded-circle:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .input-group .form-control:focus {
+        box-shadow: none;
+        border-color: #0d6efd;
+    }
+
+    .application-form .form-section {
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .application-form .form-section:last-child {
+        border-bottom: none;
+    }
+
+    .application-form h5 {
+        color: #2c3e50;
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+
+    .btn-apply {
+        background: linear-gradient(45deg, #007bff, #0056b3);
+        color: white;
+        border: none;
+        padding: 12px 30px;
+        border-radius: 5px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .btn-apply:hover {
+        background: linear-gradient(45deg, #0056b3, #004085);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #495057;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-control {
+        border: 1px solid #ced4da;
+        border-radius: 0.375rem;
+        padding: 0.75rem;
+    }
+
+    .form-control:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }
+
+    .form-text {
+        font-size: 0.875rem;
+        color: #6c757d;
+        margin-top: 0.25rem;
+    }
+
+    .form-check-label {
+        color: #495057;
+        font-weight: normal;
+    }
+
+    .text-danger small {
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+        display: block;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<style>
+    .page-title {
+        background-image: linear-gradient(rgba(28, 29, 31, 0.65), rgba(23, 4, 69, 0.65)),
+        url("{% static 'img/breadcrumb.jpg' %}");
+        background-size: cover;
+        background-position: center;
+        padding: 30px 0px;
+    }
+</style>
+<main class="main">
+    <div class="page-title light-background">
+        <div class="container">
+            <h1>{{ vacancy.title }}</h1>
+            <nav class="breadcrumbs">
+                <ol>
+                    <li><a href="{% url 'frontend_app:home' %}"><i class="fas fa-home"></i> Home</a></li>
+                    <li><a href="{% url 'frontend_app:career' %}"><i class="fas fa-briefcase"></i> Career</a></li>
+                    <li class="current">{{ vacancy.title }}</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Job Header -->
+    <section class="job-header">
+        <div class="container text-center">
+            <h1 class="display-5 fw-bold">{{ vacancy.title }}</h1>
+            <p class="lead">
+                <i class="fas fa-map-marker-alt"></i> {{ vacancy.address }}
+                <i class="fa-solid fa-hourglass-end"></i> Apply before {{ vacancy.expired_date }}
+                <span class="badge bg-light text-dark">{{ vacancy.get_job_type_display }}</span>
+            </p>
+        </div>
+    </section>
+
+    <!-- Job Details -->
+    <section class="py-5">
+        <div class="container">
+            <!-- Display Messages -->
+            {% if messages %}
+            <div class="row">
+                <div class="col-12">
+                    {% for message in messages %}
+                    <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show"
+                        role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="row">
+                <div class="col-lg-6">
+                    <h3>Job Description</h3>
+                    <p class="text-secondary">{{ vacancy.short_description | safe }}</p>
+                    <p class="text-secondary" style="color: black !important; background-color:white !important;" >{{ vacancy.description | safe }}</p>
+
+                    <!-- Required Skills -->
+                    {% if vacancy.get_skills_list %}
+                    <div class="mt-4">
+                        <h5>Required Skills</h5>
+                        <div class="d-flex flex-wrap gap-2">
+                            {% for skill in vacancy.get_skills_list %}
+                            <span class="badge bg-primary">{{ skill }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <div class="col-lg-12">
+                        <div class="card shadow-sm mt-5">
+                            <div class="card-body">
+                                <h5 class="card-title">Job Summary</h5>
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <span><i class="fas fa-briefcase me-2"></i>Position</span>
+                                        <span class="text-muted">{{ vacancy.title }}</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <span><i class="fas fa-map-marker-alt me-2"></i>Location</span>
+                                        <span class="text-muted">{{ vacancy.address }}</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <span><i class="fas fa-clock me-2"></i>Job Type</span>
+                                        <span class="text-muted">{{ vacancy.get_job_type_display }}</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <span><i class="fa-solid fa-indian-rupee-sign"></i> Salary</span>
+                                        <span class="text-muted">₹{{ vacancy.salary }}/Month</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <span><i class="fas fa-calendar me-2"></i>Application Deadline</span>
+                                        <span class="text-muted">{{ vacancy.expired_date }}</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <span><i class="fas fa-calendar me-2"></i>Posted Date</span>
+                                        <span class="text-muted">{{ vacancy.created_at|date:"M d, Y" }}</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Share This Job Card -->
+                        <div class="card shadow-sm mt-4">
+                            <div class="card-body">
+                                <h5 class="card-title text-center mb-3">Share This Job</h5>
+                                <!-- Social Media Icons -->
+                                <div class="d-flex justify-content-center gap-2 mb-3">
+                                    <!-- LinkedIn -->
+                                    <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ request.build_absolute_uri|urlencode }}"
+                                        class="btn btn-outline-primary rounded-circle d-flex align-items-center justify-content-center"
+                                        style="width: 40px; height: 40px;" target="_blank" rel="noopener noreferrer"
+                                        title="Share on LinkedIn">
+                                        <i class="fab fa-linkedin"></i>
+                                    </a>
+
+                                    <!-- Twitter -->
+                                    <a href="https://twitter.com/intent/tweet?text=Check%20out%20this%20job%20opportunity:%20{{ vacancy.title|urlencode }}&url={{ request.build_absolute_uri|urlencode }}&hashtags=job,hiring,career"
+                                        class="btn btn-outline-info rounded-circle d-flex align-items-center justify-content-center"
+                                        style="width: 40px; height: 40px;" target="_blank" rel="noopener noreferrer"
+                                        title="Share on Twitter">
+                                        <i class="fab fa-twitter"></i>
+                                    </a>
+
+                                    <!-- Facebook -->
+                                    <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri|urlencode }}"
+                                        class="btn btn-outline-dark rounded-circle d-flex align-items-center justify-content-center"
+                                        style="width: 40px; height: 40px;" target="_blank" rel="noopener noreferrer"
+                                        title="Share on Facebook">
+                                        <i class="fab fa-facebook"></i>
+                                    </a>
+
+                                    <!-- WhatsApp -->
+                                    <a href="https://api.whatsapp.com/send?text=Check%20out%20this%20job%20opportunity:%20{{ vacancy.title|urlencode }}%20{{ request.build_absolute_uri|urlencode }}"
+                                        class="btn btn-outline-success rounded-circle d-flex align-items-center justify-content-center"
+                                        style="width: 40px; height: 40px;" target="_blank" rel="noopener noreferrer"
+                                        title="Share on WhatsApp">
+                                        <i class="fab fa-whatsapp"></i>
+                                    </a>
+
+                                    <!-- Email -->
+                                    <a href="mailto:?subject=Job Opportunity: {{ vacancy.title|urlencode }}&body=Check out this job opportunity at BG-Infotechs: {{ request.build_absolute_uri|urlencode }}"
+                                        class="btn btn-outline-danger rounded-circle d-flex align-items-center justify-content-center"
+                                        style="width: 40px; height: 40px;" title="Share via Email">
+                                        <i class="fas fa-envelope"></i>
+                                    </a>
+                                </div>
+
+                                <!-- Copy Link Section -->
+                                <div class="border-top pt-3">
+                                    <label class="form-label small text-muted">Copy job link:</label>
+                                    <div class="input-group input-group-sm">
+                                        <input type="text" class="form-control form-control-sm" id="jobLink"
+                                            value="{{ request.build_absolute_uri }}" readonly
+                                            style="font-size: 0.8rem;">
+                                        <button class="btn btn-outline-primary" type="button" onclick="copyJobLink()">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Check Applications -->
+                        <div class="card shadow-sm mt-4">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">Check Your Applications</h5>
+                                <p class="text-muted small mb-3">Track your application status using your email</p>
+                                <a href="{% url 'frontend_app:my_applications' %}"
+                                    class="btn btn-outline-success w-100">
+                                    <i class="fas fa-search me-2"></i>View My Applications
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    {% if is_active %}
+                    {% if has_applied %}
+                    <div class="card application-form">
+                        <div class="card-body p-5 text-center">
+                            <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
+                            <h3>Application Submitted</h3>
+                            <p class="text-muted">You have already applied for this position. We will contact you soon.
+                            </p>
+                            <a href="{% url 'frontend_app:my_applications' %}" class="btn btn-primary">
+                                <i class="fas fa-search me-2"></i>Check Your Applications
+                            </a>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="card application-form">
+                        <div class="card-body p-5">
+                            <h2 class="text-center mb-4">Apply for This Position</h2>
+                            <form method="post" enctype="multipart/form-data">
+                                {% csrf_token %}
+
+                                <div class="form-section">
+                                    <h5>Personal Information</h5>
+                                    <div class="row g-3 mt-3">
+                                        <div class="col-12">
+                                            <label for="{{ form.full_name.id_for_label }}" class="form-label">
+                                                Full Name *
+                                            </label>
+                                            {{ form.full_name }}
+                                            {% if form.full_name.errors %}
+                                            <div class="text-danger small">
+                                                {% for error in form.full_name.errors %}
+                                                {{ error }}
+                                                {% endfor %}
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="{{ form.email.id_for_label }}" class="form-label">
+                                                Email Address *
+                                            </label>
+                                            {{ form.email }}
+                                            {% if form.email.errors %}
+                                            <div class="text-danger small">
+                                                {% for error in form.email.errors %}
+                                                {{ error }}
+                                                {% endfor %}
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="{{ form.phone.id_for_label }}" class="form-label">
+                                                Phone Number *
+                                            </label>
+                                            {{ form.phone }}
+                                            {% if form.phone.errors %}
+                                            <div class="text-danger small">
+                                                {% for error in form.phone.errors %}
+                                                {{ error }}
+                                                {% endfor %}
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-section">
+                                    <h5>Resume & Cover Letter</h5>
+                                    <div class="mt-3">
+                                        <label for="{{ form.resume.id_for_label }}" class="form-label">
+                                            Upload Resume *
+                                        </label>
+                                        {{ form.resume }}
+                                        <div class="form-text">Accepted formats: PDF, DOC, DOCX (Max 5MB)</div>
+                                        {% if form.resume.errors %}
+                                        <div class="text-danger small">
+                                            {% for error in form.resume.errors %}
+                                            {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="mt-3">
+                                        <label for="{{ form.cover_letter.id_for_label }}" class="form-label">
+                                            Cover Letter (Optional)
+                                        </label>
+                                        {{ form.cover_letter }}
+                                        {% if form.cover_letter.errors %}
+                                        <div class="text-danger small">
+                                            {% for error in form.cover_letter.errors %}
+                                            {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+
+                                <div class="form-section">
+                                    <h5>Consent</h5>
+                                    <div class="mt-3 form-check">
+                                        <input type="checkbox" name="consent" id="consent" class="form-check-input"
+                                            required>
+                                        <label class="form-check-label" for="consent">
+                                            I consent to the processing of my data for recruitment purposes.*
+                                        </label>
+                                        {% if form.consent.errors %}
+                                        <div class="text-danger small">
+                                            {% for error in form.consent.errors %}
+                                            {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+
+                                <div class="text-center mt-4">
+                                    <button type="submit" class="btn-apply">
+                                        <span>Submit Application</span>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% else %}
+                    <div class="card application-form">
+                        <div class="card-body p-5 text-center">
+                            <i class="fas fa-clock fa-3x text-muted mb-3"></i>
+                            <h3>Application Closed</h3>
+                            <p class="text-muted">This position is no longer accepting applications.</p>
+                            <a href="{% url 'frontend_app:career' %}" class="btn btn-primary">
+                                <i class="fas fa-briefcase me-2"></i>View Other Positions
+                            </a>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function copyJobLink() {
+        const jobLink = document.getElementById('jobLink');
+
+        // Select the text
+        jobLink.select();
+        jobLink.setSelectionRange(0, 99999); // For mobile devices
+
+        // Copy to clipboard
+        try {
+            navigator.clipboard.writeText(jobLink.value).then(function () {
+                showCopySuccess();
+            }).catch(function () {
+                fallbackCopy();
+            });
+        } catch (err) {
+            fallbackCopy();
+        }
+
+        function showCopySuccess() {
+            const button = event.target.closest('button');
+            const originalHTML = button.innerHTML;
+            const originalClass = button.className;
+
+            button.innerHTML = '<i class="fas fa-check"></i> Copied!';
+            button.className = 'btn btn-success';
+            button.disabled = true;
+
+            setTimeout(function () {
+                button.innerHTML = originalHTML;
+                button.className = originalClass;
+                button.disabled = false;
+            }, 2000);
+        }
+
+        function fallbackCopy() {
+            document.execCommand('copy');
+            showCopySuccess();
+        }
+    }
+
+    // Initialize tooltips if using Bootstrap
+    document.addEventListener('DOMContentLoaded', function () {
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[title]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,792 @@
+{% extends 'base.html' %}
+{% block title %}User List{% endblock %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="card border-dark">
+        <div class="card-header bg-primary text-white border-dark">
+            <h5 class="card-title mb-0">
+                <i class="fas fa-users me-2"></i>{{ page_title }}
+            </h5>
+        </div>
+        <div class="card-body p-0">
+            <!-- Loading Overlay -->
+            <div id="loading-overlay" style="display: none;">
+                <div class="d-flex justify-content-center align-items-center" style="height: 200px;">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <span class="ms-2">Loading users...</span>
+                </div>
+            </div>
+            
+            <!-- DataTable -->
+            <div class="table-responsive">
+                <table id="users-table" class="table table-hover table-striped table-bordered border-dark" style="width:100%; margin:0;">
+                    <thead class="table-primary border-dark">
+                        <tr>
+                            <th style="border: 1px solid #000; border-bottom: 2px solid #000; padding: 12px; text-align: center;">Profile</th>
+                            <th style="border: 1px solid #000; border-bottom: 2px solid #000; padding: 12px; text-align: center;">Username</th>
+                            <th style="border: 1px solid #000; border-bottom: 2px solid #000; padding: 12px; text-align: center;">Full Name</th>
+                            <th style="border: 1px solid #000; border-bottom: 2px solid #000; padding: 12px; text-align: center;">Email</th>
+                            <th style="border: 1px solid #000; border-bottom: 2px solid #000; padding: 12px; text-align: center;">Role</th>
+                            <th style="border: 1px solid #000; border-bottom: 2px solid #000; padding: 12px; text-align: center;">Status</th>
+                            <th style="border: 1px solid #000; border-bottom: 2px solid #000; padding: 12px; text-align: center;">Joined Date</th>
+                            <th style="border: 1px solid #000; border-bottom: 2px solid #000; padding: 12px; text-align: center;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="table-light border-dark">
+                        <!-- Data will be loaded via AJAX -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Container -->
+<div id="toastContainer" class="toast-container position-fixed top-0 end-0 p-3"></div>
+{% endblock %}
+
+{% block extra_css %}
+<!-- DataTables CSS -->
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.bootstrap5.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.4.1/css/responsive.bootstrap5.min.css">
+
+<style>
+#users-table {
+    border: 2px solid #000 !important;
+    border-collapse: separate !important;
+    background-color: white;
+}
+
+#users-table th,
+#users-table td {
+    border: 1px solid #000 !important;
+    vertical-align: middle !important;
+    padding: 12px 8px !important;
+}
+
+#users-table thead th {
+    border-bottom: 2px solid #000 !important;
+    background-color: #a6d4fa !important;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+#loading-overlay {
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 5px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.dataTables_processing {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    border-radius: 5px;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    z-index: 1000;
+}
+
+div.dataTables_processing {
+    color: #000 !important;
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+#users-table tbody tr {
+    border-bottom: 1px solid #000 !important;
+}
+
+.user-thumbnail {
+    border-radius: 50%;
+    border: 2px solid #dee2e6;
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+}
+
+.user-thumbnail-print {
+    border-radius: 50%;
+    border: 1px solid #000;
+    width: 35px;
+    height: 35px;
+    object-fit: cover;
+}
+
+.badge {
+    font-size: 0.75em;
+    margin: 1px;
+}
+
+.btn-group-vertical .btn {
+    margin-bottom: 2px;
+}
+
+.dt-buttons {
+    margin-bottom: 10px;
+}
+
+.dt-button {
+    margin-right: 5px;
+    margin-bottom: 5px;
+}
+
+.toast {
+    background-color: rgba(255, 255, 255, 0.95);
+    border-left: 4px solid;
+}
+
+.toast-success {
+    border-left-color: #28a745;
+}
+
+.toast-error {
+    border-left-color: #dc3545;
+}
+
+.toast-info {
+    border-left-color: #17a2b8;
+}
+
+.profile-image-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.profile-image-placeholder {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #f8f9fa;
+    border: 2px solid #dee2e6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: #6c757d;
+}
+
+.btn-loading {
+    position: relative;
+    color: transparent !important;
+}
+
+.btn-loading::after {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    top: 50%;
+    left: 50%;
+    margin-left: -8px;
+    margin-top: -8px;
+    border: 2px solid transparent;
+    border-top-color: currentColor;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Print optimization */
+@media print {
+    .dt-buttons, .dataTables_filter, .dataTables_length, .dataTables_info, 
+    .dataTables_paginate, .card-header, .toast-container, .actions-column {
+        display: none !important;
+    }
+    
+    #users-table {
+        border: 1px solid #000 !important;
+        font-size: 10px;
+        margin-top: 0 !important;
+    }
+    
+    #users-table th,
+    #users-table td {
+        padding: 6px 4px !important;
+    }
+    
+    .user-thumbnail {
+        width: 35px !important;
+        height: 35px !important;
+    }
+    
+    img {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+    
+    body {
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    
+    .container-fluid {
+        padding: 0 !important;
+    }
+    
+    .card {
+        border: none !important;
+        box-shadow: none !important;
+    }
+    
+    .card-body {
+        padding: 0 !important;
+    }
+    
+    .print-header {
+        display: block;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    
+    .no-print {
+        display: none !important;
+    }
+}
+
+.print-header {
+    display: none;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<!-- DataTables JS -->
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.bootstrap5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.print.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+
+<script>
+// CSRF token function for Django
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+// Toast notification function
+function showToast(message, type = 'info') {
+    const toastContainer = document.getElementById('toastContainer');
+    const toastId = 'toast-' + Date.now();
+    
+    const typeClass = type === 'success' ? 'bg-success' : 
+                     type === 'error' ? 'bg-danger' : 
+                     type === 'warning' ? 'bg-warning' : 'bg-info';
+    
+    const toastHtml = `
+        <div id="${toastId}" class="toast align-items-center text-white ${typeClass} border-0" role="alert">
+            <div class="d-flex">
+                <div class="toast-body">
+                    ${message}
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+            </div>
+        </div>
+    `;
+    
+    toastContainer.insertAdjacentHTML('beforeend', toastHtml);
+    
+    const toastElement = document.getElementById(toastId);
+    const toast = new bootstrap.Toast(toastElement);
+    toast.show();
+    
+    toastElement.addEventListener('hidden.bs.toast', function() {
+        toastElement.remove();
+    });
+}
+
+// Global DataTable instance
+let userTable;
+
+// Handle toggle status button clicks
+function handleToggleStatus(button) {
+    const userId = button.getAttribute('data-user-id');
+    const url = button.getAttribute('data-url');
+    const csrfToken = getCookie('csrftoken');
+    const row = $(button).closest('tr');
+    
+    if (!userId || !url) {
+        showToast('Error: Missing user data', 'error');
+        return;
+    }
+    
+    // Show loading state
+    const originalHtml = button.innerHTML;
+    button.classList.add('btn-loading');
+    button.disabled = true;
+    
+    // Make AJAX POST request
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': csrfToken,
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({})
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Update the status cell directly
+            const statusCell = row.find('td:eq(5)'); // Status column is index 5
+            const newStatusHtml = data.new_status ? 
+                '<span class="badge bg-success rounded-pill"><i class="fas fa-check-circle me-1"></i>Active</span>' :
+                '<span class="badge bg-danger rounded-pill"><i class="fas fa-times-circle me-1"></i>Inactive</span>';
+            
+            statusCell.html(newStatusHtml);
+            
+            // Update the toggle button
+            if (data.new_status) {
+                button.classList.remove('btn-outline-success');
+                button.classList.add('btn-outline-danger');
+                button.innerHTML = '<i class="fas fa-times"></i>';
+                button.setAttribute('title', 'Deactivate User');
+            } else {
+                button.classList.remove('btn-outline-danger');
+                button.classList.add('btn-outline-success');
+                button.innerHTML = '<i class="fas fa-check"></i>';
+                button.setAttribute('title', 'Activate User');
+            }
+            
+            // Update tooltip
+            const tooltip = bootstrap.Tooltip.getInstance(button);
+            if (tooltip) {
+                tooltip.dispose();
+            }
+            new bootstrap.Tooltip(button);
+            
+            showToast(`User status updated to ${data.status_text}`, 'success');
+        } else {
+            showToast(data.error || 'Failed to update user status', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error toggling user status:', error);
+        showToast('Error updating user status', 'error');
+    })
+    .finally(() => {
+        // Remove loading state
+        button.classList.remove('btn-loading');
+        button.disabled = false;
+    });
+}
+
+$(document).ready(function() {
+    // Show loading overlay initially
+    $('#loading-overlay').show();
+    
+    // Function to strip HTML for export
+    function stripHtmlForExport(data, row, column, node) {
+        if (node) {
+            var text = $(node).text().trim();
+            return text || '';
+        }
+        return data || '';
+    }
+
+    // Function to handle profile image in exports
+    function handleProfileImageExport(data, row, column, node) {
+        if (column === 0) {
+            if (data && data.includes('img')) {
+                return 'Yes';
+            } else if (data && data.includes('fas fa-user')) {
+                return 'Default';
+            }
+            return 'No';
+        }
+        return stripHtmlForExport(data, row, column, node);
+    }
+
+    // Initialize DataTable
+    userTable = $('#users-table').DataTable({
+        "processing": true,
+        "serverSide": true,
+        "ajax": {
+            "url": "{% url 'bg_app:user_datatables_api' %}",
+            "type": "GET",
+            "dataType": "json",
+            "data": function(d) {
+                d.exclude_roles = 'superuser,admin';
+                d.include_roles = 'staff,student';
+            },
+            "dataSrc": function(json) {
+                $('#loading-overlay').hide();
+                
+                if (json.error) {
+                    showToast('Error loading users: ' + json.error, 'error');
+                    return [];
+                }
+                
+                return json.data;
+            },
+            "error": function(xhr, error, code) {
+                $('#loading-overlay').hide();
+                console.log('AJAX Error:', xhr, error, code);
+                showToast('Error loading users. Please try again.', 'error');
+            }
+        },
+        "columns": [
+            {
+                "data": "profile_picture", 
+                "className": "text-center profile-image-column", 
+                "orderable": false,
+                "searchable": false,
+                "render": function(data, type, row) {
+                    if (type === 'export' || type === 'print') {
+                        return data && data.includes('img') ? 'Yes' : 'No';
+                    }
+                    return data;
+                }
+            },
+            {
+                "data": "username", 
+                "className": "text-center",
+                "render": function(data, type, row) {
+                    if (type === 'export' || type === 'print') {
+                        return stripHtmlForExport(data);
+                    }
+                    return data;
+                }
+            },
+            {
+                "data": "full_name", 
+                "className": "text-center",
+                "render": function(data, type, row) {
+                    if (type === 'export' || type === 'print') {
+                        return stripHtmlForExport(data);
+                    }
+                    return data;
+                }
+            },
+            {
+                "data": "email", 
+                "className": "text-center",
+                "render": function(data, type, row) {
+                    if (type === 'export' || type === 'print') {
+                        return stripHtmlForExport(data);
+                    }
+                    return data;
+                }
+            },
+            {
+                "data": "role", 
+                "className": "text-center",
+                "render": function(data, type, row) {
+                    if (type === 'export' || type === 'print') {
+                        return stripHtmlForExport(data);
+                    }
+                    return data;
+                }
+            },
+            {
+                "data": "status", 
+                "className": "text-center",
+                "render": function(data, type, row) {
+                    if (type === 'export' || type === 'print') {
+                        return stripHtmlForExport(data);
+                    }
+                    return data;
+                }
+            },
+            {
+                "data": "date_joined", 
+                "className": "text-center",
+                "render": function(data, type, row) {
+                    if (type === 'export' || type === 'print') {
+                        return stripHtmlForExport(data);
+                    }
+                    return data;
+                }
+            },
+            {
+                "data": "actions", 
+                "className": "text-center actions-column", 
+                "orderable": false, 
+                "searchable": false,
+                "render": function(data, type, row) {
+                    if (type === 'export' || type === 'print') {
+                        return '';
+                    }
+                    return data;
+                }
+            }
+        ],
+        "order": [[1, 'asc']],
+        "pageLength": 10,
+        "responsive": true,
+        "dom": '<"row"<"col-sm-12 col-md-6"B><"col-sm-12 col-md-6"f>>rtip',
+        "buttons": [
+            {
+                extend: 'collection',
+                text: '<i class="fas fa-download me-1"></i> Export',
+                className: 'btn btn-success btn-sm',
+                buttons: [
+                    {
+                        extend: 'copy',
+                        text: '<i class="fas fa-copy me-1"></i> Copy',
+                        className: 'btn-sm',
+                        exportOptions: {
+                            columns: [0, 1, 2, 3, 4, 5, 6],
+                            format: {
+                                body: handleProfileImageExport
+                            }
+                        },
+                        title: 'Users List - Staff & Students Only',
+                        messageTop: 'Generated on: ' + new Date().toLocaleDateString()
+                    },
+                    {
+                        extend: 'excel',
+                        text: '<i class="fas fa-file-excel me-1"></i> Excel',
+                        className: 'btn-sm',
+                        exportOptions: {
+                            columns: [0, 1, 2, 3, 4, 5, 6],
+                            format: {
+                                body: handleProfileImageExport
+                            }
+                        },
+                        title: 'Users List - Staff & Students Only',
+                        autoFilter: true
+                    },
+                    {
+                        extend: 'csv',
+                        text: '<i class="fas fa-file-csv me-1"></i> CSV',
+                        className: 'btn-sm',
+                        exportOptions: {
+                            columns: [0, 1, 2, 3, 4, 5, 6],
+                            format: {
+                                body: handleProfileImageExport
+                            }
+                        },
+                        title: 'Users List - Staff & Students Only'
+                    },
+                    {
+                        extend: 'pdf',
+                        text: '<i class="fas fa-file-pdf me-1"></i> PDF',
+                        className: 'btn-sm',
+                        exportOptions: {
+                            columns: [0, 1, 2, 3, 4, 5, 6],
+                            format: {
+                                body: handleProfileImageExport
+                            }
+                        },
+                        title: 'Users List - Staff & Students Only',
+                        orientation: 'landscape',
+                        pageSize: 'A4',
+                        customize: function(doc) {
+                            doc.defaultStyle.fontSize = 9;
+                            doc.styles.tableHeader.fontSize = 10;
+                            doc.styles.tableHeader.fillColor = '#a6d4fa';
+                            doc.styles.title.fontSize = 14;
+                            doc.styles.title.alignment = 'center';
+                            doc.pageMargins = [20, 40, 20, 30];
+                            
+                            doc.content.splice(0, 1);
+                            
+                            doc.footer = function(page, pages) {
+                                return {
+                                    columns: [
+                                        {
+                                            alignment: 'left',
+                                            text: 'Generated on: ' + new Date().toLocaleDateString()
+                                        },
+                                        {
+                                            alignment: 'right',
+                                            text: 'Page ' + page + ' of ' + pages
+                                        }
+                                    ],
+                                    margin: [20, 0]
+                                };
+                            };
+                            
+                            doc.content[0].table.widths = ['10%', '15%', '15%', '20%', '15%', '10%', '15%'];
+                        }
+                    },
+                    {
+                        extend: 'print',
+                        text: '<i class="fas fa-print me-1"></i> Print',
+                        className: 'btn-sm',
+                        exportOptions: {
+                            columns: [0, 1, 2, 3, 4, 5, 6],
+                            format: {
+                                body: function(data, row, column, node) {
+                                    if (column === 0) {
+                                        return data && data.includes('img') ? 'Yes' : 'No';
+                                    }
+                                    return stripHtmlForExport(data, row, column, node);
+                                }
+                            }
+                        },
+                        title: '',
+                        messageTop: '',
+                        customize: function(win) {
+                            $(win.document.body).html('');
+                            
+                            var printHeader = `
+                                <div class="print-header">
+                                    <h3 class="text-center">Users List - Staff & Students Only</h3>
+                                    <p class="text-center">Generated on: ${new Date().toLocaleDateString()}</p>
+                                    <hr>
+                                </div>
+                            `;
+                            
+                            var tableHtml = $('#users-table').clone();
+                            tableHtml.find('thead th:last-child, tbody td:last-child').remove();
+                            tableHtml.addClass('print-table');
+                            tableHtml.find('img').addClass('user-thumbnail-print');
+                            
+                            var finalHtml = printHeader + tableHtml[0].outerHTML;
+                            $(win.document.body).html(finalHtml);
+                            
+                            $(win.document.head).append(`
+                                <style>
+                                    @media print {
+                                        body { 
+                                            margin: 0 !important; 
+                                            padding: 10px !important;
+                                            font-size: 10pt;
+                                        }
+                                        .print-header { 
+                                            text-align: center; 
+                                            margin-bottom: 15px;
+                                        }
+                                        .print-table {
+                                            width: 100% !important;
+                                            border-collapse: collapse !important;
+                                        }
+                                        .print-table th,
+                                        .print-table td {
+                                            border: 1px solid #000 !important;
+                                            padding: 6px 4px !important;
+                                            text-align: center !important;
+                                        }
+                                        .print-table th {
+                                            background-color: #a6d4fa !important;
+                                            font-weight: bold !important;
+                                        }
+                                        .user-thumbnail-print {
+                                            width: 30px !important;
+                                            height: 30px !important;
+                                            border-radius: 50% !important;
+                                        }
+                                        img {
+                                            -webkit-print-color-adjust: exact !important;
+                                            print-color-adjust: exact !important;
+                                        }
+                                    }
+                                </style>
+                            `);
+                        },
+                        autoPrint: true
+                    }
+                ]
+            },
+            {
+                text: '<i class="fas fa-plus me-1"></i> Add User',
+                className: 'btn btn-primary btn-sm',
+                action: function (e, dt, node, config) {
+                    window.location.href = "{% url 'bg_app:user_create' %}";
+                }
+            },
+            {
+                text: '<i class="fas fa-sync-alt me-1"></i> Refresh',
+                className: 'btn btn-info btn-sm',
+                action: function (e, dt, node, config) {
+                    userTable.ajax.reload(null, false);
+                    showToast('User list refreshed successfully!', 'success');
+                }
+            }
+        ],
+        "language": {
+            "search": "Search:",
+            "lengthMenu": "Show _MENU_ entries",
+            "info": "Showing _START_ to _END_ of _TOTAL_ entries",
+            "infoEmpty": "Showing 0 to 0 of 0 entries",
+            "infoFiltered": "(filtered from _MAX_ total entries)",
+            "zeroRecords": "No matching users found",
+            "paginate": {
+                "first": "First",
+                "last": "Last",
+                "next": "Next",
+                "previous": "Previous"
+            },
+            "processing": '<div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div> Processing...'
+        },
+        "initComplete": function() {
+            $('.dataTables_filter input').addClass('form-control form-control-sm')
+                .attr('placeholder', 'Search by username, name, email, or role...')
+                .css('width', '300px');
+                
+            $('#loading-overlay').hide();
+        },
+        "drawCallback": function() {
+            // Initialize tooltips
+            $('[data-bs-toggle="tooltip"]').tooltip();
+            
+            // Handle profile image errors
+            $('.user-thumbnail').on('error', function() {
+                $(this).hide().next('.profile-image-placeholder').show();
+            });
+            
+            // Attach click events to toggle status buttons
+            $('.toggle-status').off('click').on('click', function(e) {
+                e.preventDefault();
+                handleToggleStatus(this);
+            });
+        }
+    });
+
+    // Custom styling for buttons
+    $('.dt-buttons').addClass('btn-group');
+    $('.dt-button').addClass('btn btn-sm');
+    
+    // Handle delete confirmation
+    $(document).on('click', 'a[href*="delete"]', function(e) {
+        if (!confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
+            e.preventDefault();
+            return false;
+        }
+    });
+});
+</script>
+{% endblock %}
