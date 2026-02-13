@@ -1,78 +1,114 @@
-BG INFOTECHS - Django Business Management System
-https://img.shields.io/badge/Django-5.2.6-092E20?style=flat&logo=django&logoColor=white
-https://img.shields.io/badge/Python-3.8+-3776AB?style=flat&logo=python&logoColor=white
-https://img.shields.io/badge/MySQL-8.0+-4479A1?style=flat&logo=mysql&logoColor=white
-https://img.shields.io/badge/Bootstrap-5.3+-7952B3?style=flat&logo=bootstrap&logoColor=white
-https://img.shields.io/badge/License-MIT-yellow.svg
-https://img.shields.io/badge/version-1.0.0-blue.svg
-https://img.shields.io/github/issues/Nishanchaudhary/BG_INFOTECHS_com_np
-https://img.shields.io/github/stars/Nishanchaudhary/BG_INFOTECHS_com_np
+# BG INFOTECHS - Django Business Management System
 
-A comprehensive Django-based web application for BG INFOTECHS featuring company management, training portal, blog system, career center, and client engagement modules. Built with Django 5.2.6, MySQL, and modern frontend technologies for scalable business operations.
+![Django](https://img.shields.io/badge/Django-5.2.6-092E20?style=flat&logo=django&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3.8+-3776AB?style=flat&logo=python&logoColor=white)
+![MySQL](https://img.shields.io/badge/MySQL-8.0+-4479A1?style=flat&logo=mysql&logoColor=white)
+![Bootstrap](https://img.shields.io/badge/Bootstrap-5.3+-7952B3?style=flat&logo=bootstrap&logoColor=white)
+![License](https://img.shields.io/badge/License-MIT-yellow.svg)
+![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)
+![Issues](https://img.shields.io/github/issues/Nishanchaudhary/BG_INFOTECHS_com_np)
+![Stars](https://img.shields.io/github/stars/Nishanchaudhary/BG_INFOTECHS_com_np)
 
-📋 Table of Contents
-✨ Features
+A comprehensive Django-based web application for **BG INFOTECHS** featuring company management, training portal, blog system, career center, and client engagement modules.
 
-🚀 Getting Started
+Built with **Django 5.2.6**, **MySQL**, and modern frontend technologies for scalable business operations.
 
-Prerequisites
+---
 
-Installation
+## 📋 Table of Contents
 
-📖 Usage
+- [✨ Features](#-features)
+- [🚀 Getting Started](#-getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+- [📖 Usage](#-usage)
+- [🧩 Project Structure](#-project-structure)
+- [⚙️ Configuration](#️-configuration)
+- [🧪 Testing](#-testing)
+- [🤝 Contributing](#-contributing)
+- [📄 License](#-license)
+- [📞 Contact](#-contact)
+- [🙏 Acknowledgments](#-acknowledgments)
 
-🧩 Project Structure
+---
 
-⚙️ Configuration
+# ✨ Features
 
-🧪 Testing
+## 🏗 Core Framework
 
-🤝 Contributing
+- **Django 5.2.6** – Latest Django version with enhanced security and performance  
+- **Modular Architecture** – 11 specialized Django applications  
+- **Custom User Model** – Extended authentication system with role-based permissions  
+- **Environment Configuration** – Secure settings management using `python-dotenv`  
 
-📄 License
+---
 
-📞 Contact
+## 🏢 Business Modules
 
-🙏 Acknowledgments
+- **Company Portal** – Professional company information, services, and team profiles  
+- **Training Management** – Complete training programs with course schedules  
+- **Blog System** – Dynamic content publishing with rich text editing (Summernote)  
+- **Career Center** – Job vacancy posting and application tracking system  
+- **FAQ Management** – Organized frequently asked questions with categories  
+- **Service Packages** – Service offerings with detailed feature listings  
+- **Contact System** – Inquiry forms and client communication management  
 
-✨ Features
-Core Framework
-Django 5.2.6: Latest Django version with enhanced security and performance
+---
 
-Modular Architecture: 11 specialized Django applications
+## ⚙️ Technical Features
 
-Custom User Model: Extended authentication system with role-based permissions
+- **Modern Admin Interface** – AdminLTE3 responsive dashboard  
+- **Role-Based Access Control** – Granular permissions using `rolepermissions`  
+- **Rich Text Editor** – Summernote WYSIWYG integration  
+- **Form Enhancements** – Crispy Forms with Bootstrap 5 styling  
+- **Custom Error Handling** – 404, 500, 403, 400 error pages  
+- **Email Integration** – SMTP configuration for notifications  
+- **MySQL Database** – Production-ready database with UTF8MB4 support  
+- **Static File Optimization** – WhiteNoise for efficient static file serving  
 
-Environment Configuration: Secure settings management using python-dotenv
+---
 
-Business Modules
-Company Portal: Professional company information, services, and team profiles
+# 🚀 Getting Started
 
-Training Management: Complete training programs with course schedules
+## Prerequisites
 
-Blog System: Dynamic content publishing with rich text editing (Summernote)
+Make sure you have the following installed:
 
-Career Center: Job vacancy posting and application tracking system
+- Python 3.8+
+- MySQL 8.0+
+- pip
+- virtualenv (recommended)
 
-FAQ Management: Organized frequently asked questions with categories
+---
 
-Service Packages: Service offerings with detailed feature listings
+## Installation
 
-Contact System: Inquiry forms and client communication management
+```bash
+# Clone the repository
+git clone https://github.com/Nishanchaudhary/BG_INFOTECHS_com_np.git
 
-Technical Features
-Modern Admin Interface: AdminLTE3 responsive dashboard
+# Navigate into the project directory
+cd BG_INFOTECHS_com_np
 
-Role-Based Access Control: Granular permissions using rolepermissions
+# Create virtual environment
+python -m venv env
 
-Rich Text Editor: Summernote WYSIWYG integration for content creation
+# Activate virtual environment
+# Windows
+env\Scripts\activate
+# Mac/Linux
+source env/bin/activate
 
-Form Enhancements: Crispy Forms with Bootstrap 5 styling
+# Install dependencies
+pip install -r requirements.txt
 
-Custom Error Handling: 404, 500, 403, 400 error pages
+# Configure environment variables (.env file)
 
-Email Integration: SMTP configuration for notifications
+# Run migrations
+python manage.py migrate
 
-MySQL Database: Production-ready database with UTF8MB4 support
+# Create superuser
+python manage.py createsuperuser
 
-Static File Optimization: WhiteNoise for efficient static file serving
+# Run development server
+python manage.py runserver
